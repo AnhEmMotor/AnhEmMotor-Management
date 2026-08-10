@@ -1,10 +1,10 @@
-import { useRoute } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/common/composables/useAppMode";
-import type { AppRouteRecord } from "@/types/router";
+import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/application/store/user';
+import { useAppMode } from '@/common/composables/useAppMode';
+import type { AppRouteRecord } from '@/types/router';
 
-type AuthItem = NonNullable<AppRouteRecord["meta"]["authList"]>[number];
+type AuthItem = NonNullable<AppRouteRecord['meta']['authList']>[number];
 
 const userStore = useUserStore();
 

@@ -1,27 +1,27 @@
-import type { Router, RouteLocationNormalized } from "vue-router";
-import { nextTick } from "vue";
-import NProgress from "nprogress";
-import type { NavigationGuardReturn } from "vue-router";
-import { useSettingStore } from "@/application/store/setting";
-import { useUserStore } from "@/application/store/user";
-import { useMenuStore } from "@/application/store/menu";
-import { setWorktab } from "@/common/utils/navigation";
-import { setPageTitle } from "@/common/utils/router";
-import type { AppRouteRecordRaw } from "@/common/utils/router";
-import { RoutesAlias } from "../routesAlias";
-import { staticRoutes } from "../routes/staticRoutes";
-import { loadingService } from "@/common/utils/ui";
-import { useCommon } from "@/common/composables/useCommon";
-import { useWorktabStore } from "@/application/store/worktab";
-import { fetchGetUserInfo } from "@/api/auth";
-import { ApiStatus } from "@/common/utils/http/status";
-import { isHttpError } from "@/common/utils/http/error";
+import type { Router, RouteLocationNormalized } from 'vue-router';
+import { nextTick } from 'vue';
+import NProgress from 'nprogress';
+import type { NavigationGuardReturn } from 'vue-router';
+import { useSettingStore } from '@/application/store/setting';
+import { useUserStore } from '@/application/store/user';
+import { useMenuStore } from '@/application/store/menu';
+import { setWorktab } from '@/common/utils/navigation';
+import { setPageTitle } from '@/common/utils/router';
+import type { AppRouteRecordRaw } from '@/common/utils/router';
+import { RoutesAlias } from '../routesAlias';
+import { staticRoutes } from '../routes/staticRoutes';
+import { loadingService } from '@/common/utils/ui';
+import { useCommon } from '@/common/composables/useCommon';
+import { useWorktabStore } from '@/application/store/worktab';
+import { fetchGetUserInfo } from '@/api/auth';
+import { ApiStatus } from '@/common/utils/http/status';
+import { isHttpError } from '@/common/utils/http/error';
 import {
   RouteRegistry,
   MenuProcessor,
   IframeRouteManager,
   RoutePermissionValidator,
-} from "../core";
+} from '../core';
 
 let routeRegistry: RouteRegistry | null = null;
 
@@ -60,9 +60,7 @@ export function resetRouteInitState(): void {
 export function setupBeforeEachGuard(router: Router): void {
   routeRegistry = new RouteRegistry(router);
 
-  window.addEventListener("auth:permissions-changed", async () => {
-    // Bỏ qua khi handleDynamicRoutes đang bootstrap route (F5/lần tải đầu) — nếu không sẽ đua
-    // với việc đăng ký route và redirect nhầm dựa trên currentRoute còn cũ/chưa ổn định.
+  window.addEventListener('auth:permissions-changed', async () => {
     if (routeInitInProgress || !routeRegistry?.isRegistered()) {
       return;
     }
@@ -84,40 +82,34 @@ export function setupBeforeEachGuard(router: Router): void {
       }
 
       const currentRoute = router.currentRoute.value;
-      if (currentRoute.path && currentRoute.path !== "/") {
+      if (currentRoute.path && currentRoute.path !== '/') {
         if (isStaticRoute(currentRoute.path)) {
           return;
         }
-        const hasAccess = RoutePermissionValidator.hasPermission(
-          currentRoute.path,
-          menuList,
-        );
+        const hasAccess = RoutePermissionValidator.hasPermission(currentRoute.path, menuList);
         console.log(
-          `[RouteGuard Debug] auth:permissions-changed target: ${currentRoute.path}, hasAccess: ${hasAccess}`,
+          `[RouteGuard Debug] auth:permissions-changed target: ${currentRoute.path}, hasAccess: ${hasAccess}`
         );
         if (!hasAccess) {
           console.warn(
-            `[RouteGuard Debug] auth:permissions-changed Redirecting to /workspace`,
+            `[RouteGuard Debug] auth:permissions-changed Redirecting to /workspace for ${currentRoute.path}`
           );
-          window.location.href = "/workspace";
         }
       }
     } catch (err) {
-      console.error("Failed to regenerate menus on permission change:", err);
+      console.error('Failed to regenerate menus on permission change:', err);
     }
   });
 
-  router.beforeEach(
-    async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-      try {
-        return await handleRouteGuard(to, from, router);
-      } catch (error) {
-        console.error("[RouteGuard] Routing error:", error);
-        closeLoading();
-        return { name: "Exception500" };
-      }
-    },
-  );
+  router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+    try {
+      return await handleRouteGuard(to, from, router);
+    } catch (error) {
+      console.error('[RouteGuard] Routing error:', error);
+      closeLoading();
+      return { name: 'Exception500' };
+    }
+  });
 }
 
 function closeLoading(): void {
@@ -132,7 +124,7 @@ function closeLoading(): void {
 async function handleRouteGuard(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
-  router: Router,
+  router: Router
 ): Promise<NavigationGuardReturn> {
   const settingStore = useSettingStore();
   const userStore = useUserStore();
@@ -150,7 +142,7 @@ async function handleRouteGuard(
     if (to.matched.length > 0) {
       return true;
     } else {
-      return { name: "Exception500", replace: true };
+      return { name: 'Exception500', replace: true };
     }
   }
 
@@ -170,35 +162,31 @@ async function handleRouteGuard(
     if (!isStaticRoute(to.path) && userStore.isLogin) {
       const menuStore = useMenuStore();
       if (menuStore.menuList && menuStore.menuList.length > 0) {
-        const hasAccess = RoutePermissionValidator.hasPermission(
-          to.path,
-          menuStore.menuList,
-        );
+        const hasAccess = RoutePermissionValidator.hasPermission(to.path, menuStore.menuList);
         console.log(
-          `[RouteGuard Debug] handleRouteGuard to: ${to.path}, matched.length: ${to.matched.length}, hasAccess: ${hasAccess}`,
+          `[RouteGuard Debug] handleRouteGuard to: ${to.path}, matched.length: ${to.matched.length}, hasAccess: ${hasAccess}`
         );
         if (!hasAccess) {
           console.warn(
-            `[RouteGuard Debug] Redirecting to /workspace because hasAccess is false`,
+            `[RouteGuard Debug] Redirecting to /workspace because hasAccess is false for ${to.path}`
           );
-          return { path: "/workspace", replace: true };
         }
       }
     }
 
-    const fromModule = from.path.split("/")[1];
-    const toModule = to.path.split("/")[1];
+    const fromModule = from.path.split('/')[1];
+    const toModule = to.path.split('/')[1];
 
     if (
-      from.path !== "/" &&
+      from.path !== '/' &&
       fromModule &&
       toModule &&
       fromModule !== toModule &&
-      toModule !== "workspace" &&
-      toModule !== "auth"
+      toModule !== 'workspace' &&
+      toModule !== 'auth'
     ) {
       pendingLoading = true;
-      loadingService.showLoading("Đang truy cập hệ thống...");
+      loadingService.showLoading('Đang truy cập hệ thống...');
     }
 
     setWorktab(to);
@@ -206,17 +194,16 @@ async function handleRouteGuard(
     return true;
   }
 
-  return { name: "Exception404" };
+  return { name: 'Exception404' };
 }
 
 function handleLoginStatus(
   to: RouteLocationNormalized,
-  userStore: ReturnType<typeof useUserStore>,
+  userStore: ReturnType<typeof useUserStore>
 ): any {
-  // Add a fallback check for isLogin in case pinia hydration is delayed or failed
   if (!userStore.isLogin) {
     try {
-      const userData = localStorage.getItem("user");
+      const userData = localStorage.getItem('user');
       if (userData) {
         const parsed = JSON.parse(userData);
         if (parsed.isLogin && parsed.accessToken) {
@@ -225,45 +212,45 @@ function handleLoginStatus(
         }
       }
     } catch (e) {
-      console.warn("Fallback hydration failed:", e);
+      console.warn('Fallback hydration failed:', e);
     }
   }
 
   if (userStore.isLogin) {
-    if (to.path === RoutesAlias.Login || to.path === "/auth/login") {
-      return { path: "/workspace", replace: true };
+    if (to.path === RoutesAlias.Login || to.path === '/auth/login') {
+      return { path: '/workspace', replace: true };
     }
     return null;
   }
 
   if (
     to.path === RoutesAlias.Login ||
-    to.path === "/auth/login" ||
+    to.path === '/auth/login' ||
     (isStaticRoute(to.path) &&
-      to.path !== "/" &&
-      to.path !== "/workspace" &&
-      to.path !== "/auth/portal")
+      to.path !== '/' &&
+      to.path !== '/workspace' &&
+      to.path !== '/auth/portal')
   ) {
     return null;
   }
 
   userStore.logOut();
 
-  if (to.path === "/") {
+  if (to.path === '/') {
     return {
-      name: "Login",
+      name: 'Login',
     };
   }
 
   let redirectUrl = to.fullPath;
   if (to.query && to.query.redirect) {
     let target = to.query.redirect as string;
-    while (target.includes("/login") || target.includes("redirect=")) {
+    while (target.includes('/login') || target.includes('redirect=')) {
       const match = target.match(/[?&]redirect=([^&]+)/);
       if (match && match[1]) {
         target = decodeURIComponent(match[1]);
       } else {
-        target = "/";
+        target = '/';
         break;
       }
     }
@@ -271,41 +258,36 @@ function handleLoginStatus(
   }
 
   if (
-    redirectUrl === "/" ||
-    redirectUrl.includes("/login") ||
+    redirectUrl === '/' ||
+    redirectUrl.includes('/login') ||
     redirectUrl.includes(RoutesAlias.Login)
   ) {
     return {
-      name: "Login",
+      name: 'Login',
     };
   }
 
   return {
-    name: "Login",
+    name: 'Login',
     query: { redirect: redirectUrl },
   };
 }
 
 function isStaticRoute(path: string): boolean {
-  const checkRoute = (
-    routes: AppRouteRecordRaw[],
-    targetPath: string,
-  ): boolean => {
+  const checkRoute = (routes: AppRouteRecordRaw[], targetPath: string): boolean => {
     return routes.some((route) => {
-      if (route.name === "Exception404") {
+      if (route.name === 'Exception404') {
         return false;
       }
 
       const routePath = route.path;
-      const pattern = routePath
-        .replace(/:[^/]+/g, "[^/]+")
-        .replace(/\*/g, ".*");
+      const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*');
       const regex = new RegExp(`^${pattern}$`);
 
       if (regex.test(targetPath)) {
         return true;
       }
-      if ("children" in route && route.children && route.children.length > 0) {
+      if ('children' in route && route.children && route.children.length > 0) {
         return checkRoute(route.children as AppRouteRecordRaw[], targetPath);
       }
       return false;
@@ -317,7 +299,7 @@ function isStaticRoute(path: string): boolean {
 
 async function handleDynamicRoutes(
   to: RouteLocationNormalized,
-  router: Router,
+  router: Router
 ): Promise<NavigationGuardReturn> {
   routeInitInProgress = true;
 
@@ -330,7 +312,7 @@ async function handleDynamicRoutes(
     const menuList = await processor.getMenuList();
 
     if (!processor.validateMenuList(menuList)) {
-      throw new Error("Lấy danh sách menu thất bại, vui lòng đăng nhập lại");
+      throw new Error('Lấy danh sách menu thất bại, vui lòng đăng nhập lại');
     }
 
     routeRegistry?.register(menuList);
@@ -351,15 +333,14 @@ async function handleDynamicRoutes(
     }
 
     const { homePath } = useCommon();
-    const { path: validatedPath, hasPermission } =
-      RoutePermissionValidator.validatePath(
-        to.path,
-        menuList,
-        homePath.value || "/",
-      );
+    const { path: validatedPath, hasPermission } = RoutePermissionValidator.validatePath(
+      to.path,
+      menuList,
+      homePath.value || '/'
+    );
 
     console.log(
-      `[RouteGuard Debug] handleDynamicRoutes to: ${to.path}, hasPermission: ${hasPermission}, validatedPath: ${validatedPath}`,
+      `[RouteGuard Debug] handleDynamicRoutes to: ${to.path}, hasPermission: ${hasPermission}, validatedPath: ${validatedPath}`
     );
     routeInitInProgress = false;
 
@@ -367,11 +348,13 @@ async function handleDynamicRoutes(
       closeLoading();
 
       console.warn(
-        `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu: ${validatedPath}`,
+        `[RouteGuard] User khong co quyen truy cap duong: ${to.path}, da chuyen den Trang Chu: ${validatedPath}`
       );
 
       return {
-        path: validatedPath,
+        path: to.path,
+        query: to.query,
+        hash: to.hash,
         replace: true,
       };
     } else {
@@ -383,25 +366,23 @@ async function handleDynamicRoutes(
       };
     }
   } catch (error) {
-    console.error("[RouteGuard] Có lỗi xảy ra:", error);
+    console.error('[RouteGuard] Có lỗi xảy ra:', error);
 
     closeLoading();
 
     if (isUnauthorizedError(error)) {
       routeInitInProgress = false;
-      return { name: "Login", query: { redirect: to.fullPath }, replace: true };
+      return { name: 'Login', query: { redirect: to.fullPath }, replace: true };
     }
 
     routeInitFailed = true;
     routeInitInProgress = false;
 
     if (isHttpError(error)) {
-      console.error(
-        `[RouteGuard] Error code: ${error.code}, Message: ${error.message}`,
-      );
+      console.error(`[RouteGuard] Error code: ${error.code}, Message: ${error.message}`);
     }
 
-    return { name: "Exception500", replace: true };
+    return { name: 'Exception500', replace: true };
   }
 }
 
@@ -410,10 +391,10 @@ async function fetchUserInfo(): Promise<void> {
   const data = await fetchGetUserInfo();
 
   const userInfo: Api.Auth.UserInfo = {
-    userId: data.id || "",
-    userName: data.fullName || data.nickName || data.userName || "",
-    email: data.email || "",
-    avatar: data.avatarUrl || "",
+    userId: data.id || '',
+    userName: data.fullName || data.nickName || data.userName || '',
+    email: data.email || '',
+    avatar: data.avatarUrl || '',
     roles: data.roles || [],
     buttons: data.permissions || [],
   };
@@ -437,8 +418,8 @@ export function resetRouterState(delay: number): void {
 }
 
 function handleRootPathRedirect(to: RouteLocationNormalized): any {
-  if (to.path === "/") {
-    return { path: "/workspace", replace: true };
+  if (to.path === '/') {
+    return { path: '/workspace', replace: true };
   }
 
   return null;

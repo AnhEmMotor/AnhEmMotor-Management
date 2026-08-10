@@ -1,6 +1,6 @@
-import request from "@/utils/http";
+import request from '@/common/utils/http';
 
-export type StoreChatMode = "Ai" | "Waiting" | "Human";
+export type StoreChatMode = 'Ai' | 'Waiting' | 'Human';
 
 export interface StoreChatSessionListItem {
   id: string;
@@ -15,7 +15,7 @@ export interface StoreChatSessionListItem {
   lastMessagePreview: string | null;
 }
 
-export type StoreChatSender = "Visitor" | "Ai" | "Staff" | "System";
+export type StoreChatSender = 'Visitor' | 'Ai' | 'Staff' | 'System';
 
 export interface StoreChatMessage {
   id: string;
@@ -53,11 +53,10 @@ export interface StoreChatVariantCard {
 export const StoreChatApi = {
   getSessions() {
     return request.get<StoreChatSessionListItem[]>({
-      url: "/api/v1/store-chat-handoff/sessions",
+      url: '/api/v1/store-chat-handoff/sessions',
     });
   },
 
-  // Endpoint quản trị riêng (khác endpoint public Store) — gắn permission View, không phải AllowAnonymous.
   getHistory(sessionId: string) {
     return request.get<StoreChatMessage[]>({
       url: `/api/v1/store-chat-handoff/sessions/${sessionId}/history`,
@@ -78,7 +77,7 @@ export const StoreChatApi = {
 
   searchProducts(keyword: string) {
     return request.get<StoreChatProductSearchItem[]>({
-      url: "/api/v1/store-chat-handoff/products/search",
+      url: '/api/v1/store-chat-handoff/products/search',
       params: { keyword, limit: 10 },
     });
   },

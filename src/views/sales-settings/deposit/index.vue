@@ -6,13 +6,11 @@
           <div>
             <h3>Cài đặt đặt cọc</h3>
             <p>
-              Điều chỉnh ngưỡng giá trị đơn hàng và phần trăm khách cần thanh
-              toán trước theo từng loại đơn hàng.
+              Điều chỉnh ngưỡng giá trị đơn hàng và phần trăm khách cần thanh toán trước theo từng
+              loại đơn hàng.
             </p>
           </div>
-          <ElButton type="primary" :loading="saving" @click="handleSave">
-            Lưu cài đặt
-          </ElButton>
+          <ElButton type="primary" :loading="saving" @click="handleSave"> Lưu cài đặt </ElButton>
         </div>
       </template>
 
@@ -23,10 +21,7 @@
           :label="item.orderType"
           :name="item.orderType"
         >
-          <ElForm
-            label-position="top"
-            class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
-          >
+          <ElForm label-position="top" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <ElFormItem label="Ngưỡng giá trị đơn hàng">
               <ElInputNumber
                 v-model="item.orderThreshold"
@@ -67,11 +62,7 @@
               <span>Số tiền cần đặt cọc: </span>
               <strong>{{
                 formatCurrency(
-                  calculateDeposit(
-                    item.orderThreshold,
-                    item.orderThreshold,
-                    item.depositRatio,
-                  ),
+                  calculateDeposit(item.orderThreshold, item.orderThreshold, item.depositRatio)
                 )
               }}</strong>
             </div>
@@ -81,13 +72,9 @@
                 formatCurrency(
                   Math.max(
                     item.orderThreshold -
-                      calculateDeposit(
-                        item.orderThreshold,
-                        item.orderThreshold,
-                        item.depositRatio,
-                      ),
-                    0,
-                  ),
+                      calculateDeposit(item.orderThreshold, item.orderThreshold, item.depositRatio),
+                    0
+                  )
                 )
               }}</strong>
             </div>
@@ -103,13 +90,7 @@
         </div>
       </template>
 
-      <ElTable
-        :data="history"
-        v-loading="loadingHistory"
-        border
-        stripe
-        style="width: 100%"
-      >
+      <ElTable :data="history" v-loading="loadingHistory" border stripe style="width: 100%">
         <ElTableColumn type="index" label="Lần" width="60" align="center" />
         <ElTableColumn prop="createdAt" label="Ngày thay đổi" width="180">
           <template #default="{ row }">
@@ -129,11 +110,7 @@
           <template #default="{ row }">
             {{
               formatCurrency(
-                calculateDeposit(
-                  row.orderThreshold,
-                  row.orderThreshold,
-                  row.depositRatio,
-                ),
+                calculateDeposit(row.orderThreshold, row.orderThreshold, row.depositRatio)
               )
             }}
           </template>
@@ -144,13 +121,9 @@
               formatCurrency(
                 Math.max(
                   row.orderThreshold -
-                    calculateDeposit(
-                      row.orderThreshold,
-                      row.orderThreshold,
-                      row.depositRatio,
-                    ),
-                  0,
-                ),
+                    calculateDeposit(row.orderThreshold, row.orderThreshold, row.depositRatio),
+                  0
+                )
               )
             }}
           </template>
@@ -162,22 +135,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { ElMessage } from "element-plus";
+import { onMounted, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 import {
   DepositSettingApi,
   DepositSettingItemDto,
   DepositSettingHistoryResponse,
-} from "@/api/deposit-setting.api";
-import dayjs from "dayjs";
+} from '@/api/deposit-setting.api';
+import dayjs from 'dayjs';
 
-defineOptions({ name: "SalesDepositSettings" });
+defineOptions({ name: 'SalesDepositSettings' });
 
 const loading = ref(false);
 const loadingHistory = ref(false);
 const saving = ref(false);
 
-const activeTab = ref("Xe máy");
+const activeTab = ref('Xe máy');
 const sampleOrderTotal = ref(100000000);
 
 const settings = ref<DepositSettingItemDto[]>([]);
@@ -188,12 +161,11 @@ const calculateDeposit = (total: number, threshold: number, ratio: number) => {
   return Math.round((total * ratio) / 100);
 };
 
-const formatCurrency = (value: number) =>
-  `${Math.round(value || 0).toLocaleString("vi-VN")} đ`;
+const formatCurrency = (value: number) => `${Math.round(value || 0).toLocaleString('vi-VN')} đ`;
 
 const formatDate = (date: string) => {
-  if (!date) return "";
-  return dayjs(date).format("DD-MM-YYYY HH:mm");
+  if (!date) return '';
+  return dayjs(date).format('DD-MM-YYYY HH:mm');
 };
 
 const loadSettings = async () => {
@@ -222,7 +194,7 @@ const handleSave = async () => {
   saving.value = true;
   try {
     await DepositSettingApi.updateSettings(settings.value);
-    ElMessage.success("Đã lưu cài đặt đặt cọc");
+    ElMessage.success('Đã lưu cài đặt đặt cọc');
     await Promise.all([loadSettings(), loadHistory()]);
   } finally {
     saving.value = false;

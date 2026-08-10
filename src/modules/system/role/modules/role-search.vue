@@ -21,9 +21,9 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", value: RoleSearchFormParams): void;
-  (e: "search", params: RoleSearchFormParams): void;
-  (e: "reset"): void;
+  (e: 'update:modelValue', value: RoleSearchFormParams): void;
+  (e: 'search', params: RoleSearchFormParams): void;
+  (e: 'reset'): void;
 }
 
 const props = defineProps<Props>();
@@ -33,34 +33,34 @@ const searchBarRef = ref();
 
 const formData = computed({
   get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", val),
+  set: (val) => emit('update:modelValue', val),
 });
 
 const rules = {};
 
 const formItems = computed(() => [
   {
-    label: "",
-    key: "roleName",
-    type: "input",
-    placeholder: "Nhập tên vai trò cần tìm...",
+    label: '',
+    key: 'roleName',
+    type: 'input',
+    placeholder: 'Nhập tên vai trò cần tìm...',
     clearable: true,
   },
   {
-    label: "",
-    key: "description",
-    type: "input",
-    placeholder: "Nhập mô tả vai trò...",
+    label: '',
+    key: 'description',
+    type: 'input',
+    placeholder: 'Nhập mô tả vai trò...',
     clearable: true,
   },
 ]);
 
 const handleReset = () => {
-  emit("reset");
+  emit('reset');
 };
 
 const handleSearch = async (params: RoleSearchFormParams) => {
   await searchBarRef.value.validate();
-  emit("search", params);
+  emit('search', params);
 };
 </script>

@@ -1,11 +1,11 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   ReturnRequestItem,
   ReturnRequestDetail,
   ReturnRequestListResponse,
   CreateReturnRequestCommand,
   CreateCancelRequestCommand,
-} from "@/domain/sales/returns.types";
+} from '@/domain/sales/returns.types';
 
 export function getReturnRequests(params?: {
   status?: string;
@@ -14,7 +14,7 @@ export function getReturnRequests(params?: {
   size?: number;
 }) {
   return request.get<ReturnRequestListResponse>({
-    url: "/api/v1/sales/returns",
+    url: '/api/v1/sales/returns',
     params,
   });
 }
@@ -27,14 +27,14 @@ export function getReturnRequestDetail(id: number) {
 
 export function createReturnRequest(data: CreateReturnRequestCommand) {
   return request.post<ReturnRequestDetail>({
-    url: "/api/v1/sales/returns",
+    url: '/api/v1/sales/returns',
     data,
   });
 }
 
 export function createCancelRequest(data: CreateCancelRequestCommand) {
   return request.post<ReturnRequestDetail>({
-    url: "/api/v1/sales/returns/cancel",
+    url: '/api/v1/sales/returns/cancel',
     data,
   });
 }

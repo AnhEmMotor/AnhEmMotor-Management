@@ -1,12 +1,9 @@
 <template>
   <ElRow :gutter="20">
-    <!-- Card 1: Doanh thu thực tế -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
-          <p class="text-sm text-gray-500 mb-2 font-semibold">
-            DOANH THU THỰC TẾ
-          </p>
+          <p class="text-sm text-gray-500 mb-2 font-semibold">DOANH THU THỰC TẾ</p>
           <div class="text-2xl font-bold mb-2">85.500.000đ</div>
           <div class="text-sm mb-4">
             <span class="text-green-500 font-bold">▲ +12%</span> so với hôm qua
@@ -17,17 +14,11 @@
             <span>Mục tiêu ngày: 100tr</span>
             <span>85%</span>
           </div>
-          <ElProgress
-            :percentage="85"
-            :show-text="false"
-            color="#409eff"
-            :stroke-width="8"
-          />
+          <ElProgress :percentage="85" :show-text="false" color="#409eff" :stroke-width="8" />
         </div>
       </div>
     </ElCol>
 
-    <!-- Card 2: Lợi nhuận ròng -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
@@ -43,7 +34,6 @@
       </div>
     </ElCol>
 
-    <!-- Card 3: Tiền đang treo -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4 flex flex-col justify-between">
         <div>
@@ -63,7 +53,6 @@
       </div>
     </ElCol>
 
-    <!-- Card 4: Cảnh báo cần xử lý -->
     <ElCol :xl="6" :lg="6" :md="12" :sm="24" :xs="24" class="mb-4">
       <div class="art-card h-full p-4">
         <p class="text-sm text-gray-500 mb-2 font-semibold">CẦN XỬ LÝ</p>
@@ -80,9 +69,7 @@
             <span class="w-3 h-3 rounded-full bg-yellow-400 mr-2"></span>
             <span class="font-bold mr-1">3</span> Xe sắp hết hàng
           </li>
-          <li
-            class="flex items-center hover:text-blue-500 transition-colors text-gray-400"
-          >
+          <li class="flex items-center hover:text-blue-500 transition-colors text-gray-400">
             <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
             <span class="font-bold mr-1">0</span> Lịch hẹn bị bỏ lỡ
           </li>
@@ -96,7 +83,7 @@
 defineProps({
   period: {
     type: String,
-    default: "today",
+    default: 'today',
   },
 });
 </script>

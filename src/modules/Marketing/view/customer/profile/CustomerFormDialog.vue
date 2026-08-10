@@ -11,24 +11,19 @@
       <div class="flex items-center justify-between w-full pr-4">
         <div class="flex items-center gap-3">
           <div class="size-10 bg-blue-50 text-blue-600 rounded-xl flex-cc">
-            <ArtSvgIcon
-              :icon="form.id ? 'ri:edit-box-line' : 'ri:user-add-line'"
-              class="text-xl"
-            />
+            <ArtSvgIcon :icon="form.id ? 'ri:edit-box-line' : 'ri:user-add-line'" class="text-xl" />
           </div>
           <div class="flex flex-col">
-            <h3
-              class="m-0 text-base font-bold text-gray-800 dark:text-slate-100 tracking-tight"
-            >
-              {{ form.id ? "CẬP NHẬT HỒ SƠ" : "THÊM KHÁCH HÀNG" }}
+            <h3 class="m-0 text-base font-bold text-gray-800 dark:text-slate-100 tracking-tight">
+              {{ form.id ? 'CẬP NHẬT HỒ SƠ' : 'THÊM KHÁCH HÀNG' }}
             </h3>
             <span
               class="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest"
             >
               {{
                 form.id
-                  ? "Thay đổi thông tin khách hàng #" + form.id
-                  : "Khởi tạo hồ sơ khách hàng mới"
+                  ? 'Thay đổi thông tin khách hàng #' + form.id
+                  : 'Khởi tạo hồ sơ khách hàng mới'
               }}
             </span>
           </div>
@@ -43,11 +38,7 @@
     </template>
 
     <div class="form-body p-2">
-      <ElForm
-        :model="form"
-        label-position="top"
-        class="grid grid-cols-2 gap-x-6 gap-y-4"
-      >
+      <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-4">
         <ElFormItem label="Họ và tên khách hàng" class="col-span-2 is-required">
           <ElInput
             v-model="form.fullName"
@@ -57,19 +48,11 @@
         </ElFormItem>
 
         <ElFormItem label="Số điện thoại" class="is-required">
-          <ElInput
-            v-model="form.phoneNumber"
-            placeholder="09xx.xxx.xxx"
-            class="premium-input"
-          />
+          <ElInput v-model="form.phoneNumber" placeholder="09xx.xxx.xxx" class="premium-input" />
         </ElFormItem>
 
         <ElFormItem label="Email (Nếu có)">
-          <ElInput
-            v-model="form.email"
-            placeholder="example@gmail.com"
-            class="premium-input"
-          />
+          <ElInput v-model="form.email" placeholder="example@gmail.com" class="premium-input" />
         </ElFormItem>
 
         <div class="col-span-2 h-px bg-gray-100 dark:bg-slate-800 my-2"></div>
@@ -139,40 +122,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { ElMessage } from "element-plus";
-import { fetchCreateLead, fetchUpdateLead } from "@/api/customer/lead.api";
+import { ref, watch } from 'vue';
+import { ElMessage } from 'element-plus';
+import { fetchCreateLead, fetchUpdateLead } from '@/api/customer/lead.api';
 
 const props = defineProps<{
   modelValue: boolean;
   initialData?: any;
 }>();
 
-const emit = defineEmits(["update:modelValue", "success"]);
+const emit = defineEmits(['update:modelValue', 'success']);
 
 const visible = ref(props.modelValue);
 watch(
   () => props.modelValue,
-  (val) => (visible.value = val),
+  (val) => (visible.value = val)
 );
-watch(visible, (val) => emit("update:modelValue", val));
+watch(visible, (val) => emit('update:modelValue', val));
 
 const form = ref({
   id: null as number | null,
-  fullName: "",
-  phoneNumber: "",
-  email: "",
-  source: "Store",
-  priority: "High",
-  status: "New",
-  interestedVehicle: "",
-  note: "",
-  gender: "",
-  birthday: "",
-  identificationNumber: "",
-  addressDetail: "",
-  ward: "",
-  province: "",
+  fullName: '',
+  phoneNumber: '',
+  email: '',
+  source: 'Store',
+  priority: 'High',
+  status: 'New',
+  interestedVehicle: '',
+  note: '',
+  gender: '',
+  birthday: '',
+  identificationNumber: '',
+  addressDetail: '',
+  ward: '',
+  province: '',
   score: 0,
   isVerified: false,
 });
@@ -183,51 +166,51 @@ watch(
     if (newData) {
       form.value = {
         id: newData.id ?? null,
-        fullName: newData.fullName ?? "",
-        phoneNumber: newData.phoneNumber ?? "",
-        email: newData.email ?? "",
-        source: newData.source ?? "Store",
-        priority: newData.priority ?? "High",
-        status: newData.status ?? "New",
-        interestedVehicle: newData.interestedVehicle ?? "",
-        note: newData.note ?? "",
-        gender: newData.gender ?? "",
-        birthday: newData.birthday ?? "",
-        identificationNumber: newData.identificationNumber ?? "",
-        addressDetail: newData.addressDetail ?? "",
-        ward: newData.ward ?? "",
-        province: newData.province ?? "",
+        fullName: newData.fullName ?? '',
+        phoneNumber: newData.phoneNumber ?? '',
+        email: newData.email ?? '',
+        source: newData.source ?? 'Store',
+        priority: newData.priority ?? 'High',
+        status: newData.status ?? 'New',
+        interestedVehicle: newData.interestedVehicle ?? '',
+        note: newData.note ?? '',
+        gender: newData.gender ?? '',
+        birthday: newData.birthday ?? '',
+        identificationNumber: newData.identificationNumber ?? '',
+        addressDetail: newData.addressDetail ?? '',
+        ward: newData.ward ?? '',
+        province: newData.province ?? '',
         score: newData.score ?? 0,
         isVerified: newData.isVerified ?? false,
       };
     } else {
       form.value = {
         id: null,
-        fullName: "",
-        phoneNumber: "",
-        email: "",
-        source: "Store",
-        priority: "High",
-        status: "New",
-        interestedVehicle: "",
-        note: "",
-        gender: "",
-        birthday: "",
-        identificationNumber: "",
-        addressDetail: "",
-        ward: "",
-        province: "",
+        fullName: '',
+        phoneNumber: '',
+        email: '',
+        source: 'Store',
+        priority: 'High',
+        status: 'New',
+        interestedVehicle: '',
+        note: '',
+        gender: '',
+        birthday: '',
+        identificationNumber: '',
+        addressDetail: '',
+        ward: '',
+        province: '',
         score: 0,
         isVerified: false,
       };
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const handleSubmit = async () => {
   if (!form.value.fullName || !form.value.phoneNumber) {
-    ElMessage.warning("Vui lòng nhập Tên và Số điện thoại");
+    ElMessage.warning('Vui lòng nhập Tên và Số điện thoại');
     return;
   }
 
@@ -249,7 +232,7 @@ const handleSubmit = async () => {
         score: form.value.score,
         isVerified: form.value.isVerified,
       });
-      ElMessage.success("Đã cập nhật thông tin khách hàng!");
+      ElMessage.success('Đã cập nhật thông tin khách hàng!');
     } else {
       await fetchCreateLead({
         fullName: form.value.fullName,
@@ -266,12 +249,12 @@ const handleSubmit = async () => {
         province: form.value.province,
         score: form.value.score,
       });
-      ElMessage.success("Đã thêm khách hàng mới vào hệ thống!");
+      ElMessage.success('Đã thêm khách hàng mới vào hệ thống!');
     }
-    emit("success", { ...form.value });
+    emit('success', { ...form.value });
     visible.value = false;
   } catch {
-    ElMessage.error("Lỗi khi lưu hồ sơ khách hàng. Vui lòng thử lại.");
+    ElMessage.error('Lỗi khi lưu hồ sơ khách hàng. Vui lòng thử lại.');
   }
 };
 </script>

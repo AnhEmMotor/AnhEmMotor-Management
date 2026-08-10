@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import {
   ManagerChatApi as ChatApi,
   type ChatSession,
@@ -10,8 +10,16 @@ import {
   type ChatRunEventDto,
   type ChatPlanDto,
   type SteeringResultDto,
-} from "@/api/chat/chat.api";
-import PlanCard from "./PlanCard.vue";
+} from '@/api/chat/chat.api';
+import PlanCard from './PlanCard.vue';
+import {
+  getSuggestedPages,
+  getFollowUpSuggestions,
+  EMPTY_STATE_SUGGESTIONS,
+  type SuggestedPage,
+} from './chatPageSuggestions';
+import { useMenuStore } from '@/application/store/menu';
+import { handleMenuJump } from '@/common/utils/navigation';
 import {
   Plus,
   Delete,
@@ -21,38 +29,36 @@ import {
   Menu,
   CircleCheck,
   ArrowRight,
-} from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+} from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   HubConnectionBuilder,
   HubConnectionState,
   LogLevel,
   HubConnection,
-} from "@microsoft/signalr";
-import { useUserStore } from "@/application/store/user";
-import "@wangeditor/editor/dist/css/style.css";
-import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
-import { marked } from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/atom-one-dark.css";
+} from '@microsoft/signalr';
+import { useUserStore } from '@/application/store/user';
+import '@wangeditor/editor/dist/css/style.css';
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 
-// Configure marked
 const renderer = new marked.Renderer();
 renderer.code = function (tokenOrCode: any, maybeLang?: string) {
-  let code = "";
+  let code = '';
   let lang = maybeLang;
 
-  if (typeof tokenOrCode === "object" && tokenOrCode !== null) {
-    code = tokenOrCode.text || "";
+  if (typeof tokenOrCode === 'object' && tokenOrCode !== null) {
+    code = tokenOrCode.text || '';
     lang = tokenOrCode.lang;
   } else {
-    code = tokenOrCode || "";
+    code = tokenOrCode || '';
   }
 
-  const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
+  const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
   const highlighted = hljs.highlight(code, { language }).value;
 
-  // Escape code for data attribute to prevent XSS/breaking HTML
   const encodedCode = encodeURIComponent(code);
 
   return `
@@ -72,23 +78,23 @@ marked.use({ renderer });
 
 const handleCopy = (e: Event) => {
   const target = e.target as HTMLElement;
-  const btn = target.closest(".copy-btn") as HTMLElement;
+  const btn = target.closest('.copy-btn') as HTMLElement;
   if (btn) {
-    const code = decodeURIComponent(btn.getAttribute("data-code") || "");
+    const code = decodeURIComponent(btn.getAttribute('data-code') || '');
     navigator.clipboard
       .writeText(code)
       .then(() => {
         const originalHtml = btn.innerHTML;
         btn.innerHTML =
           '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
-        btn.classList.add("text-green-400");
+        btn.classList.add('text-green-400');
         setTimeout(() => {
           btn.innerHTML = originalHtml;
-          btn.classList.remove("text-green-400");
+          btn.classList.remove('text-green-400');
         }, 2000);
       })
       .catch(() => {
-        ElMessage.error("Không thể copy đoạn code này");
+        ElMessage.error('Không thể copy đoạn code này');
       });
   }
 };
@@ -97,13 +103,13 @@ const props = defineProps<{
   modelValue: boolean;
 }>();
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue']);
 
 const drawerVisible = ref(props.modelValue);
 
 const isRichTextMode = ref(false);
 const editorRef = shallowRef();
-const editorConfig = { placeholder: "Nhập câu hỏi của bạn..." };
+const editorConfig = { placeholder: 'Nhập câu hỏi của bạn...' };
 
 const handleCreated = (editor: any) => {
   editorRef.value = editor;
@@ -119,25 +125,25 @@ watch(
     } else {
       stopConnection();
     }
-  },
+  }
 );
 
 watch(drawerVisible, (val) => {
-  emit("update:modelValue", val);
+  emit('update:modelValue', val);
 });
 
 const sessions = ref<ChatSession[]>([]);
 const activeSessionId = ref<string | null>(null);
 
 const messages = ref<ChatMessage[]>([]);
-const newMessage = ref("");
+const newMessage = ref('');
 
 const activeStreams = ref<Record<string, ChatMessage>>({});
 const activeStreamSessions = ref<Set<string>>(new Set());
 const activePlans = ref<Record<string, ChatPlanDto>>({});
 const planPanelOpen = ref(false);
 const currentPlan = computed(() =>
-  activeSessionId.value ? activePlans.value[activeSessionId.value] : undefined,
+  activeSessionId.value ? activePlans.value[activeSessionId.value] : undefined
 );
 
 interface RunWatcher {
@@ -158,18 +164,16 @@ interface SteeringBuffer {
   timer: ReturnType<typeof setTimeout> | null;
 }
 const steeringBuffers = ref<Record<string, SteeringBuffer>>({});
-const steeringStuckWatchdogs = ref<
-  Record<string, ReturnType<typeof setTimeout>>
->({});
+const steeringStuckWatchdogs = ref<Record<string, ReturnType<typeof setTimeout>>>({});
 
-type SteeringStatus = "received" | "applied" | "stuck";
+type SteeringStatus = 'received' | 'applied' | 'stuck';
 const steeringStatus = ref<Record<string, SteeringStatus>>({});
 const currentSteeringStatus = computed(() =>
-  activeSessionId.value ? steeringStatus.value[activeSessionId.value] : null,
+  activeSessionId.value ? steeringStatus.value[activeSessionId.value] : null
 );
 
 const { data: toolCatalog } = useQuery({
-  queryKey: ["chat-tool-catalog"],
+  queryKey: ['chat-tool-catalog'],
   queryFn: () => ChatApi.getToolCatalog(),
   staleTime: Infinity,
 });
@@ -178,20 +182,67 @@ const toolLabelByName = computed(() => {
   for (const tool of toolCatalog.value ?? []) map[tool.name] = tool.label;
   return map;
 });
+const { menuList } = storeToRefs(useMenuStore());
+const isDoneToolStep = (
+  step: ChatReasoningStep
+): step is Extract<ChatReasoningStep, { kind: 'tool' }> =>
+  step.kind === 'tool' && step.status === 'done';
+const suggestedPagesFor = (msg: ChatMessage) => {
+  const doneTools = (msg.reasoningSteps ?? [])
+    .filter(isDoneToolStep)
+    .map((s) => ({ name: s.name, label: s.label }));
+  return getSuggestedPages(doneTools, menuList.value);
+};
+const goToSuggestedPage = (item: SuggestedPage) => {
+  if (!item.page) return;
+  handleMenuJump(item.page);
+  drawerVisible.value = false;
+};
+
+const messageInputRef = ref();
+const activeSuggestions = computed<string[]>(() => {
+  if (newMessage.value.trim()) return [];
+  if (messages.value.length === 0) return EMPTY_STATE_SUGGESTIONS;
+  if (isSending.value) return [];
+  const lastMsg = messages.value[messages.value.length - 1];
+  if (!lastMsg || lastMsg.role !== 'AI') return [];
+  const aiSuggestion = (lastMsg.reasoningSteps ?? []).find((s) => s.kind === 'suggestion');
+  if (aiSuggestion) return [aiSuggestion.text];
+  const doneToolNames = (lastMsg.reasoningSteps ?? []).filter(isDoneToolStep).map((s) => s.name);
+  return getFollowUpSuggestions(doneToolNames);
+});
+const topSuggestion = computed(() => activeSuggestions.value[0] ?? '');
+const applySuggestion = (text: string) => {
+  newMessage.value = text;
+  nextTick(() => messageInputRef.value?.focus());
+};
+const sendSuggestion = (text: string) => {
+  newMessage.value = text;
+  sendMessage();
+};
+const handleInputTab = (e: Event) => {
+  if (newMessage.value.trim() || !topSuggestion.value) return;
+  e.preventDefault();
+  applySuggestion(topSuggestion.value);
+};
+
 const toolCallText = (tool: ChatMessageToolCall) => {
   const lowered = tool.label.charAt(0).toLowerCase() + tool.label.slice(1);
-  const prefix = `${tool.status === "done" ? "Đã" : "Đang"} ${lowered}`;
+  const prefix = `${tool.status === 'done' ? 'Đã' : 'Đang'} ${lowered}`;
   let text = tool.summary ? `${prefix} — ${tool.summary}` : prefix;
-  const period = tool.filtersApplied?.["Khoảng thời gian"];
+  const period = tool.filtersApplied?.['Khoảng thời gian'];
   if (period) text += ` (${period})`;
   if (tool.truncated) text += ` — chỉ hiện một phần dữ liệu`;
   return text;
 };
 
 const CITATION_PATTERN = /\[(c\d+)\]/g;
+const SUGGESTION_PATTERN = /<goi_y>[\s\S]*?<\/goi_y>/g;
 
 const renderAiMessage = (msg: ChatMessage) => {
-  const html = marked.parse(msg.message || "", { async: false }) as string;
+  const html = marked.parse((msg.message || '').replace(SUGGESTION_PATTERN, ''), {
+    async: false,
+  }) as string;
   return html.replace(CITATION_PATTERN, (match, id: string) => {
     if (!msg.citations?.[id]) return match;
     return `<button type="button" class="citation-chip" data-citation-id="${id}">[${id}]</button>`;
@@ -199,34 +250,22 @@ const renderAiMessage = (msg: ChatMessage) => {
 };
 
 const openCitation = (msg: ChatMessage, event: MouseEvent) => {
-  const target = (event.target as HTMLElement).closest(
-    "[data-citation-id]",
-  ) as HTMLElement | null;
+  const target = (event.target as HTMLElement).closest('[data-citation-id]') as HTMLElement | null;
   if (!target) return;
-  const citation = msg.citations?.[target.dataset.citationId ?? ""];
+  const citation = msg.citations?.[target.dataset.citationId ?? ''];
   if (!citation) return;
-  const title = [citation.sourceFile, citation.heading]
-    .filter(Boolean)
-    .join(" — ");
-  ElMessageBox.alert(
-    citation.content || "(không có nội dung)",
-    title || "Nguồn trích dẫn",
-    {
-      confirmButtonText: "Đóng",
-    },
-  );
+  const title = [citation.sourceFile, citation.heading].filter(Boolean).join(' — ');
+  ElMessageBox.alert(citation.content || '(không có nội dung)', title || 'Nguồn trích dẫn', {
+    confirmButtonText: 'Đóng',
+  });
 };
 
 const parseToolStartPayload = (
-  payload: string,
-): Pick<ChatMessageToolCall, "name" | "summary" | "argsPreview"> => {
+  payload: string
+): Pick<ChatMessageToolCall, 'name' | 'summary' | 'argsPreview'> => {
   try {
     const parsed = JSON.parse(payload);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      typeof parsed.name === "string"
-    ) {
+    if (parsed && typeof parsed === 'object' && typeof parsed.name === 'string') {
       return {
         name: parsed.name,
         summary: parsed.summary || undefined,
@@ -240,27 +279,23 @@ const parseToolStartPayload = (
 };
 
 const parseToolEndPayload = (
-  payload: string,
+  payload: string
 ): Pick<
   ChatMessageToolCall,
-  | "name"
-  | "summary"
-  | "durationMs"
-  | "resultPreview"
-  | "truncated"
-  | "totalCount"
-  | "asOf"
-  | "warnings"
-  | "filtersApplied"
-  | "citations"
+  | 'name'
+  | 'summary'
+  | 'durationMs'
+  | 'resultPreview'
+  | 'truncated'
+  | 'totalCount'
+  | 'asOf'
+  | 'warnings'
+  | 'filtersApplied'
+  | 'citations'
 > => {
   try {
     const parsed = JSON.parse(payload);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      typeof parsed.name === "string"
-    ) {
+    if (parsed && typeof parsed === 'object' && typeof parsed.name === 'string') {
       return {
         name: parsed.name,
         summary: parsed.summary || undefined,
@@ -283,11 +318,7 @@ const parseToolEndPayload = (
 const parseThinkingPayload = (payload: string): string => {
   try {
     const parsed = JSON.parse(payload);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      typeof parsed.text === "string"
-    ) {
+    if (parsed && typeof parsed === 'object' && typeof parsed.text === 'string') {
       return parsed.text;
     }
   } catch {
@@ -297,8 +328,8 @@ const parseThinkingPayload = (payload: string): string => {
 };
 
 const runIdFromMessageId = (id?: string): string | undefined => {
-  if (!id || !id.startsWith("run-")) return undefined;
-  return id.slice("run-".length).split("-seg-")[0];
+  if (!id || !id.startsWith('run-')) return undefined;
+  return id.slice('run-'.length).split('-seg-')[0];
 };
 
 const submittingFeedback = ref<Record<string, boolean>>({});
@@ -307,26 +338,23 @@ const submitMessageFeedback = async (msg: ChatMessage) => {
   if (!runId || submittingFeedback.value[msg.id!]) return;
   try {
     const { value: comment } = await ElMessageBox.prompt(
-      "Mô tả ngắn gọn số liệu nào chưa đúng (không bắt buộc)",
-      "Báo cáo số liệu chưa đúng",
+      'Mô tả ngắn gọn số liệu nào chưa đúng (không bắt buộc)',
+      'Báo cáo số liệu chưa đúng',
       {
-        confirmButtonText: "Gửi",
-        cancelButtonText: "Huỷ",
-        inputType: "textarea",
-      },
+        confirmButtonText: 'Gửi',
+        cancelButtonText: 'Huỷ',
+        inputType: 'textarea',
+      }
     );
     submittingFeedback.value[msg.id!] = true;
     await ChatApi.submitFeedback(runId, comment);
-    ElMessage.success("Đã ghi nhận phản hồi, cảm ơn bạn!");
+    ElMessage.success('Đã ghi nhận phản hồi, cảm ơn bạn!');
   } catch {
-    // người dùng bấm Huỷ hoặc API lỗi — không cần báo thêm
   } finally {
     submittingFeedback.value[msg.id!] = false;
   }
 };
 
-// Panel suy nghĩ luôn thu gọn theo mặc định (kể cả khi đang chạy) — trừ khi người dùng tự bấm
-// mở thì giữ theo lựa chọn đó (override) cho tới khi tin nhắn bị gỡ khỏi state.
 const reasoningPanelOverride = ref<Record<string, boolean>>({});
 const isReasoningPanelOpen = (msg: ChatMessage) => {
   if (msg.id && msg.id in reasoningPanelOverride.value) {
@@ -339,16 +367,11 @@ const toggleReasoningPanel = (msg: ChatMessage) => {
   reasoningPanelOverride.value[msg.id] = !isReasoningPanelOpen(msg);
 };
 
-// Tin nhắn tạo trước khi backend lưu ReasoningElapsedSeconds vẫn có thể thiếu elapsed dù đã xong
-// từ lâu. Chỉ tin nhắn ĐANG thật sự live-stream (chính là activeStreams hiện tại) mới được coi là
-// "đang suy nghĩ" khi thiếu elapsed; còn lại xem như đã xong, không hiện spinner treo vô hạn.
 const isMessageLive = (msg: ChatMessage) => {
   const sessionId = activeSessionId.value;
   return !!sessionId && activeStreams.value[sessionId] === msg;
 };
 
-// Backend trả DateTime dạng UTC nhưng thiếu hậu tố "Z"/offset (Kind=Unspecified khi serialize) —
-// new Date() mặc định hiểu chuỗi không có timezone là GIỜ LOCAL, lệch hẳn theo múi giờ trình duyệt.
 const parseUtcTimestamp = (isoString: string): number => {
   const hasTimezone = /[zZ]|[+-]\d{2}:\d{2}$/.test(isoString);
   return new Date(hasTimezone ? isoString : `${isoString}Z`).getTime();
@@ -357,15 +380,12 @@ const parseUtcTimestamp = (isoString: string): number => {
 const reasoningStartedAt = ref<Record<string, number>>({});
 const markReasoningStarted = (msg: ChatMessage, startedAt?: string | null) => {
   if (msg.id && !(msg.id in reasoningStartedAt.value)) {
-    reasoningStartedAt.value[msg.id] = startedAt
-      ? parseUtcTimestamp(startedAt)
-      : Date.now();
+    reasoningStartedAt.value[msg.id] = startedAt ? parseUtcTimestamp(startedAt) : Date.now();
   }
 };
 const finishReasoningTiming = (msg: ChatMessage | undefined) => {
   if (!msg?.id || !(msg.id in reasoningStartedAt.value)) return;
-  msg.reasoningElapsedSeconds =
-    (Date.now() - reasoningStartedAt.value[msg.id]) / 1000;
+  msg.reasoningElapsedSeconds = (Date.now() - reasoningStartedAt.value[msg.id]) / 1000;
   delete reasoningStartedAt.value[msg.id];
 };
 
@@ -378,23 +398,21 @@ const clearSteeringStuckWatchdog = (sessionId: string) => {
 const armSteeringStuckWatchdog = (sessionId: string) => {
   clearSteeringStuckWatchdog(sessionId);
   steeringStuckWatchdogs.value[sessionId] = setTimeout(() => {
-    steeringStatus.value[sessionId] = "stuck";
+    steeringStatus.value[sessionId] = 'stuck';
   }, STEERING_STUCK_MS);
 };
 const isCreatingSession = ref(false);
 const isSending = computed(
   () =>
     isCreatingSession.value ||
-    (activeSessionId.value
-      ? activeStreamSessions.value.has(activeSessionId.value)
-      : false),
+    (activeSessionId.value ? activeStreamSessions.value.has(activeSessionId.value) : false)
 );
 
 const isLoadingSessions = ref(false);
 const isLoadingHistory = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
 const editingSessionId = ref<string | null>(null);
-const editingTitle = ref("");
+const editingTitle = ref('');
 
 const userStore = useUserStore();
 const connection = ref<HubConnection | null>(null);
@@ -403,12 +421,10 @@ const startConnection = async () => {
   if (connection.value?.state === HubConnectionState.Connected) return;
 
   const token = userStore.accessToken;
-  // using env API_URL or fallback
   const baseUrl =
-    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-    "https://localhost:7147";
+    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'https://localhost:7147';
   connection.value = new HubConnectionBuilder()
-    .withUrl(baseUrl + "/hubs/manager-chat", {
+    .withUrl(baseUrl + '/hubs/manager-chat', {
       accessTokenFactory: () => token,
     })
     .withAutomaticReconnect()
@@ -424,7 +440,7 @@ const startConnection = async () => {
   try {
     await connection.value.start();
   } catch (err) {
-    console.error("SignalR Connection Error: ", err);
+    console.error('SignalR Connection Error: ', err);
   }
 };
 
@@ -446,9 +462,9 @@ const armWatchdog = (sessionId: string) => {
   watcher.watchdog = setTimeout(() => {
     const aiMsg = activeStreams.value[sessionId];
     if (aiMsg) {
-      aiMsg.message += "\n\n_(Mất kết nối với AI. Vui lòng thử lại.)_";
+      aiMsg.message += '\n\n_(Mất kết nối với AI. Vui lòng thử lại.)_';
     }
-    ElMessage.warning("Phiên trả lời bị gián đoạn");
+    ElMessage.warning('Phiên trả lời bị gián đoạn');
     cleanupRun(sessionId);
   }, RUN_WATCHDOG_MS);
 };
@@ -462,7 +478,7 @@ const persistWatcher = (sessionId: string) => {
       sessionId,
       runId: watcher.runId,
       lastSeq: watcher.lastSeq,
-    }),
+    })
   );
 };
 
@@ -489,7 +505,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
   activeStreamSessions.value.add(sessionId);
   armWatchdog(sessionId);
 
-  const stream = connection.value!.stream("SubscribeRun", runId, afterSeq);
+  const stream = connection.value!.stream('SubscribeRun', runId, afterSeq);
   stream.subscribe({
     next: (evt: ChatRunEventDto) => {
       const watcher = runWatchers.value[sessionId];
@@ -498,38 +514,36 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
 
       const aiMsg = activeStreams.value[sessionId];
       switch (evt.type) {
-        case "text_delta":
+        case 'text_delta':
           armWatchdog(sessionId);
           if (aiMsg) aiMsg.message += evt.payload;
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
-        case "message_correction":
-          // Guardrail phát hiện câu vừa stream sai (bịa số, hứa hẹn suông, lộ dữ liệu...) sau khi
-          // sinh xong — THAY toàn bộ nội dung đã hiện, không phải nối thêm.
+        case 'message_correction':
           if (aiMsg) aiMsg.message = evt.payload;
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
-        case "run_heartbeat":
+        case 'run_heartbeat':
           armWatchdog(sessionId);
           break;
-        case "steering_received":
-          steeringStatus.value[sessionId] = "received";
+        case 'steering_received':
+          steeringStatus.value[sessionId] = 'received';
           armSteeringStuckWatchdog(sessionId);
           break;
-        case "steering_applied":
+        case 'steering_applied':
           clearSteeringStuckWatchdog(sessionId);
-          steeringStatus.value[sessionId] = "applied";
+          steeringStatus.value[sessionId] = 'applied';
           setTimeout(() => {
-            if (steeringStatus.value[sessionId] === "applied") {
+            if (steeringStatus.value[sessionId] === 'applied') {
               delete steeringStatus.value[sessionId];
             }
           }, 2000);
           break;
-        case "turn_boundary": {
+        case 'turn_boundary': {
           const nextAiMsg: ChatMessage = {
             id: `run-${watcher.runId}-seg-${evt.seq}`,
-            role: "AI",
-            message: "",
+            role: 'AI',
+            message: '',
             createdAt: new Date().toISOString(),
           };
           activeStreams.value[sessionId] = nextAiMsg;
@@ -538,170 +552,161 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
-        case "run_redirected":
+        case 'run_redirected':
           clearSteeringStuckWatchdog(sessionId);
           delete steeringStatus.value[sessionId];
           break;
-        case "thinking": {
+        case 'thinking': {
           armWatchdog(sessionId);
           if (!aiMsg) break;
           markReasoningStarted(aiMsg);
-          const text = parseThinkingPayload(evt.payload || "");
-          aiMsg.reasoningSteps = [
-            ...(aiMsg.reasoningSteps ?? []),
-            { kind: "thinking", text },
-          ];
+          const text = parseThinkingPayload(evt.payload || '');
+          aiMsg.reasoningSteps = [...(aiMsg.reasoningSteps ?? []), { kind: 'thinking', text }];
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
-        case "tool_start": {
+        case 'suggested_prompt': {
+          if (!aiMsg) break;
+          const text = parseThinkingPayload(evt.payload || '');
+          if (text) {
+            aiMsg.reasoningSteps = [...(aiMsg.reasoningSteps ?? []), { kind: 'suggestion', text }];
+          }
+          break;
+        }
+        case 'tool_start': {
           armWatchdog(sessionId);
           if (!aiMsg) break;
           markReasoningStarted(aiMsg);
-          const { name, summary, argsPreview } = parseToolStartPayload(
-            evt.payload || "",
-          );
-          const label = toolLabelByName.value[name] || name || "dữ liệu";
+          const { name, summary, argsPreview } = parseToolStartPayload(evt.payload || '');
+          const label = toolLabelByName.value[name] || name || 'dữ liệu';
           aiMsg.reasoningSteps = [
             ...(aiMsg.reasoningSteps ?? []),
             {
-              kind: "tool",
+              kind: 'tool',
               name,
               label,
               summary,
               argsPreview,
-              status: "running",
+              status: 'running',
             },
           ];
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
-        case "tool_end": {
+        case 'tool_end': {
           armWatchdog(sessionId);
           const list = aiMsg?.reasoningSteps;
           if (list) {
-            const { name, ...toolResult } = parseToolEndPayload(
-              evt.payload || "",
-            );
+            const { name, ...toolResult } = parseToolEndPayload(evt.payload || '');
             const lastRunningIdx = list.findLastIndex(
-              (s) =>
-                s.kind === "tool" && s.name === name && s.status === "running",
+              (s) => s.kind === 'tool' && s.name === name && s.status === 'running'
             );
-            const current =
-              lastRunningIdx !== -1 ? list[lastRunningIdx] : undefined;
-            if (current?.kind === "tool") {
+            const current = lastRunningIdx !== -1 ? list[lastRunningIdx] : undefined;
+            if (current?.kind === 'tool') {
               const updated = [...list];
               updated[lastRunningIdx] = {
                 ...current,
                 ...toolResult,
-                status: "done",
+                status: 'done',
               };
               aiMsg!.reasoningSteps = updated;
             }
             if (toolResult.citations?.length && aiMsg) {
               aiMsg.citations = {
                 ...(aiMsg.citations ?? {}),
-                ...Object.fromEntries(
-                  toolResult.citations.map((c) => [c.citationId, c]),
-                ),
+                ...Object.fromEntries(toolResult.citations.map((c) => [c.citationId, c])),
               };
             }
           }
           if (activeSessionId.value === sessionId) scrollToBottom();
           break;
         }
-        case "run_completed":
-        case "run_cancelled":
+        case 'run_completed':
+        case 'run_cancelled':
           finishReasoningTiming(aiMsg);
           cleanupRun(sessionId);
           break;
-        case "error":
-          ElMessage.error(evt.payload || "Đã có lỗi xảy ra khi AI trả lời");
+        case 'error':
+          ElMessage.error(evt.payload || 'Đã có lỗi xảy ra khi AI trả lời');
           cleanupRun(sessionId);
           break;
-        case "plan_started": {
+        case 'plan_started': {
           ChatApi.getPlan(watcher.runId)
             .then((plan) => {
               activePlans.value[sessionId] = plan;
-              if (activeSessionId.value === sessionId)
-                planPanelOpen.value = true;
+              if (activeSessionId.value === sessionId) planPanelOpen.value = true;
             })
-            .catch((err) => console.error("Không thể tải kế hoạch:", err));
+            .catch((err) => console.error('Không thể tải kế hoạch:', err));
           break;
         }
-        case "plan_step_added": {
+        case 'plan_step_added': {
           const plan = activePlans.value[sessionId];
           if (!plan) break;
           try {
-            const { step } = JSON.parse(evt.payload || "{}");
+            const { step } = JSON.parse(evt.payload || '{}');
             if (step) plan.steps = [...plan.steps, step];
           } catch (err) {
-            console.error("plan_step_added payload lỗi:", err);
+            console.error('plan_step_added payload lỗi:', err);
           }
           break;
         }
-        case "plan_ready": {
+        case 'plan_ready': {
           const plan = activePlans.value[sessionId];
-          if (plan) plan.status = "Ready";
-          // Từ đây graph đã kết thúc (route plan→END, không interrupt) — sidecar không còn
-          // emit run_heartbeat trong lúc chờ duyệt (có thể tới 24h). Watchdog 45s không còn ý
-          // nghĩa "mất kết nối" ở trạng thái này, phải tắt để không xoá nhầm activePlans.
+          if (plan) plan.status = 'Ready';
           clearWatchdog(sessionId);
           break;
         }
-        case "plan_step_started": {
+        case 'plan_step_started': {
           armWatchdog(sessionId);
           const plan = activePlans.value[sessionId];
           if (!plan) break;
           try {
-            const { stepId } = JSON.parse(evt.payload || "{}");
+            const { stepId } = JSON.parse(evt.payload || '{}');
             const step = plan.steps.find((s) => s.id === stepId);
-            if (step) step.status = "running";
+            if (step) step.status = 'running';
           } catch (err) {
-            console.error("plan_step_started payload lỗi:", err);
+            console.error('plan_step_started payload lỗi:', err);
           }
           break;
         }
-        case "plan_step_completed": {
+        case 'plan_step_completed': {
           armWatchdog(sessionId);
           const plan = activePlans.value[sessionId];
           if (!plan) break;
           try {
-            const { stepId, status, summary } = JSON.parse(evt.payload || "{}");
+            const { stepId, status, summary } = JSON.parse(evt.payload || '{}');
             const step = plan.steps.find((s) => s.id === stepId);
             if (step) {
-              step.status = status ?? "done";
+              step.status = status ?? 'done';
               step.result = summary ?? step.result;
             }
           } catch (err) {
-            console.error("plan_step_completed payload lỗi:", err);
+            console.error('plan_step_completed payload lỗi:', err);
           }
           break;
         }
-        case "plan_edited":
-        case "plan_invalidated": {
+        case 'plan_edited':
+        case 'plan_invalidated': {
           if (!activePlans.value[sessionId]) break;
           ChatApi.getPlan(watcher.runId)
             .then((plan) => {
               activePlans.value[sessionId] = plan;
             })
-            .catch((err) => console.error("Không thể tải lại kế hoạch:", err));
+            .catch((err) => console.error('Không thể tải lại kế hoạch:', err));
           break;
         }
-        case "plan_approved": {
+        case 'plan_approved': {
           const plan = activePlans.value[sessionId];
-          if (plan) plan.status = "Executing";
-          // Run chạy thật trở lại (enqueue lại sau khi duyệt) — bật lại watchdog bảo vệ.
+          if (plan) plan.status = 'Executing';
           armWatchdog(sessionId);
           break;
         }
-        case "plan_rejected": {
+        case 'plan_rejected': {
           const plan = activePlans.value[sessionId];
-          if (plan) plan.status = "Rejected";
+          if (plan) plan.status = 'Rejected';
           break;
         }
         default:
-          // Bỏ qua event lạ để tương thích ngược khi backend thêm loại event mới
           break;
       }
 
@@ -709,7 +714,7 @@ const subscribeToRun = (sessionId: string, runId: string, afterSeq: number) => {
       if (watcher.eventCount % 20 === 0) persistWatcher(sessionId);
     },
     error: (err: any) => {
-      console.error("SubscribeRun error:", err);
+      console.error('SubscribeRun error:', err);
       cleanupRun(sessionId);
     },
     complete: () => {
@@ -723,8 +728,6 @@ const resumeActiveRun = async (sessionId: string) => {
     const activeRun = await ChatApi.getActiveRun(sessionId);
     if (!activeRun) return;
 
-    // ChatRun.Status không có giá trị "Executing" (đó là ChatPlanStatus) — dùng thẳng việc
-    // getPlan có trả về plan hay không (404 = run này không có plan) để quyết định hiện panel.
     const plan = await ChatApi.getPlan(activeRun.runId).catch(() => null);
     if (plan) {
       activePlans.value[sessionId] = plan;
@@ -732,7 +735,7 @@ const resumeActiveRun = async (sessionId: string) => {
     } else {
       const aiMsg: ChatMessage = {
         id: `run-${activeRun.runId}`,
-        role: "AI",
+        role: 'AI',
         message: activeRun.partialOutput,
         createdAt: activeRun.startedAt || new Date().toISOString(),
       };
@@ -746,13 +749,11 @@ const resumeActiveRun = async (sessionId: string) => {
       await startConnection();
     }
     subscribeToRun(sessionId, activeRun.runId, activeRun.lastSeq);
-    // subscribeToRun luôn arm watchdog vô điều kiện — tắt lại ngay nếu đang chờ duyệt, vì
-    // không còn run_heartbeat nào tới cho tới khi user duyệt/huỷ (có thể tới 24h).
-    if (activeRun.status === "AwaitingApproval") {
+    if (activeRun.status === 'AwaitingApproval') {
       clearWatchdog(sessionId);
     }
   } catch (error) {
-    console.error("Không thể khôi phục run đang chạy:", error);
+    console.error('Không thể khôi phục run đang chạy:', error);
   }
 };
 
@@ -762,21 +763,21 @@ const cancelCurrentRun = async () => {
   const watcher = runWatchers.value[sessionId];
   if (!watcher) return;
   try {
-    await connection.value?.invoke("CancelRun", watcher.runId);
+    await connection.value?.invoke('CancelRun', watcher.runId);
   } catch (error) {
-    ElMessage.error("Không thể dừng AI");
+    ElMessage.error('Không thể dừng AI');
   }
 };
 
 const handleVisibilityChange = () => {
-  if (document.visibilityState === "visible" && drawerVisible.value) {
+  if (document.visibilityState === 'visible' && drawerVisible.value) {
     loadSessions();
   }
 };
-document.addEventListener("visibilitychange", handleVisibilityChange);
+document.addEventListener('visibilitychange', handleVisibilityChange);
 
 onBeforeUnmount(() => {
-  document.removeEventListener("visibilitychange", handleVisibilityChange);
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
   stopConnection();
   const editor = editorRef.value;
   if (editor != null) {
@@ -790,7 +791,7 @@ const loadSessions = async () => {
     const res = await ChatApi.getSessions();
     sessions.value = Array.isArray(res) ? res : [];
   } catch (error) {
-    ElMessage.error("Không thể tải danh sách phiên chat");
+    ElMessage.error('Không thể tải danh sách phiên chat');
   } finally {
     isLoadingSessions.value = false;
   }
@@ -811,16 +812,16 @@ const selectSession = async (id: string) => {
 
     scrollToBottom();
   } catch (error) {
-    ElMessage.error("Khong the tai lich su chat");
+    ElMessage.error('Khong the tai lich su chat');
   } finally {
     isLoadingHistory.value = false;
   }
 };
 
 const createNewSession = async (
-  initialTitle: string = "",
-  initialMessage: string = "",
-  autoSelect: boolean = true,
+  initialTitle: string = '',
+  initialMessage: string = '',
+  autoSelect: boolean = true
 ) => {
   try {
     const res = await ChatApi.createSession(initialTitle, initialMessage);
@@ -830,7 +831,7 @@ const createNewSession = async (
     }
     return res.id;
   } catch (error) {
-    ElMessage.error("Không thể tạo phiên chat mới");
+    ElMessage.error('Không thể tạo phiên chat mới');
     return null;
   }
 };
@@ -843,15 +844,11 @@ const startNewChat = () => {
 const deleteSession = async (id: string, e: Event) => {
   e.stopPropagation();
   try {
-    await ElMessageBox.confirm(
-      "Bạn có chắc muốn xoá phiên chat này?",
-      "Xác nhận",
-      {
-        confirmButtonText: "Xoá",
-        cancelButtonText: "Huỷ",
-        type: "warning",
-      },
-    );
+    await ElMessageBox.confirm('Bạn có chắc muốn xoá phiên chat này?', 'Xác nhận', {
+      confirmButtonText: 'Xoá',
+      cancelButtonText: 'Huỷ',
+      type: 'warning',
+    });
 
     await ChatApi.deleteSession(id);
     sessions.value = sessions.value.filter((s) => s.id !== id);
@@ -864,8 +861,8 @@ const deleteSession = async (id: string, e: Event) => {
       }
     }
   } catch (error) {
-    if (error !== "cancel") {
-      ElMessage.error("Lỗi khi xoá phiên chat");
+    if (error !== 'cancel') {
+      ElMessage.error('Lỗi khi xoá phiên chat');
     }
   }
 };
@@ -888,9 +885,9 @@ const saveSessionTitle = async (id: string) => {
     if (session) {
       session.title = editingTitle.value.trim();
     }
-    ElMessage.success("Cap nhat tieu de thanh cong");
+    ElMessage.success('Cap nhat tieu de thanh cong');
   } catch (error) {
-    ElMessage.error("Loi khi cap nhat tieu de");
+    ElMessage.error('Loi khi cap nhat tieu de');
   } finally {
     editingSessionId.value = null;
   }
@@ -899,8 +896,8 @@ const saveSessionTitle = async (id: string) => {
 const beginNewRun = (sessionId: string, runId: string) => {
   const aiMsg: ChatMessage = {
     id: `run-${runId}`,
-    role: "AI",
-    message: "",
+    role: 'AI',
+    message: '',
     createdAt: new Date().toISOString(),
   };
   activeStreams.value[sessionId] = aiMsg;
@@ -914,7 +911,7 @@ const beginNewRun = (sessionId: string, runId: string) => {
 const flushSteeringBuffer = async (sessionId: string) => {
   const buf = steeringBuffers.value[sessionId];
   if (!buf) return;
-  const merged = buf.parts.join("\n");
+  const merged = buf.parts.join('\n');
   delete steeringBuffers.value[sessionId];
 
   const watcher = runWatchers.value[sessionId];
@@ -922,27 +919,27 @@ const flushSteeringBuffer = async (sessionId: string) => {
 
   if (watcher.steeringCount >= MAX_STEERING_PER_RUN) {
     ElMessage.warning(
-      "Đã gửi quá nhiều đính chính cho lần trả lời này. Hãy bấm Dừng và hỏi lại từ đầu.",
+      'Đã gửi quá nhiều đính chính cho lần trả lời này. Hãy bấm Dừng và hỏi lại từ đầu.'
     );
     return;
   }
 
   try {
     const result: SteeringResultDto = await connection.value!.invoke(
-      "SendSteering",
+      'SendSteering',
       watcher.runId,
-      merged,
+      merged
     );
     watcher.steeringCount++;
 
     messages.value.push({
       id: `steering-${watcher.runId}-${watcher.steeringCount}`,
-      role: "User",
+      role: 'User',
       message: merged,
       createdAt: new Date().toISOString(),
     });
 
-    if (result.mode === "restart") {
+    if (result.mode === 'restart') {
       cleanupRun(sessionId);
       if (activeSessionId.value === sessionId) {
         beginNewRun(sessionId, result.runId);
@@ -952,7 +949,7 @@ const flushSteeringBuffer = async (sessionId: string) => {
     }
     if (activeSessionId.value === sessionId) scrollToBottom();
   } catch (error) {
-    ElMessage.error("Không thể gửi đính chính, vui lòng thử lại");
+    ElMessage.error('Không thể gửi đính chính, vui lòng thử lại');
   }
 };
 
@@ -964,22 +961,15 @@ const sendSteering = (sessionId: string, text: string) => {
   }
   buf.parts.push(text);
   if (buf.timer) clearTimeout(buf.timer);
-  buf.timer = setTimeout(
-    () => flushSteeringBuffer(sessionId),
-    STEERING_MERGE_MS,
-  );
+  buf.timer = setTimeout(() => flushSteeringBuffer(sessionId), STEERING_MERGE_MS);
 };
 
-const PLAN_CHAT_STATUSES = new Set(["Drafting", "Ready"]);
+const PLAN_CHAT_STATUSES = new Set(['Drafting', 'Ready']);
 
-// Thay cho nút Duyệt/Huỷ trên PlanCard: mọi tin nhắn gõ trong lúc plan đang Drafting/Ready đi qua
-// đây (POST .../plan/chat) thay vì sendSteering — SendSteering cố ý từ chối AwaitingApproval vì
-// graph đã kết thúc (route plan→END, không interrupt), gõ chat lúc đó trước đây âm thầm tạo hẳn
-// 1 run mới không liên quan gì tới plan (Stage 10.9).
 const sendPlanChat = async (sessionId: string, runId: string, text: string) => {
   messages.value.push({
     id: `planchat-${runId}-${Date.now()}`,
-    role: "User",
+    role: 'User',
     message: text,
     createdAt: new Date().toISOString(),
   });
@@ -990,26 +980,26 @@ const sendPlanChat = async (sessionId: string, runId: string, text: string) => {
     if (result.reply) {
       messages.value.push({
         id: `planchat-reply-${runId}-${Date.now()}`,
-        role: "AI",
+        role: 'AI',
         message: result.reply,
         createdAt: new Date().toISOString(),
       });
     }
     scrollToBottom();
   } catch (error) {
-    console.error("sendPlanChat error:", error);
-    ElMessage.error("Không thể gửi tin nhắn cho kế hoạch, vui lòng thử lại");
+    console.error('sendPlanChat error:', error);
+    ElMessage.error('Không thể gửi tin nhắn cho kế hoạch, vui lòng thử lại');
   }
 };
 
 const sendMessage = async () => {
   let text = newMessage.value.trim();
-  if (isRichTextMode.value && text === "<p><br></p>") {
-    text = "";
+  if (isRichTextMode.value && text === '<p><br></p>') {
+    text = '';
   }
   if (!text || isCreatingSession.value) return;
 
-  newMessage.value = "";
+  newMessage.value = '';
   if (isRichTextMode.value && editorRef.value) {
     editorRef.value.clear();
   }
@@ -1027,8 +1017,6 @@ const sendMessage = async () => {
     return;
   }
 
-  // Run có thể vừa được tab khác khởi động mà tab này chưa kịp subscribe —
-  // kiểm tra lại với server trước khi tạo run mới, tránh 2 run cùng chạy.
   if (sessionId && !activeStreams.value[sessionId]) {
     try {
       const activeRun = await ChatApi.getActiveRun(sessionId);
@@ -1043,14 +1031,14 @@ const sendMessage = async () => {
         return;
       }
     } catch (error) {
-      console.error("Không thể kiểm tra run đang chạy:", error);
+      console.error('Không thể kiểm tra run đang chạy:', error);
     }
   }
 
   const userMsgId = Date.now().toString();
   messages.value.push({
     id: userMsgId,
-    role: "User",
+    role: 'User',
     message: text,
     createdAt: new Date().toISOString(),
   });
@@ -1058,7 +1046,7 @@ const sendMessage = async () => {
 
   if (!sessionId) {
     isCreatingSession.value = true;
-    const newId = await createNewSession("", text, false);
+    const newId = await createNewSession('', text, false);
     isCreatingSession.value = false;
     if (!newId) return;
     sessionId = newId;
@@ -1070,15 +1058,11 @@ const sendMessage = async () => {
       await startConnection();
     }
 
-    const runId: string = await connection.value!.invoke(
-      "StartRun",
-      sessionId,
-      text,
-    );
+    const runId: string = await connection.value!.invoke('StartRun', sessionId, text);
     beginNewRun(sessionId, runId);
   } catch (error) {
-    console.error("StartRun error:", error);
-    ElMessage.error("Lỗi khi gửi tin nhắn qua SignalR");
+    console.error('StartRun error:', error);
+    ElMessage.error('Lỗi khi gửi tin nhắn qua SignalR');
     if (activeSessionId.value === sessionId) {
       messages.value = messages.value.filter((m) => m.id !== userMsgId);
     }
@@ -1094,9 +1078,9 @@ const scrollToBottom = async () => {
 };
 
 const formatTime = (isoString: string) => {
-  if (!isoString) return "";
+  if (!isoString) return '';
   const date = new Date(parseUtcTimestamp(isoString));
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 </script>
 
@@ -1110,25 +1094,14 @@ const formatTime = (isoString: string) => {
     class="ai-chat-drawer-no-padding"
   >
     <div class="flex h-full border-l border-gray-200">
-      <!-- Left: Session List -->
       <div class="chat-left-col flex-col border-r border-gray-200 bg-gray-50">
-        <div
-          class="p-4 border-b border-gray-200 flex justify-between items-center bg-white"
-        >
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
           <h2 class="font-semibold text-lg">Phiên Chat</h2>
-          <el-button
-            type="primary"
-            :icon="Plus"
-            circle
-            @click="startNewChat()"
-          />
+          <el-button type="primary" :icon="Plus" circle @click="startNewChat()" />
         </div>
 
         <div class="flex-1 overflow-y-auto p-2" v-loading="isLoadingSessions">
-          <div
-            v-if="sessions.length === 0"
-            class="text-center text-gray-500 mt-10"
-          >
+          <div v-if="sessions.length === 0" class="text-center text-gray-500 mt-10">
             Chưa có phiên chat nào
           </div>
 
@@ -1144,11 +1117,7 @@ const formatTime = (isoString: string) => {
             @click="selectSession(session.id)"
           >
             <div class="flex justify-between items-start">
-              <div
-                v-if="editingSessionId === session.id"
-                class="flex-1 mr-2"
-                @click.stop
-              >
+              <div v-if="editingSessionId === session.id" class="flex-1 mr-2" @click.stop>
                 <el-input
                   v-model="editingTitle"
                   size="small"
@@ -1185,14 +1154,9 @@ const formatTime = (isoString: string) => {
         </div>
       </div>
 
-      <!-- Right: Chat Area -->
       <div class="chat-right-col flex-col bg-white">
-        <!-- Chat Header -->
-        <div
-          class="p-4 border-b border-gray-200 flex justify-between items-center shadow-sm z-10"
-        >
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center shadow-sm z-10">
           <div class="flex items-center gap-2">
-            <!-- Mobile Dropdown -->
             <div class="chat-mobile-dropdown">
               <el-dropdown trigger="hover">
                 <el-button :icon="Menu" circle size="small" />
@@ -1203,16 +1167,12 @@ const formatTime = (isoString: string) => {
                       :key="session.id"
                       @click="selectSession(session.id)"
                       :class="{
-                        'font-bold text-blue-600':
-                          activeSessionId === session.id,
+                        'font-bold text-blue-600': activeSessionId === session.id,
                       }"
                     >
                       {{ session.title }}
                     </el-dropdown-item>
-                    <el-dropdown-item
-                      :divided="sessions.length > 0"
-                      @click="startNewChat()"
-                    >
+                    <el-dropdown-item :divided="sessions.length > 0" @click="startNewChat()">
                       + Tạo phiên chat mới
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -1221,7 +1181,7 @@ const formatTime = (isoString: string) => {
             </div>
 
             <h2 class="font-semibold text-lg text-gray-800">
-              {{ sessions.find((s) => s.id === activeSessionId)?.title || "" }}
+              {{ sessions.find((s) => s.id === activeSessionId)?.title || '' }}
             </h2>
           </div>
           <div class="flex items-center gap-2">
@@ -1237,7 +1197,6 @@ const formatTime = (isoString: string) => {
           </div>
         </div>
 
-        <!-- Messages Area -->
         <div
           class="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-4"
           ref="messagesContainer"
@@ -1246,24 +1205,43 @@ const formatTime = (isoString: string) => {
         >
           <div
             v-if="!activeSessionId && messages.length === 0"
-            class="m-auto text-gray-400"
+            class="m-auto flex flex-col items-center gap-3 text-gray-400"
           >
-            Bắt đầu gõ tin nhắn để tạo phiên chat mới
+            <span>Bắt đầu gõ tin nhắn để tạo phiên chat mới</span>
+            <div class="flex max-w-md flex-wrap justify-center gap-2">
+              <button
+                v-for="s in EMPTY_STATE_SUGGESTIONS"
+                :key="s"
+                type="button"
+                class="prompt-suggestion-chip"
+                @click="sendSuggestion(s)"
+              >
+                {{ s }}
+              </button>
+            </div>
           </div>
           <div
             v-else-if="messages.length === 0 && !isLoadingHistory"
-            class="m-auto text-gray-400"
+            class="m-auto flex flex-col items-center gap-3 text-gray-400"
           >
-            Bắt đầu cuộc trò chuyện...
+            <span>Bắt đầu cuộc trò chuyện...</span>
+            <div class="flex max-w-md flex-wrap justify-center gap-2">
+              <button
+                v-for="s in EMPTY_STATE_SUGGESTIONS"
+                :key="s"
+                type="button"
+                class="prompt-suggestion-chip"
+                @click="sendSuggestion(s)"
+              >
+                {{ s }}
+              </button>
+            </div>
           </div>
 
           <template v-else>
             <template v-for="msg in messages" :key="msg.id">
               <div
-                v-if="
-                  msg.message ||
-                  (msg.role === 'AI' && msg.reasoningSteps?.length)
-                "
+                v-if="msg.message || (msg.role === 'AI' && msg.reasoningSteps?.length)"
                 class="flex w-full"
                 :class="msg.role === 'User' ? 'justify-end' : 'justify-start'"
               >
@@ -1286,9 +1264,7 @@ const formatTime = (isoString: string) => {
                       <el-icon
                         class="transition-transform"
                         :style="{
-                          transform: isReasoningPanelOpen(msg)
-                            ? 'rotate(90deg)'
-                            : 'rotate(0deg)',
+                          transform: isReasoningPanelOpen(msg) ? 'rotate(90deg)' : 'rotate(0deg)',
                         }"
                         ><ArrowRight
                       /></el-icon>
@@ -1297,24 +1273,16 @@ const formatTime = (isoString: string) => {
                         {{ msg.reasoningElapsedSeconds.toFixed(1) }} giây
                       </span>
                       <template v-else-if="isMessageLive(msg)">
-                        <el-icon class="is-loading text-blue-500"
-                          ><Loading
-                        /></el-icon>
+                        <el-icon class="is-loading text-blue-500"><Loading /></el-icon>
                         <span>Đang suy nghĩ...</span>
                       </template>
                       <span v-else>Đã suy nghĩ</span>
                     </button>
-                    <div
-                      v-if="isReasoningPanelOpen(msg)"
-                      class="flex flex-col gap-1 px-3 pb-2"
-                    >
+                    <div v-if="isReasoningPanelOpen(msg)" class="flex flex-col gap-1 px-3 pb-2">
                       <div class="text-[11px] italic text-gray-400">
                         Đây là diễn giải của AI, không phải nhật ký hệ thống
                       </div>
-                      <template
-                        v-for="(step, idx) in msg.reasoningSteps"
-                        :key="idx"
-                      >
+                      <template v-for="(step, idx) in msg.reasoningSteps" :key="idx">
                         <div
                           v-if="idx > 0 && step.kind === 'thinking'"
                           class="border-t border-gray-200 mt-1 pt-1"
@@ -1323,32 +1291,20 @@ const formatTime = (isoString: string) => {
                           v-if="step.kind === 'thinking'"
                           class="flex items-start gap-2 text-xs text-gray-500"
                         >
-                          <span class="tabular-nums text-gray-400"
-                            >{{ idx + 1 }}.</span
-                          >
+                          <span class="tabular-nums text-gray-400">{{ idx + 1 }}.</span>
                           <span>💭</span>
                           <span>{{ step.text }}</span>
                         </div>
                         <div
-                          v-else
+                          v-else-if="step.kind === 'tool'"
                           class="flex items-center gap-2 text-xs"
-                          :class="
-                            step.status === 'done'
-                              ? 'text-gray-400'
-                              : 'text-gray-700'
-                          "
+                          :class="step.status === 'done' ? 'text-gray-400' : 'text-gray-700'"
                         >
-                          <span class="tabular-nums text-gray-400"
-                            >{{ idx + 1 }}.</span
-                          >
-                          <el-icon
-                            v-if="step.status === 'running'"
-                            class="is-loading text-blue-500"
+                          <span class="tabular-nums text-gray-400">{{ idx + 1 }}.</span>
+                          <el-icon v-if="step.status === 'running'" class="is-loading text-blue-500"
                             ><Loading
                           /></el-icon>
-                          <el-icon v-else class="text-green-500"
-                            ><CircleCheck
-                          /></el-icon>
+                          <el-icon v-else class="text-green-500"><CircleCheck /></el-icon>
                           <span>{{ toolCallText(step) }}</span>
                         </div>
                       </template>
@@ -1378,10 +1334,22 @@ const formatTime = (isoString: string) => {
                     {{ msg.message }}
                   </div>
                   <div
+                    v-if="msg.role === 'AI' && suggestedPagesFor(msg).length"
+                    class="mt-2 flex flex-wrap gap-1.5"
+                  >
+                    <button
+                      v-for="item in suggestedPagesFor(msg)"
+                      :key="item.routeName"
+                      type="button"
+                      class="page-suggestion-chip"
+                      @click="goToSuggestedPage(item)"
+                    >
+                      → {{ item.label }}
+                    </button>
+                  </div>
+                  <div
                     class="text-[10px] mt-1 flex items-center justify-end gap-2"
-                    :class="
-                      msg.role === 'User' ? 'text-blue-200' : 'text-gray-400'
-                    "
+                    :class="msg.role === 'User' ? 'text-blue-200' : 'text-gray-400'"
                   >
                     <button
                       v-if="msg.role === 'AI' && msg.reasoningSteps?.length"
@@ -1416,7 +1384,6 @@ const formatTime = (isoString: string) => {
           </template>
         </div>
 
-        <!-- Input Area -->
         <div class="p-4 border-t border-gray-200 bg-white">
           <div
             v-if="currentSteeringStatus"
@@ -1430,9 +1397,7 @@ const formatTime = (isoString: string) => {
             <span v-if="currentSteeringStatus === 'received'"
               >⏳ Đã ghi nhận, AI sẽ xử lý ở bước tiếp theo</span
             >
-            <span v-else-if="currentSteeringStatus === 'applied'"
-              >✓ AI đã tiếp nhận</span
-            >
+            <span v-else-if="currentSteeringStatus === 'applied'">✓ AI đã tiếp nhận</span>
             <span v-else>⏳ AI đang hoàn tất bước hiện tại...</span>
             <el-button
               v-if="currentSteeringStatus === 'stuck'"
@@ -1455,15 +1420,32 @@ const formatTime = (isoString: string) => {
             />
           </div>
 
+          <div
+            v-if="activeSuggestions.length && messages.length > 0"
+            class="mb-2 flex flex-wrap gap-1.5"
+          >
+            <button
+              v-for="s in activeSuggestions"
+              :key="s"
+              type="button"
+              class="prompt-suggestion-chip"
+              @click="applySuggestion(s)"
+            >
+              💡 {{ s }}
+            </button>
+          </div>
+
           <div v-if="!isRichTextMode" class="flex gap-2">
             <el-input
+              ref="messageInputRef"
               v-model="newMessage"
               :placeholder="
                 isSending
                   ? 'Gửi thêm thông tin hoặc đính chính...'
-                  : 'Nhập câu hỏi của bạn...'
+                  : topSuggestion || 'Nhập câu hỏi của bạn...'
               "
               @keyup.enter="sendMessage"
+              @keydown.tab="handleInputTab"
               :disabled="isCreatingSession"
               class="flex-1"
             />
@@ -1475,20 +1457,13 @@ const formatTime = (isoString: string) => {
             >
               Gửi
             </el-button>
-            <el-button
-              v-if="isSending"
-              type="danger"
-              plain
-              @click="cancelCurrentRun"
-            >
+            <el-button v-if="isSending" type="danger" plain @click="cancelCurrentRun">
               Dừng
             </el-button>
           </div>
 
           <div v-else class="flex flex-col gap-2">
-            <div
-              style="border: 1px solid #dcdfe6; border-radius: 4px; z-index: 10"
-            >
+            <div style="border: 1px solid #dcdfe6; border-radius: 4px; z-index: 10">
               <Toolbar
                 style="border-bottom: 1px solid #dcdfe6"
                 :editor="editorRef"
@@ -1512,12 +1487,7 @@ const formatTime = (isoString: string) => {
               >
                 Gửi
               </el-button>
-              <el-button
-                v-if="isSending"
-                type="danger"
-                plain
-                @click="cancelCurrentRun"
-              >
+              <el-button v-if="isSending" type="danger" plain @click="cancelCurrentRun">
                 Dừng
               </el-button>
             </div>
@@ -1525,18 +1495,13 @@ const formatTime = (isoString: string) => {
         </div>
       </div>
 
-      <!-- Right: Plan Panel (Stage 10.9) -->
       <div
         v-if="planPanelOpen && currentPlan"
         class="chat-plan-col flex-col border-l border-gray-200 bg-white"
       >
-        <div
-          class="p-3 border-b border-gray-200 flex justify-between items-center"
-        >
+        <div class="p-3 border-b border-gray-200 flex justify-between items-center">
           <h3 class="font-semibold text-sm text-gray-800">📋 Kế hoạch</h3>
-          <el-button size="small" text @click="planPanelOpen = false"
-            >✕</el-button
-          >
+          <el-button size="small" text @click="planPanelOpen = false">✕</el-button>
         </div>
         <div class="flex-1 overflow-y-auto p-3">
           <PlanCard
@@ -1608,6 +1573,52 @@ const formatTime = (isoString: string) => {
 }
 
 :deep(.citation-chip:hover) {
+  background-color: #c7d2fe;
+}
+
+.page-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  border: none;
+}
+
+.page-suggestion-chip:hover {
+  background-color: #c7d2fe;
+}
+
+.page-suggestion-chip--disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.page-suggestion-chip--disabled:hover {
+  background-color: #f3f4f6;
+}
+
+.prompt-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  border: none;
+}
+
+.prompt-suggestion-chip:hover {
   background-color: #c7d2fe;
 }
 </style>

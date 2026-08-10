@@ -1,67 +1,51 @@
-import type { GuideSection } from "../data/guideData";
-import { Money, TrendCharts, User } from "@element-plus/icons-vue";
+import type { GuideSection } from '../data/guideData';
+import { User } from '@element-plus/icons-vue';
 
 export const sectionData: GuideSection = {
-  id: "hr",
-  title: "Quản Trị Nhân Sự",
-  subtitle: "HR Management",
+  id: 'hr',
+  title: 'Quản Lý Nhân Sự (HR)',
+  subtitle: 'Human Resources',
   description:
-    "Phân hệ quản trị nhân sự toàn diện: từ quản lý hồ sơ nhân viên, thiết lập chính sách, chấm công, tính lương cho đến đánh giá KPI năng lực.",
+    'Hồ sơ nhân viên, quản lý ca làm việc, KPI và hệ thống tính lương tự động cho toàn bộ hệ thống đại lý.',
   icon: User,
-  color: "#e11d48",
-  shadowColor: "rgba(225,29,72,0.15)",
-  route: "/admin/hr",
+  color: '#c026d3',
+  shadowColor: 'rgba(192,38,211,0.15)',
+  route: '/admin/hr',
+  imageUrl: '/images/manual/hr_employee_list_1785990547958.png',
   pages: [
     {
-      id: "h1",
-      title: "Quản lý Hồ sơ Nhân viên",
-      route: "/admin/employee",
-      description:
-        "Xem và quản lý hồ sơ, chức vụ, phòng ban và phân công chi nhánh của toàn bộ nhân sự.",
+      id: 'h-employees',
+      title: 'Hồ sơ Nhân viên',
+      route: '/admin/hr/employees',
+      description: 'Quản lý danh bạ, hợp đồng lao động và thông tin cá nhân của đội ngũ nhân viên.',
       steps: [
-        "Vào menu Nhân sự -> Nhân viên.",
-        "Xem danh sách toàn bộ nhân viên, sử dụng thanh tìm kiếm để lọc theo tên hoặc phòng ban.",
-        "Nhấp 'Thêm nhân viên' để tạo hồ sơ mới, cấp phát tài khoản đăng nhập.",
-        "Sử dụng nút 'Chỉnh sửa' để cập nhật thông tin cá nhân, điều chuyển chi nhánh.",
-        "Nhấp 'Xóa' để đưa nhân viên vào danh sách nghỉ việc (dữ liệu sẽ được lưu trữ mềm).",
+        '1. Vào [Quản Lý Nhân Sự] -> [Hồ sơ Nhân viên].',
+        '2. Nhấn [Thêm Nhân viên Mới]. Nhập thông tin CCCD, Ngày sinh, Địa chỉ thường trú.',
+        '3. Tải lên Bản scan (File PDF/JPG) của Sơ yếu lý lịch, Bằng cấp, Giấy khám sức khỏe.',
+        '4. Phân bổ nhân viên vào một Phòng ban (Ví dụ: Phòng Sales, Phòng Kế toán, Xưởng Dịch vụ).',
+        '5. Nhập thông tin Ngân hàng (Số tài khoản, Chi nhánh) để Kế toán chuyển lương cuối tháng.',
+        '6. Nếu nhân viên ký Hợp đồng lao động chính thức, nhập thời hạn hợp đồng. Hệ thống sẽ tự động gửi email nhắc nhở cho Bộ phận Nhân sự (HR) trước khi hợp đồng hết hạn 30 ngày.',
       ],
       tips: [
-        "Nên kiểm tra kỹ chi nhánh làm việc khi tạo mới để tính lương chính xác.",
-        "Hệ thống sẽ tự động gửi email chào mừng có chứa thông tin đăng nhập cho nhân viên mới.",
+        'Hệ thống tự động liên kết Hồ sơ này với Tài khoản đăng nhập (User Account) ở phần Phân Quyền.',
+        "Tính năng 'Gắn thẻ năng lực' giúp Quản đốc dễ dàng biết được thợ nào chuyên sửa xe ga, thợ nào chuyên xe số.",
       ],
     },
     {
-      id: "h2",
-      title: "Chính sách Lương & Hoa hồng",
-      route: "/admin/policy",
-      description:
-        "Cấu hình linh hoạt các chính sách thưởng, hoa hồng theo từng loại hình công việc.",
+      id: 'h-attendance',
+      title: 'Chấm công & Phân ca',
+      route: '/admin/hr/attendance',
+      description: 'Tự động đồng bộ dữ liệu từ máy chấm công vân tay và quản lý xin nghỉ phép.',
       steps: [
-        "Vào menu Nhân sự -> Chính sách.",
-        "Lựa chọn loại hình công việc: Sale xe máy, Sale phụ tùng, Marketing Online, hoặc Kỹ thuật viên.",
-        "Nhấp 'Tạo mới' để thiết lập mức phần trăm hoa hồng hoặc KPIs cơ sở.",
-        "Gán chính sách này cho các chức danh hoặc nhân viên tương ứng.",
+        '1. Chuyển sang tab [Chấm công]. Hệ thống sẽ kéo log dữ liệu Check-in/Check-out từ máy vân tay (hoặc nhận diện khuôn mặt).',
+        '2. Bộ phận HR xem Bảng công tổng hợp. Các ngày Đi trễ/Về sớm sẽ bị bôi đỏ.',
+        '3. Xử lý Đơn xin nghỉ phép: Nhân viên gửi đơn qua App, Quản lý vào màn hình này để [Phê duyệt] hoặc [Từ chối].',
+        '4. Nếu phê duyệt, hệ thống sẽ tự động cập nhật vào Bảng công cuối tháng.',
+        '5. Quản lý phân ca làm việc (Ca sáng/Ca chiều/Ca gãy) cho các vị trí đặc thù như Thu ngân, Bảo vệ.',
       ],
       tips: [
-        "Bạn có thể sao chép một chính sách cũ để chỉnh sửa cho nhanh.",
-        "Việc thay đổi chính sách sẽ áp dụng ngay cho kỳ lương hiện tại.",
-      ],
-    },
-    {
-      id: "h3",
-      title: "Tính Lương (Payroll) & KPI",
-      route: "/admin/payroll",
-      description:
-        "Tự động tổng hợp và tính toán lương thưởng, phạt, hoa hồng cuối tháng.",
-      steps: [
-        "Vào menu Nhân sự -> Bảng lương.",
-        "Chọn tháng và chi nhánh cần xem lương.",
-        "Nhấp 'Làm mới dữ liệu' để hệ thống tự động tổng hợp hoa hồng từ doanh số bán hàng (Sales/Service) và KPIs.",
-        "Kiểm tra lại các khoản phạt/thưởng thủ công trước khi xuất file gửi Kế toán.",
-      ],
-      tips: [
-        "Hệ thống tự động liên kết với phân hệ Sales để lấy doanh thu của sale.",
-        "Chỉ những người có quyền PayrollManagement.View mới có thể truy cập.",
+        'Phần mềm hỗ trợ tính toán tự động các loại phép (Phép năm, Phép thai sản, Nghỉ không lương).',
+        'Dữ liệu Chấm công này sẽ được đẩy thẳng sang phân hệ Kế toán để Chốt lương (Payroll).',
       ],
     },
   ],

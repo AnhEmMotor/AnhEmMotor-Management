@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface Lead {
   id: number;
@@ -55,7 +55,7 @@ export interface LeadPaginatedResponse<T = Lead> {
 
 export function fetchGetLeadList(params?: LeadListParams) {
   return request.get<Lead[] | LeadPaginatedResponse<Lead>>({
-    url: "/api/v1/Lead",
+    url: '/api/v1/Lead',
     params,
   });
 }
@@ -75,13 +75,13 @@ export function fetchUpdateLead(id: number, data: Partial<Lead>) {
 
 export function fetchGetLeadPipeline() {
   return request.get<LeadPipelineGroup[]>({
-    url: "/api/v1/Lead/pipeline",
+    url: '/api/v1/Lead/pipeline',
   });
 }
 
 export function fetchAddLeadActivity(
   id: number,
-  data: { activityType: string; description: string },
+  data: { activityType: string; description: string }
 ) {
   return request.post<number>({
     url: `/api/v1/Lead/${id}/activities`,
@@ -104,7 +104,7 @@ export function fetchAssignLead(id: number, userId: string | null) {
 
 export function fetchCreateLead(data: Partial<Lead>) {
   return request.post<number>({
-    url: "/api/v1/Lead",
+    url: '/api/v1/Lead',
     data,
   });
 }
@@ -115,7 +115,6 @@ export function fetchGetProfile360(id: number) {
   });
 }
 
-// Profile 360 types
 export interface Profile360Data {
   id: number;
   fullName: string;

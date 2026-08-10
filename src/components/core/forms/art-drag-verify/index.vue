@@ -30,18 +30,15 @@
       ref="handler"
       :style="handlerStyle"
     >
-      <ArtSvgIcon
-        :icon="value ? successIcon : handlerIcon"
-        class="text-g-600"
-      ></ArtSvgIcon>
+      <ArtSvgIcon :icon="value ? successIcon : handlerIcon" class="text-g-600"></ArtSvgIcon>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtDragVerify" });
+defineOptions({ name: 'ArtDragVerify' });
 
-const emit = defineEmits(["handlerMove", "update:value", "passCallback"]);
+const emit = defineEmits(['handlerMove', 'update:value', 'passCallback']);
 
 interface PropsType {
   value: boolean;
@@ -63,20 +60,20 @@ interface PropsType {
 
 const props = withDefaults(defineProps<PropsType>(), {
   value: false,
-  width: "100%",
+  width: '100%',
   height: 40,
-  text: "Thanh trượtkéođộng",
-  successText: "success",
-  background: "#eee",
-  progressBarBg: "#1385FF",
-  completedBg: "#57D187",
+  text: 'Thanh trượtkéođộng',
+  successText: 'success',
+  background: '#eee',
+  progressBarBg: '#1385FF',
+  completedBg: '#57D187',
   circle: false,
-  radius: "calc(var(--custom-radius) / 3 + 2px)",
-  handlerIcon: "solar:double-alt-arrow-right-linear",
-  successIcon: "ri:check-fill",
-  handlerBg: "#fff",
-  textSize: "13px",
-  textColor: "#333",
+  radius: 'calc(var(--custom-radius) / 3 + 2px)',
+  handlerIcon: 'solar:double-alt-arrow-right-linear',
+  successIcon: 'ri:check-fill',
+  handlerBg: '#fff',
+  textSize: '13px',
+  textColor: '#333',
 });
 
 interface StateType {
@@ -114,65 +111,59 @@ const onTouchMove = (e: any) => {
   }
 };
 
-document.addEventListener("touchstart", onTouchStart);
-document.addEventListener("touchmove", onTouchMove, { passive: false });
+document.addEventListener('touchstart', onTouchStart);
+document.addEventListener('touchmove', onTouchMove, { passive: false });
 
 const getNumericWidth = (): number => {
-  if (typeof props.width === "string") {
+  if (typeof props.width === 'string') {
     return dragVerify.value?.offsetWidth || 260;
   }
   return props.width;
 };
 
 const getStyleWidth = (): string => {
-  if (typeof props.width === "string") {
+  if (typeof props.width === 'string') {
     return props.width;
   }
-  return props.width + "px";
+  return props.width + 'px';
 };
 
 onMounted(() => {
-  dragVerify.value?.style.setProperty("--textColor", props.textColor);
+  dragVerify.value?.style.setProperty('--textColor', props.textColor);
   nextTick(() => {
     const numericWidth = getNumericWidth();
-    dragVerify.value?.style.setProperty(
-      "--width",
-      Math.floor(numericWidth / 2) + "px",
-    );
-    dragVerify.value?.style.setProperty(
-      "--pwidth",
-      -Math.floor(numericWidth / 2) + "px",
-    );
+    dragVerify.value?.style.setProperty('--width', Math.floor(numericWidth / 2) + 'px');
+    dragVerify.value?.style.setProperty('--pwidth', -Math.floor(numericWidth / 2) + 'px');
   });
-  document.addEventListener("touchstart", onTouchStart);
-  document.addEventListener("touchmove", onTouchMove, { passive: false });
+  document.addEventListener('touchstart', onTouchStart);
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("touchstart", onTouchStart);
-  document.removeEventListener("touchmove", onTouchMove);
+  document.removeEventListener('touchstart', onTouchStart);
+  document.removeEventListener('touchmove', onTouchMove);
 });
 
 const handlerStyle = {
-  left: "0",
-  width: props.height + "px",
-  height: props.height + "px",
+  left: '0',
+  width: props.height + 'px',
+  height: props.height + 'px',
   background: props.handlerBg,
 };
 
 const dragVerifyStyle = computed(() => ({
   width: getStyleWidth(),
-  height: props.height + "px",
-  lineHeight: props.height + "px",
+  height: props.height + 'px',
+  lineHeight: props.height + 'px',
   background: props.background,
-  borderRadius: props.circle ? props.height / 2 + "px" : props.radius,
+  borderRadius: props.circle ? props.height / 2 + 'px' : props.radius,
 }));
 
 const progressBarStyle = {
   background: props.progressBarBg,
-  height: props.height + "px",
+  height: props.height + 'px',
   borderRadius: props.circle
-    ? props.height / 2 + "px 0 0 " + props.height / 2 + "px"
+    ? props.height / 2 + 'px 0 0 ' + props.height / 2 + 'px'
     : props.radius,
 };
 
@@ -187,12 +178,11 @@ const message = computed(() => {
 const dragStart = (e: any) => {
   if (!props.value) {
     state.isMoving = true;
-    handler.value.style.transition = "none";
+    handler.value.style.transition = 'none';
     state.x =
-      (e.pageX || e.touches[0].pageX) -
-      parseInt(handler.value.style.left.replace("px", ""), 10);
+      (e.pageX || e.touches[0].pageX) - parseInt(handler.value.style.left.replace('px', ''), 10);
   }
-  emit("handlerMove");
+  emit('handlerMove');
 };
 
 const dragMoving = (e: any) => {
@@ -201,11 +191,11 @@ const dragMoving = (e: any) => {
     let _x = (e.pageX || e.touches[0].pageX) - state.x;
 
     if (_x > 0 && _x <= numericWidth - props.height) {
-      handler.value.style.left = _x + "px";
-      progressBar.value.style.width = _x + props.height / 2 + "px";
+      handler.value.style.left = _x + 'px';
+      progressBar.value.style.width = _x + props.height / 2 + 'px';
     } else if (_x > numericWidth - props.height) {
-      handler.value.style.left = numericWidth - props.height + "px";
-      progressBar.value.style.width = numericWidth - props.height / 2 + "px";
+      handler.value.style.left = numericWidth - props.height + 'px';
+      progressBar.value.style.width = numericWidth - props.height / 2 + 'px';
       passVerify();
     }
   }
@@ -218,14 +208,14 @@ const dragFinish = (e: any) => {
 
     if (_x < numericWidth - props.height) {
       state.isOk = true;
-      handler.value.style.left = "0";
-      handler.value.style.transition = "all 0.2s";
-      progressBar.value.style.width = "0";
+      handler.value.style.left = '0';
+      handler.value.style.transition = 'all 0.2s';
+      progressBar.value.style.width = '0';
       state.isOk = false;
     } else {
-      handler.value.style.transition = "none";
-      handler.value.style.left = numericWidth - props.height + "px";
-      progressBar.value.style.width = numericWidth - props.height / 2 + "px";
+      handler.value.style.transition = 'none';
+      handler.value.style.left = numericWidth - props.height + 'px';
+      progressBar.value.style.width = numericWidth - props.height / 2 + 'px';
       passVerify();
     }
     state.isMoving = false;
@@ -233,25 +223,23 @@ const dragFinish = (e: any) => {
 };
 
 const passVerify = () => {
-  emit("update:value", true);
+  emit('update:value', true);
   state.isMoving = false;
   progressBar.value.style.background = props.completedBg;
-  messageRef.value.style["-webkit-text-fill-color"] = "unset";
-  messageRef.value.style.animation =
-    "slidetounlock2 2s cubic-bezier(0, 0.2, 1, 1) infinite";
-  messageRef.value.style.color = "#fff";
-  emit("passCallback");
+  messageRef.value.style['-webkit-text-fill-color'] = 'unset';
+  messageRef.value.style.animation = 'slidetounlock2 2s cubic-bezier(0, 0.2, 1, 1) infinite';
+  messageRef.value.style.color = '#fff';
+  emit('passCallback');
 };
 
 const reset = () => {
-  handler.value.style.left = "0";
-  progressBar.value.style.width = "0";
+  handler.value.style.left = '0';
+  progressBar.value.style.width = '0';
   progressBar.value.style.background = props.progressBarBg;
-  messageRef.value.style["-webkit-text-fill-color"] = "transparent";
-  messageRef.value.style.animation =
-    "slidetounlock 2s cubic-bezier(0, 0.2, 1, 1) infinite";
+  messageRef.value.style['-webkit-text-fill-color'] = 'transparent';
+  messageRef.value.style.animation = 'slidetounlock 2s cubic-bezier(0, 0.2, 1, 1) infinite';
   messageRef.value.style.color = props.background;
-  emit("update:value", false);
+  emit('update:value', false);
   state.isOk = false;
   state.isMoving = false;
   state.x = 0;

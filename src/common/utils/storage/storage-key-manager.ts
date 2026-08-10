@@ -1,4 +1,4 @@
-import { StorageConfig } from "@/common/utils/storage";
+import { StorageConfig } from '@/common/utils/storage';
 
 export class StorageKeyManager {
   private getCurrentVersionKey(storeId: string): string {
@@ -13,11 +13,7 @@ export class StorageKeyManager {
     const storageKeys = Object.keys(localStorage);
     const pattern = StorageConfig.createKeyPattern(storeId);
 
-    return (
-      storageKeys.find(
-        (key) => pattern.test(key) && localStorage.getItem(key),
-      ) || null
-    );
+    return storageKeys.find((key) => pattern.test(key) && localStorage.getItem(key)) || null;
   }
 
   private migrateData(fromKey: string, toKey: string): void {

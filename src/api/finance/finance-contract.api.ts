@@ -1,7 +1,7 @@
-import request from "@/common/utils/http";
-import type { PagedResult } from "@/types/api";
+import request from '@/common/utils/http';
+import type { PagedResult } from '@/types/api';
 
-export type FinanceContractStatus = "Pending" | "Disbursed";
+export type FinanceContractStatus = 'Pending' | 'Disbursed';
 
 export interface FinanceContractDisbursementEvidenceUploadRequest {
   financeContractId: string;
@@ -46,10 +46,7 @@ export interface FinanceContractDetailDto {
   };
 
   cavet?: {
-    state:
-      | "FinancialCompanyHolds"
-      | "StoreHoldsOnBehalf"
-      | "DeliveredToCustomer";
+    state: 'FinancialCompanyHolds' | 'StoreHoldsOnBehalf' | 'DeliveredToCustomer';
     receivedDate?: string;
     receiverName?: string;
     storageLocation?: string;
@@ -76,28 +73,20 @@ export const FinanceContractApi = {
     });
   },
   getFinanceContractList(params: FinanceContractListParams) {
-    const {
-      current,
-      size,
-      keyword,
-      disbursementStatus,
-      partner,
-      cavetLocation,
-    } = params;
+    const { current, size, keyword, disbursementStatus, partner, cavetLocation } = params;
     const filters: string[] = [];
 
     if (keyword) filters.push(`Keyword@=${keyword}`);
-    if (disbursementStatus)
-      filters.push(`DisbursementStatus==${disbursementStatus}`);
+    if (disbursementStatus) filters.push(`DisbursementStatus==${disbursementStatus}`);
     if (partner) filters.push(`BankName@=${partner}`);
     if (cavetLocation) {
       const entityValue =
-        cavetLocation === "FinancialCompanyHolds"
-          ? "Bank"
-          : cavetLocation === "StoreHoldsOnBehalf"
-            ? "Store"
-            : cavetLocation === "DeliveredToCustomer"
-              ? "Customer"
+        cavetLocation === 'FinancialCompanyHolds'
+          ? 'Bank'
+          : cavetLocation === 'StoreHoldsOnBehalf'
+            ? 'Store'
+            : cavetLocation === 'DeliveredToCustomer'
+              ? 'Customer'
               : cavetLocation;
       filters.push(`CavetLocation==${entityValue}`);
     }
@@ -106,33 +95,27 @@ export const FinanceContractApi = {
       Page: current,
       PageSize: size,
     };
-    if (filters.length > 0) query.Filters = filters.join(",");
+    if (filters.length > 0) query.Filters = filters.join(',');
 
     return request.get<PagedResult<FinanceContractDetailDto>>({
       url: `/api/v1/FinanceContracts`,
       params: query,
     });
   },
-  uploadDisbursementEvidence(
-    payload: FinanceContractDisbursementEvidenceUploadRequest,
-  ) {
+  uploadDisbursementEvidence(payload: FinanceContractDisbursementEvidenceUploadRequest) {
     const formData = new FormData();
-    formData.append("file", payload.file);
+    formData.append('file', payload.file);
 
     return request.post<any>({
       url: `/api/v1/FinanceContracts/${payload.financeContractId}/disbursement/evidence/upload`,
       data: formData,
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
   },
 
-  updateDisbursementPayment(
-    financeContractId: string,
-    actualAmount: number,
-    actualDate?: string,
-  ) {
+  updateDisbursementPayment(financeContractId: string, actualAmount: number, actualDate?: string) {
     return request.post<any>({
       url: `/api/v1/FinanceContracts/${financeContractId}/disbursement/payment`,
       data: {
@@ -169,7 +152,7 @@ export const FinanceContractApi = {
       interestRate?: number;
       monthlyPaymentAmount?: number;
       expectedDate?: string;
-    },
+    }
   ) {
     return request.put<boolean>({
       url: `/api/v1/FinanceContracts/${financeContractId}`,
@@ -177,10 +160,7 @@ export const FinanceContractApi = {
     });
   },
 
-  updateCavetState(
-    financeContractId: string,
-    cavet: FinanceContractDetailDto["cavet"],
-  ) {
+  updateCavetState(financeContractId: string, cavet: FinanceContractDetailDto['cavet']) {
     return request.post<any>({
       url: `/api/v1/FinanceContracts/${financeContractId}/cavet/state`,
       data: {

@@ -1,10 +1,10 @@
-import { useUserStore } from "@/application/store/user";
-import { StorageConfig } from "@/common/utils/storage/storage-config";
+import { useUserStore } from '@/application/store/user';
+import { StorageConfig } from '@/common/utils/storage/storage-config';
 
 class VersionManager {
   private normalizeVersion(version: string | undefined): string {
-    if (!version) return "0.0.0";
-    return version.replace(/^v/, "");
+    if (!version) return '0.0.0';
+    return version.replace(/^v/, '');
   }
 
   private getStoredVersion(): string | null {
@@ -32,24 +32,19 @@ class VersionManager {
     oldVersionKeys: string[];
   } {
     const storageKeys = Object.keys(localStorage);
-    const currentVersionPrefix = StorageConfig.generateStorageKey("").slice(
-      0,
-      -1,
-    );
+    const currentVersionPrefix = StorageConfig.generateStorageKey('').slice(0, -1);
 
     const oldSysKey =
       storageKeys.find(
         (key) =>
-          StorageConfig.isVersionedKey(key) &&
-          key !== currentVersionPrefix &&
-          !key.includes("-"),
+          StorageConfig.isVersionedKey(key) && key !== currentVersionPrefix && !key.includes('-')
       ) || null;
 
     const oldVersionKeys = storageKeys.filter(
       (key) =>
         StorageConfig.isVersionedKey(key) &&
         !StorageConfig.isCurrentVersionKey(key) &&
-        key.includes("-"),
+        key.includes('-')
     );
 
     return { oldSysKey, oldVersionKeys };
@@ -59,10 +54,7 @@ class VersionManager {
     return false;
   }
 
-  private cleanupLegacyData(
-    oldSysKey: string | null,
-    oldVersionKeys: string[],
-  ): void {
+  private cleanupLegacyData(oldSysKey: string | null, oldVersionKeys: string[]): void {
     if (oldSysKey) {
       localStorage.removeItem(oldSysKey);
     }
@@ -78,16 +70,13 @@ class VersionManager {
 
   private async executeUpgrade(
     _storedVersion: string,
-    legacyStorage: ReturnType<typeof this.findLegacyStorage>,
+    legacyStorage: ReturnType<typeof this.findLegacyStorage>
   ): Promise<void> {
     const requireReLogin = this.shouldRequireReLogin();
 
     this.setStoredVersion(StorageConfig.CURRENT_VERSION);
 
-    this.cleanupLegacyData(
-      legacyStorage.oldSysKey,
-      legacyStorage.oldVersionKeys,
-    );
+    this.cleanupLegacyData(legacyStorage.oldSysKey, legacyStorage.oldVersionKeys);
 
     if (requireReLogin) {
       this.performLogout();

@@ -1,23 +1,23 @@
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { MenuThemeType } from "@/types/store";
-import AppConfig from "@/config";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { MenuThemeType } from '@/types/store';
+import AppConfig from '@/config';
 import {
   SystemThemeEnum,
   MenuThemeEnum,
   MenuTypeEnum,
   ContainerWidthEnum,
-} from "@/common/enums/appEnum";
-import { setElementThemeColor } from "@/common/utils/ui";
-import { useCeremony } from "@/common/composables/useCeremony";
-import { StorageConfig } from "@/common/utils";
-import { SETTING_DEFAULT_CONFIG } from "@/config/setting";
+} from '@/common/enums/appEnum';
+import { setElementThemeColor } from '@/common/utils/ui';
+import { useCeremony } from '@/common/composables/useCeremony';
+import { StorageConfig } from '@/common/utils';
+import { SETTING_DEFAULT_CONFIG } from '@/config/setting';
 
 export const useSettingStore = defineStore(
-  "settingStore",
+  'settingStore',
   () => {
     try {
-      const stored = localStorage.getItem("setting");
+      const stored = localStorage.getItem('setting');
       if (stored) {
         const parsed = JSON.parse(stored);
         let changed = false;
@@ -25,12 +25,12 @@ export const useSettingStore = defineStore(
           parsed.menuOpenWidth = 260;
           changed = true;
         }
-        if (parsed.systemThemeColor === "#5D87FF") {
-          parsed.systemThemeColor = "#E84A4A";
+        if (parsed.systemThemeColor === '#5D87FF') {
+          parsed.systemThemeColor = '#E84A4A';
           changed = true;
         }
         if (changed) {
-          localStorage.setItem("setting", JSON.stringify(parsed));
+          localStorage.setItem('setting', JSON.stringify(parsed));
         }
       }
     } catch (e) {}
@@ -79,9 +79,7 @@ export const useSettingStore = defineStore(
 
     const refresh = ref(SETTING_DEFAULT_CONFIG.refresh);
 
-    const holidayFireworksLoaded = ref(
-      SETTING_DEFAULT_CONFIG.holidayFireworksLoaded,
-    );
+    const holidayFireworksLoaded = ref(SETTING_DEFAULT_CONFIG.holidayFireworksLoaded);
 
     const boxBorderMode = ref(SETTING_DEFAULT_CONFIG.boxBorderMode);
 
@@ -93,12 +91,10 @@ export const useSettingStore = defineStore(
 
     const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth);
 
-    const festivalDate = ref("");
+    const festivalDate = ref('');
 
     const getMenuTheme = computed((): MenuThemeType => {
-      const list = AppConfig.themeList.filter(
-        (item) => item.theme === menuThemeType.value,
-      );
+      const list = AppConfig.themeList.filter((item) => item.theme === menuThemeType.value);
       if (isDark.value) {
         return AppConfig.darkMenuStyles[0];
       } else {
@@ -111,24 +107,15 @@ export const useSettingStore = defineStore(
     });
 
     const getMenuOpenWidth = computed((): string => {
-      return (
-        menuOpenWidth.value + "px" ||
-        SETTING_DEFAULT_CONFIG.menuOpenWidth + "px"
-      );
+      return menuOpenWidth.value + 'px' || SETTING_DEFAULT_CONFIG.menuOpenWidth + 'px';
     });
 
     const getCustomRadius = computed((): string => {
-      return (
-        customRadius.value + "rem" ||
-        SETTING_DEFAULT_CONFIG.customRadius + "rem"
-      );
+      return customRadius.value + 'rem' || SETTING_DEFAULT_CONFIG.customRadius + 'rem';
     });
 
     const isShowFireworks = computed((): boolean => {
-      return festivalDate.value ===
-        useCeremony().currentFestivalData.value?.date
-        ? false
-        : true;
+      return festivalDate.value === useCeremony().currentFestivalData.value?.date ? false : true;
     });
 
     const switchMenuLayouts = (type: MenuTypeEnum) => {
@@ -139,10 +126,7 @@ export const useSettingStore = defineStore(
       menuOpenWidth.value = width;
     };
 
-    const setGlopTheme = (
-      theme: SystemThemeEnum,
-      themeMode: SystemThemeEnum,
-    ) => {
+    const setGlopTheme = (theme: SystemThemeEnum, themeMode: SystemThemeEnum) => {
       systemThemeType.value = theme;
       systemThemeMode.value = themeMode;
       localStorage.setItem(StorageConfig.THEME_KEY, theme);
@@ -235,10 +219,7 @@ export const useSettingStore = defineStore(
 
     const setCustomRadius = (radius: string) => {
       customRadius.value = radius;
-      document.documentElement.style.setProperty(
-        "--custom-radius",
-        `${radius}rem`,
-      );
+      document.documentElement.style.setProperty('--custom-radius', `${radius}rem`);
     };
 
     const setholidayFireworksLoaded = (isLoad: boolean) => {
@@ -325,8 +306,8 @@ export const useSettingStore = defineStore(
   },
   {
     persist: {
-      key: "setting",
+      key: 'setting',
       storage: localStorage,
     },
-  },
+  }
 );

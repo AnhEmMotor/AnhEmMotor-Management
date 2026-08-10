@@ -23,9 +23,7 @@
         role="listitem"
       >
         <div class="support-workflow__marker">
-          <ArtSvgIcon
-            :icon="index < currentStepIndex ? 'ri:check-line' : step.icon"
-          />
+          <ArtSvgIcon :icon="index < currentStepIndex ? 'ri:check-line' : step.icon" />
         </div>
         <div class="support-workflow__copy">
           <strong>{{ step.label }}</strong>
@@ -40,17 +38,11 @@
           <p class="support-workflow__eyebrow">Đánh giá hai chiều</p>
           <h4>Lịch sử đánh giá</h4>
         </div>
-        <ElTag type="warning" effect="plain" round>
-          {{ ratingHistory.length }} lượt
-        </ElTag>
+        <ElTag type="warning" effect="plain" round> {{ ratingHistory.length }} lượt </ElTag>
       </div>
 
       <div v-if="ratingHistory.length" class="rating-history__list">
-        <article
-          v-for="entry in ratingHistory"
-          :key="entry.key"
-          class="rating-history__item"
-        >
+        <article v-for="entry in ratingHistory" :key="entry.key" class="rating-history__item">
           <div class="rating-history__identity">
             <span class="rating-history__icon">
               <ArtSvgIcon :icon="entry.icon" />
@@ -93,8 +85,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import type { Contact } from "@/types";
+import { computed, ref, watch } from 'vue';
+import type { Contact } from '@/types';
 
 const props = defineProps<{
   request: Contact.SupportRequest;
@@ -107,18 +99,18 @@ const emit = defineEmits<{
 }>();
 
 const steps = [
-  { status: "New", label: "Tiếp nhận", icon: "ri:inbox-archive-line" },
+  { status: 'New', label: 'Tiếp nhận', icon: 'ri:inbox-archive-line' },
   {
-    status: "Assigned",
-    label: "Đã phân công",
-    icon: "ri:user-received-2-line",
+    status: 'Assigned',
+    label: 'Đã phân công',
+    icon: 'ri:user-received-2-line',
   },
   {
-    status: "InProgress",
-    label: "Đang hỗ trợ",
-    icon: "ri:customer-service-2-line",
+    status: 'InProgress',
+    label: 'Đang hỗ trợ',
+    icon: 'ri:customer-service-2-line',
   },
-  { status: "Closed", label: "Hoàn tất", icon: "ri:checkbox-circle-line" },
+  { status: 'Closed', label: 'Hoàn tất', icon: 'ri:checkbox-circle-line' },
 ] as const;
 
 const employeeRating = ref(0);
@@ -128,7 +120,7 @@ watch(
   () => {
     employeeRating.value = props.request.employeeRatingOfCustomer ?? 0;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const currentStepIndex = computed(() => {
@@ -149,9 +141,9 @@ const ratingHistory = computed(() => {
 
   if (props.request.employeeRatingOfCustomer != null) {
     entries.push({
-      key: "employee-to-customer",
-      label: "Nhân viên đánh giá khách hàng",
-      icon: "ri:user-star-line",
+      key: 'employee-to-customer',
+      label: 'Nhân viên đánh giá khách hàng',
+      icon: 'ri:user-star-line',
       rating: props.request.employeeRatingOfCustomer,
       ratedAt: props.request.employeeRatedAt,
     });
@@ -159,28 +151,26 @@ const ratingHistory = computed(() => {
 
   if (props.request.customerRatingOfEmployee != null) {
     entries.push({
-      key: "customer-to-employee",
-      label: "Khách hàng đánh giá nhân viên",
-      icon: "ri:star-smile-line",
+      key: 'customer-to-employee',
+      label: 'Khách hàng đánh giá nhân viên',
+      icon: 'ri:star-smile-line',
       rating: props.request.customerRatingOfEmployee,
       ratedAt: props.request.customerRatedAt,
     });
   }
 
-  return entries.sort((left, right) =>
-    (left.ratedAt ?? "").localeCompare(right.ratedAt ?? ""),
-  );
+  return entries.sort((left, right) => (left.ratedAt ?? '').localeCompare(right.ratedAt ?? ''));
 });
 
 const formatTime = (value?: string) => {
-  if (!value) return "Chưa ghi nhận thời gian";
-  return new Intl.DateTimeFormat("vi-VN", {
-    dateStyle: "short",
-    timeStyle: "short",
+  if (!value) return 'Chưa ghi nhận thời gian';
+  return new Intl.DateTimeFormat('vi-VN', {
+    dateStyle: 'short',
+    timeStyle: 'short',
   }).format(new Date(value));
 };
 
-const stepTime = (status: (typeof steps)[number]["status"]) => {
+const stepTime = (status: (typeof steps)[number]['status']) => {
   const values = {
     New: props.request.createdAt,
     Assigned: props.request.assignedAt,
@@ -191,9 +181,9 @@ const stepTime = (status: (typeof steps)[number]["status"]) => {
 };
 
 const submitEmployeeRating = () => {
-  emit("rateCustomer", {
+  emit('rateCustomer', {
     rating: employeeRating.value,
-    comment: "",
+    comment: '',
   });
 };
 </script>

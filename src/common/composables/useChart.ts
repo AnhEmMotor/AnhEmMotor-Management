@@ -1,27 +1,27 @@
-import { ref, onUnmounted, nextTick, watch, computed, onMounted } from "vue";
-import * as echarts from "echarts";
-import { useWindowSize } from "@vueuse/core";
-import { getCssVar } from "@/common/utils/ui";
-import { useSettingStore } from "@/application/store/setting";
-import { storeToRefs } from "pinia";
+import { ref, onUnmounted, nextTick, watch, computed, onMounted } from 'vue';
+import * as echarts from 'echarts';
+import { useWindowSize } from '@vueuse/core';
+import { getCssVar } from '@/common/utils/ui';
+import { useSettingStore } from '@/application/store/setting';
+import { storeToRefs } from 'pinia';
 
 export interface ChartOptions {
   [key: string]: any;
 }
 
 export const useChartOps = () => ({
-  chartHeight: "16rem",
+  chartHeight: '16rem',
   fontSize: 13,
-  fontColor: "#999",
-  themeColor: getCssVar("--el-color-primary-light-1"),
+  fontColor: '#999',
+  themeColor: getCssVar('--el-color-primary-light-1'),
   colors: [
-    getCssVar("--el-color-primary-light-1"),
-    "#4ABEFF",
-    "#EDF2FF",
-    "#14DEBA",
-    "#FFAF20",
-    "#FA8A6C",
-    "#FFAF20",
+    getCssVar('--el-color-primary-light-1'),
+    '#4ABEFF',
+    '#EDF2FF',
+    '#14DEBA',
+    '#FFAF20',
+    '#FA8A6C',
+    '#FFAF20',
   ],
 });
 
@@ -39,11 +39,7 @@ export function useChart(options: any = {}) {
     if (!chartRef.value) return;
 
     if (!chartInstance) {
-      chartInstance = echarts.init(
-        chartRef.value,
-        isDark.value ? "dark" : "light",
-        initOptions,
-      );
+      chartInstance = echarts.init(chartRef.value, isDark.value ? 'dark' : 'light', initOptions);
     }
 
     if (clear) {
@@ -70,21 +66,16 @@ export function useChart(options: any = {}) {
   const getAnimationConfig = (delay = 50, duration = 1500) => ({
     animationDelay: (idx: number) => idx * delay + 200,
     animationDuration: (idx: number) => duration - 50 * idx,
-    animationEasing: "exponentialOut" as const,
+    animationEasing: 'exponentialOut' as const,
   });
 
-  const getTooltipStyle = (
-    trigger: "axis" | "item" | "none" = "axis",
-    extra = {},
-  ) => ({
+  const getTooltipStyle = (trigger: 'axis' | 'item' | 'none' = 'axis', extra = {}) => ({
     trigger: trigger as any,
-    backgroundColor: isDark.value
-      ? "rgba(0, 0, 0, 0.8)"
-      : "rgba(255, 255, 255, 0.9)",
-    borderColor: isDark.value ? "#333" : "#ddd",
+    backgroundColor: isDark.value ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+    borderColor: isDark.value ? '#333' : '#ddd',
     borderWidth: 1,
     textStyle: {
-      color: isDark.value ? "#fff" : "#333",
+      color: isDark.value ? '#fff' : '#333',
     },
     ...extra,
   });
@@ -92,15 +83,15 @@ export function useChart(options: any = {}) {
   const getAxisLineStyle = (show = true) => ({
     show,
     lineStyle: {
-      color: isDark.value ? "#444" : "#EDEDED",
+      color: isDark.value ? '#444' : '#EDEDED',
     },
   });
 
   const getSplitLineStyle = (show = true) => ({
     show,
     lineStyle: {
-      color: isDark.value ? "#444" : "#EDEDED",
-      type: "dashed" as const,
+      color: isDark.value ? '#444' : '#EDEDED',
+      type: 'dashed' as const,
     },
   });
 
@@ -113,9 +104,9 @@ export function useChart(options: any = {}) {
     };
   };
 
-  const getLegendStyle = (position = "bottom", extra = {}) => {
+  const getLegendStyle = (position = 'bottom', extra = {}) => {
     const base = {
-      textStyle: { color: isDark.value ? "#fff" : "#333" },
+      textStyle: { color: isDark.value ? '#fff' : '#333' },
       itemWidth: 12,
       itemHeight: 12,
       itemGap: 20,
@@ -123,20 +114,16 @@ export function useChart(options: any = {}) {
     };
 
     const posMap: any = {
-      bottom: { bottom: 0, left: "center", orient: "horizontal" },
-      top: { top: 0, left: "center", orient: "horizontal" },
-      left: { left: 0, top: "center", orient: "vertical" },
-      right: { right: 0, top: "center", orient: "vertical" },
+      bottom: { bottom: 0, left: 'center', orient: 'horizontal' },
+      top: { top: 0, left: 'center', orient: 'horizontal' },
+      left: { left: 0, top: 'center', orient: 'vertical' },
+      right: { right: 0, top: 'center', orient: 'vertical' },
     };
 
-    return { ...base, ...posMap[position], icon: "roundRect" };
+    return { ...base, ...posMap[position], icon: 'roundRect' };
   };
 
-  const getGridWithLegend = (
-    showLegend: boolean,
-    position = "bottom",
-    baseGrid = {},
-  ) => {
+  const getGridWithLegend = (showLegend: boolean, position = 'bottom', baseGrid = {}) => {
     const grid = {
       top: 15,
       right: 15,
@@ -197,19 +184,11 @@ export function useChart(options: any = {}) {
 }
 
 export function useChartComponent(config: any) {
-  const {
-    props,
-    generateOptions,
-    checkEmpty,
-    watchSources = [],
-    chartOptions = {},
-  } = config;
+  const { props, generateOptions, checkEmpty, watchSources = [], chartOptions = {} } = config;
   const chartCore = useChart(chartOptions);
   const { initChart, isDark } = chartCore;
 
-  const isEmpty = computed(
-    () => !!props.isEmpty || (!!checkEmpty && checkEmpty()),
-  );
+  const isEmpty = computed(() => !!props.isEmpty || (!!checkEmpty && checkEmpty()));
 
   const updateChart = () => {
     nextTick(() => {

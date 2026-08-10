@@ -21,12 +21,8 @@
     >
       <template #menuType>
         <ElRadioGroup v-model="form.menuType" :disabled="disableMenuType">
-          <ElRadioButton value="menu" label="menu">{{
-            $t("admin.t125")
-          }}</ElRadioButton>
-          <ElRadioButton value="button" label="button">{{
-            $t("admin.t126")
-          }}</ElRadioButton>
+          <ElRadioButton value="menu" label="menu">{{ $t('admin.t125') }}</ElRadioButton>
+          <ElRadioButton value="button" label="button">{{ $t('admin.t126') }}</ElRadioButton>
         </ElRadioGroup>
       </template>
     </ArtForm>
@@ -41,29 +37,28 @@
 </template>
 
 <script setup lang="ts">
-import type { FormRules } from "element-plus";
-import { ElIcon, ElTooltip } from "element-plus";
-import { QuestionFilled } from "@element-plus/icons-vue";
-import { formatMenuTitle } from "@/common/utils/router";
-import type { AppRouteRecord } from "@/types/router";
-import type { FormItem } from "@/components/core/forms/art-form/index.vue";
-import ArtForm from "@/components/core/forms/art-form/index.vue";
-import { useWindowSize } from "@vueuse/core";
+import type { FormRules } from 'element-plus';
+import { ElIcon, ElTooltip } from 'element-plus';
+import { QuestionFilled } from '@element-plus/icons-vue';
+import { formatMenuTitle } from '@/common/utils/router';
+import type { AppRouteRecord } from '@/types/router';
+import type { FormItem } from '@/components/core/forms/art-form/index.vue';
+import ArtForm from '@/components/core/forms/art-form/index.vue';
+import { useWindowSize } from '@vueuse/core';
 
 const { width } = useWindowSize();
 
 const createLabelTooltip = (label: string, tooltip: string) => {
   return () =>
-    h("span", { class: "flex items-center" }, [
-      h("span", label),
+    h('span', { class: 'flex items-center' }, [
+      h('span', label),
       h(
         ElTooltip,
         {
           content: tooltip,
-          placement: "top",
+          placement: 'top',
         },
-        () =>
-          h(ElIcon, { class: "ml-0.5 cursor-help" }, () => h(QuestionFilled)),
+        () => h(ElIcon, { class: 'ml-0.5 cursor-help' }, () => h(QuestionFilled))
       ),
     ]);
 };
@@ -98,18 +93,18 @@ interface MenuFormData {
 interface Props {
   visible: boolean;
   editData?: AppRouteRecord | any;
-  type?: "menu" | "button";
+  type?: 'menu' | 'button';
   lockType?: boolean;
 }
 
 interface Emits {
-  (e: "update:visible", value: boolean): void;
-  (e: "submit", data: MenuFormData): void;
+  (e: 'update:visible', value: boolean): void;
+  (e: 'submit', data: MenuFormData): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   visible: false,
-  type: "menu",
+  type: 'menu',
   lockType: false,
 });
 
@@ -118,168 +113,162 @@ const emit = defineEmits<Emits>();
 const formRef = ref();
 const isEdit = ref(false);
 
-const form = reactive<MenuFormData & { menuType: "menu" | "button" }>({
-  menuType: "menu",
+const form = reactive<MenuFormData & { menuType: 'menu' | 'button' }>({
+  menuType: 'menu',
   id: 0,
-  name: "",
-  path: "",
-  label: "",
-  component: "",
-  icon: "",
+  name: '',
+  path: '',
+  label: '',
+  component: '',
+  icon: '',
   isEnable: true,
   sort: 1,
   isMenu: true,
   keepAlive: true,
   isHide: false,
   isHideTab: false,
-  link: "",
+  link: '',
   isIframe: false,
   showBadge: false,
-  showTextBadge: "",
+  showTextBadge: '',
   fixedTab: false,
-  activePath: "",
+  activePath: '',
   roles: [],
   isFullPage: false,
-  authName: "",
-  authLabel: "",
-  authIcon: "",
+  authName: '',
+  authLabel: '',
+  authIcon: '',
   authSort: 1,
 });
 
 const rules = reactive<FormRules>({
   name: [
-    { required: true, message: "Vui lòng nhậpMenudanhtên", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhậpMenudanhtên', trigger: 'blur' },
     {
       min: 2,
       max: 20,
-      message: "trườngđộtại 2 đến 20 chiếcchữký",
-      trigger: "blur",
+      message: 'trườngđộtại 2 đến 20 chiếcchữký',
+      trigger: 'blur',
     },
   ],
-  path: [
-    { required: true, message: "Vui lòng nhậpRoutingDiaChi", trigger: "blur" },
-  ],
-  label: [{ required: true, message: "NhậpQuyenHantiêu", trigger: "blur" }],
+  path: [{ required: true, message: 'Vui lòng nhậpRoutingDiaChi', trigger: 'blur' }],
+  label: [{ required: true, message: 'NhậpQuyenHantiêu', trigger: 'blur' }],
   authName: [
     {
       required: true,
-      message: "Vui lòng nhậpQuyenHandanhtên",
-      trigger: "blur",
+      message: 'Vui lòng nhậpQuyenHandanhtên',
+      trigger: 'blur',
     },
   ],
-  authLabel: [
-    { required: true, message: "Vui lòng nhậpQuyenHantiêu", trigger: "blur" },
-  ],
+  authLabel: [{ required: true, message: 'Vui lòng nhậpQuyenHantiêu', trigger: 'blur' }],
 });
 
 const formItems = computed<FormItem[]>(() => {
-  const baseItems: FormItem[] = [
-    { label: "Menuloạikiểu", key: "menuType", span: 24 },
-  ];
+  const baseItems: FormItem[] = [{ label: 'Menuloạikiểu', key: 'menuType', span: 24 }];
 
   const switchSpan = width.value < 640 ? 12 : 6;
 
-  if (form.menuType === "menu") {
+  if (form.menuType === 'menu') {
     return [
       ...baseItems,
       {
-        label: "Menudanhtên",
-        key: "name",
-        type: "input",
-        props: { placeholder: "Menudanhtên" },
+        label: 'Menudanhtên',
+        key: 'name',
+        type: 'input',
+        props: { placeholder: 'Menudanhtên' },
       },
       {
         label: createLabelTooltip(
-          "RoutingDiaChi",
-          "mộtcấpMenu：lấy / mởđầucủatuyệtđốiđường（nếu /dashboard）\nhaicấpvàlấydưới：đốiđường（nếu console、user）",
+          'RoutingDiaChi',
+          'mộtcấpMenu：lấy / mởđầucủatuyệtđốiđường（nếu /dashboard）\nhaicấpvàlấydưới：đốiđường（nếu console、user）'
         ),
-        key: "path",
-        type: "input",
-        props: { placeholder: "nếu：/dashboard hoặc console" },
+        key: 'path',
+        type: 'input',
+        props: { placeholder: 'nếu：/dashboard hoặc console' },
       },
       {
-        label: "QuyenHantiêu",
-        key: "label",
-        type: "input",
-        props: { placeholder: "nếu：User" },
+        label: 'QuyenHantiêu',
+        key: 'label',
+        type: 'input',
+        props: { placeholder: 'nếu：User' },
       },
       {
         label: createLabelTooltip(
-          "Componentđường",
-          "mộtcấpchacấpMenu：viết /index/index\ndụng cụthểtrangmặt：viếtComponentđường（nếu /system/user）\nmụclụcMenu：giữkhông",
+          'Componentđường',
+          'mộtcấpchacấpMenu：viết /index/index\ndụng cụthểtrangmặt：viếtComponentđường（nếu /system/user）\nmụclụcMenu：giữkhông'
         ),
-        key: "component",
-        type: "input",
-        props: { placeholder: "nếu：/system/user hoặcgiữkhông" },
+        key: 'component',
+        type: 'input',
+        props: { placeholder: 'nếu：/system/user hoặcgiữkhông' },
       },
       {
-        label: "Icon",
-        key: "icon",
-        type: "input",
-        props: { placeholder: "nếu：ri:user-line" },
+        label: 'Icon',
+        key: 'icon',
+        type: 'input',
+        props: { placeholder: 'nếu：ri:user-line' },
       },
       {
         label: createLabelTooltip(
-          "VaiTroQuyenHan",
-          "chỉdùngởtrướcđầuQuyenHanmôkiểu：CauHinhVaiTrotiêu（nếu R_SUPER、R_ADMIN）\nsauđầuQuyenHanmôkiểu：vôcầnCauHinh",
+          'VaiTroQuyenHan',
+          'chỉdùngởtrướcđầuQuyenHanmôkiểu：CauHinhVaiTrotiêu（nếu R_SUPER、R_ADMIN）\nsauđầuQuyenHanmôkiểu：vôcầnCauHinh'
         ),
-        key: "roles",
-        type: "inputtag",
-        props: { placeholder: "NhậpVaiTrotiêusauvềxe，nếu：R_SUPER" },
+        key: 'roles',
+        type: 'inputtag',
+        props: { placeholder: 'NhậpVaiTrotiêusauvềxe，nếu：R_SUPER' },
       },
       {
-        label: "Menuxếpthứ",
-        key: "sort",
-        type: "number",
-        props: { min: 1, controlsPosition: "right", style: { width: "100%" } },
+        label: 'Menuxếpthứ',
+        key: 'sort',
+        type: 'number',
+        props: { min: 1, controlsPosition: 'right', style: { width: '100%' } },
       },
       {
-        label: "ngoàibộliêntiếp",
-        key: "link",
-        type: "input",
-        props: { placeholder: "nếu：https://www.example.com" },
+        label: 'ngoàibộliêntiếp',
+        key: 'link',
+        type: 'input',
+        props: { placeholder: 'nếu：https://www.example.com' },
       },
       {
-        label: "vănquyểnhuychương",
-        key: "showTextBadge",
-        type: "input",
-        props: { placeholder: "nếu：New、Hot" },
+        label: 'vănquyểnhuychương',
+        key: 'showTextBadge',
+        type: 'input',
+        props: { placeholder: 'nếu：New、Hot' },
       },
       {
         label: createLabelTooltip(
-          "kíchsốngđường",
-          'dùngởTrang chi tiếtbằngẨnMenu，địnhcaosángHiển thịcủachacấpMenuđường\nví dụnếu：NguoiDungTrang chi tiếtcaosángHiển thị"NguoiDungQuản lý"Menu',
+          'kíchsốngđường',
+          'dùngởTrang chi tiếtbằngẨnMenu，địnhcaosángHiển thịcủachacấpMenuđường\nví dụnếu：NguoiDungTrang chi tiếtcaosángHiển thị"NguoiDungQuản lý"Menu'
         ),
-        key: "activePath",
-        type: "input",
-        props: { placeholder: "nếu：/system/user" },
+        key: 'activePath',
+        type: 'input',
+        props: { placeholder: 'nếu：/system/user' },
       },
-      { label: "làphủBật", key: "isEnable", type: "switch", span: switchSpan },
+      { label: 'làphủBật', key: 'isEnable', type: 'switch', span: switchSpan },
       {
-        label: "trangmặtCache",
-        key: "keepAlive",
-        type: "switch",
+        label: 'trangmặtCache',
+        key: 'keepAlive',
+        type: 'switch',
         span: switchSpan,
       },
-      { label: "ẨnMenu", key: "isHide", type: "switch", span: switchSpan },
+      { label: 'ẨnMenu', key: 'isHide', type: 'switch', span: switchSpan },
       {
-        label: "làphủtrongnhúng",
-        key: "isIframe",
-        type: "switch",
+        label: 'làphủtrongnhúng',
+        key: 'isIframe',
+        type: 'switch',
         span: switchSpan,
       },
       {
-        label: "Hiển thịhuychương",
-        key: "showBadge",
-        type: "switch",
+        label: 'Hiển thịhuychương',
+        key: 'showBadge',
+        type: 'switch',
         span: switchSpan,
       },
-      { label: "cốđịnhTag", key: "fixedTab", type: "switch", span: switchSpan },
-      { label: "TagẨn", key: "isHideTab", type: "switch", span: switchSpan },
+      { label: 'cốđịnhTag', key: 'fixedTab', type: 'switch', span: switchSpan },
+      { label: 'TagẨn', key: 'isHideTab', type: 'switch', span: switchSpan },
       {
-        label: "Toàn màn hìnhtrangmặt",
-        key: "isFullPage",
-        type: "switch",
+        label: 'Toàn màn hìnhtrangmặt',
+        key: 'isFullPage',
+        type: 'switch',
         span: switchSpan,
       },
     ];
@@ -287,41 +276,41 @@ const formItems = computed<FormItem[]>(() => {
     return [
       ...baseItems,
       {
-        label: "QuyenHandanhtên",
-        key: "authName",
-        type: "input",
-        props: { placeholder: "nếu：Thêm mới、Chỉnh sửa、Xóa" },
+        label: 'QuyenHandanhtên',
+        key: 'authName',
+        type: 'input',
+        props: { placeholder: 'nếu：Thêm mới、Chỉnh sửa、Xóa' },
       },
       {
-        label: "QuyenHantiêu",
-        key: "authLabel",
-        type: "input",
-        props: { placeholder: "nếu：add、edit、delete" },
+        label: 'QuyenHantiêu',
+        key: 'authLabel',
+        type: 'input',
+        props: { placeholder: 'nếu：add、edit、delete' },
       },
       {
-        label: "QuyenHanxếpthứ",
-        key: "authSort",
-        type: "number",
-        props: { min: 1, controlsPosition: "right", style: { width: "100%" } },
+        label: 'QuyenHanxếpthứ',
+        key: 'authSort',
+        type: 'number',
+        props: { min: 1, controlsPosition: 'right', style: { width: '100%' } },
       },
     ];
   }
 });
 
 const dialogTitle = computed(() => {
-  const type = form.menuType === "menu" ? "Menu" : "Nút";
+  const type = form.menuType === 'menu' ? 'Menu' : 'Nút';
   return isEdit.value ? `Chỉnh sửa${type}` : `mớixây${type}`;
 });
 
 const disableMenuType = computed(() => {
   if (isEdit.value) return true;
-  if (!isEdit.value && form.menuType === "menu" && props.lockType) return true;
+  if (!isEdit.value && form.menuType === 'menu' && props.lockType) return true;
   return false;
 });
 
 const resetForm = (): void => {
   formRef.value?.reset();
-  form.menuType = "menu";
+  form.menuType = 'menu';
 };
 
 const loadFormData = (): void => {
@@ -329,33 +318,33 @@ const loadFormData = (): void => {
 
   isEdit.value = true;
 
-  if (form.menuType === "menu") {
+  if (form.menuType === 'menu') {
     const row = props.editData;
     form.id = row.id || 0;
-    form.name = formatMenuTitle(row.meta?.title || "");
-    form.path = row.path || "";
-    form.label = row.name || "";
-    form.component = row.component || "";
-    form.icon = row.meta?.icon || "";
+    form.name = formatMenuTitle(row.meta?.title || '');
+    form.path = row.path || '';
+    form.label = row.name || '';
+    form.component = row.component || '';
+    form.icon = row.meta?.icon || '';
     form.sort = row.meta?.sort || 1;
     form.isMenu = row.meta?.isMenu ?? true;
     form.keepAlive = row.meta?.keepAlive ?? false;
     form.isHide = row.meta?.isHide ?? false;
     form.isHideTab = row.meta?.isHideTab ?? false;
     form.isEnable = row.meta?.isEnable ?? true;
-    form.link = row.meta?.link || "";
+    form.link = row.meta?.link || '';
     form.isIframe = row.meta?.isIframe ?? false;
     form.showBadge = row.meta?.showBadge ?? false;
-    form.showTextBadge = row.meta?.showTextBadge || "";
+    form.showTextBadge = row.meta?.showTextBadge || '';
     form.fixedTab = row.meta?.fixedTab ?? false;
-    form.activePath = row.meta?.activePath || "";
+    form.activePath = row.meta?.activePath || '';
     form.roles = row.meta?.roles || [];
     form.isFullPage = row.meta?.isFullPage ?? false;
   } else {
     const row = props.editData;
-    form.authName = row.title || "";
-    form.authLabel = row.authMark || "";
-    form.authIcon = row.icon || "";
+    form.authName = row.title || '';
+    form.authLabel = row.authMark || '';
+    form.authIcon = row.icon || '';
     form.authSort = row.sort || 1;
   }
 };
@@ -365,16 +354,16 @@ const handleSubmit = async (): Promise<void> => {
 
   try {
     await formRef.value.validate();
-    emit("submit", { ...form });
-    ElMessage.success(`${isEdit.value ? "Chỉnh sửa" : "Thêm mới"}ThanhCong`);
+    emit('submit', { ...form });
+    ElMessage.success(`${isEdit.value ? 'Chỉnh sửa' : 'Thêm mới'}ThanhCong`);
     handleCancel();
   } catch {
-    ElMessage.error("FormsoátnghiệmThatBai，Vui lòngTìmNhập");
+    ElMessage.error('FormsoátnghiệmThatBai，Vui lòngTìmNhập');
   }
 };
 
 const handleCancel = (): void => {
-  emit("update:visible", false);
+  emit('update:visible', false);
 };
 
 const handleClosed = (): void => {
@@ -393,7 +382,7 @@ watch(
         }
       });
     }
-  },
+  }
 );
 
 watch(
@@ -402,6 +391,6 @@ watch(
     if (props.visible) {
       form.menuType = newType;
     }
-  },
+  }
 );
 </script>

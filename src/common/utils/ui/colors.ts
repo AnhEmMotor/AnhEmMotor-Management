@@ -1,4 +1,4 @@
-import { useSettingStore } from "@/application/store/setting";
+import { useSettingStore } from '@/application/store/setting';
 
 interface RgbaResult {
   red: number;
@@ -12,33 +12,30 @@ export function getCssVar(name: string): string {
 }
 
 function isValidHexColor(hex: string): boolean {
-  const cleanHex = hex.trim().replace(/^#/, "");
+  const cleanHex = hex.trim().replace(/^#/, '');
   return /^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/.test(cleanHex);
 }
 
 function isValidRgbValue(r: number, g: number, b: number): boolean {
-  const isValid = (value: number) =>
-    Number.isInteger(value) && value >= 0 && value <= 255;
+  const isValid = (value: number) => Number.isInteger(value) && value >= 0 && value <= 255;
   return isValid(r) && isValid(g) && isValid(b);
 }
 
 export function hexToRgba(hex: string, opacity: number): RgbaResult {
   if (!isValidHexColor(hex)) {
-    throw new Error("Invalid hex color format");
+    throw new Error('Invalid hex color format');
   }
 
-  let cleanHex = hex.trim().replace(/^#/, "").toUpperCase();
+  let cleanHex = hex.trim().replace(/^#/, '').toUpperCase();
 
   if (cleanHex.length === 3) {
     cleanHex = cleanHex
-      .split("")
+      .split('')
       .map((char) => char.repeat(2))
-      .join("");
+      .join('');
   }
 
-  const [red, green, blue] = cleanHex
-    .match(/\w\w/g)!
-    .map((x) => parseInt(x, 16));
+  const [red, green, blue] = cleanHex.match(/\w\w/g)!.map((x) => parseInt(x, 16));
 
   const validOpacity = Math.max(0, Math.min(1, opacity));
 
@@ -49,23 +46,23 @@ export function hexToRgba(hex: string, opacity: number): RgbaResult {
 
 export function hexToRgb(hexColor: string): number[] {
   if (!isValidHexColor(hexColor)) {
-    ElMessage.warning("NhậpLỗicủahexMàu sắcgiá trị");
-    throw new Error("Invalid hex color format");
+    ElMessage.warning('NhậpLỗicủahexMàu sắcgiá trị');
+    throw new Error('Invalid hex color format');
   }
 
-  const cleanHex = hexColor.replace(/^#/, "");
+  const cleanHex = hexColor.replace(/^#/, '');
   let hex = cleanHex;
 
   if (hex.length === 3) {
     hex = hex
-      .split("")
+      .split('')
       .map((char) => char.repeat(2))
-      .join("");
+      .join('');
   }
 
   const hexPairs = hex.match(/../g);
   if (!hexPairs) {
-    throw new Error("Invalid hex color format");
+    throw new Error('Invalid hex color format');
   }
 
   return hexPairs.map((hexPair) => parseInt(hexPair, 16));
@@ -73,8 +70,8 @@ export function hexToRgb(hexColor: string): number[] {
 
 export function rgbToHex(r: number, g: number, b: number): string {
   if (!isValidRgbValue(r, g, b)) {
-    ElMessage.warning("NhậpLỗicủaRGBMàu sắcgiá trị");
-    throw new Error("Invalid RGB color values");
+    ElMessage.warning('NhậpLỗicủaRGBMàu sắcgiá trị');
+    throw new Error('Invalid RGB color values');
   }
 
   const toHex = (value: number) => {
@@ -85,11 +82,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-export function colourBlend(
-  color1: string,
-  color2: string,
-  ratio: number,
-): string {
+export function colourBlend(color1: string, color2: string, ratio: number): string {
   const validRatio = Math.max(0, Math.min(1, Number(ratio)));
 
   const rgb1 = hexToRgb(color1);
@@ -103,14 +96,10 @@ export function colourBlend(
   return rgbToHex(blendedRgb[0], blendedRgb[1], blendedRgb[2]);
 }
 
-export function getLightColor(
-  color: string,
-  level: number,
-  isDark: boolean = false,
-): string {
+export function getLightColor(color: string, level: number, isDark: boolean = false): string {
   if (!isValidHexColor(color)) {
-    ElMessage.warning("NhậpLỗicủahexMàu sắcgiá trị");
-    throw new Error("Invalid hex color format");
+    ElMessage.warning('NhậpLỗicủahexMàu sắcgiá trị');
+    throw new Error('Invalid hex color format');
   }
 
   if (isDark) {
@@ -118,17 +107,15 @@ export function getLightColor(
   }
 
   const rgb = hexToRgb(color);
-  const lightRgb = rgb.map((value) =>
-    Math.floor((255 - value) * level + value),
-  );
+  const lightRgb = rgb.map((value) => Math.floor((255 - value) * level + value));
 
   return rgbToHex(lightRgb[0], lightRgb[1], lightRgb[2]);
 }
 
 export function getDarkColor(color: string, level: number): string {
   if (!isValidHexColor(color)) {
-    ElMessage.warning("NhậpLỗicủahexMàu sắcgiá trị");
-    throw new Error("Invalid hex color format");
+    ElMessage.warning('NhậpLỗicủahexMàu sắcgiá trị');
+    throw new Error('Invalid hex color format');
   }
 
   const rgb = hexToRgb(color);
@@ -137,32 +124,29 @@ export function getDarkColor(color: string, level: number): string {
   return rgbToHex(darkRgb[0], darkRgb[1], darkRgb[2]);
 }
 
-export function handleElementThemeColor(
-  theme: string,
-  isDark: boolean = false,
-): void {
-  document.documentElement.style.setProperty("--el-color-primary", theme);
+export function handleElementThemeColor(theme: string, isDark: boolean = false): void {
+  document.documentElement.style.setProperty('--el-color-primary', theme);
 
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-light-${i}`,
-      getLightColor(theme, i / 10, isDark),
+      getLightColor(theme, i / 10, isDark)
     );
   }
 
   for (let i = 1; i <= 9; i++) {
     document.documentElement.style.setProperty(
       `--el-color-primary-dark-${i}`,
-      getDarkColor(theme, i / 10),
+      getDarkColor(theme, i / 10)
     );
   }
 }
 
 export function setElementThemeColor(color: string): void {
-  const mixColor = "#ffffff";
+  const mixColor = '#ffffff';
   const elStyle = document.documentElement.style;
 
-  elStyle.setProperty("--el-color-primary", color);
+  elStyle.setProperty('--el-color-primary', color);
   handleElementThemeColor(color, useSettingStore().isDark);
 
   for (let i = 1; i < 16; i++) {

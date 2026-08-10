@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export const InventoryReportApi = {
   getSummary(params?: {
@@ -9,7 +9,7 @@ export const InventoryReportApi = {
     year?: number;
   }) {
     return request.get<any>({
-      url: "/api/v1/InventoryReport",
+      url: '/api/v1/InventoryReport',
       params,
     });
   },
@@ -20,16 +20,16 @@ export const InventoryReportApi = {
       params.colorId = colorId;
     }
     return request.get<any>({
-      url: "/api/v1/InventoryReport/details",
+      url: '/api/v1/InventoryReport/details',
       params,
     });
   },
 
   export(params?: { searchTerm?: string; month?: number; year?: number }) {
     return request.get<Blob>({
-      url: "/api/v1/InventoryReport/export",
+      url: '/api/v1/InventoryReport/export',
       params,
-      responseType: "blob",
+      responseType: 'blob',
     });
   },
 
@@ -40,7 +40,7 @@ export const InventoryReportApi = {
     endDate?: string;
   }) {
     return request.get<any[]>({
-      url: "/api/v1/InventoryLedgers",
+      url: '/api/v1/InventoryLedgers',
       params,
     });
   },
@@ -52,9 +52,9 @@ export const InventoryReportApi = {
     endDate?: string;
   }) {
     return request.get<Blob>({
-      url: "/api/v1/InventoryLedgers/export",
+      url: '/api/v1/InventoryLedgers/export',
       params,
-      responseType: "blob",
+      responseType: 'blob',
     });
   },
 };

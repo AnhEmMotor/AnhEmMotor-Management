@@ -7,10 +7,7 @@
     class="el-dialog-border animate__animated animate__zoomIn"
     @close="handleClose"
   >
-    <div
-      v-loading="loadingStructure || loadingCurrent"
-      class="permission-tree-container"
-    >
+    <div v-loading="loadingStructure || loadingCurrent" class="permission-tree-container">
       <ElScrollbar height="60vh">
         <ElTree
           ref="treeRef"
@@ -37,17 +34,15 @@
       <div class="dialog-footer flex justify-between items-center w-full">
         <div>
           <ElButton size="small" @click="toggleExpandAll">
-            {{ isExpandAll ? "Thu gọn tất cả" : "Mở rộng tất cả" }}
+            {{ isExpandAll ? 'Thu gọn tất cả' : 'Mở rộng tất cả' }}
           </ElButton>
           <ElButton size="small" @click="toggleSelectAll">
-            {{ isSelectAll ? "Hủy chọn tất cả" : "Chọn tất cả" }}
+            {{ isSelectAll ? 'Hủy chọn tất cả' : 'Chọn tất cả' }}
           </ElButton>
         </div>
         <div>
           <ElButton @click="handleClose">Hủy</ElButton>
-          <ElButton type="primary" @click="savePermission" :loading="saving"
-            >Lưu thay đổi</ElButton
-          >
+          <ElButton type="primary" @click="savePermission" :loading="saving">Lưu thay đổi</ElButton>
         </div>
       </div>
     </template>
@@ -55,11 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  fetchGetPermissionStructure,
-  fetchGetRolePermissions,
-  fetchUpdateRole,
-} from "@/api/auth";
+import { fetchGetPermissionStructure, fetchGetRolePermissions, fetchUpdateRole } from '@/api/auth';
 
 interface Props {
   modelValue: boolean;
@@ -67,8 +58,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", value: boolean): void;
-  (e: "success"): void;
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'success'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -98,13 +89,13 @@ const permissionConflicts = ref<Record<string, string[]>>({});
 const lastCheckedKeys = ref<string[]>([]);
 
 const defaultProps = {
-  children: "children",
-  label: "label",
+  children: 'children',
+  label: 'label',
 };
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
+  set: (value) => emit('update:modelValue', value),
 });
 
 const loadPermissionStructure = async () => {
@@ -115,31 +106,29 @@ const loadPermissionStructure = async () => {
     permissionDependencies.value = res.dependencies || {};
     permissionConflicts.value = res.conflicts || {};
 
-    const nodes: TreePermissionNode[] = ((res as any).modules || []).map(
-      (mod: any) => {
-        const moduleChildren = (mod.features || []).map((feat: any) => {
-          const featureChildren = (feat.permissions || []).map((perm: any) => ({
-            id: perm.id,
-            label: perm.name || perm.id,
-            description: perm.description,
-          }));
-          return {
-            id: feat.id,
-            label: feat.name || feat.id,
-            children: featureChildren,
-          };
-        });
+    const nodes: TreePermissionNode[] = ((res as any).modules || []).map((mod: any) => {
+      const moduleChildren = (mod.features || []).map((feat: any) => {
+        const featureChildren = (feat.permissions || []).map((perm: any) => ({
+          id: perm.id,
+          label: perm.name || perm.id,
+          description: perm.description,
+        }));
         return {
-          id: mod.id,
-          label: mod.name || mod.id,
-          children: moduleChildren,
+          id: feat.id,
+          label: feat.name || feat.id,
+          children: featureChildren,
         };
-      },
-    );
+      });
+      return {
+        id: mod.id,
+        label: mod.name || mod.id,
+        children: moduleChildren,
+      };
+    });
     treeData.value = nodes;
   } catch (error) {
-    console.error("Failed to load permission structure:", error);
-    ElMessage.error("Không thể lấy cấu trúc quyền từ backend");
+    console.error('Failed to load permission structure:', error);
+    ElMessage.error('Không thể lấy cấu trúc quyền từ backend');
   } finally {
     loadingStructure.value = false;
   }
@@ -157,20 +146,16 @@ const loadRolePermissions = async () => {
           feat.children?.forEach((act) => validActionIds.add(act.id));
         });
       });
-      const leafPermissions = (permissions || []).filter((p) =>
-        validActionIds.has(p),
-      );
+      const leafPermissions = (permissions || []).filter((p) => validActionIds.has(p));
 
       treeRef.value?.setCheckedKeys(leafPermissions);
       lastCheckedKeys.value = treeRef.value?.getCheckedKeys() || [];
       const allKeys = getAllNodeKeys(treeData.value);
-      isSelectAll.value =
-        leafPermissions.length === validActionIds.size &&
-        validActionIds.size > 0;
+      isSelectAll.value = leafPermissions.length === validActionIds.size && validActionIds.size > 0;
     });
   } catch (error) {
-    console.error("Failed to load role permissions:", error);
-    ElMessage.error("Không thể lấy danh sách quyền của vai trò");
+    console.error('Failed to load role permissions:', error);
+    ElMessage.error('Không thể lấy danh sách quyền của vai trò');
   } finally {
     loadingCurrent.value = false;
   }
@@ -183,7 +168,7 @@ watch(
       await loadPermissionStructure();
       await loadRolePermissions();
     }
-  },
+  }
 );
 
 const handleClose = () => {
@@ -196,10 +181,8 @@ const savePermission = async () => {
   if (!props.roleData) return;
   saving.value = true;
   try {
-    const checkedKeys = (treeRef.value?.getCheckedKeys(false) ||
-      []) as string[];
-    const halfCheckedKeys = (treeRef.value?.getHalfCheckedKeys() ||
-      []) as string[];
+    const checkedKeys = (treeRef.value?.getCheckedKeys(false) || []) as string[];
+    const halfCheckedKeys = (treeRef.value?.getHalfCheckedKeys() || []) as string[];
     const allSelectedKeys = [...checkedKeys, ...halfCheckedKeys];
 
     const validPermissionIds = new Set<string>();
@@ -210,21 +193,19 @@ const savePermission = async () => {
       });
     });
 
-    const realPermissions = allSelectedKeys.filter((id) =>
-      validPermissionIds.has(id),
-    );
+    const realPermissions = allSelectedKeys.filter((id) => validPermissionIds.has(id));
 
     await fetchUpdateRole(props.roleData.id, {
       roleName: props.roleData.name,
-      description: props.roleData.description || "",
+      description: props.roleData.description || '',
       permissions: realPermissions,
     });
 
-    ElMessage.success("Cập nhật quyền hạn vai trò thành công!");
-    emit("success");
+    ElMessage.success('Cập nhật quyền hạn vai trò thành công!');
+    emit('success');
     handleClose();
   } catch (error) {
-    console.error("Failed to save permissions:", error);
+    console.error('Failed to save permissions:', error);
   } finally {
     saving.value = false;
   }
@@ -311,19 +292,16 @@ const handleTreeCheck = (data: any, state: any) => {
 
   if (newlyUnchecked.length > 0) {
     const removeDependents = (key: string) => {
-      Object.entries(permissionDependencies.value).forEach(
-        ([dependentKey, deps]) => {
-          if (
-            deps.includes(key) &&
-            (checkedKeys.includes(dependentKey) ||
-              newlyChecked.includes(dependentKey)) &&
-            !keysToRemove.has(dependentKey)
-          ) {
-            keysToRemove.add(dependentKey);
-            removeDependents(dependentKey);
-          }
-        },
-      );
+      Object.entries(permissionDependencies.value).forEach(([dependentKey, deps]) => {
+        if (
+          deps.includes(key) &&
+          (checkedKeys.includes(dependentKey) || newlyChecked.includes(dependentKey)) &&
+          !keysToRemove.has(dependentKey)
+        ) {
+          keysToRemove.add(dependentKey);
+          removeDependents(dependentKey);
+        }
+      });
     };
     newlyUnchecked.forEach(removeDependents);
   }
@@ -337,8 +315,7 @@ const handleTreeCheck = (data: any, state: any) => {
 
   const allKeys = getAllNodeKeys(treeData.value);
   const currentChecked = treeRef.value?.getCheckedKeys() || [];
-  isSelectAll.value =
-    currentChecked.length === allKeys.length && allKeys.length > 0;
+  isSelectAll.value = currentChecked.length === allKeys.length && allKeys.length > 0;
 };
 </script>
 

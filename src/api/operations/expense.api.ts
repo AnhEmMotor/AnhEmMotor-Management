@@ -1,4 +1,4 @@
-﻿import request from "@/common/utils/http";
+﻿import request from '@/common/utils/http';
 
 export interface ExpenseResponse {
   id: number;
@@ -14,7 +14,7 @@ export interface ExpenseResponse {
 export const expenseApi = {
   getAll() {
     return request.get<ExpenseResponse[]>({
-      url: "/api/v1/expenses",
+      url: '/api/v1/expenses',
     });
   },
 };

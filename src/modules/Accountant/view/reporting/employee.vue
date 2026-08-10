@@ -13,19 +13,10 @@
             v-model:end-date="periodEnd"
             @update:modelValue="onPeriodChange"
           />
-          <ElButton
-            type="primary"
-            :icon="Refresh"
-            :loading="loading"
-            @click="loadPerformance"
-          >
+          <ElButton type="primary" :icon="Refresh" :loading="loading" @click="loadPerformance">
             Làm mới
           </ElButton>
-          <ElButton
-            type="primary"
-            :disabled="loading"
-            @click="exportEmployeeExcel"
-          >
+          <ElButton type="primary" :disabled="loading" @click="exportEmployeeExcel">
             <ArtSvgIcon icon="ri:file-excel-2-line" />
             Xuất Excel
           </ElButton>
@@ -51,25 +42,25 @@
         :loading="loading"
       />
       <ArtStatsCard
-        title="Hoàn thành KPI"
-        :count="formatPercent(reportSummary.achievementRate)"
-        :description="`${reportSummary.achievedCount} nhân viên đạt hoặc vượt KPI`"
-        icon="ri:target-line"
+        title="Trung bình doanh số"
+        :count="
+          formatCurrency(
+            reportSummary.employeeCount > 0
+              ? reportSummary.totalSales / reportSummary.employeeCount
+              : 0
+          )
+        "
+        :description="`Tính trên ${reportSummary.employeeCount} hồ sơ nhân sự`"
+        icon="ri:bar-chart-box-line"
         icon-style="bg-report-red-dark"
         :loading="loading"
       />
       <ArtStatsCard
-        title="Cần theo dõi"
-        :count="
-          reportSummary.needImprovementCount + reportSummary.withoutKpiCount
-        "
-        :description="`${reportSummary.needImprovementCount} chưa đạt · ${reportSummary.withoutKpiCount} chưa được giao KPI`"
-        icon="ri:alarm-warning-line"
-        :icon-style="
-          reportSummary.needImprovementCount + reportSummary.withoutKpiCount > 0
-            ? 'bg-report-red-dark'
-            : 'bg-report-gray'
-        "
+        title="Nhân sự có doanh số"
+        :count="sourceCoverage.sales.toString()"
+        :description="`Chiếm ${formatPercent(reportSummary.employeeCount > 0 ? (sourceCoverage.sales / reportSummary.employeeCount) * 100 : 0)} tổng số nhân sự`"
+        icon="ri:user-star-line"
+        icon-style="bg-report-red-light"
         :loading="loading"
       />
     </div>
@@ -89,31 +80,24 @@
       <div class="employee-report__source-grid">
         <div>
           <span>Đơn hàng hoàn tất</span>
-          <strong
-            >{{ sourceCoverage.sales }}/{{
-              reportSummary.employeeCount
-            }}</strong
-          >
+          <strong>{{ sourceCoverage.sales }}/{{ reportSummary.employeeCount }}</strong>
         </div>
         <div>
-          <span>KPI đã giao</span>
+          <span>Nhân sự có giao dịch</span>
           <strong
-            >{{ sourceCoverage.kpi }}/{{ reportSummary.employeeCount }}</strong
+            >{{ performance.filter((p) => p.hasSalesData || p.hasCommissionData).length }}/{{
+              reportSummary.employeeCount
+            }}</strong
           >
         </div>
         <div>
           <span>Hoa hồng phát sinh</span>
-          <strong
-            >{{ sourceCoverage.commission }}/{{
-              reportSummary.employeeCount
-            }}</strong
-          >
+          <strong>{{ sourceCoverage.commission }}/{{ reportSummary.employeeCount }}</strong>
         </div>
       </div>
       <p v-if="hasData && !hasMetricData" class="employee-report__source-note">
-        API đã tải hồ sơ nhân sự, nhưng chưa phát sinh doanh số hoặc hoa hồng
-        trong kỳ. Hãy kiểm tra dữ liệu đơn hàng, KPI và chính sách hoa hồng ở
-        các module nguồn.
+        API đã tải hồ sơ nhân sự, nhưng chưa phát sinh doanh số hoặc hoa hồng trong kỳ. Hãy kiểm tra
+        dữ liệu đơn hàng, KPI và chính sách hoa hồng ở các module nguồn.
       </p>
       <p v-else-if="!hasData" class="employee-report__source-note">
         API chưa trả hồ sơ nhân sự cho kỳ đang chọn.
@@ -121,9 +105,7 @@
     </ElCard>
 
     <div class="employee-report__charts">
-      <ElCard
-        class="reporting-card employee-report__chart-card employee-report__chart-card--wide"
-      >
+      <ElCard class="reporting-card employee-report__chart-card employee-report__chart-card--wide">
         <template #header>
           <div class="employee-report__card-header">
             <span>Doanh số và hoa hồng theo nhân viên</span>
@@ -146,18 +128,18 @@
       <ElCard class="reporting-card employee-report__chart-card">
         <template #header>
           <div class="employee-report__card-header">
-            <span>Cơ cấu trạng thái KPI</span>
+            <span>Cơ cấu nhân sự theo vai trò</span>
             <span>{{ reportSummary.employeeCount }} nhân viên</span>
           </div>
         </template>
         <div
-          v-if="hasKpiData"
-          ref="kpiStatusChartRef"
+          v-if="roleSummary.length"
+          ref="roleChartRef"
           class="reporting-chart employee-report__chart"
         ></div>
         <ElEmpty
           v-else
-          description="Chưa có KPI trong kỳ"
+          description="Chưa có dữ liệu"
           :image-size="90"
           class="employee-report__empty"
         />
@@ -209,11 +191,7 @@
           </div>
         </template>
         <div v-if="roleSummary.length" class="employee-report__role-list">
-          <div
-            v-for="role in roleSummary"
-            :key="role.role"
-            class="employee-report__role-row"
-          >
+          <div v-for="role in roleSummary" :key="role.role" class="employee-report__role-row">
             <div>
               <strong>{{ role.role }}</strong>
               <span>{{ role.employeeCount }} nhân viên</span>
@@ -235,14 +213,46 @@
 
     <ElCard class="reporting-card employee-report__table-card">
       <template #header>
-        <div class="employee-report__card-header">
-          <span>Chi tiết hiệu suất nhân sự</span>
-          <span>{{ selectedRangeLabel }}</span>
+        <div class="employee-report__card-header employee-report__table-header">
+          <div class="employee-report__table-title">
+            <span>Chi tiết hiệu suất nhân sự</span>
+            <span>{{ selectedRangeLabel }}</span>
+          </div>
+          <div class="employee-report__table-actions">
+            <ElInput
+              v-model="searchQuery"
+              placeholder="Tìm nhân viên..."
+              :prefix-icon="Search"
+              clearable
+              style="width: 200px"
+            />
+            <ElSelect
+              v-model="roleFilter"
+              placeholder="Tất cả vai trò"
+              clearable
+              style="width: 160px"
+            >
+              <ElOption
+                v-for="role in roleSummary"
+                :key="role.role"
+                :label="role.role"
+                :value="role.role"
+              />
+            </ElSelect>
+            <ElButton
+              type="primary"
+              @click="exportTableExcel"
+              :disabled="!filteredPerformance.length"
+            >
+              <ArtSvgIcon icon="ri:file-excel-2-line" />
+              Xuất Excel
+            </ElButton>
+          </div>
         </div>
       </template>
       <ElTable
         v-loading="loading"
-        :data="performance"
+        :data="filteredPerformance"
         class="reporting-table"
         empty-text="Chưa có dữ liệu"
       >
@@ -250,55 +260,16 @@
           <template #default="{ row }">
             <div class="employee-report__employee-cell">
               <strong>{{ row.employeeName }}</strong>
-              <ElTag v-if="row.isTopSeller" type="success" effect="light" round>
-                Top
-              </ElTag>
+              <ElTag v-if="row.isTopSeller" type="success" effect="light" round> Top </ElTag>
             </div>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="role" label="Vai trò" min-width="180" />
-        <ElTableColumn
-          prop="totalSales"
-          label="Doanh số mang về"
-          min-width="170"
-          align="right"
-        >
+        <ElTableColumn prop="totalSales" label="Doanh số mang về" min-width="170" align="right">
           <template #default="{ row }">
             {{
-              row.hasSalesData || row.hasKpiData
-                ? formatCurrency(row.totalSales)
-                : "Chưa phát sinh"
+              row.hasSalesData || row.hasKpiData ? formatCurrency(row.totalSales) : 'Chưa phát sinh'
             }}
-          </template>
-        </ElTableColumn>
-        <ElTableColumn
-          prop="targetSales"
-          label="Mục tiêu"
-          min-width="150"
-          align="right"
-        >
-          <template #default="{ row }">
-            {{
-              row.targetSales > 0
-                ? formatCurrency(row.targetSales)
-                : "Chưa giao"
-            }}
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="Tiến độ KPI" min-width="180">
-          <template #default="{ row }">
-            <div
-              v-if="row.targetSales > 0"
-              class="employee-report__progress-cell"
-            >
-              <ElProgress
-                :percentage="Math.min(getAchievementRate(row), 130)"
-                :stroke-width="8"
-                :show-text="false"
-              />
-              <span>{{ formatPercent(getAchievementRate(row)) }}</span>
-            </div>
-            <span v-else class="reporting-muted">Chưa có mục tiêu</span>
           </template>
         </ElTableColumn>
         <ElTableColumn
@@ -309,51 +280,20 @@
         >
           <template #default="{ row }">
             <span class="font-semibold text-primary">
-              {{
-                row.hasCommissionData
-                  ? formatCurrency(row.commissionPaid)
-                  : "Chưa phát sinh"
-              }}
+              {{ row.hasCommissionData ? formatCurrency(row.commissionPaid) : 'Chưa phát sinh' }}
             </span>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Nguồn dữ liệu" min-width="210">
           <template #default="{ row }">
             <div class="employee-report__source-tags">
-              <ElTag
-                :type="row.hasSalesData ? 'success' : 'info'"
-                effect="plain"
-                size="small"
-              >
+              <ElTag :type="row.hasSalesData ? 'success' : 'info'" effect="plain" size="small">
                 Đơn hàng
               </ElTag>
-              <ElTag
-                :type="row.hasKpiData ? 'success' : 'info'"
-                effect="plain"
-                size="small"
-              >
-                KPI
-              </ElTag>
-              <ElTag
-                :type="row.hasCommissionData ? 'success' : 'info'"
-                effect="plain"
-                size="small"
-              >
+              <ElTag :type="row.hasCommissionData ? 'success' : 'info'" effect="plain" size="small">
                 Hoa hồng
               </ElTag>
             </div>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn
-          prop="kpiStatus"
-          label="Trạng thái KPI"
-          min-width="150"
-          align="center"
-        >
-          <template #default="{ row }">
-            <ElTag :type="getKpiTagType(row.kpiStatus)" effect="light" round>
-              {{ row.kpiStatus }}
-            </ElTag>
           </template>
         </ElTableColumn>
       </ElTable>
@@ -362,27 +302,20 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from "echarts";
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
-import { ElMessage } from "element-plus";
-import { Refresh, WarningFilled } from "@element-plus/icons-vue";
+import * as echarts from 'echarts';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { ElMessage } from 'element-plus';
+import { Refresh, WarningFilled, Search } from '@element-plus/icons-vue';
 
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import { AnalyticsService } from "@/services/analytics.service";
-import type { StaffPerformance } from "@/services/analytics.types";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import { AnalyticsService } from '@/services/analytics.service';
+import type { StaffPerformance } from '@/services/analytics.types';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
 
-type Period = "today" | "month" | "year" | "custom";
-type KpiStatus = StaffPerformance["kpiStatus"];
+type Period = 'today' | 'month' | 'year' | 'custom';
+type KpiStatus = StaffPerformance['kpiStatus'];
 
 interface RoleSummary {
   role: string;
@@ -392,27 +325,40 @@ interface RoleSummary {
   commissionPaid: number;
 }
 
-const currentPeriod = ref<Period>("month");
+const currentPeriod = ref<Period>('month');
 const periodStart = ref(toDateInput(startOfMonth(new Date())));
 const periodEnd = ref(toDateInput(new Date()));
 const performance = ref<StaffPerformance[]>([]);
 const loading = ref(false);
-const errorMessage = ref("");
+const errorMessage = ref('');
+
+const searchQuery = ref('');
+const roleFilter = ref('');
+
+const filteredPerformance = computed(() => {
+  let result = performance.value;
+  if (roleFilter.value) {
+    result = result.filter((item) => item.role === roleFilter.value);
+  }
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    result = result.filter((item) => item.employeeName.toLowerCase().includes(q));
+  }
+  return result;
+});
 
 const salesCommissionChartRef = ref<HTMLElement | null>(null);
 const kpiStatusChartRef = ref<HTMLElement | null>(null);
+const roleChartRef = ref<HTMLElement | null>(null);
 let salesCommissionChart: echarts.ECharts | null = null;
 let kpiStatusChart: echarts.ECharts | null = null;
+let roleChart: echarts.ECharts | null = null;
 
 const hasData = computed(() => performance.value.length > 0);
 const hasMetricData = computed(() =>
-  performance.value.some(
-    (item) => item.totalSales > 0 || item.commissionPaid > 0,
-  ),
+  performance.value.some((item) => item.totalSales > 0 || item.commissionPaid > 0)
 );
-const hasKpiData = computed(() =>
-  performance.value.some((item) => item.hasKpiData),
-);
+const hasKpiData = computed(() => performance.value.some((item) => item.hasKpiData));
 
 const sourceCoverage = computed(() => ({
   sales: performance.value.filter((item) => item.hasSalesData).length,
@@ -421,20 +367,20 @@ const sourceCoverage = computed(() => ({
 }));
 
 const reportSummary = computed(() => {
-  const totalSales = sumBy(performance.value, "totalSales");
-  const totalTarget = sumBy(performance.value, "targetSales");
+  const totalSales = sumBy(performance.value, 'totalSales');
+  const totalTarget = sumBy(performance.value, 'targetSales');
   const targetedSales = performance.value
     .filter((item) => item.targetSales > 0)
     .reduce((total, item) => total + (item.totalSales || 0), 0);
-  const totalCommission = sumBy(performance.value, "commissionPaid");
+  const totalCommission = sumBy(performance.value, 'commissionPaid');
   const achievedCount = performance.value.filter(
-    (item) => item.kpiStatus === "Đạt" || item.kpiStatus === "Vượt KPI",
+    (item) => item.kpiStatus === 'Đạt' || item.kpiStatus === 'Vượt KPI'
   ).length;
   const needImprovementCount = performance.value.filter(
-    (item) => item.kpiStatus === "Cần cải thiện",
+    (item) => item.kpiStatus === 'Cần cải thiện'
   ).length;
   const withoutKpiCount = performance.value.filter(
-    (item) => item.kpiStatus === "Chưa đặt KPI",
+    (item) => item.kpiStatus === 'Chưa đặt KPI'
   ).length;
 
   return {
@@ -451,30 +397,26 @@ const reportSummary = computed(() => {
 
 const commissionRate = computed(() =>
   reportSummary.value.totalSales > 0
-    ? (reportSummary.value.totalCommission / reportSummary.value.totalSales) *
-      100
-    : 0,
+    ? (reportSummary.value.totalCommission / reportSummary.value.totalSales) * 100
+    : 0
 );
 
 const selectedRangeLabel = computed(
-  () => `${formatDate(periodStart.value)} - ${formatDate(periodEnd.value)}`,
+  () => `${formatDate(periodStart.value)} - ${formatDate(periodEnd.value)}`
 );
 
 const kpiStatusSummary = computed(() =>
-  (["Vượt KPI", "Đạt", "Cần cải thiện", "Chưa đặt KPI"] as KpiStatus[]).map(
-    (status) => ({
-      status,
-      count: performance.value.filter((item) => item.kpiStatus === status)
-        .length,
-    }),
-  ),
+  (['Vượt KPI', 'Đạt', 'Cần cải thiện', 'Chưa đặt KPI'] as KpiStatus[]).map((status) => ({
+    status,
+    count: performance.value.filter((item) => item.kpiStatus === status).length,
+  }))
 );
 
 const topPerformers = computed(() =>
   [...performance.value]
     .filter((item) => item.totalSales > 0 || item.commissionPaid > 0)
     .sort((first, second) => second.totalSales - first.totalSales)
-    .slice(0, 5),
+    .slice(0, 5)
 );
 
 const roleSummary = computed<RoleSummary[]>(() => {
@@ -496,13 +438,11 @@ const roleSummary = computed<RoleSummary[]>(() => {
     grouped.set(item.role, current);
   }
 
-  return [...grouped.values()].sort(
-    (first, second) => second.totalSales - first.totalSales,
-  );
+  return [...grouped.values()].sort((first, second) => second.totalSales - first.totalSales);
 });
 
 function onPeriodChange(period?: Period) {
-  if (period && period !== "custom") {
+  if (period && period !== 'custom') {
     setDateRange(period);
   }
 
@@ -511,20 +451,21 @@ function onPeriodChange(period?: Period) {
 
 async function loadPerformance() {
   loading.value = true;
-  errorMessage.value = "";
+  errorMessage.value = '';
 
   try {
-    const data = await AnalyticsService.getStaffPerformance(
-      periodStart.value,
-      periodEnd.value,
-    );
-    performance.value = Array.isArray(data) ? data : [];
+    const data = await AnalyticsService.getStaffPerformance(periodStart.value, periodEnd.value);
+    performance.value = Array.isArray(data)
+      ? data.map((item) => ({
+          ...item,
+          hasSalesData: item.totalSales > 0,
+          hasCommissionData: item.commissionPaid > 0,
+          hasKpiData: item.targetSales > 0,
+        }))
+      : [];
   } catch (error) {
     performance.value = [];
-    errorMessage.value = getErrorMessage(
-      error,
-      "Không thể tải dữ liệu nhân sự và hoa hồng",
-    );
+    errorMessage.value = getErrorMessage(error, 'Không thể tải dữ liệu nhân sự và hoa hồng');
     ElMessage.error(errorMessage.value);
   } finally {
     loading.value = false;
@@ -538,43 +479,66 @@ function exportEmployeeExcel() {
     fileName: `Bao_cao_nhan_su_hoa_hong_${periodStart.value}_${periodEnd.value}`,
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
-            "Từ ngày": periodStart.value,
-            "Đến ngày": periodEnd.value,
-            "Số nhân viên": reportSummary.value.employeeCount,
-            "Tổng doanh số": reportSummary.value.totalSales,
-            "Tổng mục tiêu": reportSummary.value.totalTarget,
-            "Tổng hoa hồng": reportSummary.value.totalCommission,
-            "Tỷ lệ hoàn thành KPI (%)": reportSummary.value.achievementRate,
-            "Tỷ lệ hoa hồng (%)": commissionRate.value,
+            'Từ ngày': periodStart.value,
+            'Đến ngày': periodEnd.value,
+            'Số nhân viên': reportSummary.value.employeeCount,
+            'Tổng doanh số': reportSummary.value.totalSales,
+            'Tổng mục tiêu': reportSummary.value.totalTarget,
+            'Tổng hoa hồng': reportSummary.value.totalCommission,
+            'Tỷ lệ hoàn thành KPI (%)': reportSummary.value.achievementRate,
+            'Tỷ lệ hoa hồng (%)': commissionRate.value,
           },
         ],
       },
       {
-        name: "Theo nhân viên",
+        name: 'Theo nhân viên',
         rows: performance.value.map((item) => ({
-          "Nhân viên": item.employeeName,
-          "Chức vụ": item.role,
-          "Doanh số": item.totalSales,
-          "Mục tiêu": item.targetSales,
-          "Hoa hồng": item.commissionPaid,
-          "Trạng thái KPI": item.kpiStatus,
-          "Nguồn doanh số": item.salesSource,
-          "Có dữ liệu bán hàng": item.hasSalesData ? "Có" : "Không",
-          "Có dữ liệu KPI": item.hasKpiData ? "Có" : "Không",
-          "Có dữ liệu hoa hồng": item.hasCommissionData ? "Có" : "Không",
+          'Nhân viên': item.employeeName,
+          'Chức vụ': item.role,
+          'Doanh số': item.totalSales,
+          'Mục tiêu': item.targetSales,
+          'Hoa hồng': item.commissionPaid,
+          'Trạng thái KPI': item.kpiStatus,
+          'Nguồn doanh số': item.salesSource,
+          'Có dữ liệu bán hàng': item.hasSalesData ? 'Có' : 'Không',
+          'Có dữ liệu KPI': item.hasKpiData ? 'Có' : 'Không',
+          'Có dữ liệu hoa hồng': item.hasCommissionData ? 'Có' : 'Không',
         })),
       },
       {
-        name: "Theo chức vụ",
+        name: 'Theo chức vụ',
         rows: roleSummary.value.map((item) => ({
-          "Chức vụ": item.role,
-          "Số nhân viên": item.employeeCount,
-          "Doanh số": item.totalSales,
-          "Mục tiêu": item.targetSales,
-          "Hoa hồng": item.commissionPaid,
+          'Chức vụ': item.role,
+          'Số nhân viên': item.employeeCount,
+          'Doanh số': item.totalSales,
+          'Mục tiêu': item.targetSales,
+          'Hoa hồng': item.commissionPaid,
+        })),
+      },
+    ],
+  });
+}
+
+function exportTableExcel() {
+  exportReportWorkbook({
+    fileName: `Chi_tiet_hieu_suat_nhan_su_${periodStart.value}_${periodEnd.value}`,
+    sheets: [
+      {
+        name: 'Chi tiết',
+        rows: filteredPerformance.value.map((item) => ({
+          'Nhân viên': item.employeeName,
+          'Vai trò': item.role,
+          'Doanh số': item.totalSales,
+          'Mục tiêu': item.targetSales,
+          'Hoa hồng': item.commissionPaid,
+          'Trạng thái KPI': item.kpiStatus,
+          'Nguồn doanh số': item.salesSource,
+          'Có dữ liệu bán hàng': item.hasSalesData ? 'Có' : 'Không',
+          'Có dữ liệu KPI': item.hasKpiData ? 'Có' : 'Không',
+          'Có dữ liệu hoa hồng': item.hasCommissionData ? 'Có' : 'Không',
         })),
       },
     ],
@@ -593,6 +557,12 @@ function renderCharts() {
   } else {
     renderKpiStatusChart();
   }
+
+  if (!roleSummary.value.length) {
+    roleChart?.clear();
+  } else {
+    renderRoleChart();
+  }
 }
 
 function renderSalesCommissionChart() {
@@ -601,16 +571,14 @@ function renderSalesCommissionChart() {
     salesCommissionChart = echarts.init(salesCommissionChartRef.value);
   }
 
-  const rows = topPerformers.value.length
-    ? topPerformers.value
-    : performance.value.slice(0, 8);
+  const rows = topPerformers.value.length ? topPerformers.value : performance.value.slice(0, 8);
 
   salesCommissionChart.setOption({
-    color: ["#E84A4A", "#FFB020"],
+    color: ['#E84A4A', '#FFB020'],
     tooltip: {
-      trigger: "axis",
+      trigger: 'axis',
       valueFormatter: (value: number | string) =>
-        typeof value === "number" ? formatCurrency(value) : String(value),
+        typeof value === 'number' ? formatCurrency(value) : String(value),
     },
     legend: {
       top: 0,
@@ -623,7 +591,7 @@ function renderSalesCommissionChart() {
       left: 72,
     },
     xAxis: {
-      type: "category",
+      type: 'category',
       data: rows.map((item) => item.employeeName),
       axisLabel: {
         color: chartTextColor(),
@@ -633,7 +601,7 @@ function renderSalesCommissionChart() {
       axisLine: { lineStyle: { color: chartGridColor() } },
     },
     yAxis: {
-      type: "value",
+      type: 'value',
       axisLabel: {
         color: chartTextColor(),
         formatter: (value: number) => compactCurrency(value),
@@ -642,14 +610,14 @@ function renderSalesCommissionChart() {
     },
     series: [
       {
-        name: "Doanh số",
-        type: "bar",
+        name: 'Doanh số',
+        type: 'bar',
         barMaxWidth: 34,
         data: rows.map((item) => item.totalSales || 0),
       },
       {
-        name: "Hoa hồng",
-        type: "bar",
+        name: 'Hoa hồng',
+        type: 'bar',
         barMaxWidth: 34,
         data: rows.map((item) => item.commissionPaid || 0),
       },
@@ -664,22 +632,22 @@ function renderKpiStatusChart() {
   }
 
   kpiStatusChart.setOption({
-    color: ["#22C55E", "#E84A4A", "#EF4444", "#94A3B8"],
-    tooltip: { trigger: "item" },
+    color: ['#22C55E', '#E84A4A', '#EF4444', '#94A3B8'],
+    tooltip: { trigger: 'item' },
     legend: {
       bottom: 0,
       textStyle: { color: chartTextColor() },
     },
     series: [
       {
-        name: "Trạng thái KPI",
-        type: "pie",
-        radius: ["48%", "70%"],
-        center: ["50%", "44%"],
+        name: 'Trạng thái KPI',
+        type: 'pie',
+        radius: ['48%', '70%'],
+        center: ['50%', '44%'],
         avoidLabelOverlap: true,
         label: {
           color: chartTextColor(),
-          formatter: "{b}: {c}",
+          formatter: '{b}: {c}',
         },
         data: kpiStatusSummary.value.map((item) => ({
           name: item.status,
@@ -690,16 +658,50 @@ function renderKpiStatusChart() {
   });
 }
 
+function renderRoleChart() {
+  if (!roleChartRef.value) return;
+  if (!roleChart) {
+    roleChart = echarts.init(roleChartRef.value);
+  }
+
+  roleChart.setOption({
+    color: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'],
+    tooltip: { trigger: 'item' },
+    legend: {
+      bottom: 0,
+      textStyle: { color: chartTextColor() },
+    },
+    series: [
+      {
+        name: 'Vai trò',
+        type: 'pie',
+        radius: ['48%', '70%'],
+        center: ['50%', '44%'],
+        avoidLabelOverlap: true,
+        label: { show: false },
+        labelLine: { show: false },
+        data: roleSummary.value.map((item) => ({
+          name: item.role,
+          value: item.employeeCount,
+        })),
+      },
+    ],
+  });
+}
+
 function resizeCharts() {
   salesCommissionChart?.resize();
   kpiStatusChart?.resize();
+  roleChart?.resize();
 }
 
 function destroyCharts() {
   salesCommissionChart?.dispose();
   kpiStatusChart?.dispose();
+  roleChart?.dispose();
   salesCommissionChart = null;
   kpiStatusChart = null;
+  roleChart = null;
 }
 
 function getAchievementRate(item: Partial<StaffPerformance>) {
@@ -709,17 +711,14 @@ function getAchievementRate(item: Partial<StaffPerformance>) {
   return targetSales > 0 ? (totalSales / targetSales) * 100 : 0;
 }
 
-function sumBy(
-  rows: StaffPerformance[],
-  key: "totalSales" | "targetSales" | "commissionPaid",
-) {
+function sumBy(rows: StaffPerformance[], key: 'totalSales' | 'targetSales' | 'commissionPaid') {
   return rows.reduce((total, item) => total + (item[key] || 0), 0);
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(Number.isFinite(value) ? value : 0);
 }
@@ -742,48 +741,46 @@ function formatPercent(value: number) {
 
 function formatDate(value: string) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
+  if (Number.isNaN(date.getTime())) return '-';
 
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date);
 }
 
-function getKpiTagType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
+function getKpiTagType(status: string): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
   switch (status) {
-    case "Vượt KPI":
-      return "success";
-    case "Đạt":
-      return "primary";
-    case "Cần cải thiện":
-      return "danger";
-    case "Chưa đặt KPI":
-      return "info";
+    case 'Vượt KPI':
+      return 'success';
+    case 'Đạt':
+      return 'primary';
+    case 'Cần cải thiện':
+      return 'danger';
+    case 'Chưa đặt KPI':
+      return 'info';
     default:
-      return "info";
+      return 'info';
   }
 }
 
 function setDateRange(period: Period) {
   const today = new Date();
 
-  if (period === "today") {
+  if (period === 'today') {
     periodStart.value = toDateInput(today);
     periodEnd.value = toDateInput(today);
     return;
   }
 
-  if (period === "month") {
+  if (period === 'month') {
     periodStart.value = toDateInput(startOfMonth(today));
     periodEnd.value = toDateInput(today);
     return;
   }
 
-  if (period === "year") {
+  if (period === 'year') {
     periodStart.value = toDateInput(new Date(today.getFullYear(), 0, 1));
     periodEnd.value = toDateInput(today);
   }
@@ -801,17 +798,15 @@ function toDateInput(date: Date) {
 
 function chartTextColor() {
   return (
-    getComputedStyle(document.documentElement)
-      .getPropertyValue("--el-text-color-regular")
-      .trim() || "#606266"
+    getComputedStyle(document.documentElement).getPropertyValue('--el-text-color-regular').trim() ||
+    '#606266'
   );
 }
 
 function chartGridColor() {
   return (
-    getComputedStyle(document.documentElement)
-      .getPropertyValue("--el-border-color-light")
-      .trim() || "#E5E7EB"
+    getComputedStyle(document.documentElement).getPropertyValue('--el-border-color-light').trim() ||
+    '#E5E7EB'
   );
 }
 
@@ -820,18 +815,18 @@ function getErrorMessage(error: unknown, fallback: string) {
 }
 
 watch([periodStart, periodEnd], () => {
-  if (currentPeriod.value === "custom") {
+  if (currentPeriod.value === 'custom') {
     void loadPerformance();
   }
 });
 
 onMounted(() => {
   void loadPerformance();
-  window.addEventListener("resize", resizeCharts);
+  window.addEventListener('resize', resizeCharts);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", resizeCharts);
+  window.removeEventListener('resize', resizeCharts);
   destroyCharts();
 });
 </script>
@@ -845,7 +840,7 @@ onBeforeUnmount(() => {
 
 .employee-report__actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
   padding: 10px;
@@ -853,6 +848,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%);
+  overflow-x: auto;
 }
 
 .employee-report__kpis {
@@ -922,11 +918,31 @@ onBeforeUnmount(() => {
   color: var(--report-text);
 }
 
-.employee-report__card-header > span:first-child {
+.employee-report__table-header {
+  gap: 16px;
+}
+
+.employee-report__table-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.employee-report__table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.employee-report__card-header > span:first-child,
+.employee-report__table-title > span:first-child {
   font-weight: 700;
 }
 
-.employee-report__card-header > span:last-child {
+.employee-report__card-header > span:last-child,
+.employee-report__table-title > span:last-child {
   font-size: 12px;
   font-weight: 600;
   color: var(--report-muted);
@@ -1041,7 +1057,7 @@ onBeforeUnmount(() => {
   }
 
   .employee-report__charts {
-    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(380px, 1fr);
   }
 
   .employee-report__insights {

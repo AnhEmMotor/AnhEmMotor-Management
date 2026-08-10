@@ -1,14 +1,14 @@
-import { useSettingStore } from "@/application/store/setting";
-import { MenuThemeEnum, MenuTypeEnum } from "@/common/enums/appEnum";
+import { useSettingStore } from '@/application/store/setting';
+import { MenuThemeEnum, MenuTypeEnum } from '@/common/enums/appEnum';
 
 export function useSettingsState() {
   const settingStore = useSettingStore();
 
   const initColorWeak = () => {
     if (settingStore.colorWeak) {
-      const el = document.getElementsByTagName("html")[0];
+      const el = document.getElementsByTagName('html')[0];
       setTimeout(() => {
-        el.classList.add("color-weak");
+        el.classList.add('color-weak');
       }, 100);
     }
   };

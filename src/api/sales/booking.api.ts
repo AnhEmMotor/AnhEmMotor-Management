@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface Booking {
   id: number;
@@ -8,7 +8,7 @@ export interface Booking {
   preferredDate: string;
   productVariantId?: number;
   variantName?: string;
-  status: string; // e.g. Pending, Confirmed, Cancelled
+  status: string;
   note?: string;
   bookingType: string;
   location?: string;
@@ -17,13 +17,13 @@ export interface Booking {
 export const BookingApi = {
   getList() {
     return request.get<Booking[]>({
-      url: "/api/v1/Bookings",
+      url: '/api/v1/Bookings',
     });
   },
 
   confirm(id: number) {
     return request.post<void>({
-      url: "/api/v1/Bookings/confirm",
+      url: '/api/v1/Bookings/confirm',
       data: { bookingId: id },
     });
   },
@@ -39,7 +39,7 @@ export const BookingApi = {
     bookingType: string;
   }) {
     return request.post<number>({
-      url: "/api/v1/Bookings",
+      url: '/api/v1/Bookings',
       data,
     });
   },
@@ -57,7 +57,7 @@ export const BookingApi = {
       location?: string;
       bookingType: string;
       status?: string;
-    },
+    }
   ) {
     return request.put<boolean>({
       url: `/api/v1/Bookings/${id}`,

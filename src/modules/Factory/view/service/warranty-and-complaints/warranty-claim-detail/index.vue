@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page p-6 bg-slate-50 min-h-screen">
-    <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
@@ -19,7 +18,6 @@
       </div>
 
       <div class="flex items-center gap-2 flex-wrap">
-        <!-- Nút từ chối bảo hành -->
         <el-button
           v-if="canReject"
           type="danger"
@@ -31,7 +29,6 @@
           Từ Chối Bảo Hành
         </el-button>
 
-        <!-- Các nút chuyển đổi trạng thái workflow -->
         <el-button
           v-if="currentStatusValue === 1"
           type="primary"
@@ -88,26 +85,14 @@
       </div>
     </div>
 
-    <!-- Pipeline progress -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
       <div class="flex items-center justify-between mb-4">
-        <span class="font-semibold text-slate-800 text-sm"
-          >TIẾN TRÌNH XỬ LÝ HỒ SƠ</span
-        >
-        <el-tag
-          :type="statusTagType"
-          effect="dark"
-          class="font-semibold px-3 py-1.5"
-        >
+        <span class="font-semibold text-slate-800 text-sm">TIẾN TRÌNH XỬ LÝ HỒ SƠ</span>
+        <el-tag :type="statusTagType" effect="dark" class="font-semibold px-3 py-1.5">
           {{ getStatusLabel(claim?.status as any) }}
         </el-tag>
       </div>
-      <el-steps
-        :active="activeStepIndex"
-        align-center
-        finish-status="success"
-        class="custom-steps"
-      >
+      <el-steps :active="activeStepIndex" align-center finish-status="success" class="custom-steps">
         <el-step title="Tiếp nhận" description="Mới tiếp nhận phiếu" />
         <el-step title="Chờ thẩm định" description="Gửi hãng kiểm tra" />
         <el-step title="Đã duyệt" description="Hãng duyệt bồi hoàn" />
@@ -117,13 +102,8 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-10 gap-6">
-      <!-- Cột trái (70%) - Chi tiết nghiệp vụ -->
       <div class="lg:col-span-7 space-y-6">
-        <!-- Mô tả sự cố -->
-        <el-card
-          class="shadow-sm border-slate-100"
-          header-class="font-bold text-slate-800"
-        >
+        <el-card class="shadow-sm border-slate-100" header-class="font-bold text-slate-800">
           <template #header>
             <div class="flex items-center gap-2">
               <el-icon class="text-primary"><Warning /></el-icon>
@@ -132,25 +112,18 @@
           </template>
           <div class="space-y-4">
             <div>
-              <div
-                class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1"
-              >
+              <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">
                 Mô tả chi tiết từ kỹ thuật viên
               </div>
               <p
                 class="text-slate-800 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-line leading-relaxed"
               >
-                {{
-                  fixMojibake(claim?.issueDescription) ||
-                  "Chưa có mô tả chi tiết lỗi."
-                }}
+                {{ fixMojibake(claim?.issueDescription) || 'Chưa có mô tả chi tiết lỗi.' }}
               </p>
             </div>
 
             <div>
-              <div
-                class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2"
-              >
+              <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">
                 Hình ảnh & Video minh chứng sự cố
               </div>
               <div
@@ -165,11 +138,7 @@
                   :key="idx"
                   class="relative group rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-black aspect-video flex items-center justify-center"
                 >
-                  <video
-                    v-if="isVideo(u)"
-                    controls
-                    class="w-full h-full object-contain"
-                  >
+                  <video v-if="isVideo(u)" controls class="w-full h-full object-contain">
                     <source :src="u" />
                   </video>
                   <el-image
@@ -186,7 +155,6 @@
           </div>
         </el-card>
 
-        <!-- Danh sách phụ tùng bồi hoàn -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="flex items-center gap-2 justify-between">
@@ -194,9 +162,7 @@
                 <el-icon class="text-primary"><Setting /></el-icon>
                 <span>2. DANH SÁCH LINH KIỆN / PHỤ TÙNG BỒI HOÀN</span>
               </div>
-              <el-tag type="info" class="font-bold"
-                >Chính sách miễn phí 100% công sửa chữa</el-tag
-              >
+              <el-tag type="info" class="font-bold">Chính sách miễn phí 100% công sửa chữa</el-tag>
             </div>
           </template>
           <el-table
@@ -210,21 +176,12 @@
                 {{ fixMojibake(row.partName) }}
               </template>
             </el-table-column>
-            <el-table-column
-              prop="partCode"
-              label="Mã Linh Kiện"
-              min-width="140"
-            />
-            <el-table-column
-              label="Đơn Giá Phát Sinh"
-              min-width="130"
-              align="right"
-            >
+            <el-table-column prop="partCode" label="Mã Linh Kiện" min-width="140" />
+            <el-table-column label="Đơn Giá Phát Sinh" min-width="130" align="right">
               <template #default="{ row }">
                 <span
                   :class="{
-                    'text-slate-400 line-through font-normal':
-                      row.unitPrice === 0,
+                    'text-slate-400 line-through font-normal': row.unitPrice === 0,
                     'text-amber-600 font-bold': row.unitPrice > 0,
                   }"
                 >
@@ -232,20 +189,11 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column
-              label="Diện Bảo Hành"
-              min-width="140"
-              align="center"
-            >
+            <el-table-column label="Diện Bảo Hành" min-width="140" align="center">
               <template #default="{ row }">
-                <el-tag
-                  :type="row.unitPrice === 0 ? 'success' : 'warning'"
-                  effect="plain"
-                >
+                <el-tag :type="row.unitPrice === 0 ? 'success' : 'warning'" effect="plain">
                   {{
-                    row.unitPrice === 0
-                      ? "Trong diện bảo hành (Miễn phí)"
-                      : "Ngoài diện bảo hành"
+                    row.unitPrice === 0 ? 'Trong diện bảo hành (Miễn phí)' : 'Ngoài diện bảo hành'
                   }}
                 </el-tag>
               </template>
@@ -258,14 +206,13 @@
             >
               <template #default="{ row }">
                 <el-tag :type="getPartStatusTagType(row.statusText || '')">
-                  {{ getPartStatusLabel(row.statusText || "") }}
+                  {{ getPartStatusLabel(row.statusText || '') }}
                 </el-tag>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
 
-        <!-- Lịch sử bảo hành của xe -->
         <el-card class="shadow-sm border-slate-100" v-loading="historyLoading">
           <template #header>
             <div class="flex items-center gap-2 justify-between">
@@ -283,30 +230,22 @@
               </div>
             </div>
           </template>
-          <!-- Empty state -->
           <div
-            v-if="
-              !historyLoading && (!historyClaims || historyClaims.length === 0)
-            "
+            v-if="!historyLoading && (!historyClaims || historyClaims.length === 0)"
             class="text-center py-10 text-slate-400"
           >
             <el-icon class="text-4xl mb-2"><Timer /></el-icon>
             <p class="text-sm">Chưa có lịch sử bảo hành cho xe này.</p>
           </div>
-          <!-- History list -->
           <div v-else class="space-y-6">
             <div
               v-for="hc in historyClaims"
               :key="hc.id"
               class="border border-slate-200 rounded-lg overflow-hidden"
             >
-              <div
-                class="bg-slate-50 px-4 py-3 flex items-center justify-between flex-wrap gap-2"
-              >
+              <div class="bg-slate-50 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div class="flex items-center gap-3">
-                  <span class="font-bold text-slate-700 text-sm">{{
-                    hc.claimNumber
-                  }}</span>
+                  <span class="font-bold text-slate-700 text-sm">{{ hc.claimNumber }}</span>
                   <el-tag
                     :type="getHistoryStatusTagType(hc.statusText || '')"
                     effect="dark"
@@ -322,12 +261,10 @@
                   </span>
                 </div>
                 <div class="text-xs text-slate-500">
-                  {{ dayjs(hc.createdAt).format("DD/MM/YYYY HH:mm") }}
+                  {{ dayjs(hc.createdAt).format('DD/MM/YYYY HH:mm') }}
                 </div>
               </div>
-              <p
-                class="px-4 py-2 text-sm text-slate-600 border-b border-slate-100"
-              >
+              <p class="px-4 py-2 text-sm text-slate-600 border-b border-slate-100">
                 {{ fixMojibake(hc.issueDescription) }}
               </p>
               <div v-if="hc.parts && hc.parts.length > 0">
@@ -343,16 +280,8 @@
                       {{ fixMojibake(row.partName) }}
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    prop="partCode"
-                    label="Mã Linh Kiện"
-                    min-width="120"
-                  />
-                  <el-table-column
-                    label="Đơn Giá"
-                    min-width="110"
-                    align="right"
-                  >
+                  <el-table-column prop="partCode" label="Mã Linh Kiện" min-width="120" />
+                  <el-table-column label="Đơn Giá" min-width="110" align="right">
                     <template #default="{ row }">
                       <span
                         :class="{
@@ -364,27 +293,20 @@
                       </span>
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    label="Thẩm Định"
-                    min-width="120"
-                    align="center"
-                  >
+                  <el-table-column label="Thẩm Định" min-width="120" align="center">
                     <template #default="{ row }">
                       <el-tag
                         :type="getPartStatusTagType(row.statusText || '')"
                         effect="plain"
                         size="small"
                       >
-                        {{ row.unitPrice === 0 ? "Miễn phí" : "Phát sinh" }}
+                        {{ row.unitPrice === 0 ? 'Miễn phí' : 'Phát sinh' }}
                       </el-tag>
                     </template>
                   </el-table-column>
                 </el-table>
               </div>
-              <div
-                v-else
-                class="px-4 py-2 text-xs text-slate-400 italic border-b border-slate-100"
-              >
+              <div v-else class="px-4 py-2 text-xs text-slate-400 italic border-b border-slate-100">
                 Không có linh kiện phát sinh.
               </div>
               <div
@@ -399,9 +321,7 @@
         </el-card>
       </div>
 
-      <!-- Cột phải (30%) - Định danh & Đối soát -->
       <div class="lg:col-span-3 space-y-6">
-        <!-- Thông tin xe & khách hàng -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="font-bold text-slate-800 flex items-center gap-2">
@@ -411,31 +331,24 @@
           </template>
           <div class="space-y-3 text-sm text-slate-600">
             <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Chủ sở hữu</span
               >
               <span class="text-slate-800 font-bold text-base">{{
-                claim?.customerName || "N/A"
+                claim?.customerName || 'N/A'
               }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Số điện thoại</span
               >
-              <span class="text-slate-800 font-medium">{{
-                claim?.customerPhone || "N/A"
-              }}</span>
+              <span class="text-slate-800 font-medium">{{ claim?.customerPhone || 'N/A' }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Địa chỉ liên lạc</span
               >
-              <span class="text-slate-800 text-xs">{{
-                claim?.customerAddress || "N/A"
-              }}</span>
+              <span class="text-slate-800 text-xs">{{ claim?.customerAddress || 'N/A' }}</span>
             </div>
           </div>
         </el-card>
@@ -449,64 +362,49 @@
           </template>
           <div class="space-y-3 text-sm text-slate-600">
             <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Biển số xe</span
               >
-              <el-tag
-                effect="plain"
-                class="font-bold text-slate-700 border-slate-300 mt-0.5"
-              >
+              <el-tag effect="plain" class="font-bold text-slate-700 border-slate-300 mt-0.5">
                 {{ claim?.vehiclePlate || generateMockPlate(claim?.id || 1) }}
               </el-tag>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Số khung (VIN)</span
               >
               <span class="text-slate-800 font-mono font-medium">{{
-                claim?.vehicleVin || "N/A"
+                claim?.vehicleVin || 'N/A'
               }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Màu sắc xe</span
               >
-              <span class="text-slate-800 font-medium">{{
-                claim?.vehicleColor || "N/A"
-              }}</span>
+              <span class="text-slate-800 font-medium">{{ claim?.vehicleColor || 'N/A' }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Dòng xe / Đời xe</span
               >
-              <span class="text-slate-800 font-medium">{{
-                claim?.vehicleYear || "N/A"
-              }}</span>
+              <span class="text-slate-800 font-medium">{{ claim?.vehicleYear || 'N/A' }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Tình trạng bảo hành xe</span
               >
               <span
                 class="font-bold"
                 :class="
-                  claim?.warrantyRemaining === 'Hết hạn'
-                    ? 'text-rose-600'
-                    : 'text-emerald-600'
+                  claim?.warrantyRemaining === 'Hết hạn' ? 'text-rose-600' : 'text-emerald-600'
                 "
               >
-                {{ claim?.warrantyRemaining || "N/A" }}
+                {{ claim?.warrantyRemaining || 'N/A' }}
               </span>
             </div>
           </div>
         </el-card>
 
-        <!-- Đối soát hãng -->
         <el-card class="shadow-sm border-slate-100">
           <template #header>
             <div class="font-bold text-slate-800 flex items-center gap-2">
@@ -516,36 +414,32 @@
           </template>
           <div class="space-y-3 text-sm text-slate-600">
             <div>
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Trung tâm tiếp nhận</span
               >
               <span class="text-slate-800 font-medium">{{
-                claim?.serviceCenterName || "N/A"
+                claim?.serviceCenterName || 'N/A'
               }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Mã số hồ sơ hãng</span
               >
               <span class="text-slate-800 font-mono font-medium">{{
-                claim?.manufacturerClaimNumber || "Chưa liên kết hãng"
+                claim?.manufacturerClaimNumber || 'Chưa liên kết hãng'
               }}</span>
             </div>
             <div class="border-t border-slate-100 pt-2">
-              <span
-                class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
+              <span class="text-slate-400 block text-xs uppercase tracking-wider font-semibold"
                 >Quyết định của Hãng</span
               >
               <span class="text-slate-800 font-medium">{{
-                claim?.manufacturerDecision || "Đang chờ hãng xem xét"
+                claim?.manufacturerDecision || 'Đang chờ hãng xem xét'
               }}</span>
             </div>
           </div>
         </el-card>
 
-        <!-- Chi phí tổng hợp -->
         <el-card class="shadow-sm border-slate-100 bg-slate-900 text-white">
           <template #header>
             <div class="font-bold text-white flex items-center gap-2">
@@ -560,13 +454,9 @@
             </div>
             <div class="flex justify-between">
               <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
-              <span class="text-amber-400 font-bold">{{
-                formatPrice(totalPartsCost)
-              }}</span>
+              <span class="text-amber-400 font-bold">{{ formatPrice(totalPartsCost) }}</span>
             </div>
-            <div
-              class="border-t border-slate-800 pt-3 flex justify-between items-baseline"
-            >
+            <div class="border-t border-slate-800 pt-3 flex justify-between items-baseline">
               <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
               <span class="text-xl font-extrabold text-primary">{{
                 formatPrice(totalPartsCost)
@@ -583,11 +473,11 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, computed, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import dayjs from "dayjs";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import dayjs from 'dayjs';
 import {
   ArrowLeft,
   Document,
@@ -600,11 +490,8 @@ import {
   OfficeBuilding,
   Money,
   Timer,
-} from "@element-plus/icons-vue";
-import {
-  WarrantyClaimApi,
-  WarrantyClaimDetail,
-} from "@/api/service/warranty-claim.api";
+} from '@element-plus/icons-vue';
+import { WarrantyClaimApi, WarrantyClaimDetail } from '@/api/service/warranty-claim.api';
 
 const router = useRouter();
 const route = useRoute();
@@ -617,31 +504,29 @@ const claim = ref<WarrantyClaimDetail | null>(null);
 const mediaUrls = computed(() => claim.value?.mediaUrls ?? []);
 
 const generateMockPlate = (id: number) => {
-  if (!id) return "N/A";
-  const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "K"];
+  if (!id) return 'N/A';
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K'];
   const l1 = letters[id % letters.length];
   const n1 = (id * 17) % 10;
   const p1 = (id * 123) % 999;
   const p2 = (id * 45) % 99;
-  return `29-${l1}${n1} ${String(p1).padStart(3, "0")}.${String(p2).padStart(2, "0")}`;
+  return `29-${l1}${n1} ${String(p1).padStart(3, '0')}.${String(p2).padStart(2, '0')}`;
 };
 
 const fixMojibake = (text: string | null | undefined) => {
-  if (!text) return "";
+  if (!text) return '';
 
-  // Demo text replacements for severely corrupted DB strings
-  if (text.includes("60km/h"))
-    return "Kêu máy ở dải tốc độ cao (trên 60km/h), cảm giác giật cục khi tăng ga nhanh.";
-  if (text.includes("C") && text.includes("bi") && text.includes("n"))
-    return "Bộ bi nồi côn";
-  if (text.includes("curoa")) return "Dây curoa truyền động";
-  if (text.includes("12V-7Ah")) return "Bình ắc quy 12V-7Ah";
-  if (text.includes("2 th") || text.includes("qua"))
-    return "Bình ắc quy chết liên tục sau 2 tháng, đã thay 1 lần vẫn bị tình trạng không đề xe được qua đêm.";
+  if (text.includes('60km/h'))
+    return 'Kêu máy ở dải tốc độ cao (trên 60km/h), cảm giác giật cục khi tăng ga nhanh.';
+  if (text.includes('C') && text.includes('bi') && text.includes('n')) return 'Bộ bi nồi côn';
+  if (text.includes('curoa')) return 'Dây curoa truyền động';
+  if (text.includes('12V-7Ah')) return 'Bình ắc quy 12V-7Ah';
+  if (text.includes('2 th') || text.includes('qua'))
+    return 'Bình ắc quy chết liên tục sau 2 tháng, đã thay 1 lần vẫn bị tình trạng không đề xe được qua đêm.';
 
   let result = text;
   let count = 0;
-  while (result.includes("Ã") && count < 3) {
+  while (result.includes('Ã') && count < 3) {
     try {
       let decoded = decodeURIComponent(escape(result));
       if (decoded === result) break;
@@ -654,15 +539,14 @@ const fixMojibake = (text: string | null | undefined) => {
   return result;
 };
 
-// Trạng thái hiện tại dạng số để dễ so sánh và điều khiển workflow
 const currentStatusValue = computed(() => {
   return claim.value?.status ?? 1;
 });
 
 const activeStepIndex = computed(() => {
   const val = currentStatusValue.value;
-  if (val === 6) return 0; // Từ chối
-  return val - 1; // 1 -> 0, 5 -> 4
+  if (val === 6) return 0; 
+  return val - 1; 
 });
 
 const canReject = computed(() => {
@@ -672,11 +556,11 @@ const canReject = computed(() => {
 
 const statusTagType = computed(() => {
   const val = currentStatusValue.value;
-  if (val === 5) return "success";
-  if (val === 3) return "warning";
-  if (val === 4) return "primary";
-  if (val === 6) return "danger";
-  return "info";
+  if (val === 5) return 'success';
+  if (val === 3) return 'warning';
+  if (val === 4) return 'primary';
+  if (val === 6) return 'danger';
+  return 'info';
 });
 
 const totalPartsCost = computed(() => {
@@ -686,29 +570,24 @@ const totalPartsCost = computed(() => {
   }, 0);
 });
 
-// --- Warranty History ---
 const historyClaims = ref<any[]>([]);
 const historyLoading = ref(false);
 const totalHistoryPartsCost = computed(() => {
   return historyClaims.value.reduce((sum, hc) => {
-    const partsCost = (hc.parts ?? []).reduce(
-      (s: number, p: any) => s + (p.unitPrice || 0),
-      0,
-    );
+    const partsCost = (hc.parts ?? []).reduce((s: number, p: any) => s + (p.unitPrice || 0), 0);
     return sum + partsCost;
   }, 0);
 });
 
-// Methods
 const formatDateOnly = (val: any) => {
-  if (!val) return "N/A";
-  return dayjs(val).format("DD/MM/YYYY");
+  if (!val) return 'N/A';
+  return dayjs(val).format('DD/MM/YYYY');
 };
 
 const formatPrice = (val: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 };
 
@@ -717,60 +596,57 @@ const isVideo = (url: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-  const s = status ? String(status).toLowerCase() : "";
-  if (s === "received" || s === "1") return "Tiếp nhận";
-  if (s === "pendingmanufacturer" || s === "2") return "Chờ hãng thẩm định";
-  if (s === "approved" || s === "3") return "Đã duyệt bồi hoàn";
-  if (s === "replaced" || s === "4") return "Thợ thay thế";
-  if (s === "completed" || s === "5") return "Hoàn tất - Đóng hồ sơ";
-  if (s === "rejected" || s === "6") return "Từ chối";
+  const s = status ? String(status).toLowerCase() : '';
+  if (s === 'received' || s === '1') return 'Tiếp nhận';
+  if (s === 'pendingmanufacturer' || s === '2') return 'Chờ hãng thẩm định';
+  if (s === 'approved' || s === '3') return 'Đã duyệt bồi hoàn';
+  if (s === 'replaced' || s === '4') return 'Thợ thay thế';
+  if (s === 'completed' || s === '5') return 'Hoàn tất - Đóng hồ sơ';
+  if (s === 'rejected' || s === '6') return 'Từ chối';
   return status;
 };
 
 const getPartStatusTagType = (status: string) => {
-  const s = status ? String(status).toLowerCase() : "";
-  if (s === "approved") return "success";
-  if (s === "rejected") return "danger";
-  return "info";
+  const s = status ? String(status).toLowerCase() : '';
+  if (s === 'approved') return 'success';
+  if (s === 'rejected') return 'danger';
+  return 'info';
 };
 
 const getPartStatusLabel = (status: string) => {
-  const s = status ? String(status).toLowerCase() : "";
-  if (s === "approved") return "Đã duyệt";
-  if (s === "rejected") return "Từ chối";
-  return "Chờ hãng";
+  const s = status ? String(status).toLowerCase() : '';
+  if (s === 'approved') return 'Đã duyệt';
+  if (s === 'rejected') return 'Từ chối';
+  return 'Chờ hãng';
 };
 
 const getHistoryStatusTagType = (statusText: string) => {
   const s = String(statusText).toLowerCase();
-  if (s === "Tiếp nhận") return "info";
-  if (s === "Chờ hãng thẩm định") return "warning";
-  if (s === "Đã duyệt bồi hoàn") return "success";
-  if (s === "Thợ thay thế") return "primary";
-  if (s === "Hoàn tất") return "success";
-  if (s === "Từ chối") return "danger";
-  return "info";
+  if (s === 'Tiếp nhận') return 'info';
+  if (s === 'Chờ hãng thẩm định') return 'warning';
+  if (s === 'Đã duyệt bồi hoàn') return 'success';
+  if (s === 'Thợ thay thế') return 'primary';
+  if (s === 'Hoàn tất') return 'success';
+  if (s === 'Từ chối') return 'danger';
+  return 'info';
 };
 
 function goBack() {
-  router.push({ name: "WorkshopWarranty" }).catch(() => null);
+  router.push({ name: 'WorkshopWarranty' }).catch(() => null);
 }
 
 async function loadHistory() {
   if (!claim.value?.vehicleId) return;
   historyLoading.value = true;
   try {
-    historyClaims.value = await WarrantyClaimApi.getHistory(
-      claim.value.vehicleId,
-    );
+    historyClaims.value = await WarrantyClaimApi.getHistory(claim.value.vehicleId);
   } catch (error) {
-    console.error("Lỗi khi lấy lịch sử bảo hành:", error);
+    console.error('Lỗi khi lấy lịch sử bảo hành:', error);
   } finally {
     historyLoading.value = false;
   }
 }
 
-// APIs
 async function load() {
   loading.value = true;
   try {
@@ -780,111 +656,107 @@ async function load() {
     }
     await loadHistory();
   } catch (error) {
-    console.error("Lỗi khi lấy chi tiết bảo hành:", error);
-    ElMessage.error("Không thể tải chi tiết phiếu bảo hành.");
+    console.error('Lỗi khi lấy chi tiết bảo hành:', error);
+    ElMessage.error('Không thể tải chi tiết phiếu bảo hành.');
   } finally {
     loading.value = false;
   }
 }
 
-// Cập nhật trạng thái
 async function handleUpdateStatus(statusNum: number) {
   const labels: Record<number, string> = {
-    2: "gửi hãng thẩm định",
-    4: "xác nhận thợ đã thay thế xong linh kiện",
-    5: "hoàn tất và đóng hồ sơ bảo hành này",
-    6: "từ chối bảo hành hồ sơ này",
+    2: 'gửi hãng thẩm định',
+    4: 'xác nhận thợ đã thay thế xong linh kiện',
+    5: 'hoàn tất và đóng hồ sơ bảo hành này',
+    6: 'từ chối bảo hành hồ sơ này',
   };
 
   try {
     await ElMessageBox.confirm(
       `Bạn có chắc chắn muốn ${labels[statusNum]}? Hành động này không thể hoàn tác.`,
-      "Xác nhận thay đổi trạng thái",
+      'Xác nhận thay đổi trạng thái',
       {
-        confirmButtonText: "Xác nhận",
-        cancelButtonText: "Hủy bỏ",
-        type: statusNum === 6 ? "error" : "warning",
-      },
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy bỏ',
+        type: statusNum === 6 ? 'error' : 'warning',
+      }
     );
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
       status: statusNum,
     });
-    ElMessage.success("Cập nhật trạng thái thành công!");
+    ElMessage.success('Cập nhật trạng thái thành công!');
     void load();
   } catch (err) {
-    if (err !== "cancel") {
+    if (err !== 'cancel') {
       console.error(err);
-      ElMessage.error("Cập nhật trạng thái thất bại.");
+      ElMessage.error('Cập nhật trạng thái thất bại.');
     }
   } finally {
     submitting.value = false;
   }
 }
 
-// Thẩm định duyệt bồi hoàn từ hãng (đặc thù chuyển status 3 và ghi nhận quyết định hãng)
 async function handleApproveClaim() {
   try {
     const { value: decisionText } = await ElMessageBox.prompt(
-      "Nhập ý kiến thẩm định / quyết định bồi hoàn từ hãng:",
-      "Duyệt bồi hoàn bảo hành từ hãng",
+      'Nhập ý kiến thẩm định / quyết định bồi hoàn từ hãng:',
+      'Duyệt bồi hoàn bảo hành từ hãng',
       {
-        confirmButtonText: "Xác nhận duyệt",
-        cancelButtonText: "Hủy bỏ",
-        inputPlaceholder:
-          "VD: Hãng Honda Việt Nam đồng ý bồi hoàn 100% linh kiện cụm bơm xăng.",
+        confirmButtonText: 'Xác nhận duyệt',
+        cancelButtonText: 'Hủy bỏ',
+        inputPlaceholder: 'VD: Hãng Honda Việt Nam đồng ý bồi hoàn 100% linh kiện cụm bơm xăng.',
         inputValidator: (value) => {
           if (!value || value.trim().length === 0) {
-            return "Vui lòng nhập quyết định từ hãng.";
+            return 'Vui lòng nhập quyết định từ hãng.';
           }
           return true;
         },
-      },
+      }
     );
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 3, // Approved
+      status: 3, 
       manufacturerDecision: decisionText,
     });
-    ElMessage.success("Đã duyệt bồi hoàn bảo hành thành công!");
+    ElMessage.success('Đã duyệt bồi hoàn bảo hành thành công!');
     void load();
   } catch (err) {
-    if (err !== "cancel") {
+    if (err !== 'cancel') {
       console.error(err);
-      ElMessage.error("Duyệt bảo hành thất bại.");
+      ElMessage.error('Duyệt bảo hành thất bại.');
     }
   } finally {
     submitting.value = false;
   }
 }
 
-// Kích hoạt thu hồi đặc biệt
 async function handleRecall() {
   try {
     await ElMessageBox.confirm(
-      "Cảnh báo: Bạn đang kích hoạt quy trình THU HỒI PHƯƠNG TIỆN LỖI (RECALL) và cấp xe mới. Bạn có chắc chắn muốn tiếp tục?",
-      "KÍCH HOẠT THU HỒI XE",
+      'Cảnh báo: Bạn đang kích hoạt quy trình THU HỒI PHƯƠNG TIỆN LỖI (RECALL) và cấp xe mới. Bạn có chắc chắn muốn tiếp tục?',
+      'KÍCH HOẠT THU HỒI XE',
       {
-        confirmButtonText: "Đồng ý kích hoạt",
-        cancelButtonText: "Hủy bỏ",
-        type: "error",
-      },
+        confirmButtonText: 'Đồng ý kích hoạt',
+        cancelButtonText: 'Hủy bỏ',
+        type: 'error',
+      }
     );
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 5, // Đóng hồ sơ bồi hoàn
+      status: 5, 
       isRecall: true,
-      manufacturerDecision: "Hãng phê duyệt triệu hồi xe lỗi và cấp xe mới.",
+      manufacturerDecision: 'Hãng phê duyệt triệu hồi xe lỗi và cấp xe mới.',
     });
-    ElMessage.success("Đã kích hoạt thu hồi xe lỗi thành công!");
+    ElMessage.success('Đã kích hoạt thu hồi xe lỗi thành công!');
     void load();
   } catch (err) {
-    if (err !== "cancel") {
+    if (err !== 'cancel') {
       console.error(err);
-      ElMessage.error("Kích hoạt thu hồi xe thất bại.");
+      ElMessage.error('Kích hoạt thu hồi xe thất bại.');
     }
   } finally {
     submitting.value = false;

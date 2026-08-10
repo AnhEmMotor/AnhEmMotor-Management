@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <!-- Header & Quick Search -->
     <div class="flex items-center justify-between gap-4">
       <div class="flex-1 max-w-xl">
         <ElInput
@@ -12,9 +11,7 @@
         />
       </div>
       <div class="flex items-center gap-2">
-        <h2
-          class="m-0 text-xl font-bold uppercase tracking-wide hidden md:block"
-        >
+        <h2 class="m-0 text-xl font-bold uppercase tracking-wide hidden md:block">
           Trung Tâm Điều Phối & Thống Kê
         </h2>
         <ElButton type="primary" plain @click="resetAutoRefresh">
@@ -24,18 +21,12 @@
       </div>
     </div>
 
-    <!-- HÀNG ĐỢI CÔNG VIỆC CẦN XỬ LÝ NGAY -->
     <div class="flex items-center justify-between mt-2">
-      <span class="font-semibold text-lg uppercase">
-        📊 Hàng Đợi Công Việc Cần Xử Lý Ngay
-      </span>
-      <span class="text-xs text-gray-500"
-        >(Click vào số để mở danh sách đơn)</span
-      >
+      <span class="font-semibold text-lg uppercase"> 📊 Hàng Đợi Công Việc Cần Xử Lý Ngay </span>
+      <span class="text-xs text-gray-500">(Click vào số để mở danh sách đơn)</span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- ĐƠN MỚI CHỜ DUYỆT -->
       <ArtStatsCard
         title="ĐƠN MỚI CHỜ DUYỆT"
         :count="workload.pendingOrders"
@@ -45,7 +36,6 @@
         class="cursor-pointer"
         @click="handleFilter('pending')"
       />
-      <!-- TRỄ LỊCH SLA -->
       <ArtStatsCard
         title="TRỄ LỊCH SLA"
         :count="workload.slaDelayed"
@@ -56,7 +46,6 @@
         class="cursor-pointer animate-pulse"
         @click="handleFilter('sla')"
       />
-      <!-- ĐƠN LỖI TIỀN -->
       <ArtStatsCard
         title="ĐƠN LỖI TIỀN"
         :count="workload.paymentErrors"
@@ -66,7 +55,6 @@
         class="cursor-pointer"
         @click="handleFilter('payment')"
       />
-      <!-- ĐÒI ĐỔI TRẢ -->
       <ArtStatsCard
         title="ĐÒI ĐỔI TRẢ"
         :count="workload.returnRequests"
@@ -79,25 +67,19 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <!-- ĐỒ THỊ LƯỢNG ĐƠN THEO GIỜ IN-DAY -->
       <ElCard class="art-table-card lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="font-semibold uppercase"
-              >📈 Đồ Thị Lượng Đơn Theo Giờ (In-day)</span
-            >
+            <span class="font-semibold uppercase">📈 Đồ Thị Lượng Đơn Theo Giờ (In-day)</span>
           </div>
         </template>
         <div ref="hourlyChartRef" class="h-64 w-full"></div>
       </ElCard>
 
-      <!-- HIỆU SUẤT TRỰC ĐƠN HÔM NAY & TỶ LỆ NHẬN HÀNG -->
       <div class="flex flex-col gap-4">
         <ElCard class="art-table-card">
           <template #header>
-            <span class="font-semibold uppercase"
-              >🏆 Hiệu Suất Trực Đơn Hôm Nay</span
-            >
+            <span class="font-semibold uppercase">🏆 Hiệu Suất Trực Đơn Hôm Nay</span>
           </template>
           <div class="flex flex-col gap-3 py-2">
             <div class="flex justify-between items-center text-sm">
@@ -106,9 +88,7 @@
             </div>
             <div class="flex justify-between items-center text-sm">
               <span class="text-gray-500">Đã duyệt hoàn tất:</span>
-              <span class="font-bold text-green-500"
-                >{{ productivity.completed }} đơn</span
-              >
+              <span class="font-bold text-green-500">{{ productivity.completed }} đơn</span>
             </div>
             <div class="mt-2">
               <div class="flex justify-between items-center mb-1 text-xs">
@@ -134,13 +114,10 @@
       </div>
     </div>
 
-    <!-- DANH SÁCH ĐƠN HÀNG CẦN CHÚ Ý ĐẶC BIỆT -->
     <ElCard class="flex-1 art-table-card border-red-200 dark:border-red-900">
       <template #header>
         <div class="flex items-center justify-between">
-          <span
-            class="font-semibold text-red-500 uppercase flex items-center gap-2"
-          >
+          <span class="font-semibold text-red-500 uppercase flex items-center gap-2">
             🚨 Danh Sách Đơn Hàng Cần Chú Ý Đặc Biệt (CRITICAL ORDERS)
           </span>
           <span class="text-xs text-red-400">
@@ -149,12 +126,7 @@
         </div>
       </template>
 
-      <ElAlert
-        v-if="filteredExceptions.length === 0"
-        type="success"
-        show-icon
-        :closable="false"
-      >
+      <ElAlert v-if="filteredExceptions.length === 0" type="success" show-icon :closable="false">
         Tuyệt vời! Hiện tại không có đơn hàng ngoại lệ nào cần xử lý.
       </ElAlert>
 
@@ -180,34 +152,19 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  computed,
-  watch,
-  nextTick,
-} from "vue";
-import {
-  ElCard,
-  ElButton,
-  ElAlert,
-  ElInput,
-  ElProgress,
-  ElNotification,
-} from "element-plus";
-import * as echarts from "echarts";
-import { useSettingStore } from "@/application/store/setting";
-import { Search } from "@element-plus/icons-vue";
-import { orderStatisticsApi } from "@/api/operations/order-statistics.api";
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue';
+import { ElCard, ElButton, ElAlert, ElInput, ElProgress, ElNotification } from 'element-plus';
+import * as echarts from 'echarts';
+import { useSettingStore } from '@/application/store/setting';
+import { Search } from '@element-plus/icons-vue';
+import { orderStatisticsApi } from '@/api/operations/order-statistics.api';
 
-defineOptions({ name: "OrderStatisticsDashboard" });
+defineOptions({ name: 'OrderStatisticsDashboard' });
 
 const settingStore = useSettingStore();
-const isDark = computed(() => settingStore.systemThemeType === "dark");
+const isDark = computed(() => settingStore.systemThemeType === 'dark');
 
-// --- STATE ---
-const searchQuery = ref("");
+const searchQuery = ref('');
 const countdownTimer = ref(30);
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 const activeFilter = ref<string | null>(null);
@@ -218,7 +175,6 @@ const methodChartRef = ref<HTMLDivElement | null>(null);
 let hourlyChartInstance: echarts.ECharts | null = null;
 let methodChartInstance: echarts.ECharts | null = null;
 
-// --- API DATA ---
 const workload = ref({
   pendingOrders: 0,
   slaDelayed: 0,
@@ -253,19 +209,18 @@ const loadStats = async () => {
     hourlyData.value = d.hourlyData;
     exceptionOrders.value = d.exceptionOrders.map((e: any) => ({
       ...e,
-      waitTime: "",
+      waitTime: '',
     }));
 
     nextTick(() => {
       renderHourlyChart();
     });
   } catch (error) {
-    console.error("Failed to load order statistics:", error);
+    console.error('Failed to load order statistics:', error);
   } finally {
     loadingStats.value = false;
   }
 };
-// --- COMPUTED ---
 const productivityProgress = computed(() => {
   const { target, completed } = productivity.value;
   return Math.round((completed / target) * 100);
@@ -282,8 +237,7 @@ const filteredExceptions = computed(() => {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(
       (item) =>
-        String(item.id).toLowerCase().includes(q) ||
-        item.customerName.toLowerCase().includes(q),
+        String(item.id).toLowerCase().includes(q) || item.customerName.toLowerCase().includes(q)
     );
   }
 
@@ -291,23 +245,22 @@ const filteredExceptions = computed(() => {
 });
 
 const exceptionColumns = computed(() => [
-  { label: "Mã đơn", prop: "id", minWidth: 120 },
-  { label: "Khách hàng", prop: "customerName", minWidth: 150 },
-  { label: "Vấn đề gặp phải", prop: "issue", useSlot: true, minWidth: 250 },
-  { label: "Thời gian chờ", prop: "waitTime", minWidth: 150 },
+  { label: 'Mã đơn', prop: 'id', minWidth: 120 },
+  { label: 'Khách hàng', prop: 'customerName', minWidth: 150 },
+  { label: 'Vấn đề gặp phải', prop: 'issue', useSlot: true, minWidth: 250 },
+  { label: 'Thời gian chờ', prop: 'waitTime', minWidth: 150 },
   {
-    label: "Thao tác",
-    prop: "action",
+    label: 'Thao tác',
+    prop: 'action',
     useSlot: true,
     minWidth: 120,
-    align: "center",
+    align: 'center',
   },
 ]);
 
-// --- METHODS ---
 const handleFilter = (type: string) => {
   if (activeFilter.value === type) {
-    activeFilter.value = null; // Toggle off
+    activeFilter.value = null; 
   } else {
     activeFilter.value = type;
   }
@@ -315,31 +268,28 @@ const handleFilter = (type: string) => {
 
 const getIssueColor = (type: string) => {
   switch (type) {
-    case "sla":
-      return "text-red-500 font-semibold";
-    case "payment":
-      return "text-orange-500 font-semibold";
-    case "return":
-      return "text-purple-500 font-semibold";
+    case 'sla':
+      return 'text-red-500 font-semibold';
+    case 'payment':
+      return 'text-orange-500 font-semibold';
+    case 'return':
+      return 'text-purple-500 font-semibold';
     default:
-      return "text-gray-700 dark:text-gray-300";
+      return 'text-gray-700 dark:text-gray-300';
   }
 };
 
 const checkSLAAlerts = () => {
   if (workload.value.slaDelayed > 0) {
     ElNotification({
-      title: "Cảnh báo SLA",
+      title: 'Cảnh báo SLA',
       message: `Có ${workload.value.slaDelayed} đơn hàng trễ lịch cần xử lý ngay!`,
-      type: "error",
+      type: 'error',
       duration: 5000,
     });
-    // Optional: Simulate ping sound
     try {
-      const audio = new Audio("/ping.mp3");
-      audio
-        .play()
-        .catch((e) => console.warn("Audio autoplay blocked by browser", e));
+      const audio = new Audio('/ping.mp3');
+      audio.play().catch((e) => console.warn('Audio autoplay blocked by browser', e));
     } catch (e) {}
   }
 };
@@ -350,10 +300,8 @@ const startTimer = () => {
   timerInterval = setInterval(() => {
     countdownTimer.value--;
     if (countdownTimer.value <= 0) {
-      // Simulate API Refresh
       countdownTimer.value = 30;
-      // In a real app, call API here
-      console.log("Auto-refreshing data...");
+      console.log('Auto-refreshing data...');
       loadStats();
     }
   }, 1000);
@@ -361,60 +309,58 @@ const startTimer = () => {
 
 const resetAutoRefresh = () => {
   startTimer();
-  console.log("Manual refresh triggered");
+  console.log('Manual refresh triggered');
 };
 
-// --- CHARTS ---
 const getThemeColors = () => {
   if (isDark.value) {
     return {
-      text: "#e5e6eb",
-      line: "#333333",
-      tooltipBg: "#1f1f1f",
-      tooltipBorder: "#444444",
-      barColor: "#409eff",
-      pieColors: ["#409eff", "#67c23a"],
+      text: '#e5e6eb',
+      line: '#333333',
+      tooltipBg: '#1f1f1f',
+      tooltipBorder: '#444444',
+      barColor: '#409eff',
+      pieColors: ['#409eff', '#67c23a'],
     };
   } else {
     return {
-      text: "#606266",
-      line: "#e4e7ed",
-      tooltipBg: "#ffffff",
-      tooltipBorder: "#e4e7ed",
-      barColor: "#409eff",
-      pieColors: ["#409eff", "#67c23a"],
+      text: '#606266',
+      line: '#e4e7ed',
+      tooltipBg: '#ffffff',
+      tooltipBorder: '#e4e7ed',
+      barColor: '#409eff',
+      pieColors: ['#409eff', '#67c23a'],
     };
   }
 };
 
 const renderHourlyChart = () => {
   if (!hourlyChartRef.value) return;
-  if (!hourlyChartInstance)
-    hourlyChartInstance = echarts.init(hourlyChartRef.value);
+  if (!hourlyChartInstance) hourlyChartInstance = echarts.init(hourlyChartRef.value);
 
   const colors = getThemeColors();
   const option = {
     tooltip: {
-      trigger: "axis",
+      trigger: 'axis',
       backgroundColor: colors.tooltipBg,
       borderColor: colors.tooltipBorder,
       textStyle: { color: colors.text },
     },
     grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "3%",
-      top: "10%",
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      top: '10%',
       containLabel: true,
     },
     xAxis: {
-      type: "category",
+      type: 'category',
       data: hourlyData.value.map((h) => h.hour),
       axisLabel: { color: colors.text },
       axisLine: { lineStyle: { color: colors.line } },
     },
     yAxis: {
-      type: "value",
+      type: 'value',
       axisLabel: { color: colors.text },
       axisLine: { lineStyle: { color: colors.line } },
       splitLine: { lineStyle: { color: colors.line } },
@@ -422,14 +368,14 @@ const renderHourlyChart = () => {
     series: [
       {
         data: hourlyData.value.map((h) => h.count),
-        type: "bar",
+        type: 'bar',
         itemStyle: {
           color: colors.barColor,
           borderRadius: [4, 4, 0, 0],
         },
         label: {
           show: true,
-          position: "top",
+          position: 'top',
           color: colors.text,
         },
       },
@@ -440,14 +386,13 @@ const renderHourlyChart = () => {
 
 const renderMethodChart = () => {
   if (!methodChartRef.value) return;
-  if (!methodChartInstance)
-    methodChartInstance = echarts.init(methodChartRef.value);
+  if (!methodChartInstance) methodChartInstance = echarts.init(methodChartRef.value);
 
   const colors = getThemeColors();
   const option = {
     tooltip: {
-      trigger: "item",
-      formatter: "{b}: {c}%",
+      trigger: 'item',
+      formatter: '{b}: {c}%',
       backgroundColor: colors.tooltipBg,
       borderColor: colors.tooltipBorder,
       textStyle: { color: colors.text },
@@ -455,18 +400,18 @@ const renderMethodChart = () => {
     color: colors.pieColors,
     series: [
       {
-        type: "pie",
-        radius: ["40%", "70%"],
+        type: 'pie',
+        radius: ['40%', '70%'],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 4,
-          borderColor: isDark.value ? "#161618" : "#fff",
+          borderColor: isDark.value ? '#161618' : '#fff',
           borderWidth: 2,
         },
         label: { show: false },
         data: [
-          { value: 65, name: "Giao tận nhà" },
-          { value: 35, name: "Nhận tại cửa hàng" },
+          { value: 65, name: 'Giao tận nhà' },
+          { value: 35, name: 'Nhận tại cửa hàng' },
         ],
       },
     ],
@@ -493,12 +438,12 @@ onMounted(() => {
     renderHourlyChart();
     renderMethodChart();
   });
-  window.addEventListener("resize", resizeCharts);
+  window.addEventListener('resize', resizeCharts);
 });
 
 onBeforeUnmount(() => {
   if (timerInterval) clearInterval(timerInterval);
-  window.removeEventListener("resize", resizeCharts);
+  window.removeEventListener('resize', resizeCharts);
   hourlyChartInstance?.dispose();
   methodChartInstance?.dispose();
 });

@@ -1,33 +1,24 @@
-import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
 
 const page = readFileSync(
-  new URL("../src/modules/Admin/view/employee/kpi/index.vue", import.meta.url),
-  "utf8",
+  new URL('../src/modules/Admin/view/employee/kpi/index.vue', import.meta.url),
+  'utf8'
 );
-const api = readFileSync(
-  new URL("../src/api/operations/kpi.api.ts", import.meta.url),
-  "utf8",
-);
-const route = readFileSync(
-  new URL("../src/router/modules/hr.ts", import.meta.url),
-  "utf8",
-);
-const vi = readFileSync(
-  new URL("../src/i18n/package/vi.ts", import.meta.url),
-  "utf8",
-);
+const api = readFileSync(new URL('../src/api/operations/kpi.api.ts', import.meta.url), 'utf8');
+const route = readFileSync(new URL('../src/router/modules/hr.ts', import.meta.url), 'utf8');
+const vi = readFileSync(new URL('../src/i18n/package/vi.ts', import.meta.url), 'utf8');
 
-test("KPI route is visible in the active HR menu", () => {
+test('KPI route is visible in the active HR menu', () => {
   const kpiRoute = route.match(
-    /path:\s*"kpi"[\s\S]*?component:\s*"\/Admin\/view\/employee\/kpi\/index"[\s\S]*?meta:\s*\{([\s\S]*?)\n\s*\},/,
+    /path:\s*"kpi"[\s\S]*?component:\s*"\/Admin\/view\/employee\/kpi\/index"[\s\S]*?meta:\s*\{([\s\S]*?)\n\s*\},/
   );
-  assert.ok(kpiRoute, "active KPI route must exist");
+  assert.ok(kpiRoute, 'active KPI route must exist');
   assert.doesNotMatch(kpiRoute[1], /isHide:\s*true/);
 });
 
-test("KPI API exposes typed CRUD operations", () => {
+test('KPI API exposes typed CRUD operations', () => {
   assert.match(api, /export interface KpiUpsertRequest/);
   assert.match(api, /request\.get<KpiResponse\[\]>/);
   assert.match(api, /request\.post<number>/);
@@ -36,7 +27,7 @@ test("KPI API exposes typed CRUD operations", () => {
   assert.doesNotMatch(api, /\bany\b/);
 });
 
-test("KPI page uses real APIs and complete management states", () => {
+test('KPI page uses real APIs and complete management states', () => {
   assert.match(page, /EmployeeApi\.getList\(\)/);
   assert.match(page, /kpiApi\.getAll\(\)/);
   assert.match(page, /kpiApi\.create\(toRequest\(\)\)/);
@@ -54,7 +45,7 @@ test("KPI page uses real APIs and complete management states", () => {
   assert.doesNotMatch(page, /\bany\b/);
 });
 
-test("KPI page strings are localized", () => {
+test('KPI page strings are localized', () => {
   assert.match(page, /menus\.hr\.kpiManagement/);
   assert.match(vi, /kpiManagement:\s*\{/);
   assert.match(vi, /title:\s*"Quản lý KPI nhân viên"/);

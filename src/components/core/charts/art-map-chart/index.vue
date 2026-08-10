@@ -4,22 +4,17 @@
       <ElEmpty description="TạmvôđịaảnhDữ liệu" />
     </div>
 
-    <div
-      v-else
-      id="china-map"
-      ref="chinaMapRef"
-      class="h-full w-full overflow-hidden rounded-lg"
-    />
+    <div v-else id="china-map" ref="chinaMapRef" class="h-full w-full overflow-hidden rounded-lg" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { echarts } from "@/plugins/echarts";
-import { useSettingStore } from "@/application/store/setting";
-import chinaMapJson from "@/mock/json/chinaMap.json";
-import type { MapChartProps } from "@/types/component/chart";
+import { echarts } from '@/plugins/echarts';
+import { useSettingStore } from '@/application/store/setting';
+import chinaMapJson from '@/mock/json/chinaMap.json';
+import type { MapChartProps } from '@/types/component/chart';
 
-defineOptions({ name: "ArtMapChart" });
+defineOptions({ name: 'ArtMapChart' });
 
 const chinaMapRef = ref<HTMLElement | null>(null);
 const chartInstance = shallowRef<echarts.ECharts | null>(null);
@@ -28,7 +23,7 @@ const { isDark } = storeToRefs(settingStore);
 
 const props = withDefaults(defineProps<MapChartProps>(), {
   mapData: () => [],
-  selectedRegion: "",
+  selectedRegion: '',
   showLabels: true,
   showScatter: true,
   isEmpty: false,
@@ -43,9 +38,7 @@ const isEmpty = computed(() => {
   return props.isEmpty || (!props.mapData?.length && !chinaMapJson);
 });
 
-const prepareMapData = (geoJson: {
-  features: Array<{ properties: Record<string, unknown> }>;
-}) => {
+const prepareMapData = (geoJson: { features: Array<{ properties: Record<string, unknown> }> }) => {
   return geoJson.features.map((feature) => ({
     name: feature.properties.name as string,
     value: Math.round(Math.random() * 1000),
@@ -56,10 +49,10 @@ const prepareMapData = (geoJson: {
 };
 
 const getThemeStyles = () => ({
-  borderColor: isDark.value ? "rgba(255,255,255,0.6)" : "rgba(147,235,248,1)",
-  shadowColor: isDark.value ? "rgba(0,0,0,0.8)" : "rgba(128,217,248,1)",
-  labelColor: isDark.value ? "#fff" : "#333",
-  backgroundColor: isDark.value ? "rgba(0,0,0,0.8)" : "rgba(255,255,255,0.9)",
+  borderColor: isDark.value ? 'rgba(255,255,255,0.6)' : 'rgba(147,235,248,1)',
+  shadowColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(128,217,248,1)',
+  labelColor: isDark.value ? '#fff' : '#333',
+  backgroundColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
 });
 
 const createChartOption = (mapData: Array<Record<string, unknown>>) => {
@@ -70,7 +63,7 @@ const createChartOption = (mapData: Array<Record<string, unknown>>) => {
     tooltip: {
       show: true,
       backgroundColor: themeStyles.backgroundColor,
-      borderColor: isDark.value ? "#333" : "#ddd",
+      borderColor: isDark.value ? '#333' : '#ddd',
       borderWidth: 1,
       textStyle: {
         color: themeStyles.labelColor,
@@ -79,15 +72,15 @@ const createChartOption = (mapData: Array<Record<string, unknown>>) => {
         const { name, adcode, level } = data || {};
         return `
             <div style="padding: 8px;">
-              <div><strong>thựctên:</strong> ${name || "ChưabáođồngTên"}</div>
-              <div><strong>thếmã:</strong> ${adcode || "Tạmvô"}</div>
-              <div><strong>cấptính:</strong> ${level || "Tạmvô"}</div>
+              <div><strong>thựctên:</strong> ${name || 'ChưabáođồngTên'}</div>
+              <div><strong>thếmã:</strong> ${adcode || 'Tạmvô'}</div>
+              <div><strong>cấptính:</strong> ${level || 'Tạmvô'}</div>
             </div>
           `;
       },
     },
     geo: {
-      map: "china",
+      map: 'china',
       zoom: 1,
       show: true,
       roam: false,
@@ -95,12 +88,12 @@ const createChartOption = (mapData: Array<Record<string, unknown>>) => {
         min: 0.8,
         max: 3,
       },
-      layoutSize: "100%",
+      layoutSize: '100%',
       emphasis: {
         label: { show: props.showLabels },
         itemStyle: {
-          areaColor: "rgba(82,180,255,0.9)",
-          borderColor: "#fff",
+          areaColor: 'rgba(82,180,255,0.9)',
+          borderColor: '#fff',
           borderWidth: 3,
         },
       },
@@ -115,54 +108,54 @@ const createChartOption = (mapData: Array<Record<string, unknown>>) => {
     },
     series: [
       {
-        type: "map",
-        map: "china",
+        type: 'map',
+        map: 'china',
         aspectScale: 0.75,
         zoom: 1,
         label: {
           show: props.showLabels,
-          color: "#fff",
+          color: '#fff',
           fontSize: 10,
         },
         itemStyle: {
-          borderColor: "rgba(147,235,248,0.8)",
+          borderColor: 'rgba(147,235,248,0.8)',
           borderWidth: 2,
           areaColor: {
-            type: "linear",
+            type: 'linear',
             x: 0,
             y: 0,
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: "rgba(147,235,248,0.3)" },
-              { offset: 1, color: "rgba(32,120,207,0.9)" },
+              { offset: 0, color: 'rgba(147,235,248,0.3)' },
+              { offset: 1, color: 'rgba(32,120,207,0.9)' },
             ],
           },
-          shadowColor: "rgba(32,120,207,1)",
+          shadowColor: 'rgba(32,120,207,1)',
           shadowOffsetY: 15,
           shadowBlur: 20,
         },
         emphasis: {
           label: {
             show: true,
-            color: "#fff",
+            color: '#fff',
             fontSize: 12,
           },
           itemStyle: {
-            areaColor: "rgba(82,180,255,0.9)",
-            borderColor: "#fff",
+            areaColor: 'rgba(82,180,255,0.9)',
+            borderColor: '#fff',
             borderWidth: 3,
           },
         },
         select: {
           label: {
             show: true,
-            color: "#fff",
-            fontWeight: "bold",
+            color: '#fff',
+            fontWeight: 'bold',
           },
           itemStyle: {
-            areaColor: "#4FAEFB",
-            borderColor: "#fff",
+            areaColor: '#4FAEFB',
+            borderColor: '#fff',
             borderWidth: 2,
           },
         },
@@ -171,21 +164,21 @@ const createChartOption = (mapData: Array<Record<string, unknown>>) => {
       ...(props.showScatter
         ? [
             {
-              name: "Thànhthị",
-              type: "scatter",
-              coordinateSystem: "geo",
-              symbol: "pin",
+              name: 'Thànhthị',
+              type: 'scatter',
+              coordinateSystem: 'geo',
+              symbol: 'pin',
               symbolSize: 15,
               label: { show: false },
               itemStyle: {
-                color: "#F99020",
+                color: '#F99020',
                 shadowBlur: 10,
-                shadowColor: "#333",
+                shadowColor: '#333',
               },
               data: [
-                { name: "Bắc Kinh", value: [116.405285, 39.904989, 100] },
-                { name: "Thượng Hải", value: [121.472644, 31.231706, 100] },
-                { name: "Thâm Quyến", value: [114.085947, 22.547, 100] },
+                { name: 'Bắc Kinh', value: [116.405285, 39.904989, 100] },
+                { name: 'Thượng Hải', value: [121.472644, 31.231706, 100] },
+                { name: 'Thâm Quyến', value: [114.085947, 22.547, 100] },
               ],
             },
           ]
@@ -199,36 +192,35 @@ const initMap = async (): Promise<void> => {
 
   chartInstance.value = echarts.init(chinaMapRef.value);
 
-  echarts.registerMap("china", chinaMapJson as any);
-  const mapData =
-    props.mapData.length > 0 ? props.mapData : prepareMapData(chinaMapJson);
+  echarts.registerMap('china', chinaMapJson as any);
+  const mapData = props.mapData.length > 0 ? props.mapData : prepareMapData(chinaMapJson);
   const option = createChartOption(mapData);
 
   chartInstance.value.setOption(option);
 
-  chartInstance.value.on("click", handleMapClick);
+  chartInstance.value.on('click', handleMapClick);
 
-  emit("renderComplete");
+  emit('renderComplete');
 };
 
 const handleMapClick = (params: Record<string, unknown>) => {
-  if (params.componentType === "series") {
+  if (params.componentType === 'series') {
     const data = params.data as Record<string, unknown> | undefined;
     const regionData = {
       name: params.name as string,
-      adcode: (data?.adcode as string) || "",
-      level: (data?.level as string) || "",
+      adcode: (data?.adcode as string) || '',
+      level: (data?.level as string) || '',
     };
 
     console.log(`vịtrongđồngTên: ${params.name}`, params);
 
     chartInstance.value?.dispatchAction({
-      type: "select",
+      type: 'select',
       seriesIndex: 0,
       dataIndex: params.dataIndex as number,
     });
 
-    emit("regionClick", regionData);
+    emit('regionClick', regionData);
   }
 };
 
@@ -238,11 +230,11 @@ const resizeChart = () => {
 
 const cleanupChart = () => {
   if (chartInstance.value) {
-    chartInstance.value.off("click", handleMapClick);
+    chartInstance.value.off('click', handleMapClick);
     chartInstance.value.dispose();
     chartInstance.value = null;
   }
-  window.removeEventListener("resize", resizeChart);
+  window.removeEventListener('resize', resizeChart);
 };
 
 onMounted(() => {
@@ -251,7 +243,7 @@ onMounted(() => {
       setTimeout(resizeChart, 100);
     });
   }
-  window.addEventListener("resize", resizeChart);
+  window.addEventListener('resize', resizeChart);
 });
 
 onUnmounted(cleanupChart);
@@ -271,12 +263,11 @@ watch(
   () => props.mapData,
   () => {
     if (chartInstance.value && !isEmpty.value) {
-      const mapData =
-        props.mapData.length > 0 ? props.mapData : prepareMapData(chinaMapJson);
+      const mapData = props.mapData.length > 0 ? props.mapData : prepareMapData(chinaMapJson);
       const option = createChartOption(mapData);
       chartInstance.value.setOption(option);
     }
   },
-  { deep: true },
+  { deep: true }
 );
 </script>

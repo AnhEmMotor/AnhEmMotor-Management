@@ -1,4 +1,4 @@
-import type { Component } from "vue";
+import type { Component } from 'vue';
 
 export interface GuidePage {
   id: string;
@@ -20,6 +20,7 @@ export interface GuideSection {
   shadowColor: string;
   route?: string;
   pages?: GuidePage[];
+  imageUrl?: string;
 }
 export interface FeatureItem {
   title: string;

@@ -2,7 +2,6 @@
   <div
     class="resp-page customer-asset-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
-    <!-- Header -->
     <div
       class="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -10,10 +9,7 @@
         <div
           class="size-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl flex-cc shadow-sm"
         >
-          <ArtSvgIcon
-            icon="ri:car-fill"
-            class="text-xl text-blue-500 dark:text-blue-400"
-          />
+          <ArtSvgIcon icon="ri:car-fill" class="text-xl text-blue-500 dark:text-blue-400" />
         </div>
         <div>
           <h2
@@ -32,7 +28,6 @@
       </ElButton>
     </div>
 
-    <!-- Toolbar -->
     <div
       class="h-14 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-10"
     >
@@ -54,23 +49,19 @@
           @click="openAddDialog"
           class="bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 h-10 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
-          <ArtSvgIcon icon="ri:file-add-line" class="text-blue-500" /> Thêm tài
-          sản mới
+          <ArtSvgIcon icon="ri:file-add-line" class="text-blue-500" /> Thêm tài sản mới
         </button>
       </div>
     </div>
 
-    <!-- Main layout -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- Left sidebar: lead list -->
       <div
         class="w-[380px] bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800 flex flex-col shrink-0"
       >
         <div
           class="p-4 border-b border-gray-50 dark:border-slate-800 flex items-center justify-between"
         >
-          <span
-            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
             >Danh sách khách hàng ({{ leads.length }})</span
           >
           <ArtSvgIcon icon="ri:sort-desc" class="text-gray-300" />
@@ -98,21 +89,18 @@
               </div>
               <div class="flex-1 flex flex-col justify-center">
                 <div class="flex justify-between items-start">
-                  <span
-                    class="text-sm font-bold text-gray-800 dark:text-slate-100 leading-tight"
-                    >{{ lead.fullName }}</span
-                  >
+                  <span class="text-sm font-bold text-gray-800 dark:text-slate-100 leading-tight">{{
+                    lead.fullName
+                  }}</span>
                 </div>
                 <div class="flex items-center gap-2 mt-1">
-                  <span
-                    class="text-[10px] font-bold text-gray-500 tracking-widest"
+                  <span class="text-[10px] font-bold text-gray-500 tracking-widest"
                     >#{{ lead.id }}</span
                   >
                   <span class="w-1 h-1 rounded-full bg-gray-300"></span>
-                  <span
-                    class="text-[10px] font-bold text-gray-400 tracking-tighter"
-                    >{{ lead.phoneNumber || "Không có SĐT" }}</span
-                  >
+                  <span class="text-[10px] font-bold text-gray-400 tracking-tighter">{{
+                    lead.phoneNumber || 'Không có SĐT'
+                  }}</span>
                 </div>
               </div>
             </div>
@@ -120,7 +108,6 @@
         </div>
       </div>
 
-      <!-- Right: customer assets list -->
       <div
         v-if="selectedLead"
         class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gray-50/50 dark:bg-slate-900/50"
@@ -133,18 +120,12 @@
             <ArtSvgIcon icon="ri:user-3-fill" class="text-2xl" />
           </div>
           <div>
-            <h1
-              class="m-0 text-2xl font-bold text-gray-800 dark:text-white tracking-tight"
-            >
+            <h1 class="m-0 text-2xl font-bold text-gray-800 dark:text-white tracking-tight">
               {{ selectedLead.fullName }}
             </h1>
-            <p
-              class="m-0 text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest"
-            >
-              {{ selectedLead.phoneNumber || "Chưa cập nhật SĐT" }} • KH #{{
-                selectedLead.id
-              }}
-              • {{ customerAssets.length }} TÀI SẢN
+            <p class="m-0 text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest">
+              {{ selectedLead.phoneNumber || 'Chưa cập nhật SĐT' }} • KH #{{ selectedLead.id }} •
+              {{ customerAssets.length }} TÀI SẢN
             </p>
           </div>
         </div>
@@ -153,10 +134,7 @@
           v-if="customerAssets.length === 0"
           class="flex flex-col items-center justify-center p-12 text-gray-300 dark:text-gray-600 bg-white dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-slate-700 border-dashed"
         >
-          <ArtSvgIcon
-            icon="ri:car-washing-line"
-            class="text-6xl mb-4 opacity-50"
-          />
+          <ArtSvgIcon icon="ri:car-washing-line" class="text-6xl mb-4 opacity-50" />
           <span class="text-sm font-bold uppercase tracking-widest"
             >Khách hàng chưa sở hữu tài sản nào</span
           >
@@ -173,15 +151,10 @@
                 <div
                   class="size-16 rounded-xl bg-gray-100 dark:bg-slate-700 overflow-hidden shrink-0 border border-gray-100 dark:border-slate-600"
                 >
-                  <img
-                    :src="getImageUrl(asset.imageUrl)"
-                    class="size-full object-cover"
-                  />
+                  <img :src="getImageUrl(asset.imageUrl)" class="size-full object-cover" />
                 </div>
                 <div class="flex flex-col gap-2">
-                  <h2
-                    class="m-0 text-xl font-bold text-gray-800 dark:text-white tracking-tight"
-                  >
+                  <h2 class="m-0 text-xl font-bold text-gray-800 dark:text-white tracking-tight">
                     {{ asset.productName || `Xe máy #${asset.id}` }}
                   </h2>
                   <div class="flex gap-2">
@@ -194,7 +167,7 @@
                       "
                       class="font-bold text-[9px] rounded-lg"
                     >
-                      {{ asset.licensePlate ? "ĐÃ CÓ BIỂN" : "CHƯA CẤP BIỂN" }}
+                      {{ asset.licensePlate ? 'ĐÃ CÓ BIỂN' : 'CHƯA CẤP BIỂN' }}
                     </ElTag>
                     <ElTag
                       effect="plain"
@@ -221,7 +194,6 @@
               </div>
             </div>
 
-            <!-- Specs grid -->
             <div class="grid grid-cols-4 gap-3 mb-6">
               <div
                 v-for="spec in getAssetSpecs(asset)"
@@ -229,14 +201,10 @@
                 class="bg-gray-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-gray-100 dark:border-slate-700"
               >
                 <div class="flex items-center gap-2 mb-1">
-                  <ArtSvgIcon
-                    :icon="spec.icon"
-                    class="text-gray-400 text-[10px]"
-                  />
-                  <span
-                    class="text-[8px] font-bold text-gray-400 uppercase tracking-widest"
-                    >{{ spec.label }}</span
-                  >
+                  <ArtSvgIcon :icon="spec.icon" class="text-gray-400 text-[10px]" />
+                  <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{{
+                    spec.label
+                  }}</span>
                 </div>
                 <span
                   class="text-[11px] font-bold text-gray-800 dark:text-slate-200 tracking-tight"
@@ -245,7 +213,6 @@
               </div>
             </div>
 
-            <!-- Digital Vault -->
             <div>
               <div class="flex items-center gap-2 mb-3">
                 <div class="w-1 h-3 bg-navy rounded-full"></div>
@@ -272,13 +239,10 @@
                       <ArtSvgIcon :icon="folder.icon" class="text-lg" />
                     </div>
                     <div>
-                      <h4
-                        class="m-0 text-xs font-bold text-gray-800 dark:text-slate-200"
-                      >
+                      <h4 class="m-0 text-xs font-bold text-gray-800 dark:text-slate-200">
                         {{ folder.title }}
                       </h4>
-                      <span
-                        class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter"
+                      <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter"
                         >{{ folder.count }} tệp tin</span
                       >
                     </div>
@@ -301,7 +265,6 @@
       </div>
     </div>
 
-    <!-- Dialog Thêm tài sản mới -->
     <ElDialog
       v-model="addDialogVisible"
       title="THÊM PHƯƠNG TIỆN MỚI"
@@ -325,10 +288,7 @@
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Biển số xe" class="is-required">
-          <ElInput
-            v-model="form.licensePlate"
-            placeholder="Ví dụ: 29A1-123.45"
-          />
+          <ElInput v-model="form.licensePlate" placeholder="Ví dụ: 29A1-123.45" />
         </ElFormItem>
         <ElFormItem label="Khách hàng sở hữu" class="is-required">
           <ElSelect
@@ -346,10 +306,7 @@
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Số khung (VIN)" class="is-required">
-          <ElInput
-            v-model="form.vinNumber"
-            placeholder="Nhập 17 ký tự số khung..."
-          />
+          <ElInput v-model="form.vinNumber" placeholder="Nhập 17 ký tự số khung..." />
         </ElFormItem>
         <ElFormItem label="Số máy" class="is-required">
           <ElInput v-model="form.engineNumber" placeholder="Nhập số máy..." />
@@ -367,17 +324,13 @@
       <template #footer>
         <div class="flex gap-3 justify-end">
           <ElButton @click="addDialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton
-            type="primary"
-            :loading="submitLoading"
-            @click="handleAddSubmit"
+          <ElButton type="primary" :loading="submitLoading" @click="handleAddSubmit"
             >Lưu tài sản</ElButton
           >
         </div>
       </template>
     </ElDialog>
 
-    <!-- Dialog Sửa biển số xe -->
     <ElDialog
       v-model="editDialogVisible"
       title="CẬP NHẬT BIỂN SỐ XE"
@@ -387,19 +340,13 @@
     >
       <ElForm :model="editForm" label-position="top">
         <ElFormItem label="Biển số xe mới" class="is-required">
-          <ElInput
-            v-model="editForm.licensePlate"
-            placeholder="Ví dụ: 29A1-123.45"
-          />
+          <ElInput v-model="editForm.licensePlate" placeholder="Ví dụ: 29A1-123.45" />
         </ElFormItem>
       </ElForm>
       <template #footer>
         <div class="flex gap-3 justify-end">
           <ElButton @click="editDialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton
-            type="primary"
-            :loading="editSubmitLoading"
-            @click="handleEditSubmit"
+          <ElButton type="primary" :loading="editSubmitLoading" @click="handleEditSubmit"
             >Lưu thay đổi</ElButton
           >
         </div>
@@ -409,15 +356,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import dayjs from "dayjs";
-import { ElMessage } from "element-plus";
-import { VehicleApi, type Vehicle } from "@/api/vehicle";
-import { ProductApi } from "@/api/product";
-import { fetchGetLeadList } from "@/api/customer/lead.api";
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import dayjs from 'dayjs';
+import { ElMessage } from 'element-plus';
+import { VehicleApi, type Vehicle } from '@/api/vehicle';
+import { ProductApi } from '@/api/product';
+import { fetchGetLeadList } from '@/api/customer/lead.api';
 
-defineOptions({ name: "CustomerAsset" });
+defineOptions({ name: 'CustomerAsset' });
 
 const router = useRouter();
 const loadingLeads = ref(false);
@@ -426,7 +373,7 @@ const leads = ref<any[]>([]);
 const customerAssets = ref<any[]>([]);
 const selectedLeadId = ref<number | null>(null);
 
-const filters = reactive<{ keyword: string }>({ keyword: "" });
+const filters = reactive<{ keyword: string }>({ keyword: '' });
 
 const addDialogVisible = ref(false);
 const editDialogVisible = ref(false);
@@ -436,33 +383,31 @@ const leadList = ref<any[]>([]);
 const productList = ref<any[]>([]);
 const editForm = ref({
   id: 0,
-  licensePlate: "",
+  licensePlate: '',
 });
 
 const form = ref({
   productId: null as number | null,
-  licensePlate: "",
+  licensePlate: '',
   leadId: null as number | null,
-  vinNumber: "",
-  engineNumber: "",
-  purchaseDate: "",
+  vinNumber: '',
+  engineNumber: '',
+  purchaseDate: '',
 });
 
 const getInitials = (name: string) => {
-  if (!name) return "?";
-  const words = name.trim().split(" ");
+  if (!name) return '?';
+  const words = name.trim().split(' ');
   if (words.length === 1) return words[0].charAt(0).toUpperCase();
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 };
 
 const getImageUrl = (url?: string) => {
   if (!url)
-    return "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200";
-  if (url.startsWith("http")) return url;
-  const baseUrl =
-    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-    "http://localhost:5000";
-  return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+    return 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200';
+  if (url.startsWith('http')) return url;
+  const baseUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
+  return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
 };
 
 const loadLeads = async () => {
@@ -473,9 +418,7 @@ const loadLeads = async () => {
       apiParams.Filters = `search=${filters.keyword.trim()}`;
     }
     const res = await fetchGetLeadList(apiParams);
-    leads.value = Array.isArray(res)
-      ? res
-      : (res as any).items || (res as any).records || [];
+    leads.value = Array.isArray(res) ? res : (res as any).items || (res as any).records || [];
 
     if (leads.value.length > 0 && selectedLeadId.value === null) {
       selectedLeadId.value = leads.value[0].id;
@@ -483,7 +426,7 @@ const loadLeads = async () => {
       selectedLeadId.value = null;
     }
   } catch (error: any) {
-    ElMessage.error(error?.message || "Không thể tải danh sách khách hàng");
+    ElMessage.error(error?.message || 'Không thể tải danh sách khách hàng');
   } finally {
     loadingLeads.value = false;
   }
@@ -500,9 +443,7 @@ const loadCustomerAssets = async (leadId: number) => {
     });
     customerAssets.value = res.items || [];
   } catch (err: any) {
-    ElMessage.error(
-      err.message || "Lỗi khi tải danh sách phương tiện của khách hàng",
-    );
+    ElMessage.error(err.message || 'Lỗi khi tải danh sách phương tiện của khách hàng');
   } finally {
     loadingAssets.value = false;
   }
@@ -519,10 +460,10 @@ watch(selectedLeadId, (newId) => {
 const openAddDialog = async () => {
   form.value = {
     productId: null,
-    licensePlate: "",
+    licensePlate: '',
     leadId: selectedLeadId.value,
-    vinNumber: "",
-    engineNumber: "",
+    vinNumber: '',
+    engineNumber: '',
     purchaseDate: new Date().toISOString(),
   };
   addDialogVisible.value = true;
@@ -537,7 +478,7 @@ const openAddDialog = async () => {
       : (leadsRes as any).items || (leadsRes as any).records || [];
     productList.value = prodsRes.items || [];
   } catch {
-    ElMessage.error("Không thể tải danh sách danh mục và khách hàng");
+    ElMessage.error('Không thể tải danh sách danh mục và khách hàng');
   }
 };
 
@@ -549,7 +490,7 @@ const handleAddSubmit = async () => {
     !form.value.vinNumber ||
     !form.value.engineNumber
   ) {
-    ElMessage.warning("Vui lòng nhập đầy đủ các trường thông tin bắt buộc");
+    ElMessage.warning('Vui lòng nhập đầy đủ các trường thông tin bắt buộc');
     return;
   }
 
@@ -564,87 +505,84 @@ const handleAddSubmit = async () => {
       purchaseDate: form.value.purchaseDate,
     });
 
-    ElMessage.success("Đã thêm phương tiện mới thành công!");
+    ElMessage.success('Đã thêm phương tiện mới thành công!');
     addDialogVisible.value = false;
 
-    // Nếu khách hàng vừa thêm xe đang được chọn, tải lại danh sách xe
     if (selectedLeadId.value === form.value.leadId) {
       loadCustomerAssets(selectedLeadId.value);
     } else {
       selectedLeadId.value = form.value.leadId;
     }
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi lưu phương tiện mới");
+    ElMessage.error(err.message || 'Lỗi khi lưu phương tiện mới');
   } finally {
     submitLoading.value = false;
   }
 };
 
-const selectedLead = computed(() =>
-  leads.value.find((l) => l.id === selectedLeadId.value),
-);
+const selectedLead = computed(() => leads.value.find((l) => l.id === selectedLeadId.value));
 
 const handleSearch = () => {
   loadLeads();
 };
 
 const formatDate = (value?: string) => {
-  if (!value) return "-";
-  return dayjs(value).format("DD/MM/YYYY");
+  if (!value) return '-';
+  return dayjs(value).format('DD/MM/YYYY');
 };
 
 const vaultFolders = computed(() => [
   {
-    title: "Đăng ký xe & Cavet",
-    icon: "ri:file-text-line",
+    title: 'Đăng ký xe & Cavet',
+    icon: 'ri:file-text-line',
     count: 2,
     preview:
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=200",
+      'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=200',
   },
   {
-    title: "Đăng kiểm & Bảo hiểm",
-    icon: "ri:shield-check-line",
+    title: 'Đăng kiểm & Bảo hiểm',
+    icon: 'ri:shield-check-line',
     count: 1,
     preview:
-      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=200",
+      'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=200',
   },
   {
-    title: "Hóa đơn & Hợp đồng",
-    icon: "ri:bill-line",
+    title: 'Hóa đơn & Hợp đồng',
+    icon: 'ri:bill-line',
     count: 1,
     preview:
-      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=200",
+      'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=200',
   },
 ]);
 
 const getAssetSpecs = (v: any) => {
   return [
     {
-      label: "Thể loại",
-      value: v?.categoryName || "Xe máy",
-      icon: "ri:motorbike-line",
+      label: 'Thể loại',
+      value: v?.categoryName || 'Xe máy',
+      icon: 'ri:motorbike-line',
     },
     {
-      label: "Phiên bản",
-      value: v?.variantName || "-",
-      icon: "ri:settings-5-line",
+      label: 'Phiên bản',
+      value: v?.variantName || '-',
+      icon: 'ri:settings-5-line',
     },
-    { label: "Màu sắc", value: v?.colorName || "-", icon: "ri:palette-line" },
-    { label: "Số khung", value: v?.vinNumber || "-", icon: "ri:barcode-line" },
+    { label: 'Màu sắc', value: v?.colorName || '-', icon: 'ri:palette-line' },
+    { label: 'Số khung', value: v?.vinNumber || '-', icon: 'ri:barcode-line' },
     {
-      label: "Số máy",
-      value: v?.engineNumber || "-",
-      icon: "ri:settings-3-line",
+      label: 'Số máy',
+      value: v?.engineNumber || '-',
+      icon: 'ri:settings-3-line',
     },
     {
-      label: "Ngày mua",
+      label: 'Ngày mua',
       value: formatDate(v?.purchaseDate),
-      icon: "ri:calendar-line",
+      icon: 'ri:calendar-line',
     },
     {
-      label: "Biển số",
-      value: v?.licensePlate || "Chưa cấp biển",
-      icon: "ri:git-commit-line",
+      label: 'Biển số',
+      value: v?.licensePlate || 'Chưa cấp biển',
+      icon: 'ri:git-commit-line',
     },
   ];
 };
@@ -652,37 +590,34 @@ const getAssetSpecs = (v: any) => {
 const openEditDialog = (asset: any) => {
   editForm.value = {
     id: asset.id,
-    licensePlate: asset.licensePlate || "",
+    licensePlate: asset.licensePlate || '',
   };
   editDialogVisible.value = true;
 };
 
 const handleEditSubmit = async () => {
   if (!editForm.value.licensePlate.trim()) {
-    ElMessage.warning("Vui lòng nhập biển số xe");
+    ElMessage.warning('Vui lòng nhập biển số xe');
     return;
   }
 
   editSubmitLoading.value = true;
   try {
-    await VehicleApi.updateLicensePlate(
-      editForm.value.id,
-      editForm.value.licensePlate.trim(),
-    );
-    ElMessage.success("Cập nhật biển số xe thành công!");
+    await VehicleApi.updateLicensePlate(editForm.value.id, editForm.value.licensePlate.trim());
+    ElMessage.success('Cập nhật biển số xe thành công!');
     editDialogVisible.value = false;
     if (selectedLeadId.value) {
       loadCustomerAssets(selectedLeadId.value);
     }
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi cập nhật biển số xe");
+    ElMessage.error(err.message || 'Lỗi khi cập nhật biển số xe');
   } finally {
     editSubmitLoading.value = false;
   }
 };
 
 const handleReportClick = () => {
-  ElMessage.info("Tính năng Báo cáo/Xuất PDF đang được phát triển.");
+  ElMessage.info('Tính năng Báo cáo/Xuất PDF đang được phát triển.');
 };
 
 onMounted(loadLeads);

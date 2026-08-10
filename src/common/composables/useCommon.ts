@@ -1,6 +1,6 @@
-import { computed } from "vue";
-import { useMenuStore } from "@/application/store/menu";
-import { useSettingStore } from "@/application/store/setting";
+import { computed } from 'vue';
+import { useMenuStore } from '@/application/store/menu';
+import { useSettingStore } from '@/application/store/setting';
 
 export function useCommon() {
   const menuStore = useMenuStore();
@@ -13,28 +13,28 @@ export function useCommon() {
   };
 
   const scrollToTop = () => {
-    const scrollContainer = document.getElementById("app-main");
+    const scrollContainer = document.getElementById('app-main');
     if (scrollContainer) {
       scrollContainer.scrollTop = 0;
     }
   };
 
   const smoothScrollToTop = () => {
-    const scrollContainer = document.getElementById("app-main");
+    const scrollContainer = document.getElementById('app-main');
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
 
   const scrollTo = (top: number, smooth: boolean = false) => {
-    const scrollContainer = document.getElementById("app-main");
+    const scrollContainer = document.getElementById('app-main');
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top,
-        behavior: smooth ? "smooth" : "auto",
+        behavior: smooth ? 'smooth' : 'auto',
       });
     }
   };

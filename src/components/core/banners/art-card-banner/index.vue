@@ -34,9 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import defaultIcon from "@imgs/3d/icon1.webp";
+import defaultIcon from '@imgs/3d/icon1.webp';
 
-defineOptions({ name: "ArtCardBanner" });
+defineOptions({ name: 'ArtCardBanner' });
 
 interface CardBannerProps {
   height?: string;
@@ -58,34 +58,34 @@ interface CardBannerProps {
 }
 
 withDefaults(defineProps<CardBannerProps>(), {
-  height: "24rem",
+  height: '24rem',
   image: defaultIcon,
-  title: "",
-  description: "",
+  title: '',
+  description: '',
   button: () => ({
     show: true,
-    text: "XemChiTiet",
-    color: "var(--theme-color)",
-    textColor: "#fff",
+    text: 'XemChiTiet',
+    color: 'var(--theme-color)',
+    textColor: '#fff',
   }),
   cancelButton: () => ({
     show: false,
-    text: "Hủy",
-    color: "#f5f5f5",
-    textColor: "#666",
+    text: 'Hủy',
+    color: '#f5f5f5',
+    textColor: '#666',
   }),
 });
 
 const emit = defineEmits<{
-  (e: "click"): void;
-  (e: "cancel"): void;
+  (e: 'click'): void;
+  (e: 'cancel'): void;
 }>();
 
 const handleClick = () => {
-  emit("click");
+  emit('click');
 };
 
 const handleCancel = () => {
-  emit("cancel");
+  emit('cancel');
 };
 </script>

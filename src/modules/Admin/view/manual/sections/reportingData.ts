@@ -1,80 +1,52 @@
-import type { GuideSection } from "../data/guideData";
-import { DataAnalysis, Picture, DataLine } from "@element-plus/icons-vue";
+import type { GuideSection } from '../data/guideData';
+import { PieChart } from '@element-plus/icons-vue';
 
 export const sectionData: GuideSection = {
-  id: "reporting",
-  title: "Thống Kê & Báo Cáo",
-  subtitle: "Reporting & Analytics",
+  id: 'reporting',
+  title: 'Báo Cáo Phân Tích Chuyên Sâu',
+  subtitle: 'Advanced Analytics',
   description:
-    "Hệ thống báo cáo tổng hợp chuyên sâu dành cho Ban Giám Đốc: bao gồm tài chính, tồn kho, nhân sự và hiệu suất xưởng dịch vụ.",
-  icon: DataAnalysis,
-  color: "#7c3aed",
-  shadowColor: "rgba(124,58,237,0.15)",
-  route: "/admin/reporting",
+    'Công cụ Business Intelligence (BI) nội bộ. Phân tích dữ liệu đa chiều giúp Ban Giám Đốc đưa ra chiến lược kinh doanh chính xác thay vì cảm tính.',
+  icon: PieChart,
+  color: '#be123c',
+  shadowColor: 'rgba(190,18,60,0.15)',
+  route: '/admin/reporting',
+  imageUrl: '/images/manual/reporting_charts_1785990538004.png',
   pages: [
     {
-      id: "r1",
-      title: "Tổng quan Điều hành",
-      route: "/admin/reporting/overview",
+      id: 'r-revenue',
+      title: 'Phân tích Doanh thu & Lợi nhuận',
+      route: '/admin/reporting/revenue',
       description:
-        "Bảng điều khiển (Dashboard) tổng hợp các chỉ số kinh doanh then chốt của toàn công ty.",
+        'Bóc tách doanh thu theo từng dòng xe, từng nhóm phụ tùng, và từng nhóm dịch vụ.',
       steps: [
-        "Vào menu Thống kê & Báo cáo -> Tổng quan điều hành.",
-        "Xem các chỉ số (KPI): tổng doanh thu, lợi nhuận ròng, số lượng đơn hàng mới, giá trị tồn kho.",
-        "Sử dụng công cụ chọn chu kỳ thời gian (ngày/tuần/tháng/năm) ở góc trên bên phải.",
-        "Quan sát biểu đồ xu hướng để đưa ra quyết định kinh doanh kịp thời.",
+        '1. Truy cập [Báo Cáo Phân Tích] -> [Phân tích Doanh thu].',
+        '2. Lựa chọn khung thời gian cần phân tích (Thường là theo Quý hoặc Năm).',
+        "3. Xem biểu đồ 'Tỷ trọng Doanh thu': So sánh đóng góp của Bán Xe vs Bán Phụ tùng vs Dịch vụ sửa chữa.",
+        '4. Sử dụng công cụ [Phân tích xu hướng - Trend Analysis] để xem dòng xe nào đang có chu kỳ sống đi xuống (cần xả hàng), dòng xe nào đang hot (cần nhập thêm).',
+        '5. Phân tích lợi nhuận gộp (Gross Margin) để biết mảng nào mang lại tiền thực sự cho công ty.',
+        '6. Bấm [Tạo Dashboard Riêng] để ghim các biểu đồ bạn quan tâm nhất ra màn hình chính.',
       ],
       tips: [
-        "Cần có quyền Xem Thống kê (Permissions.StatisticalView) mới có thể truy cập.",
-        "Bạn có thể so sánh dữ liệu với cùng kỳ năm ngoái.",
+        'Bạn có thể so sánh trực tiếp kết quả kinh doanh của 2 chi nhánh khác nhau trên cùng 1 biểu đồ.',
+        'Xuất dữ liệu thô (Raw Data) ra Excel để Data Analyst (Chuyên viên phân tích) của công ty tự chạy mô hình dự báo.',
       ],
     },
     {
-      id: "r2",
-      title: "Báo cáo Tài chính",
-      route: "/admin/reporting/financial",
+      id: 'r-inventory',
+      title: 'Báo cáo Vòng quay Tồn kho',
+      route: '/admin/reporting/inventory',
       description:
-        "Theo dõi dòng tiền thu-chi, biến động lợi nhuận và tỷ suất hoàn vốn (ROI).",
+        'Tối ưu hóa dòng vốn lưu động bằng cách phát hiện hàng tồn kho chậm luân chuyển (Dead Stock).',
       steps: [
-        "Vào menu Thống kê & Báo cáo -> Báo cáo tài chính.",
-        "Theo dõi bảng thu-chi chi tiết từ hoạt động bán xe và dịch vụ sửa chữa.",
-        "Phân tích cơ cấu chi phí theo các loại hình (lương, vận hành, nhập hàng).",
-        "Nhấp nút 'Xuất Excel/PDF' để lấy số liệu gửi bộ phận Kế toán tổng hợp.",
+        '1. Chuyển sang tab [Phân tích Tồn kho].',
+        "2. Hệ thống hiển thị 'Chỉ số Vòng quay hàng tồn kho' (Inventory Turnover Ratio). Chỉ số càng cao, công ty bán hàng càng nhanh.",
+        '3. Xem danh sách [Hàng cận date/Chậm luân chuyển]: Các mẫu xe đã nằm kho quá 6 tháng, hoặc phụ tùng bám bụi không ai mua.',
+        '4. Đánh giá Tồn kho an toàn (Safety Stock): Các mã phụ tùng hay hỏng hóc nhưng kho đang cạn kiệt, cần lên Đơn đặt hàng bổ sung khẩn cấp.',
       ],
       tips: [
-        "Dữ liệu tài chính ở đây được đồng bộ hóa từ mọi giao dịch phát sinh trên hệ thống.",
-      ],
-    },
-    {
-      id: "r3",
-      title: "Báo cáo Tồn kho",
-      route: "/admin/reporting/inventory",
-      description:
-        "Thống kê lượng xuất-nhập-tồn, đánh giá giá trị hàng hóa và nhận cảnh báo sắp hết hàng.",
-      steps: [
-        "Vào menu Thống kê & Báo cáo -> Báo cáo tồn kho.",
-        "Xem biểu đồ cơ cấu tồn kho theo Nhà cung cấp hoặc Thương hiệu.",
-        "Theo dõi thẻ kho chi tiết để xem luân chuyển hàng hóa.",
-        "Kiểm tra danh sách 'Hàng hóa dưới mức tối thiểu' để lên kế hoạch nhập hàng.",
-      ],
-      tips: [
-        "Nên kiểm tra tồn kho tối thiểu hàng tuần để không bị gián đoạn hoạt động kinh doanh.",
-      ],
-    },
-    {
-      id: "r4",
-      title: "Báo cáo Xưởng dịch vụ",
-      route: "/admin/reporting/workshop",
-      description:
-        "Theo dõi hoạt động sửa chữa, bảo hành và tiền công thợ của các xưởng dịch vụ.",
-      steps: [
-        "Vào menu Thống kê & Báo cáo -> Báo cáo xưởng.",
-        "Xem tổng lượng xe vào xưởng, số lượng yêu cầu bảo hành và tổng doanh thu dịch vụ.",
-        "Bạn có thể lọc dữ liệu theo từng Kỹ thuật viên (thợ) hoặc loại hình dịch vụ.",
-        "Xuất báo cáo để đánh giá năng suất làm việc của xưởng.",
-      ],
-      tips: [
-        "Dữ liệu này rất hữu ích khi kết hợp với bảng lương để đánh giá KPI của khối Kỹ thuật.",
+        'Giám đốc dựa vào báo cáo Hàng chậm luân chuyển để yêu cầu phòng Marketing chạy chương trình xả kho (Clearance Sale).',
+        'Việc giải phóng hàng tồn chậm sẽ giúp công ty thu hồi vốn và giảm chi phí lãi vay ngân hàng.',
       ],
     },
   ],

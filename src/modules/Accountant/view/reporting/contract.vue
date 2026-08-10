@@ -15,11 +15,7 @@
             @update:start-date="onStartDateChange"
             @update:end-date="onEndDateChange"
           />
-          <ElButton
-            type="primary"
-            :disabled="isLoading"
-            @click="exportContractExcel"
-          >
+          <ElButton type="primary" :disabled="isLoading" @click="exportContractExcel">
             <ArtSvgIcon icon="ri:file-excel-2-line" />
             Xuất Excel
           </ElButton>
@@ -27,7 +23,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- KPI TẦNG 1 -->
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng số HĐ Bán xe"
@@ -68,13 +63,11 @@
       class="mt-4"
     />
 
-    <!-- TẦNG 2: BIỂU ĐỒ TRẠNG THÁI TỔNG THỂ FULL-WIDTH -->
     <ElCard v-loading="isLoading" class="reporting-card mt-4">
       <template #header>Trạng thái hợp đồng</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 3: TRẠNG THÁI THEO TỪNG LOẠI HỢP ĐỒNG -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Hợp đồng mua bán</template>
@@ -86,7 +79,6 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 4: BẢNG DỮ LIỆU CHI TIẾT -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="contract-list-header">
@@ -98,11 +90,7 @@
             </div>
           </div>
           <div class="contract-filter-bar">
-            <ElSelect
-              v-model="typeFilter"
-              placeholder="Loại hợp đồng"
-              clearable
-            >
+            <ElSelect v-model="typeFilter" placeholder="Loại hợp đồng" clearable>
               <ElOption label="Bán xe" value="Bán xe" />
               <ElOption label="Nhà cung cấp" value="Nhà cung cấp" />
             </ElSelect>
@@ -114,18 +102,12 @@
                 :value="status"
               />
             </ElSelect>
-            <ElInput
-              v-model="searchQuery"
-              placeholder="Tìm mã HĐ, tên đối tác..."
-              clearable
-            >
+            <ElInput v-model="searchQuery" placeholder="Tìm mã HĐ, tên đối tác..." clearable>
               <template #prefix>
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
-            <ElButton v-if="hasActiveFilters" @click="resetContractFilters">
-              Xóa lọc
-            </ElButton>
+            <ElButton v-if="hasActiveFilters" @click="resetContractFilters"> Xóa lọc </ElButton>
           </div>
         </div>
       </template>
@@ -135,11 +117,7 @@
         class="reporting-table"
         empty-text="Không có dữ liệu hợp đồng"
       >
-        <ElTableColumn
-          prop="contractNumber"
-          label="Số hợp đồng"
-          min-width="150"
-        />
+        <ElTableColumn prop="contractNumber" label="Số hợp đồng" min-width="150" />
         <ElTableColumn prop="date" label="Ngày lập" min-width="130" />
         <ElTableColumn prop="type" label="Phân loại" min-width="130">
           <template #default="{ row }">
@@ -148,23 +126,12 @@
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="partnerName"
-          label="Đối tác (KH/NCC)"
-          min-width="200"
-        />
-        <ElTableColumn
-          prop="value"
-          label="Giá trị HĐ"
-          min-width="150"
-          align="right"
-        >
+        <ElTableColumn prop="partnerName" label="Đối tác (KH/NCC)" min-width="200" />
+        <ElTableColumn prop="value" label="Giá trị HĐ" min-width="150" align="right">
           <template #default="{ row }">
             <span
               class="font-semibold"
-              :class="
-                row.type === 'Bán xe' ? 'text-emerald-600' : 'text-rose-600'
-              "
+              :class="row.type === 'Bán xe' ? 'text-emerald-600' : 'text-rose-600'"
             >
               {{ formatCurrency(row.value) }}
             </span>
@@ -191,30 +158,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import * as echarts from "echarts";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { statisticsApi, type ContractOverviewResponse } from "@/api/operations";
-import { useSettingStore } from "@/application/store/setting";
-import { storeToRefs } from "pinia";
-import { exportReportWorkbook } from "@/utils/report-excel";
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import * as echarts from 'echarts';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import { statisticsApi, type ContractOverviewResponse } from '@/api/operations';
+import { useSettingStore } from '@/application/store/setting';
+import { storeToRefs } from 'pinia';
+import { exportReportWorkbook } from '@/utils/report-excel';
 
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
 
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref(
-  new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString(),
-);
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
 const periodEnd = ref(new Date().toISOString());
 
-const searchQuery = ref("");
-const typeFilter = ref("");
-const statusFilter = ref("");
+const searchQuery = ref('');
+const typeFilter = ref('');
+const statusFilter = ref('');
 
-// Refs for ECharts DOM elements
 const trendChartRef = ref<HTMLElement | null>(null);
 const statusChartRef = ref<HTMLElement | null>(null);
 const topSuppliersChartRef = ref<HTMLElement | null>(null);
@@ -223,13 +187,12 @@ let trendChart: echarts.ECharts | null = null;
 let statusChart: echarts.ECharts | null = null;
 let topSuppliersChart: echarts.ECharts | null = null;
 
-// Theming constants
-const chartTextColor = computed(() => (isDark.value ? "#9ca3af" : "#4b5563"));
+const chartTextColor = computed(() => (isDark.value ? '#9ca3af' : '#4b5563'));
 const chartAxisLineColor = computed(() =>
-  isDark.value ? "rgba(255, 255, 255, 0.16)" : "rgba(0, 0, 0, 0.1)",
+  isDark.value ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.1)'
 );
 const chartGridLineColor = computed(() =>
-  isDark.value ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+  isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
 );
 
 watch(isDark, () => {
@@ -243,15 +206,14 @@ const summaryData = ref({
   totalSupplierValue: 0,
 });
 
-const trendData = ref<ContractOverviewResponse["trendData"]>([]);
-const statusData = ref<ContractOverviewResponse["statusData"]>([]);
-const topSuppliersData = ref<ContractOverviewResponse["topSuppliersData"]>([]);
-const contractsData = ref<ContractOverviewResponse["contractsData"]>([]);
+const trendData = ref<ContractOverviewResponse['trendData']>([]);
+const statusData = ref<ContractOverviewResponse['statusData']>([]);
+const topSuppliersData = ref<ContractOverviewResponse['topSuppliersData']>([]);
+const contractsData = ref<ContractOverviewResponse['contractsData']>([]);
 const isLoading = ref(false);
-const errorMessage = ref("");
+const errorMessage = ref('');
 
-const normalizeFilterValue = (value?: string) =>
-  (value ?? "").trim().toLocaleLowerCase("vi-VN");
+const normalizeFilterValue = (value?: string) => (value ?? '').trim().toLocaleLowerCase('vi-VN');
 
 type ContractStatusChartItem = {
   name: string;
@@ -271,25 +233,19 @@ function summarizeContractStatuses(type: string): ContractStatusChartItem[] {
   return Array.from(statusCounts, ([name, value]) => ({ name, value }));
 }
 
-const salesContractStatusData = computed(() =>
-  summarizeContractStatuses("Bán xe"),
-);
+const salesContractStatusData = computed(() => summarizeContractStatuses('Bán xe'));
 
-const supplierContractStatusData = computed(() =>
-  summarizeContractStatuses("Nhà cung cấp"),
-);
+const supplierContractStatusData = computed(() => summarizeContractStatuses('Nhà cung cấp'));
 
 const availableStatuses = computed(() =>
-  Array.from(
-    new Set(contractsData.value.map((item) => item.status).filter(Boolean)),
-  ).sort((left, right) => left.localeCompare(right, "vi-VN")),
+  Array.from(new Set(contractsData.value.map((item) => item.status).filter(Boolean))).sort(
+    (left, right) => left.localeCompare(right, 'vi-VN')
+  )
 );
 
 const hasActiveFilters = computed(
   () =>
-    Boolean(typeFilter.value) ||
-    Boolean(statusFilter.value) ||
-    Boolean(searchQuery.value.trim()),
+    Boolean(typeFilter.value) || Boolean(statusFilter.value) || Boolean(searchQuery.value.trim())
 );
 
 const filteredContracts = computed(() => {
@@ -297,24 +253,20 @@ const filteredContracts = computed(() => {
 
   if (typeFilter.value) {
     const selectedType = normalizeFilterValue(typeFilter.value);
-    result = result.filter(
-      (item) => normalizeFilterValue(item.type) === selectedType,
-    );
+    result = result.filter((item) => normalizeFilterValue(item.type) === selectedType);
   }
 
   if (statusFilter.value) {
     const selectedStatus = normalizeFilterValue(statusFilter.value);
-    result = result.filter(
-      (item) => normalizeFilterValue(item.status) === selectedStatus,
-    );
+    result = result.filter((item) => normalizeFilterValue(item.status) === selectedStatus);
   }
 
-  const q = searchQuery.value.trim().toLocaleLowerCase("vi-VN");
+  const q = searchQuery.value.trim().toLocaleLowerCase('vi-VN');
   if (q) {
     result = result.filter(
       (item) =>
         normalizeFilterValue(item.contractNumber).includes(q) ||
-        normalizeFilterValue(item.partnerName).includes(q),
+        normalizeFilterValue(item.partnerName).includes(q)
     );
   }
 
@@ -334,9 +286,9 @@ watch([typeFilter, statusFilter, searchQuery], () => {
 });
 
 function resetContractFilters() {
-  typeFilter.value = "";
-  statusFilter.value = "";
-  searchQuery.value = "";
+  typeFilter.value = '';
+  statusFilter.value = '';
+  searchQuery.value = '';
   currentPage.value = 1;
 }
 
@@ -345,40 +297,40 @@ function exportContractExcel() {
     fileName: `Bao_cao_hop_dong_${toDateInput(new Date(periodStart.value))}_${toDateInput(new Date(periodEnd.value))}`,
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
-            "Hợp đồng bán xe": summaryData.value.totalSalesCount,
-            "Giá trị hợp đồng bán xe": summaryData.value.totalSalesValue,
-            "Hợp đồng nhà cung cấp": summaryData.value.totalSupplierCount,
-            "Giá trị hợp đồng NCC": summaryData.value.totalSupplierValue,
+            'Hợp đồng bán xe': summaryData.value.totalSalesCount,
+            'Giá trị hợp đồng bán xe': summaryData.value.totalSalesValue,
+            'Hợp đồng nhà cung cấp': summaryData.value.totalSupplierCount,
+            'Giá trị hợp đồng NCC': summaryData.value.totalSupplierValue,
           },
         ],
       },
       {
-        name: "Danh sách hợp đồng",
+        name: 'Danh sách hợp đồng',
         rows: filteredContracts.value.map((item) => ({
-          "Mã hợp đồng": item.contractNumber,
+          'Mã hợp đồng': item.contractNumber,
           Loại: item.type,
-          "Đối tác": item.partnerName,
-          "Giá trị": item.value,
-          "Trạng thái": item.status,
+          'Đối tác': item.partnerName,
+          'Giá trị': item.value,
+          'Trạng thái': item.status,
           Ngày: item.date,
         })),
       },
       {
-        name: "Xu hướng",
+        name: 'Xu hướng',
         rows: trendData.value.map((item) => ({
           Ngày: item.day,
-          "Giá trị hợp đồng bán xe": item.salesValue,
-          "Giá trị hợp đồng NCC": item.supplierValue,
+          'Giá trị hợp đồng bán xe': item.salesValue,
+          'Giá trị hợp đồng NCC': item.supplierValue,
         })),
       },
       {
-        name: "Trạng thái",
+        name: 'Trạng thái',
         rows: statusData.value.map((item) => ({
-          "Trạng thái": item.name,
-          "Số lượng": item.value,
+          'Trạng thái': item.name,
+          'Số lượng': item.value,
         })),
       },
     ],
@@ -387,12 +339,9 @@ function exportContractExcel() {
 
 async function loadContractOverview() {
   isLoading.value = true;
-  errorMessage.value = "";
+  errorMessage.value = '';
   try {
-    const res = await statisticsApi.getContractOverview(
-      periodStart.value,
-      periodEnd.value,
-    );
+    const res = await statisticsApi.getContractOverview(periodStart.value, periodEnd.value);
     summaryData.value = res.kpi;
     trendData.value = res.trendData || [];
     statusData.value = (res.statusData || []).map((item) => ({
@@ -407,18 +356,18 @@ async function loadContractOverview() {
     currentPage.value = 1;
     renderCharts();
   } catch (error) {
-    console.error("Failed to load contract overview", error);
+    console.error('Failed to load contract overview', error);
     errorMessage.value =
       error instanceof Error
         ? error.message
-        : "Không thể tải báo cáo hợp đồng trong khoảng thời gian đã chọn";
+        : 'Không thể tải báo cáo hợp đồng trong khoảng thời gian đã chọn';
   } finally {
     isLoading.value = false;
   }
 }
 
-function onPeriodChange(period: "today" | "month" | "year" | "custom") {
-  if (period !== "custom") {
+function onPeriodChange(period: 'today' | 'month' | 'year' | 'custom') {
+  if (period !== 'custom') {
     setPeriodRange(period);
   }
 
@@ -428,29 +377,29 @@ function onPeriodChange(period: "today" | "month" | "year" | "custom") {
 }
 
 function onStartDateChange(value: string) {
-  const shouldReload = currentPeriod.value === "custom";
+  const shouldReload = currentPeriod.value === 'custom';
   periodStart.value = value;
-  currentPeriod.value = "custom";
+  currentPeriod.value = 'custom';
   if (shouldReload && value && periodEnd.value) {
     void loadContractOverview();
   }
 }
 
 function onEndDateChange(value: string) {
-  const shouldReload = currentPeriod.value === "custom";
+  const shouldReload = currentPeriod.value === 'custom';
   periodEnd.value = value;
-  currentPeriod.value = "custom";
+  currentPeriod.value = 'custom';
   if (shouldReload && periodStart.value && value) {
     void loadContractOverview();
   }
 }
 
-function setPeriodRange(period: "today" | "month" | "year") {
+function setPeriodRange(period: 'today' | 'month' | 'year') {
   const today = new Date();
   const start =
-    period === "today"
+    period === 'today'
       ? today
-      : period === "month"
+      : period === 'month'
         ? new Date(today.getFullYear(), today.getMonth(), 1)
         : new Date(today.getFullYear(), 0, 1);
 
@@ -466,151 +415,147 @@ function toDateInput(date: Date) {
 
 function translateContractStatus(status: string) {
   const labels: Record<string, string> = {
-    Draft: "Nháp",
-    PendingApproval: "Chờ phê duyệt",
-    Approved: "Đã phê duyệt",
-    Signed: "Đã ký",
-    Active: "Đang hiệu lực",
-    Fulfilled: "Đã hoàn tất",
-    Completed: "Đã hoàn thành",
-    Expired: "Đã hết hạn",
-    Terminated: "Đã thanh lý",
-    Cancelled: "Đã hủy",
+    Draft: 'Nháp',
+    PendingApproval: 'Chờ phê duyệt',
+    Approved: 'Đã phê duyệt',
+    Signed: 'Đã ký',
+    Active: 'Đang hiệu lực',
+    Fulfilled: 'Đã hoàn tất',
+    Completed: 'Đã hoàn thành',
+    Expired: 'Đã hết hạn',
+    Terminated: 'Đã thanh lý',
+    Cancelled: 'Đã hủy',
   };
 
   return labels[status] ?? status;
 }
 
 function renderCharts() {
-  // 1. Horizontal Bar Chart: Trạng thái hợp đồng tổng thể
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption(
       {
-        backgroundColor: "transparent",
-        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
         grid: {
-          left: "3%",
-          right: "6%",
-          bottom: "3%",
+          left: '3%',
+          right: '6%',
+          bottom: '3%',
           containLabel: true,
         },
         xAxis: {
-          type: "value",
+          type: 'value',
           minInterval: 1,
           axisLabel: { color: chartTextColor.value },
           splitLine: { lineStyle: { color: chartGridLineColor.value } },
         },
         yAxis: {
-          type: "category",
+          type: 'category',
           data: statusData.value.map((item) => item.name),
           axisLabel: { color: chartTextColor.value },
           axisLine: { lineStyle: { color: chartAxisLineColor.value } },
         },
         series: [
           {
-            name: "Số hợp đồng",
-            type: "bar",
+            name: 'Số hợp đồng',
+            type: 'bar',
             data: statusData.value.map((item) => item.value),
             barMaxWidth: 34,
             itemStyle: {
-              color: "#e84a4a",
+              color: '#e84a4a',
               borderRadius: [0, 6, 6, 0],
             },
             label: {
               show: true,
-              position: "right",
+              position: 'right',
               color: chartTextColor.value,
-              formatter: "{c}",
-              fontWeight: "bold",
+              formatter: '{c}',
+              fontWeight: 'bold',
             },
           },
         ],
       },
-      true,
+      true
     );
   }
 
-  // 2. Pie Chart: Hợp đồng nhà cung cấp
   if (topSuppliersChartRef.value) {
-    if (!topSuppliersChart)
-      topSuppliersChart = echarts.init(topSuppliersChartRef.value);
+    if (!topSuppliersChart) topSuppliersChart = echarts.init(topSuppliersChartRef.value);
     topSuppliersChart.setOption(
       {
-        backgroundColor: "transparent",
-        tooltip: { trigger: "item" },
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item' },
         legend: {
-          orient: "vertical",
-          left: "left",
+          orient: 'vertical',
+          left: 'left',
           textStyle: { color: chartTextColor.value },
         },
         series: [
           {
-            type: "pie",
-            radius: ["40%", "70%"],
-            center: ["60%", "50%"],
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['60%', '50%'],
             data: supplierContractStatusData.value.map((item) => ({
               name: item.name,
               value: item.value,
             })),
             itemStyle: {
               borderRadius: 5,
-              borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
+              borderColor: isDark.value ? 'rgba(30, 41, 59, 1)' : '#fff',
               borderWidth: 2,
             },
             label: {
               show: true,
               color: chartTextColor.value,
-              formatter: "{b}: {c}",
+              formatter: '{b}: {c}',
               fontSize: 13,
-              fontWeight: "bold",
+              fontWeight: 'bold',
             },
           },
         ],
-        color: ["#f59e0b", "#e84a4a", "#3b82f6", "#22c55e", "#8b5cf6"],
+        color: ['#f59e0b', '#e84a4a', '#3b82f6', '#22c55e', '#8b5cf6'],
       },
-      true,
+      true
     );
   }
 
-  // 3. Pie Chart: Hợp đồng mua bán
   if (statusChartRef.value) {
     if (!statusChart) statusChart = echarts.init(statusChartRef.value);
     statusChart.setOption(
       {
-        backgroundColor: "transparent",
-        tooltip: { trigger: "item" },
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'item' },
         legend: {
-          orient: "vertical",
-          left: "left",
+          orient: 'vertical',
+          left: 'left',
           textStyle: { color: chartTextColor.value },
         },
         series: [
           {
-            type: "pie",
-            radius: ["40%", "70%"],
-            center: ["60%", "50%"],
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['60%', '50%'],
             data: salesContractStatusData.value.map((item) => ({
               name: item.name,
               value: item.value,
             })),
             itemStyle: {
               borderRadius: 5,
-              borderColor: isDark.value ? "rgba(30, 41, 59, 1)" : "#fff",
+              borderColor: isDark.value ? 'rgba(30, 41, 59, 1)' : '#fff',
               borderWidth: 2,
             },
             label: {
-              show: true,
+              show: false,
               color: chartTextColor.value,
-              formatter: "{b}: {c}",
+              formatter: '{b}: {c}',
               fontSize: 13,
-              fontWeight: "bold",
+              fontWeight: 'bold',
             },
           },
         ],
-        color: ["#3b82f6", "#22c55e", "#f59e0b", "#e84a4a", "#8b5cf6"],
+        color: ['#3b82f6', '#22c55e', '#f59e0b', '#e84a4a', '#8b5cf6'],
       },
-      true,
+      true
     );
   }
 }
@@ -623,34 +568,33 @@ function handleResize() {
 
 onMounted(() => {
   void loadContractOverview();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   trendChart?.dispose();
   statusChart?.dispose();
   topSuppliersChart?.dispose();
 });
 
-// Format Utilities
 function formatCurrency(val: number) {
-  if (!val) return "0 ₫";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (!val) return '0 ₫';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 }
 
 function formatShortCurrency(val: number) {
-  if (!val) return "0 ₫";
-  if (val >= 1_000_000_000) return (val / 1_000_000_000).toFixed(1) + " Tỷ";
-  if (val >= 1_000_000) return (val / 1_000_000).toFixed(1) + " Tr";
+  if (!val) return '0 ₫';
+  if (val >= 1_000_000_000) return (val / 1_000_000_000).toFixed(1) + ' Tỷ';
+  if (val >= 1_000_000) return (val / 1_000_000).toFixed(1) + ' Tr';
   return formatCurrency(val);
 }
 
 function formatNumber(val: number) {
-  return new Intl.NumberFormat("vi-VN").format(val || 0);
+  return new Intl.NumberFormat('vi-VN').format(val || 0);
 }
 </script>
 
@@ -734,7 +678,6 @@ function formatNumber(val: number) {
   }
 }
 
-/* Custom icon colors */
 .bg-report-blue {
   @apply bg-blue-500/10 text-blue-500;
 }

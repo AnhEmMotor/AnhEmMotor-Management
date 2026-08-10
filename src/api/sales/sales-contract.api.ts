@@ -1,11 +1,11 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   SalesContractListDto,
   SalesContractDetailDto,
   CreateSalesContractRequest,
   UpdateSalesContractRequest,
   UpdateContractStatusRequest,
-} from "@/domain/sales/contract.types";
+} from '@/domain/sales/contract.types';
 
 export const SalesContractApi = {
   getList(params: {
@@ -17,7 +17,7 @@ export const SalesContractApi = {
   }) {
     const { current, size, ...rest } = params;
     return request.get<{ items: SalesContractListDto[]; totalCount: number }>({
-      url: "/api/v1/contracts/sales",
+      url: '/api/v1/contracts/sales',
       params: { Page: current, PageSize: size, ...rest },
     });
   },
@@ -30,7 +30,7 @@ export const SalesContractApi = {
 
   create(data: CreateSalesContractRequest) {
     return request.post<SalesContractDetailDto>({
-      url: "/api/v1/contracts/sales",
+      url: '/api/v1/contracts/sales',
       data,
     });
   },
@@ -50,7 +50,7 @@ export const SalesContractApi = {
 
   uploadScannedFile(contractId: string, file: File) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     return request.post<{ scannedFileUrl: string }>({
       url: `/api/v1/contracts/sales/${contractId}/scanned-file`,
       data: formData,
@@ -83,7 +83,7 @@ export const SalesContractApi = {
       overdueCount: number;
       signedCount: number;
     }>({
-      url: "/api/v1/contracts/sales/statistics",
+      url: '/api/v1/contracts/sales/statistics',
     });
   },
 };

@@ -8,12 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import type { EChartsOption } from "@/plugins/echarts";
-import { getCssVar } from "@/common/utils/ui";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import type { ScatterChartProps } from "@/types/component/chart";
+import type { EChartsOption } from '@/plugins/echarts';
+import { getCssVar } from '@/common/utils/ui';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import type { ScatterChartProps } from '@/types/component/chart';
 
-defineOptions({ name: "ArtScatterChart" });
+defineOptions({ name: 'ArtScatterChart' });
 
 const props = withDefaults(defineProps<ScatterChartProps>(), {
   height: useChartOps().chartHeight,
@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<ScatterChartProps>(), {
 
   showTooltip: true,
   showLegend: false,
-  legendPosition: "bottom",
+  legendPosition: 'bottom',
 });
 
 const {
@@ -44,14 +44,11 @@ const {
 } = useChartComponent({
   props,
   checkEmpty: () => {
-    return (
-      !props.data?.length ||
-      props.data.every((item) => item.value.every((val) => val === 0))
-    );
+    return !props.data?.length || props.data.every((item) => item.value.every((val) => val === 0));
   },
   watchSources: [() => props.data, () => props.colors, () => props.symbolSize],
   generateOptions: (): EChartsOption => {
-    const computedColor = props.colors[0] || getCssVar("--el-color-primary");
+    const computedColor = props.colors[0] || getCssVar('--el-color-primary');
 
     return {
       grid: {
@@ -62,7 +59,7 @@ const {
         containLabel: true,
       },
       tooltip: props.showTooltip
-        ? getTooltipStyle("item", {
+        ? getTooltipStyle('item', {
             formatter: (params: { value: [number, number] }) => {
               const [x, y] = params.value;
               return `X: ${x}<br/>Y: ${y}`;
@@ -70,14 +67,14 @@ const {
           })
         : undefined,
       xAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
         axisLine: getAxisLineStyle(props.showAxisLine),
         axisTick: getAxisTickStyle(),
         splitLine: getSplitLineStyle(props.showSplitLine),
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
         axisLine: getAxisLineStyle(props.showAxisLine),
         axisTick: getAxisTickStyle(),
@@ -85,23 +82,19 @@ const {
       },
       series: [
         {
-          type: "scatter",
+          type: 'scatter',
           data: props.data,
           symbolSize: props.symbolSize,
           itemStyle: {
             color: computedColor,
             shadowBlur: 6,
-            shadowColor: isDark.value
-              ? "rgba(255, 255, 255, 0.1)"
-              : "rgba(0, 0, 0, 0.1)",
+            shadowColor: isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
             shadowOffsetY: 2,
           },
           emphasis: {
             itemStyle: {
               shadowBlur: 12,
-              shadowColor: isDark.value
-                ? "rgba(255, 255, 255, 0.2)"
-                : "rgba(0, 0, 0, 0.2)",
+              shadowColor: isDark.value ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
             },
             scale: true,
           },

@@ -1,1 +1,1 @@
-export * from "./vehicle.api";
+export * from './vehicle.api';

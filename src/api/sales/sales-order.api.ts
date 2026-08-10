@@ -1,11 +1,11 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   CreateSalesOrderByManager,
   SalesOrder,
   SalesOrderList,
   UpdateSalesOrderForManager,
   VehicleAssignmentRequirement,
-} from "@/domain/order/order.types";
+} from '@/domain/order/order.types';
 
 function getPagedList(url: string, params: any) {
   const { current, size, ...rest } = params;
@@ -21,11 +21,11 @@ function getPagedList(url: string, params: any) {
 
 export const SalesOrderApi = {
   getConfirmedList(params: any) {
-    return getPagedList("/api/v1/SalesOrders/confirmed", params);
+    return getPagedList('/api/v1/SalesOrders/confirmed', params);
   },
 
   getUnconfirmedList(params: any) {
-    return getPagedList("/api/v1/SalesOrders/unconfirmed", params);
+    return getPagedList('/api/v1/SalesOrders/unconfirmed', params);
   },
 
   getById(id: number) {
@@ -36,31 +36,31 @@ export const SalesOrderApi = {
 
   getStatuses() {
     return request.get<Record<string, string>>({
-      url: "/api/v1/SalesOrders/status",
+      url: '/api/v1/SalesOrders/status',
     });
   },
 
   getStatusMap() {
     return request.get<Array<{ id: string; name: string }>>({
-      url: "/api/v1/SalesOrders/status-map",
+      url: '/api/v1/SalesOrders/status-map',
     });
   },
 
   getTransitionMap() {
     return request.get<Record<string, string[]>>({
-      url: "/api/v1/SalesOrders/transition-map",
+      url: '/api/v1/SalesOrders/transition-map',
     });
   },
 
   getLockedStatuses() {
     return request.get({
-      url: "/api/v1/SalesOrders/locked-statuses",
+      url: '/api/v1/SalesOrders/locked-statuses',
     });
   },
 
   getVehicleAssignmentStatuses() {
     return request.get<string[]>({
-      url: "/api/v1/SalesOrders/vehicle-assignment-statuses",
+      url: '/api/v1/SalesOrders/vehicle-assignment-statuses',
     });
   },
 
@@ -73,7 +73,7 @@ export const SalesOrderApi = {
 
   createByManager(data: CreateSalesOrderByManager) {
     return request.post<SalesOrder>({
-      url: "/api/v1/SalesOrders/by-manager",
+      url: '/api/v1/SalesOrders/by-manager',
       data,
     });
   },
@@ -94,7 +94,7 @@ export const SalesOrderApi = {
 
   updateManyOutputStatus(data: { ids: number[]; statusId: string }) {
     return request.patch<any>({
-      url: "/api/v1/SalesOrders/status",
+      url: '/api/v1/SalesOrders/status',
       data,
     });
   },
@@ -113,7 +113,7 @@ export const SalesOrderApi = {
 
   getProvinces() {
     return request.get<{ provinceId: number; provinceName: string }[]>({
-      url: "/api/v1/SalesOrders/provinces",
+      url: '/api/v1/SalesOrders/provinces',
     });
   },
 

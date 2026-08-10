@@ -1,8 +1,8 @@
-export type PaymentSourceType = "RepairOrder" | "Warranty" | "ServiceBooking";
+export type PaymentSourceType = 'RepairOrder' | 'Warranty' | 'ServiceBooking';
 
-export type PaymentMethod = "Cash" | "Transfer" | "Card" | "VNPay" | "MoMo";
+export type PaymentMethod = 'Cash' | 'Transfer' | 'Card' | 'VNPay' | 'MoMo';
 
-export type PaymentStatus = "Paid" | "Unpaid" | "Partial" | "Refunded";
+export type PaymentStatus = 'Paid' | 'Unpaid' | 'Partial' | 'Refunded';
 
 export interface PaymentItem {
   id: number;

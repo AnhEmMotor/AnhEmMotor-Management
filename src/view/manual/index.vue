@@ -1,14 +1,8 @@
 <template>
   <div class="manual-layout h-screen flex flex-col overflow-hidden relative">
-    <!-- Background Image -->
-    <img
-      src="@/assets/images/HDSD.jpg"
-      class="manual-image-bg"
-      alt="background"
-    />
+    <img src="@/assets/images/HDSD.jpg" class="manual-image-bg" alt="background" />
     <div class="manual-bg-overlay"></div>
 
-    <!-- Header -->
     <div
       id="app-header"
       class="w-full sticky top-0 z-50 shadow-sm relative"
@@ -17,16 +11,11 @@
       <ArtHeaderBar :isPortal="true" />
     </div>
 
-    <!-- Main Workspace -->
     <div class="manual-container flex flex-1 overflow-hidden relative z-10">
-      <!-- Content Area -->
       <div
         class="manual-content flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 relative flex flex-col"
       >
-        <div
-          class="w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center"
-        >
-          <!-- Overview -->
+        <div class="w-full max-w-[1300px] mx-auto flex-1 flex flex-col justify-center">
           <div v-if="activeSection === 'overview'">
             <div
               class="mb-8 mx-auto max-w-2xl bg-black/40 backdrop-blur-md rounded-2xl py-6 px-8 border border-white/10 shadow-2xl text-center"
@@ -47,9 +36,7 @@
 
             <div class="workspace-grid mt-4">
               <el-card
-                v-for="section in availableSections.filter(
-                  (s) => s.id !== 'overview',
-                )"
+                v-for="section in availableSections.filter((s) => s.id !== 'overview')"
                 :key="section.id"
                 class="workspace-card relative"
                 :style="{
@@ -75,17 +62,14 @@
 
                 <div class="card-content">
                   <h3 class="workspace-title">{{ section.title }}</h3>
-                  <span
-                    class="workspace-subtitle"
-                    :style="{ color: section.color }"
-                    >{{ section.subtitle }}</span
-                  >
+                  <span class="workspace-subtitle" :style="{ color: section.color }">{{
+                    section.subtitle
+                  }}</span>
                 </div>
               </el-card>
             </div>
           </div>
 
-          <!-- Specific Modules -->
           <div
             v-else
             :key="activeSection"
@@ -108,48 +92,29 @@
                 }"
                 ><component :is="currentSectionData?.icon"
               /></el-icon>
-              <h1
-                class="text-3xl font-black"
-                style="color: var(--el-text-color-primary)"
-              >
+              <h1 class="text-3xl font-black" style="color: var(--el-text-color-primary)">
                 {{ currentSectionData?.title }}
               </h1>
             </div>
-            <p
-              class="mb-8 text-lg"
-              style="color: var(--el-text-color-secondary)"
-            >
+            <p class="mb-8 text-lg" style="color: var(--el-text-color-secondary)">
               Tài liệu hướng dẫn nghiệp vụ chi tiết dành riêng cho phân hệ này.
             </p>
 
-            <div
-              class="prose max-w-none"
-              style="color: var(--el-text-color-regular)"
-            >
-              <!-- Mock Content -->
-              <h3
-                class="text-xl font-bold mb-4"
-                style="color: var(--el-text-color-primary)"
-              >
+            <div class="prose max-w-none" style="color: var(--el-text-color-regular)">
+              <h3 class="text-xl font-bold mb-4" style="color: var(--el-text-color-primary)">
                 1. Giới thiệu phân hệ
               </h3>
               <p class="mb-6 leading-relaxed">
-                Phân hệ <strong>{{ currentSectionData?.title }}</strong> được
-                thiết kế để giúp bạn quản lý các nghiệp vụ chuyên môn một cách
-                nhanh chóng, tự động và chính xác. Tại đây, bạn sẽ được hướng
-                dẫn từng bước để làm chủ các chức năng.
+                Phân hệ <strong>{{ currentSectionData?.title }}</strong> được thiết kế để giúp bạn
+                quản lý các nghiệp vụ chuyên môn một cách nhanh chóng, tự động và chính xác. Tại
+                đây, bạn sẽ được hướng dẫn từng bước để làm chủ các chức năng.
               </p>
 
-              <h3
-                class="text-xl font-bold mb-4"
-                style="color: var(--el-text-color-primary)"
-              >
+              <h3 class="text-xl font-bold mb-4" style="color: var(--el-text-color-primary)">
                 2. Các chức năng chính
               </h3>
               <ul class="list-disc pl-6 space-y-2 mb-8">
-                <li>
-                  Xem danh sách và thao tác dữ liệu cơ bản (Thêm, Sửa, Xóa).
-                </li>
+                <li>Xem danh sách và thao tác dữ liệu cơ bản (Thêm, Sửa, Xóa).</li>
                 <li>Xử lý các nghiệp vụ chuyên sâu theo quy trình chuẩn.</li>
                 <li>Lập và xuất báo cáo thống kê định kỳ.</li>
               </ul>
@@ -162,9 +127,8 @@
                 class="mb-4"
               >
                 <p class="mt-1">
-                  Vui lòng kiểm tra kỹ dữ liệu trước khi lưu vào hệ thống để
-                  tránh sai sót ảnh hưởng đến các phân hệ khác (vì dữ liệu được
-                  liên kết chặt chẽ).
+                  Vui lòng kiểm tra kỹ dữ liệu trước khi lưu vào hệ thống để tránh sai sót ảnh hưởng
+                  đến các phân hệ khác (vì dữ liệu được liên kết chặt chẽ).
                 </p>
               </el-alert>
             </div>
@@ -180,8 +144,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, markRaw } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, markRaw } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   Document,
   Picture,
@@ -191,30 +155,30 @@ import {
   Service,
   Wallet,
   Back,
-} from "@element-plus/icons-vue";
-import { useAuth } from "@/common/composables/useAuth";
-import { Permissions } from "@/domain/constants/permissions";
-import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
-import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
+} from '@element-plus/icons-vue';
+import { useAuth } from '@/common/composables/useAuth';
+import { Permissions } from '@/domain/constants/permissions';
+import ArtHeaderBar from '@/components/core/layouts/art-header-bar/index.vue';
+import ArtGlobalComponent from '@/components/core/layouts/art-global-component/index.vue';
 
 const { hasAuth } = useAuth();
 const router = useRouter();
 
-const activeSection = ref("overview");
+const activeSection = ref('overview');
 
 function openSection(section: any) {
-  if (section.id === "admin") {
-    router.push("/admin/manual");
-  } else if (section.id === "factory") {
-    router.push("/factory/manual");
-  } else if (section.id === "accountant") {
-    router.push("/Accountant/manual");
-  } else if (section.id === "marketing") {
-    router.push("/Marketing/manual");
-  } else if (section.id === "order") {
-    router.push("/Order/manual");
-  } else if (section.id === "warehouse") {
-    router.push("/Warehouse/manual");
+  if (section.id === 'admin') {
+    router.push('/admin/manual');
+  } else if (section.id === 'factory') {
+    router.push('/factory/manual');
+  } else if (section.id === 'accountant') {
+    router.push('/Accountant/manual');
+  } else if (section.id === 'marketing') {
+    router.push('/Marketing/manual');
+  } else if (section.id === 'order') {
+    router.push('/Order/manual');
+  } else if (section.id === 'warehouse') {
+    router.push('/Warehouse/manual');
   } else {
     activeSection.value = section.id;
   }
@@ -222,73 +186,73 @@ function openSection(section: any) {
 
 const sections = [
   {
-    id: "overview",
-    title: "Tổng quan hệ thống",
-    subtitle: "System Overview",
+    id: 'overview',
+    title: 'Tổng quan hệ thống',
+    subtitle: 'System Overview',
     icon: markRaw(Document),
-    color: "#0284c7",
-    shadowColor: "rgba(2, 132, 199, 0.15)",
+    color: '#0284c7',
+    shadowColor: 'rgba(2, 132, 199, 0.15)',
     hasAccess: true,
   },
   {
-    id: "admin",
-    title: "Ban Điều Hành & Chủ Showroom",
-    subtitle: "Executive Overview",
+    id: 'admin',
+    title: 'Ban Điều Hành & Chủ Showroom',
+    subtitle: 'Executive Overview',
     icon: markRaw(DataAnalysis),
-    color: "#e11d48",
-    shadowColor: "rgba(225, 29, 72, 0.25)",
+    color: '#e11d48',
+    shadowColor: 'rgba(225, 29, 72, 0.25)',
     hasAccess: hasAuth(Permissions.Admin.Module),
   },
   {
-    id: "marketing",
-    title: "Marketing & SEO",
-    subtitle: "Marketing & SEO Workspace",
+    id: 'marketing',
+    title: 'Marketing & SEO',
+    subtitle: 'Marketing & SEO Workspace',
     icon: markRaw(UserFilled),
-    color: "#059669",
-    shadowColor: "rgba(5, 150, 105, 0.25)",
+    color: '#059669',
+    shadowColor: 'rgba(5, 150, 105, 0.25)',
     hasAccess: hasAuth(Permissions.Marketing.Module),
   },
   {
-    id: "warehouse",
-    title: "Quản Lý Kho & Hậu Cần",
-    subtitle: "Inventory & Asset Logistics",
+    id: 'warehouse',
+    title: 'Quản Lý Kho & Hậu Cần',
+    subtitle: 'Inventory & Asset Logistics',
     icon: markRaw(Box),
-    color: "#d97706",
-    shadowColor: "rgba(217, 119, 6, 0.15)",
+    color: '#d97706',
+    shadowColor: 'rgba(217, 119, 6, 0.15)',
     hasAccess: hasAuth(Permissions.Warehouse.Module),
   },
   {
-    id: "factory",
-    title: "Dịch Vụ & Xưởng Sửa Chữa",
-    subtitle: "Workshop Operations",
+    id: 'factory',
+    title: 'Dịch Vụ & Xưởng Sửa Chữa',
+    subtitle: 'Workshop Operations',
     icon: markRaw(Service),
-    color: "#2563eb",
-    shadowColor: "rgba(37, 99, 235, 0.15)",
+    color: '#2563eb',
+    shadowColor: 'rgba(37, 99, 235, 0.15)',
     hasAccess: hasAuth(Permissions.Factory.Module),
   },
   {
-    id: "accountant",
-    title: "Kế Toán, Lương & Thuế",
-    subtitle: "Financial & Compliance",
+    id: 'accountant',
+    title: 'Kế Toán, Lương & Thuế',
+    subtitle: 'Financial & Compliance',
     icon: markRaw(Wallet),
-    color: "#7c3aed",
-    shadowColor: "rgba(124, 58, 237, 0.15)",
+    color: '#7c3aed',
+    shadowColor: 'rgba(124, 58, 237, 0.15)',
     hasAccess: hasAuth(Permissions.Accountant.Module),
   },
   {
-    id: "order",
-    title: "Đơn hàng & Vận chuyển",
-    subtitle: "Order & Transer Workspace",
+    id: 'order',
+    title: 'Đơn hàng & Vận chuyển',
+    subtitle: 'Order & Transer Workspace',
     icon: markRaw(Wallet),
-    color: "#0284c7",
-    shadowColor: "rgba(2, 132, 199, 0.15)",
+    color: '#0284c7',
+    shadowColor: 'rgba(2, 132, 199, 0.15)',
     hasAccess: hasAuth(Permissions.Order.Module),
   },
 ];
 
 const availableSections = computed(() => sections.filter((s) => s.hasAccess));
 const currentSectionData = computed(() =>
-  availableSections.value.find((s) => s.id === activeSection.value),
+  availableSections.value.find((s) => s.id === activeSection.value)
 );
 </script>
 

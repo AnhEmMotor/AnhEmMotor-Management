@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page sales-report-page">
-    <!-- Filter Bar -->
     <div class="filter-bar">
       <div class="filter-bar__left">
         <ElSelect
@@ -52,7 +51,6 @@
         </ElButton>
       </div>
     </div>
-    <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card kpi-card--revenue">
         <div class="kpi-card__icon">
@@ -67,7 +65,7 @@
             class="kpi-card__change"
             :class="kpis.revenueChange >= 0 ? 'text-green-500' : 'text-red-500'"
           >
-            {{ kpis.revenueChange >= 0 ? "▲" : "▼" }}
+            {{ kpis.revenueChange >= 0 ? '▲' : '▼' }}
             {{ Math.abs(kpis.revenueChange).toFixed(1) }}%
           </div>
         </div>
@@ -86,7 +84,7 @@
             class="kpi-card__change"
             :class="kpis.profitChange >= 0 ? 'text-green-500' : 'text-red-500'"
           >
-            {{ kpis.profitChange >= 0 ? "▲" : "▼" }}
+            {{ kpis.profitChange >= 0 ? '▲' : '▼' }}
             {{ Math.abs(kpis.profitChange).toFixed(1) }}%
           </div>
         </div>
@@ -103,7 +101,7 @@
             class="kpi-card__change"
             :class="kpis.orderChange >= 0 ? 'text-green-500' : 'text-red-500'"
           >
-            {{ kpis.orderChange >= 0 ? "▲" : "▼" }}
+            {{ kpis.orderChange >= 0 ? '▲' : '▼' }}
             {{ Math.abs(kpis.orderChange).toFixed(1) }}%
           </div>
         </div>
@@ -117,7 +115,7 @@
           <div class="kpi-card__label">Đơn hủy</div>
           <div class="kpi-card__value">{{ kpis.cancelledOrders }}</div>
           <div class="kpi-card__change text-red-500">
-            {{ kpis.cancelledOrders > 0 ? "Cần xử lý" : "Không có" }}
+            {{ kpis.cancelledOrders > 0 ? 'Cần xử lý' : 'Không có' }}
           </div>
         </div>
       </div>
@@ -133,16 +131,14 @@
             class="kpi-card__change"
             :class="kpis.aovChange >= 0 ? 'text-green-500' : 'text-red-500'"
           >
-            {{ kpis.aovChange >= 0 ? "▲" : "▼" }}
+            {{ kpis.aovChange >= 0 ? '▲' : '▼' }}
             {{ Math.abs(kpis.aovChange).toFixed(1) }}%
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Charts Section -->
     <div class="charts-grid">
-      <!-- Revenue Trend Chart -->
       <ElCard class="chart-card">
         <template #header>
           <div class="chart-card__header">
@@ -152,7 +148,6 @@
         <div ref="trendChartRef" class="chart-container"></div>
       </ElCard>
 
-      <!-- Revenue Structure Pie Chart -->
       <ElCard class="chart-card">
         <template #header>
           <div class="chart-card__header">
@@ -163,21 +158,14 @@
       </ElCard>
     </div>
 
-    <!-- Top Rankings -->
     <div class="rankings-grid">
-      <!-- Top 5 Motorbikes -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
             <span>🏍️ Top 5 dòng xe bán chạy nhất</span>
           </div>
         </template>
-        <ElTable
-          :data="topMotorbikes"
-          style="width: 100%"
-          size="small"
-          :show-header="true"
-        >
+        <ElTable :data="topMotorbikes" style="width: 100%" size="small" :show-header="true">
           <ElTableColumn type="index" label="#" width="50" align="center" />
           <ElTableColumn label="Dòng xe" min-width="180">
             <template #default="{ row }">
@@ -188,26 +176,18 @@
             <template #default="{ row }">{{ row.quantity }} chiếc</template>
           </ElTableColumn>
           <ElTableColumn label="Doanh thu" width="140" align="right">
-            <template #default="{ row }">{{
-              formatCurrency(row.revenue)
-            }}</template>
+            <template #default="{ row }">{{ formatCurrency(row.revenue) }}</template>
           </ElTableColumn>
         </ElTable>
       </ElCard>
 
-      <!-- Top 5 Parts -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
             <span>⚙️ Top 5 phụ tùng bán chạy</span>
           </div>
         </template>
-        <ElTable
-          :data="topParts"
-          style="width: 100%"
-          size="small"
-          :show-header="true"
-        >
+        <ElTable :data="topParts" style="width: 100%" size="small" :show-header="true">
           <ElTableColumn type="index" label="#" width="50" align="center" />
           <ElTableColumn label="Phụ tùng" min-width="180">
             <template #default="{ row }">
@@ -218,14 +198,11 @@
             <template #default="{ row }">{{ row.quantity }} sp</template>
           </ElTableColumn>
           <ElTableColumn label="Doanh thu" width="140" align="right">
-            <template #default="{ row }">{{
-              formatCurrency(row.revenue)
-            }}</template>
+            <template #default="{ row }">{{ formatCurrency(row.revenue) }}</template>
           </ElTableColumn>
         </ElTable>
       </ElCard>
 
-      <!-- Top 3 Employees -->
       <ElCard class="ranking-card">
         <template #header>
           <div class="ranking-card__header">
@@ -240,12 +217,8 @@
             :class="'employee-item--' + (idx + 1)"
           >
             <div class="employee-item__rank">
-              <span v-if="idx === 0" class="rank-badge rank-badge--gold"
-                >🥇</span
-              >
-              <span v-else-if="idx === 1" class="rank-badge rank-badge--silver"
-                >🥈</span
-              >
+              <span v-if="idx === 0" class="rank-badge rank-badge--gold">🥇</span>
+              <span v-else-if="idx === 1" class="rank-badge rank-badge--silver">🥈</span>
               <span v-else class="rank-badge rank-badge--bronze">🥉</span>
             </div>
             <div class="employee-item__info">
@@ -263,7 +236,6 @@
       </ElCard>
     </div>
 
-    <!-- Detailed Data Table -->
     <ElCard class="detail-card">
       <template #header>
         <div class="detail-card__header">
@@ -282,35 +254,22 @@
           </ElInput>
         </div>
       </template>
-      <ElTable
-        :data="paginatedDetailData"
-        style="width: 100%"
-        border
-        size="small"
-      >
+      <ElTable :data="paginatedDetailData" style="width: 100%" border size="small">
         <ElTableColumn label="Ngày" min-width="120" align="center">
           <template #default="{ row }">{{ formatDate(row.date) }}</template>
         </ElTableColumn>
         <ElTableColumn label="Doanh thu Xe máy" min-width="160" align="right">
-          <template #default="{ row }">{{
-            formatCurrency(row.motorbikeRevenue)
-          }}</template>
+          <template #default="{ row }">{{ formatCurrency(row.motorbikeRevenue) }}</template>
         </ElTableColumn>
         <ElTableColumn label="Doanh thu Phụ tùng" min-width="160" align="right">
-          <template #default="{ row }">{{
-            formatCurrency(row.partsRevenue)
-          }}</template>
+          <template #default="{ row }">{{ formatCurrency(row.partsRevenue) }}</template>
         </ElTableColumn>
         <ElTableColumn label="Doanh thu Dịch vụ" min-width="160" align="right">
-          <template #default="{ row }">{{
-            formatCurrency(row.serviceRevenue)
-          }}</template>
+          <template #default="{ row }">{{ formatCurrency(row.serviceRevenue) }}</template>
         </ElTableColumn>
         <ElTableColumn label="Tổng doanh thu" min-width="160" align="right">
           <template #default="{ row }">
-            <span class="font-bold">{{
-              formatCurrency(row.totalRevenue)
-            }}</span>
+            <span class="font-bold">{{ formatCurrency(row.totalRevenue) }}</span>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Số đơn" min-width="90" align="center">
@@ -321,19 +280,9 @@
             formatCurrency(Math.round(row.totalRevenue / row.orderCount))
           }}</template>
         </ElTableColumn>
-        <ElTableColumn
-          label="Thao tác"
-          width="100"
-          align="center"
-          fixed="right"
-        >
+        <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
           <template #default="{ row }">
-            <ElButton
-              type="primary"
-              link
-              size="small"
-              @click="handleViewDetail(row)"
-            >
+            <ElButton type="primary" link size="small" @click="handleViewDetail(row)">
               Xem
             </ElButton>
           </template>
@@ -352,12 +301,7 @@
       </div>
     </ElCard>
 
-    <!-- Detail Drawer -->
-    <ElDrawer
-      v-model="drawerVisible"
-      title="Chi tiết doanh thu ngày"
-      size="40%"
-    >
+    <ElDrawer v-model="drawerVisible" title="Chi tiết doanh thu ngày" size="40%">
       <div v-if="drawerData" class="drawer-detail">
         <div class="drawer-detail__header">
           <div class="drawer-detail__date">
@@ -371,21 +315,15 @@
         <div class="drawer-detail__breakdown">
           <div class="breakdown-row">
             <span>🏍️ Doanh thu Xe máy:</span>
-            <span class="font-bold">{{
-              formatCurrency(drawerData.motorbikeRevenue)
-            }}</span>
+            <span class="font-bold">{{ formatCurrency(drawerData.motorbikeRevenue) }}</span>
           </div>
           <div class="breakdown-row">
             <span>⚙️ Doanh thu Phụ tùng:</span>
-            <span class="font-bold">{{
-              formatCurrency(drawerData.partsRevenue)
-            }}</span>
+            <span class="font-bold">{{ formatCurrency(drawerData.partsRevenue) }}</span>
           </div>
           <div class="breakdown-row">
             <span>🛠️ Doanh thu Dịch vụ:</span>
-            <span class="font-bold">{{
-              formatCurrency(drawerData.serviceRevenue)
-            }}</span>
+            <span class="font-bold">{{ formatCurrency(drawerData.serviceRevenue) }}</span>
           </div>
           <ElDivider />
           <div class="breakdown-row breakdown-row--total">
@@ -397,12 +335,7 @@
           <h4 class="mb-3 font-bold text-gray-700">
             Danh sách đơn hàng ({{ drawerData.orderCount }})
           </h4>
-          <ElTable
-            :data="drawerData.orders"
-            style="width: 100%"
-            size="small"
-            border
-          >
+          <ElTable :data="drawerData.orders" style="width: 100%" size="small" border>
             <ElTableColumn label="Mã đơn" width="120">
               <template #default="{ row }">
                 <span class="font-medium text-primary">#{{ row.id }}</span>
@@ -410,24 +343,18 @@
             </ElTableColumn>
             <ElTableColumn label="Loại" width="120" align="center">
               <template #default="{ row }">
-                <ElTag :type="getOrderTypeTag(row.type)" size="small">{{
-                  row.typeLabel
-                }}</ElTag>
+                <ElTag :type="getOrderTypeTag(row.type)" size="small">{{ row.typeLabel }}</ElTag>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Khách hàng" min-width="150">
               <template #default="{ row }">{{ row.customer }}</template>
             </ElTableColumn>
             <ElTableColumn label="Số tiền" width="140" align="right">
-              <template #default="{ row }">{{
-                formatCurrency(row.amount)
-              }}</template>
+              <template #default="{ row }">{{ formatCurrency(row.amount) }}</template>
             </ElTableColumn>
             <ElTableColumn label="Trạng thái" width="120" align="center">
               <template #default="{ row }">
-                <ElTag :type="getStatusTag(row.status)" size="small">{{
-                  row.status
-                }}</ElTag>
+                <ElTag :type="getStatusTag(row.status)" size="small">{{ row.status }}</ElTag>
               </template>
             </ElTableColumn>
           </ElTable>
@@ -438,9 +365,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed } from "vue";
-import * as echarts from "echarts";
-import { ElMessage } from "element-plus";
+import { onMounted, onUnmounted, ref, computed } from 'vue';
+import * as echarts from 'echarts';
+import { ElMessage } from 'element-plus';
 import {
   Download,
   Document,
@@ -450,30 +377,26 @@ import {
   CloseBold,
   Search,
   ShoppingBag,
-} from "@element-plus/icons-vue";
-import { statisticsApi } from "@/api/operations/statistics.api";
+} from '@element-plus/icons-vue';
+import { statisticsApi } from '@/api/operations/statistics.api';
 import type {
   AdminRevenueAnalysisResponse,
   DailyRevenueDetailResponse,
-} from "@/types/api/statistical";
+} from '@/types/api/statistical';
 
-defineOptions({ name: "SalesReport" });
+defineOptions({ name: 'SalesReport' });
 
-// Filter state
-const filterBranch = ref("all");
-const filterPeriod = ref("month");
-const filterCategory = ref("all");
+const filterBranch = ref('all');
+const filterPeriod = ref('month');
+const filterCategory = ref('all');
 
-// Table state
-const tableSearch = ref("");
+const tableSearch = ref('');
 const tablePage = ref(1);
 const tablePageSize = ref(10);
 
-// Drawer state
 const drawerVisible = ref(false);
 const drawerData = ref<any>(null);
 
-// Chart refs
 const trendChartRef = ref<HTMLElement | null>(null);
 const pieChartRef = ref<HTMLElement | null>(null);
 let trendChart: echarts.ECharts | null = null;
@@ -499,19 +422,16 @@ const topParts = ref<any[]>([]);
 
 const topEmployees = ref<any[]>([]);
 
-// Detail data for table
 const detailData = ref<any[]>([]);
 
 const filteredDetailData = computed(() => {
   let data = detailData.value;
-  if (filterCategory.value !== "all") {
+  if (filterCategory.value !== 'all') {
     data = data.map((item) => {
       let catRevenue = 0;
-      if (filterCategory.value === "motorbike")
-        catRevenue = item.motorbikeRevenue;
-      else if (filterCategory.value === "parts") catRevenue = item.partsRevenue;
-      else if (filterCategory.value === "service")
-        catRevenue = item.serviceRevenue;
+      if (filterCategory.value === 'motorbike') catRevenue = item.motorbikeRevenue;
+      else if (filterCategory.value === 'parts') catRevenue = item.partsRevenue;
+      else if (filterCategory.value === 'service') catRevenue = item.serviceRevenue;
       return { ...item, totalRevenue: catRevenue };
     });
   }
@@ -528,38 +448,38 @@ const paginatedDetailData = computed(() => {
 });
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(value);
 }
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return d.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 }
 
-function getOrderTypeTag(type: string): "success" | "warning" | "info" {
-  const map: Record<string, "success" | "warning" | "info"> = {
-    motorbike: "success",
-    parts: "warning",
-    service: "info",
+function getOrderTypeTag(type: string): 'success' | 'warning' | 'info' {
+  const map: Record<string, 'success' | 'warning' | 'info'> = {
+    motorbike: 'success',
+    parts: 'warning',
+    service: 'info',
   };
-  return map[type] || "info";
+  return map[type] || 'info';
 }
 
-function getStatusTag(status: string): "success" | "warning" | "info" {
-  const map: Record<string, "success" | "warning" | "info"> = {
-    "Đã thanh toán": "success",
-    "Chưa TT": "warning",
-    COD: "info",
+function getStatusTag(status: string): 'success' | 'warning' | 'info' {
+  const map: Record<string, 'success' | 'warning' | 'info'> = {
+    'Đã thanh toán': 'success',
+    'Chưa TT': 'warning',
+    COD: 'info',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
 function handleFilterChange() {
@@ -575,7 +495,6 @@ function handleSizeChange() {
 }
 
 function handlePageChange() {
-  // handled by v-model
 }
 
 function handleViewDetail(row: any) {
@@ -584,17 +503,16 @@ function handleViewDetail(row: any) {
 }
 
 function handleExportExcel() {
-  ElMessage.success("Đang xuất Excel... (chức năng demo)");
+  ElMessage.success('Đang xuất Excel... (chức năng demo)');
 }
 
 function handleExportPdf() {
-  ElMessage.success("Đang xuất PDF... (chức năng demo)");
+  ElMessage.success('Đang xuất PDF... (chức năng demo)');
 }
 
 async function fetchData() {
   try {
-    const res: AdminRevenueAnalysisResponse =
-      await statisticsApi.getRevenueAnalysis();
+    const res: AdminRevenueAnalysisResponse = await statisticsApi.getRevenueAnalysis();
 
     if (res.summary) {
       kpis.value = {
@@ -607,10 +525,7 @@ async function fetchData() {
         cancelledOrders: res.summary.overdueOrdersCount || 0,
         aov:
           res.summary.monthlyRevenue && res.summary.pendingOrdersCount
-            ? Math.round(
-                Number(res.summary.monthlyRevenue) /
-                  res.summary.pendingOrdersCount,
-              )
+            ? Math.round(Number(res.summary.monthlyRevenue) / res.summary.pendingOrdersCount)
             : 0,
         aovChange: 0,
       };
@@ -627,7 +542,7 @@ async function fetchData() {
 
     if (res.topProductsByRevenue && res.topProductsByRevenue.length > 0) {
       topMotorbikes.value = res.topProductsByRevenue.slice(0, 5).map((p) => ({
-        name: p.productName || "",
+        name: p.productName || '',
         quantity: p.unitsSold || 0,
         revenue: Number(p.revenue || 0),
       }));
@@ -647,8 +562,8 @@ async function fetchData() {
       detailData.value.splice(0, detailData.value.length, ...mapped);
     }
   } catch (error) {
-    console.error("Failed to fetch sales report:", error);
-    ElMessage.error("Không thể tải dữ liệu báo cáo");
+    console.error('Failed to fetch sales report:', error);
+    ElMessage.error('Không thể tải dữ liệu báo cáo');
   }
 }
 
@@ -662,9 +577,9 @@ function renderCharts() {
       return `${d.getDate()}/${d.getMonth() + 1}`;
     });
     trendChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       tooltip: {
-        trigger: "axis",
+        trigger: 'axis',
         formatter: (params: any) => {
           let html = `<strong>${params[0].axisValue}</strong><br/>`;
           params.forEach((p: any) => {
@@ -674,71 +589,70 @@ function renderCharts() {
         },
       },
       legend: {
-        data: ["Xe máy", "Phụ tùng", "Dịch vụ xưởng"],
-        textStyle: { color: "var(--el-text-color-secondary, #909399)" },
+        data: ['Xe máy', 'Phụ tùng', 'Dịch vụ xưởng'],
+        textStyle: { color: 'var(--el-text-color-secondary, #909399)' },
         top: 0,
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "category",
+        type: 'category',
         boundaryGap: false,
         data: dates,
-        axisLabel: { color: "var(--el-text-color-secondary, #909399)" },
+        axisLabel: { color: 'var(--el-text-color-secondary, #909399)' },
         axisLine: {
-          lineStyle: { color: "var(--el-border-color-light, #e4e7ed)" },
+          lineStyle: { color: 'var(--el-border-color-light, #e4e7ed)' },
         },
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: {
-          color: "var(--el-text-color-secondary, #909399)",
-          formatter: (v: number) =>
-            v >= 1000000 ? `${v / 1000000}tr` : `${v / 1000}k`,
+          color: 'var(--el-text-color-secondary, #909399)',
+          formatter: (v: number) => (v >= 1000000 ? `${v / 1000000}tr` : `${v / 1000}k`),
         },
         splitLine: {
-          lineStyle: { color: "var(--el-border-color-lighter, #f0f0f0)" },
+          lineStyle: { color: 'var(--el-border-color-lighter, #f0f0f0)' },
         },
       },
       series: [
         {
-          name: "Xe máy",
-          type: "line",
+          name: 'Xe máy',
+          type: 'line',
           smooth: true,
           data: revenueTrendData.value.map((r) => r.motorbike),
-          itemStyle: { color: "#409eff" },
-          lineStyle: { color: "#409eff" },
+          itemStyle: { color: '#409eff' },
+          lineStyle: { color: '#409eff' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(64, 158, 255, 0.25)" },
-              { offset: 1, color: "rgba(64, 158, 255, 0)" },
+              { offset: 0, color: 'rgba(64, 158, 255, 0.25)' },
+              { offset: 1, color: 'rgba(64, 158, 255, 0)' },
             ]),
           },
         },
         {
-          name: "Phụ tùng",
-          type: "line",
+          name: 'Phụ tùng',
+          type: 'line',
           smooth: true,
           data: revenueTrendData.value.map((r) => r.parts),
-          itemStyle: { color: "#67c23a" },
-          lineStyle: { color: "#67c23a" },
+          itemStyle: { color: '#67c23a' },
+          lineStyle: { color: '#67c23a' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(103, 194, 58, 0.2)" },
-              { offset: 1, color: "rgba(103, 194, 58, 0)" },
+              { offset: 0, color: 'rgba(103, 194, 58, 0.2)' },
+              { offset: 1, color: 'rgba(103, 194, 58, 0)' },
             ]),
           },
         },
         {
-          name: "Dịch vụ xưởng",
-          type: "line",
+          name: 'Dịch vụ xưởng',
+          type: 'line',
           smooth: true,
           data: revenueTrendData.value.map((r) => r.service),
-          itemStyle: { color: "#e6a23c" },
-          lineStyle: { color: "#e6a23c" },
+          itemStyle: { color: '#e6a23c' },
+          lineStyle: { color: '#e6a23c' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(230, 162, 60, 0.2)" },
-              { offset: 1, color: "rgba(230, 162, 60, 0)" },
+              { offset: 0, color: 'rgba(230, 162, 60, 0.2)' },
+              { offset: 1, color: 'rgba(230, 162, 60, 0)' },
             ]),
           },
         },
@@ -748,63 +662,57 @@ function renderCharts() {
 
   if (pieChartRef.value) {
     if (!pieChart) pieChart = echarts.init(pieChartRef.value);
-    const totalMotorbike = revenueTrendData.value.reduce(
-      (s, r) => s + r.motorbike,
-      0,
-    );
+    const totalMotorbike = revenueTrendData.value.reduce((s, r) => s + r.motorbike, 0);
     const totalParts = revenueTrendData.value.reduce((s, r) => s + r.parts, 0);
-    const totalService = revenueTrendData.value.reduce(
-      (s, r) => s + r.service,
-      0,
-    );
+    const totalService = revenueTrendData.value.reduce((s, r) => s + r.service, 0);
     const grandTotal = totalMotorbike + totalParts + totalService;
     pieChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       tooltip: {
-        trigger: "item",
+        trigger: 'item',
         formatter: (params: any) =>
           `${params.name}<br/>${formatCurrency(params.value)} (${((params.value / grandTotal) * 100).toFixed(1)}%)`,
       },
       legend: {
-        orient: "vertical",
+        orient: 'vertical',
         right: 10,
-        top: "center",
-        textStyle: { color: "var(--el-text-color-regular, #606266)" },
+        top: 'center',
+        textStyle: { color: 'var(--el-text-color-regular, #606266)' },
       },
       series: [
         {
-          type: "pie",
-          radius: ["40%", "70%"],
-          center: ["35%", "50%"],
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['35%', '50%'],
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 6,
-            borderColor: "var(--el-bg-color-overlay, #fff)",
+            borderColor: 'var(--el-bg-color-overlay, #fff)',
             borderWidth: 2,
           },
           label: {
             show: true,
-            formatter: "{b}\n{d}%",
-            color: "var(--el-text-color-regular, #606266)",
+            formatter: '{b}\n{d}%',
+            color: 'var(--el-text-color-regular, #606266)',
           },
           emphasis: {
-            label: { show: true, fontSize: 16, fontWeight: "bold" },
+            label: { show: true, fontSize: 16, fontWeight: 'bold' },
           },
           data: [
             {
               value: totalMotorbike,
-              name: "Xe máy",
-              itemStyle: { color: "#409eff" },
+              name: 'Xe máy',
+              itemStyle: { color: '#409eff' },
             },
             {
               value: totalParts,
-              name: "Phụ tùng",
-              itemStyle: { color: "#67c23a" },
+              name: 'Phụ tùng',
+              itemStyle: { color: '#67c23a' },
             },
             {
               value: totalService,
-              name: "Dịch vụ xưởng",
-              itemStyle: { color: "#e6a23c" },
+              name: 'Dịch vụ xưởng',
+              itemStyle: { color: '#e6a23c' },
             },
           ],
         },
@@ -821,11 +729,11 @@ function handleResize() {
 onMounted(async () => {
   await fetchData();
   renderCharts();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   trendChart?.dispose();
   pieChart?.dispose();
 });

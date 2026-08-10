@@ -1,15 +1,15 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { AppRouteRecord } from "@/types/router";
-import { getFirstMenuPath } from "@/common/utils";
-import { HOME_PAGE_PATH } from "@/router";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { AppRouteRecord } from '@/types/router';
+import { getFirstMenuPath } from '@/common/utils';
+import { HOME_PAGE_PATH } from '@/router';
 
-export const useMenuStore = defineStore("menuStore", () => {
+export const useMenuStore = defineStore('menuStore', () => {
   const homePath = ref(HOME_PAGE_PATH);
 
   const menuList = ref<AppRouteRecord[]>([]);
 
-  const menuWidth = ref("");
+  const menuWidth = ref('');
 
   const removeRouteFns = ref<(() => void)[]>([]);
 

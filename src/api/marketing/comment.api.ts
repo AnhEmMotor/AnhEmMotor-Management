@@ -1,4 +1,4 @@
-﻿import request from "@/common/utils/http";
+﻿import request from '@/common/utils/http';
 
 export interface NewsCommentResponse {
   id: number;
@@ -15,7 +15,7 @@ export interface NewsCommentResponse {
 export const commentApi = {
   getAll() {
     return request.get<NewsCommentResponse[]>({
-      url: "/api/v1/news-comments",
+      url: '/api/v1/news-comments',
     });
   },
   getByNewsId(newsId: number) {

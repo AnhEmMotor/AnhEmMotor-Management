@@ -8,12 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import { graphic, type EChartsOption } from "@/plugins/echarts";
-import { getCssVar, hexToRgba } from "@/common/utils/ui";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import type { LineChartProps, LineDataItem } from "@/types/component/chart";
+import { graphic, type EChartsOption } from '@/plugins/echarts';
+import { getCssVar, hexToRgba } from '@/common/utils/ui';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import type { LineChartProps, LineDataItem } from '@/types/component/chart';
 
-defineOptions({ name: "ArtLineChart" });
+defineOptions({ name: 'ArtLineChart' });
 
 const props = withDefaults(defineProps<LineChartProps>(), {
   height: useChartOps().chartHeight,
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   lineWidth: 2.5,
   showAreaColor: false,
   smooth: true,
-  symbol: "none",
+  symbol: 'none',
   symbolSize: 6,
   animationDelay: 200,
 
@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
 
   showTooltip: true,
   showLegend: false,
-  legendPosition: "bottom",
+  legendPosition: 'bottom',
 });
 
 const isAnimating = ref(false);
@@ -52,8 +52,8 @@ const isMultipleData = computed(() => {
   return (
     Array.isArray(props.data) &&
     props.data.length > 0 &&
-    typeof props.data[0] === "object" &&
-    "name" in props.data[0]
+    typeof props.data[0] === 'object' &&
+    'name' in props.data[0]
   );
 });
 
@@ -95,7 +95,7 @@ const copyRealData = (): number[] | LineDataItem[] => {
   return [...(props.data as number[])];
 };
 
-const primaryColor = computed(() => getCssVar("--el-color-primary"));
+const primaryColor = computed(() => getCssVar('--el-color-primary'));
 
 const getColor = (customColor?: string, index?: number): string => {
   if (customColor) return customColor;
@@ -104,8 +104,7 @@ const getColor = (customColor?: string, index?: number): string => {
 };
 
 const generateAreaStyle = (item: LineDataItem, color: string) => {
-  if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor)
-    return undefined;
+  if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor) return undefined;
 
   const areaConfig = item.areaStyle || {};
   if (areaConfig.custom) return areaConfig.custom;
@@ -155,7 +154,7 @@ const createSeriesItem = (config: {
   return {
     name: config.name,
     data: config.data,
-    type: "line" as const,
+    type: 'line' as const,
     color: config.color,
     smooth: config.smooth ?? props.smooth,
     symbol: config.symbol ?? props.symbol,
@@ -166,7 +165,7 @@ const createSeriesItem = (config: {
     },
     areaStyle: config.areaStyle,
     emphasis: {
-      focus: "series" as const,
+      focus: 'series' as const,
       lineStyle: {
         width: (config.lineWidth ?? props.lineWidth) + 1,
       },
@@ -179,18 +178,14 @@ const generateChartOptions = (isInitial = false): EChartsOption => {
     animation: true,
     animationDuration: isInitial ? 0 : 1300,
     animationDurationUpdate: isInitial ? 0 : 1300,
-    grid: getGridWithLegend(
-      props.showLegend && isMultipleData.value,
-      props.legendPosition,
-      {
-        top: 15,
-        right: 15,
-        left: 0,
-      },
-    ),
+    grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
+      top: 15,
+      right: 15,
+      left: 0,
+    }),
     tooltip: props.showTooltip ? getTooltipStyle() : undefined,
     xAxis: {
-      type: "category",
+      type: 'category',
       boundaryGap: false,
       data: props.xAxisData,
       axisTick: getAxisTickStyle(),
@@ -198,7 +193,7 @@ const generateChartOptions = (isInitial = false): EChartsOption => {
       axisLabel: getAxisLabelStyle(props.showAxisLabel),
     },
     yAxis: {
-      type: "value",
+      type: 'value',
       min: 0,
       max: maxValue.value,
       axisLabel: getAxisLabelStyle(props.showAxisLabel),
@@ -266,7 +261,7 @@ const initChartWithAnimation = () => {
           animatedData.value = [...currentAnimatedData];
           updateChartOptions(generateChartOptions(false));
         },
-        index * props.animationDelay + 100,
+        index * props.animationDelay + 100
       );
 
       animationTimers.value.push(timer);
@@ -287,18 +282,16 @@ const initChartWithAnimation = () => {
 };
 
 const checkIsEmpty = () => {
-  if (Array.isArray(props.data) && typeof props.data[0] === "number") {
+  if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
     const singleData = props.data as number[];
     return !singleData.length || singleData.every((val) => val === 0);
   }
 
-  if (Array.isArray(props.data) && typeof props.data[0] === "object") {
+  if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
     const multiData = props.data as LineDataItem[];
     return (
       !multiData.length ||
-      multiData.every(
-        (item) => !item.data?.length || item.data.every((val) => val === 0),
-      )
+      multiData.every((item) => !item.data?.length || item.data.every((val) => val === 0))
     );
   }
 
@@ -334,11 +327,7 @@ const renderChart = () => {
   }
 };
 
-watch(
-  [() => props.data, () => props.xAxisData, () => props.colors],
-  renderChart,
-  { deep: true },
-);
+watch([() => props.data, () => props.xAxisData, () => props.colors], renderChart, { deep: true });
 
 onMounted(() => {
   renderChart();

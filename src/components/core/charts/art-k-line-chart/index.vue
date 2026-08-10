@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import type { EChartsOption } from "@/plugins/echarts";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import type { KLineChartProps } from "@/types/component/chart";
+import type { EChartsOption } from '@/plugins/echarts';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import type { KLineChartProps } from '@/types/component/chart';
 
-defineOptions({ name: "ArtKLineChart" });
+defineOptions({ name: 'ArtKLineChart' });
 
 const props = withDefaults(defineProps<KLineChartProps>(), {
   height: useChartOps().chartHeight,
@@ -27,8 +27,8 @@ const props = withDefaults(defineProps<KLineChartProps>(), {
 });
 
 const getActualColors = () => {
-  const defaultUpColor = "#4C87F3";
-  const defaultDownColor = "#8BD8FC";
+  const defaultUpColor = '#4C87F3';
+  const defaultDownColor = '#8BD8FC';
 
   return {
     upColor: props.colors?.[0] || defaultUpColor,
@@ -49,11 +49,7 @@ const {
     return (
       !props.data?.length ||
       props.data.every(
-        (item) =>
-          item.open === 0 &&
-          item.close === 0 &&
-          item.high === 0 &&
-          item.low === 0,
+        (item) => item.open === 0 && item.close === 0 && item.high === 0 && item.low === 0
       )
     );
   },
@@ -75,9 +71,9 @@ const {
         left: 20,
         containLabel: true,
       },
-      tooltip: getTooltipStyle("axis", {
+      tooltip: getTooltipStyle('axis', {
         axisPointer: {
-          type: "cross",
+          type: 'cross',
         },
         formatter: (params: Array<{ name: string; data: number[] }>) => {
           const param = params[0];
@@ -94,14 +90,14 @@ const {
         },
       }),
       xAxis: {
-        type: "category",
+        type: 'category',
         data: props.data.map((item) => item.time),
         axisTick: getAxisTickStyle(),
         axisLine: getAxisLineStyle(true),
         axisLabel: getAxisLabelStyle(true),
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         scale: true,
         axisLabel: getAxisLabelStyle(true),
         axisLine: getAxisLineStyle(true),
@@ -109,13 +105,8 @@ const {
       },
       series: [
         {
-          type: "candlestick",
-          data: props.data.map((item) => [
-            item.open,
-            item.close,
-            item.low,
-            item.high,
-          ]),
+          type: 'candlestick',
+          data: props.data.map((item) => [item.open, item.close, item.low, item.high]),
           itemStyle: {
             color: upColor,
             color0: downColor,
@@ -127,7 +118,7 @@ const {
             itemStyle: {
               borderWidth: 2,
               shadowBlur: 10,
-              shadowColor: "rgba(0, 0, 0, 0.3)",
+              shadowColor: 'rgba(0, 0, 0, 0.3)',
             },
           },
           ...getAnimationConfig(),
@@ -136,14 +127,14 @@ const {
       dataZoom: props.showDataZoom
         ? [
             {
-              type: "inside",
+              type: 'inside',
               start: props.dataZoomStart,
               end: props.dataZoomEnd,
             },
             {
               show: true,
-              type: "slider",
-              top: "90%",
+              type: 'slider',
+              top: '90%',
               start: props.dataZoomStart,
               end: props.dataZoomEnd,
             },

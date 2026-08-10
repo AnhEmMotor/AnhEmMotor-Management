@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface ConversionToolResponse {
   id: number;
@@ -19,12 +19,12 @@ export interface ConversionToolResponse {
 export const conversionToolApi = {
   getAll() {
     return request.get<ConversionToolResponse[]>({
-      url: "/api/v1/conversion-tools",
+      url: '/api/v1/conversion-tools',
     });
   },
   create(data: Partial<ConversionToolResponse>) {
     return request.post<ConversionToolResponse>({
-      url: "/api/v1/conversion-tools",
+      url: '/api/v1/conversion-tools',
       data,
     });
   },

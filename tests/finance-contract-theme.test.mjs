@@ -1,24 +1,24 @@
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
 
-import { compileStyle, parse } from "@vue/compiler-sfc";
+import { compileStyle, parse } from '@vue/compiler-sfc';
 
 const themedManagementViews = [
-  ["finance contract list page", "../src/views/contract/finance/index.vue"],
-  ["sales contract list page", "../src/views/contract/sales/index.vue"],
-  ["supplier contract list page", "../src/views/contract/supplier/index.vue"],
+  ['finance contract list page', '../src/views/contract/finance/index.vue'],
+  ['sales contract list page', '../src/views/contract/sales/index.vue'],
+  ['supplier contract list page', '../src/views/contract/supplier/index.vue'],
   [
-    "report page header component",
-    "../src/views/analytics-reporting/components/ReportPageHeader.vue",
+    'report page header component',
+    '../src/views/analytics-reporting/components/ReportPageHeader.vue',
   ],
   [
-    "report period switcher component",
-    "../src/views/analytics-reporting/components/ReportPeriodSwitcher.vue",
+    'report period switcher component',
+    '../src/views/analytics-reporting/components/ReportPeriodSwitcher.vue',
   ],
   [
-    "report placeholder component",
-    "../src/views/analytics-reporting/components/ReportPlaceholder.vue",
+    'report placeholder component',
+    '../src/views/analytics-reporting/components/ReportPlaceholder.vue',
   ],
 ];
 
@@ -28,7 +28,7 @@ const darkPaletteDeclaration =
 for (const [viewName, componentPath] of themedManagementViews) {
   test(`${viewName} only applies its dark palette in dark mode`, async () => {
     const componentUrl = new URL(componentPath, import.meta.url);
-    const source = await readFile(componentUrl, "utf8");
+    const source = await readFile(componentUrl, 'utf8');
     const { descriptor, errors: parseErrors } = parse(source, {
       filename: componentUrl.pathname,
     });
@@ -37,17 +37,17 @@ for (const [viewName, componentPath] of themedManagementViews) {
     assert.equal(
       descriptor.styles.length,
       1,
-      "the Vue component must keep exactly one style block",
+      'the Vue component must keep exactly one style block'
     );
     assert.doesNotMatch(
-      descriptor.template?.content ?? "",
+      descriptor.template?.content ?? '',
       /text-color=["']#f8fafc["']/,
-      "KPI cards must inherit the active theme instead of forcing dark-mode text",
+      'KPI cards must inherit the active theme instead of forcing dark-mode text'
     );
 
     const style = descriptor.styles[0];
     const { code, errors: styleErrors } = compileStyle({
-      id: `management-theme-${viewName.replaceAll(/\W+/g, "-")}`,
+      id: `management-theme-${viewName.replaceAll(/\W+/g, '-')}`,
       filename: componentUrl.pathname,
       source: style.content,
       preprocessLang: style.lang,
@@ -56,19 +56,16 @@ for (const [viewName, componentPath] of themedManagementViews) {
 
     assert.deepEqual(styleErrors, []);
 
-    const darkPaletteRules = [...code.matchAll(/([^{}]+)\{([^{}]+)\}/g)].filter(
-      ([, , body]) => darkPaletteDeclaration.test(body),
+    const darkPaletteRules = [...code.matchAll(/([^{}]+)\{([^{}]+)\}/g)].filter(([, , body]) =>
+      darkPaletteDeclaration.test(body)
     );
-    assert.ok(
-      darkPaletteRules.length > 0,
-      "expected the existing dark palette to remain defined",
-    );
+    assert.ok(darkPaletteRules.length > 0, 'expected the existing dark palette to remain defined');
 
     for (const [, selector] of darkPaletteRules) {
       assert.match(
         selector,
         /html\.dark/,
-        `dark palette selector must be gated by html.dark: ${selector.trim()}`,
+        `dark palette selector must be gated by html.dark: ${selector.trim()}`
       );
     }
   });

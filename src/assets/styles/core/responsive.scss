@@ -1,9 +1,4 @@
-// =============================================================================
-// GLOBAL RESPONSIVE LAYER — AnhEmMotor-Management
-// Breakpoints: sm=640px, md=768px, lg=1024px, xl=1280px, 2xl=1536px
-// =============================================================================
 
-// --- App shell ---
 #app {
   @media (width <= 1024px) {
     .art-header-bar,
@@ -11,24 +6,24 @@
       zoom: 0.9;
     }
   }
+
   @media (width <= 768px) {
     .art-header-bar {
       zoom: 0.85;
     }
   }
 
-  // Page content padding trên mobile
   .art-page-content {
     @media (width <= 640px) {
       padding: 8px !important;
     }
+
     @media (width >= 641px) and (width <= 1024px) {
       padding: 12px !important;
     }
   }
 }
 
-// --- Sidebar overlay cho mobile ---
 .layout-sidebar {
   @media (width <= 800px) {
     position: fixed !important;
@@ -42,18 +37,18 @@
 
     &.show-mobile {
       transform: translateX(0);
+
       .menu-model {
         display: block !important;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgb(0 0 0 / 40%);
         z-index: 1999;
       }
     }
   }
 }
 
-// --- Element Plus table responsive ---
 @mixin resp-table {
   width: 100%;
   overflow-x: auto;
@@ -71,6 +66,7 @@
           }
         }
       }
+
       .el-table__body-wrapper {
         .el-table__body {
           td {
@@ -91,7 +87,6 @@
   @include resp-table;
 }
 
-// --- Element Plus dialog responsive ---
 @mixin resp-dialog {
   @media (width <= 640px) {
     width: 96vw !important;
@@ -101,19 +96,21 @@
     .el-dialog__header {
       padding: 12px 14px !important;
     }
+
     .el-dialog__body {
       padding: 10px 14px !important;
     }
+
     .el-dialog__footer {
       padding: 10px 14px !important;
     }
   }
 }
+
 .resp-dialog {
   @include resp-dialog;
 }
 
-// --- Form responsive: 2-col -> 1-col trên mobile ---
 @mixin resp-form-grid($cols: 2) {
   display: grid;
   grid-template-columns: repeat($cols, 1fr);
@@ -125,11 +122,18 @@
   }
 }
 
-.resp-form-2 { @include resp-form-grid(2); }
-.resp-form-3 { @include resp-form-grid(3); }
-.resp-form-4 { @include resp-form-grid(4); }
+.resp-form-2 {
+  @include resp-form-grid(2);
+}
 
-// --- Card grid responsive ---
+.resp-form-3 {
+  @include resp-form-grid(3);
+}
+
+.resp-form-4 {
+  @include resp-form-grid(4);
+}
+
 @mixin resp-card-grid($cols: 3) {
   display: grid;
   grid-template-columns: repeat($cols, 1fr);
@@ -138,18 +142,24 @@
   @media (width <= 1280px) {
     grid-template-columns: repeat($cols - 1, 1fr);
   }
+
   @media (width <= 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @media (width <= 640px) {
     grid-template-columns: 1fr;
   }
 }
 
-.resp-cards-3 { @include resp-card-grid(3); }
-.resp-cards-4 { @include resp-card-grid(4); }
+.resp-cards-3 {
+  @include resp-card-grid(3);
+}
 
-// --- Stat card / KPI box ---
+.resp-cards-4 {
+  @include resp-card-grid(4);
+}
+
 @mixin resp-stats($cols: 4) {
   display: grid;
   grid-template-columns: repeat($cols, 1fr);
@@ -158,16 +168,21 @@
   @media (width <= 1280px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @media (width <= 640px) {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 }
 
-.resp-stats-4 { @include resp-stats(4); }
-.resp-stats-3 { @include resp-stats(3); }
+.resp-stats-4 {
+  @include resp-stats(4);
+}
 
-// --- Search bar ---
+.resp-stats-3 {
+  @include resp-stats(3);
+}
+
 @mixin resp-search {
   .search-bar {
     display: flex;
@@ -186,4 +201,6 @@
   }
 }
 
-.resp-search { @include resp-search; }
+.resp-search {
+  @include resp-search;
+}

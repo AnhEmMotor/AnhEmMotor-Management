@@ -1,9 +1,8 @@
 <template>
   <div class="resp-page hr-employee-container flex h-full flex-col gap-4">
-    <!-- Header -->
     <div class="employee-page__header flex items-center justify-between gap-3">
       <h1 class="employee-page__title text-2xl font-semibold">
-        {{ $t("menus.hr.employee") }}
+        {{ $t('menus.hr.employee') }}
       </h1>
       <ElButton
         v-auth="Permissions.Admin.EmployeeManagement.Create"
@@ -15,7 +14,6 @@
       </ElButton>
     </div>
 
-    <!-- Stats -->
     <div class="resp-stats-3 grid grid-cols-1 gap-4 md:grid-cols-3">
       <ArtStatsCard
         title="Tổng hồ sơ"
@@ -37,7 +35,6 @@
       />
     </div>
 
-    <!-- Main Content -->
     <ElCard class="flex-1 art-table-card flex flex-col" shadow="never">
       <div class="mb-4">
         <ArtSearchBar
@@ -50,11 +47,7 @@
         />
       </div>
 
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="loadData"
-      />
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData" />
 
       <ArtTable
         ref="tableRef"
@@ -108,7 +101,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="detailVisible"
       title="Hồ sơ chi tiết nhân viên"
@@ -121,9 +113,7 @@
         v-loading="detailLoading"
         class="employee-detail-content mx-auto max-w-md px-2"
       >
-        <div
-          class="employee-detail__header mb-6 flex items-center gap-4 border-b pb-4"
-        >
+        <div class="employee-detail__header mb-6 flex items-center gap-4 border-b pb-4">
           <div
             class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-2xl"
           >
@@ -139,11 +129,7 @@
           </div>
         </div>
 
-        <ElForm
-          label-width="140px"
-          class="employee-detail-form"
-          label-position="left"
-        >
+        <ElForm label-width="140px" class="employee-detail-form" label-position="left">
           <ElFormItem label="Họ và tên" class="!mb-2">
             <span class="employee-value employee-value--strong font-medium">{{
               selectedEmployee.fullName
@@ -153,14 +139,10 @@
             <span class="employee-value">{{ selectedEmployee.email }}</span>
           </ElFormItem>
           <ElFormItem label="Vị trí / Chức vụ" class="!mb-2">
-            <ElTag size="small" type="info">{{
-              selectedEmployee.jobTitle
-            }}</ElTag>
+            <ElTag size="small" type="info">{{ selectedEmployee.jobTitle }}</ElTag>
           </ElFormItem>
           <ElFormItem label="CMND / CCCD" class="!mb-2">
-            <span class="employee-value">{{
-              selectedEmployee.identityNumber || "---"
-            }}</span>
+            <span class="employee-value">{{ selectedEmployee.identityNumber || '---' }}</span>
           </ElFormItem>
           <ElFormItem label="Mức lương cơ bản" class="!mb-2">
             <span class="employee-value--accent font-semibold">{{
@@ -168,23 +150,17 @@
             }}</span>
           </ElFormItem>
           <ElFormItem label="Ngày bắt đầu" class="!mb-2">
-            <span class="employee-value">{{
-              formatDate(selectedEmployee.contractDate)
-            }}</span>
+            <span class="employee-value">{{ formatDate(selectedEmployee.contractDate) }}</span>
           </ElFormItem>
           <ElFormItem label="Địa chỉ" class="!mb-2">
-            <span class="employee-value">{{
-              selectedEmployee.address || "---"
-            }}</span>
+            <span class="employee-value">{{ selectedEmployee.address || '---' }}</span>
           </ElFormItem>
           <ElFormItem label="Ngân hàng" class="!mb-2">
-            <span class="employee-value">{{
-              selectedEmployee.bankName || "---"
-            }}</span>
+            <span class="employee-value">{{ selectedEmployee.bankName || '---' }}</span>
           </ElFormItem>
           <ElFormItem label="Số tài khoản" class="!mb-2">
             <span class="employee-value font-medium">{{
-              selectedEmployee.bankAccountNumber || "---"
+              selectedEmployee.bankAccountNumber || '---'
             }}</span>
           </ElFormItem>
         </ElForm>
@@ -196,7 +172,6 @@
       </template>
     </ElDialog>
 
-    <!-- Form Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -204,13 +179,7 @@
       class="resp-dialog employee-dialog"
       destroy-on-close
     >
-      <ElForm
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="140px"
-        class="mt-4"
-      >
+      <ElForm ref="formRef" :model="form" :rules="rules" label-width="140px" class="mt-4">
         <ElFormItem label="Họ và tên" prop="fullName">
           <ElInput v-model="form.fullName" placeholder="Nhập họ và tên" />
         </ElFormItem>
@@ -218,10 +187,7 @@
           <ElInput v-model="form.email" placeholder="Nhập địa chỉ email" />
         </ElFormItem>
         <ElFormItem label="Vị trí / Chức vụ" prop="jobTitle">
-          <ElInput
-            v-model="form.jobTitle"
-            placeholder="Nhập vị trí / chức vụ"
-          />
+          <ElInput v-model="form.jobTitle" placeholder="Nhập vị trí / chức vụ" />
         </ElFormItem>
         <ElFormItem label="Mức lương cơ bản" prop="baseSalary">
           <ElInputNumber
@@ -233,10 +199,7 @@
           />
         </ElFormItem>
         <ElFormItem label="CMND / CCCD" prop="identityNumber">
-          <ElInput
-            v-model="form.identityNumber"
-            placeholder="Nhập số CMND/CCCD"
-          />
+          <ElInput v-model="form.identityNumber" placeholder="Nhập số CMND/CCCD" />
         </ElFormItem>
         <ElFormItem label="Ngày bắt đầu" prop="contractDate">
           <ElDatePicker
@@ -255,18 +218,13 @@
           <ElInput v-model="form.bankName" placeholder="Tên ngân hàng" />
         </ElFormItem>
         <ElFormItem label="Số tài khoản" prop="bankAccountNumber">
-          <ElInput
-            v-model="form.bankAccountNumber"
-            placeholder="Số tài khoản ngân hàng"
-          />
+          <ElInput v-model="form.bankAccountNumber" placeholder="Số tài khoản ngân hàng" />
         </ElFormItem>
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="handleSubmit">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="handleSubmit"> Xác nhận </ElButton>
         </span>
       </template>
     </ElDialog>
@@ -274,24 +232,15 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { Plus } from "@element-plus/icons-vue";
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
-import {
-  ElMessage,
-  ElMessageBox,
-  type FormInstance,
-  type FormRules,
-} from "element-plus";
-import {
-  EmployeeApi,
-  type EmployeeResponse,
-  type EmployeeUpsertRequest,
-} from "@/api/operations";
-import type { SearchFormItem } from "@/components/core/forms/art-search-bar/index.vue";
-import { searchItems, columns } from "@/modules/Admin/logic/employee";
+import { Permissions } from '@/domain/constants/permissions';
+import { Plus } from '@element-plus/icons-vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus';
+import { EmployeeApi, type EmployeeResponse, type EmployeeUpsertRequest } from '@/api/operations';
+import type { SearchFormItem } from '@/components/core/forms/art-search-bar/index.vue';
+import { searchItems, columns } from '@/modules/Admin/logic/employee';
 
-defineOptions({ name: "HREmployee" });
+defineOptions({ name: 'HREmployee' });
 
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
@@ -302,42 +251,38 @@ type EmployeeForm = EmployeeUpsertRequest & {
 
 const emptyForm = (): EmployeeForm => ({
   id: 0,
-  fullName: "",
-  email: "",
-  jobTitle: "",
+  fullName: '',
+  email: '',
+  jobTitle: '',
   baseSalary: 0,
-  identityNumber: "",
-  address: "",
-  contractDate: "",
-  bankName: "",
-  bankAccountNumber: "",
+  identityNumber: '',
+  address: '',
+  contractDate: '',
+  bankName: '',
+  bankAccountNumber: '',
 });
 
 const form = reactive<EmployeeForm>(emptyForm());
 
 const rules = reactive<FormRules>({
-  fullName: [
-    { required: true, message: "Vui lòng nhập họ và tên", trigger: "blur" },
-  ],
+  fullName: [{ required: true, message: 'Vui lòng nhập họ và tên', trigger: 'blur' }],
   email: [
-    { required: true, message: "Vui lòng nhập email", trigger: "blur" },
-    { type: "email", message: "Định dạng email không hợp lệ", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhập email', trigger: 'blur' },
+    { type: 'email', message: 'Định dạng email không hợp lệ', trigger: 'blur' },
   ],
   jobTitle: [
     {
       required: true,
-      message: "Vui lòng nhập vị trí/chức vụ",
-      trigger: "blur",
+      message: 'Vui lòng nhập vị trí/chức vụ',
+      trigger: 'blur',
     },
   ],
-  baseSalary: [
-    { required: true, message: "Vui lòng nhập lương cơ bản", trigger: "blur" },
-  ],
+  baseSalary: [{ required: true, message: 'Vui lòng nhập lương cơ bản', trigger: 'blur' }],
 });
 
 const loading = ref(false);
 const dialogVisible = ref(false);
-const dialogTitle = ref("Thêm nhân viên");
+const dialogTitle = ref('Thêm nhân viên');
 const detailVisible = ref(false);
 const detailLoading = ref(false);
 const selectedEmployee = ref<EmployeeResponse | null>(null);
@@ -345,20 +290,16 @@ const selectedEmployee = ref<EmployeeResponse | null>(null);
 const pagination = reactive({ current: 1, size: 10, total: 0 });
 const allEmployees = ref<EmployeeResponse[]>([]);
 
-const searchForm = ref({ name: "", jobTitle: "", email: "" });
+const searchForm = ref({ name: '', jobTitle: '', email: '' });
 const columnChecks = ref([...columns]);
 
 const uniqueJobTitles = computed(() =>
-  Array.from(
-    new Set(
-      allEmployees.value.map((employee) => employee.jobTitle).filter(Boolean),
-    ),
-  ),
+  Array.from(new Set(allEmployees.value.map((employee) => employee.jobTitle).filter(Boolean)))
 );
 
 const dynamicSearchItems = computed<SearchFormItem[]>(() =>
   searchItems.map((item) =>
-    item.key === "jobTitle"
+    item.key === 'jobTitle'
       ? {
           ...item,
           props: {
@@ -369,25 +310,21 @@ const dynamicSearchItems = computed<SearchFormItem[]>(() =>
             })),
           },
         }
-      : item,
-  ),
+      : item
+  )
 );
 
-const normalizedSearch = (value: string) =>
-  value.trim().toLocaleLowerCase("vi");
+const normalizedSearch = (value: string) => value.trim().toLocaleLowerCase('vi');
 
 const filteredEmployees = computed(() => {
   const name = normalizedSearch(searchForm.value.name);
   const email = normalizedSearch(searchForm.value.email);
 
   return allEmployees.value.filter((employee) => {
-    const matchesName =
-      !name || normalizedSearch(employee.fullName).includes(name);
+    const matchesName = !name || normalizedSearch(employee.fullName).includes(name);
     const matchesJobTitle =
-      !searchForm.value.jobTitle ||
-      employee.jobTitle === searchForm.value.jobTitle;
-    const matchesEmail =
-      !email || normalizedSearch(employee.email).includes(email);
+      !searchForm.value.jobTitle || employee.jobTitle === searchForm.value.jobTitle;
+    const matchesEmail = !email || normalizedSearch(employee.email).includes(email);
     return matchesName && matchesJobTitle && matchesEmail;
   });
 });
@@ -410,23 +347,21 @@ watch(
     const lastPage = Math.max(1, Math.ceil(employees.length / pagination.size));
     if (pagination.current > lastPage) pagination.current = lastPage;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
-const getInitial = (name: string) => name?.charAt(0).toUpperCase() || "?";
+const getInitial = (name: string) => name?.charAt(0).toUpperCase() || '?';
 
 const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-    value,
-  );
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "---";
+  if (!dateStr) return '---';
   const date = new Date(dateStr);
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 };
 
@@ -435,8 +370,8 @@ const loadData = async () => {
   try {
     allEmployees.value = (await EmployeeApi.getList()) ?? [];
   } catch (error) {
-    console.error("Failed to load employees:", error);
-    ElMessage.error("Không thể tải danh sách nhân viên");
+    console.error('Failed to load employees:', error);
+    ElMessage.error('Không thể tải danh sách nhân viên');
   } finally {
     loading.value = false;
   }
@@ -454,7 +389,7 @@ const resetForm = () => {
 const handleAdd = () => {
   resetForm();
   dialogVisible.value = true;
-  dialogTitle.value = "Thêm nhân viên";
+  dialogTitle.value = 'Thêm nhân viên';
   nextTick(() => formRef.value?.clearValidate());
 };
 
@@ -462,7 +397,7 @@ const handleEdit = (row: EmployeeResponse) => {
   resetForm();
   Object.assign(form, row);
   dialogVisible.value = true;
-  dialogTitle.value = "Cập nhật nhân viên";
+  dialogTitle.value = 'Cập nhật nhân viên';
   nextTick(() => formRef.value?.clearValidate());
 };
 
@@ -488,16 +423,16 @@ const handleSubmit = async () => {
     const payload = employeePayload();
     if (form.id) {
       await EmployeeApi.update(form.id, payload);
-      ElMessage.success("Cập nhật nhân viên thành công");
+      ElMessage.success('Cập nhật nhân viên thành công');
     } else {
       await EmployeeApi.create(payload);
-      ElMessage.success("Thêm nhân viên thành công");
+      ElMessage.success('Thêm nhân viên thành công');
     }
     dialogVisible.value = false;
     await loadData();
   } catch (error) {
-    console.error("Failed to save employee:", error);
-    ElMessage.error("Không thể lưu hồ sơ nhân viên. Vui lòng thử lại.");
+    console.error('Failed to save employee:', error);
+    ElMessage.error('Không thể lưu hồ sơ nhân viên. Vui lòng thử lại.');
   } finally {
     submitting.value = false;
   }
@@ -510,8 +445,8 @@ const handleView = async (row: EmployeeResponse) => {
   try {
     selectedEmployee.value = await EmployeeApi.getById(row.id);
   } catch (error) {
-    console.error("Failed to load employee detail:", error);
-    ElMessage.error("Không thể tải chi tiết nhân viên");
+    console.error('Failed to load employee detail:', error);
+    ElMessage.error('Không thể tải chi tiết nhân viên');
   } finally {
     detailLoading.value = false;
   }
@@ -521,20 +456,20 @@ const handleDelete = async (row: EmployeeResponse) => {
   try {
     await ElMessageBox.confirm(
       `Bạn có chắc muốn xóa nhân viên "${row.fullName}"? Hành động này không thể hoàn tác.`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "error",
-      },
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'error',
+      }
     );
     await EmployeeApi.delete(row.id);
-    ElMessage.success("Đã xóa nhân viên thành công");
+    ElMessage.success('Đã xóa nhân viên thành công');
     await loadData();
   } catch (error: unknown) {
-    if (error !== "cancel" && error !== "close") {
-      console.error("Failed to delete employee:", error);
-      ElMessage.error("Xóa nhân viên thất bại");
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('Failed to delete employee:', error);
+      ElMessage.error('Xóa nhân viên thất bại');
     }
   }
 };

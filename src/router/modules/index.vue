@@ -8,5 +8,4 @@
 </template>
 
 <script setup lang="ts">
-// Dumb component rỗng chờ phát triển
 </script>

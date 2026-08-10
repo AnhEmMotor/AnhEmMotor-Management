@@ -5,9 +5,7 @@
     </div>
     <ElEmpty v-else-if="error" :description="error" />
     <template v-else-if="profile">
-      <div
-        class="hub-header bg-white rounded-2xl shadow-sm border border-gray-100 p-5"
-      >
+      <div class="hub-header bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <div class="flex items-center gap-3 mb-4">
           <ElButton circle plain @click="goBack">
             <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg" />
@@ -18,15 +16,11 @@
           <ElTag :type="getStatusType(profile.status)" effect="dark" round>{{
             getStatusLabel(profile.status)
           }}</ElTag>
-          <ElTag v-if="profile.isVerified" type="success" effect="dark" round
-            >Đã xác minh</ElTag
-          >
+          <ElTag v-if="profile.isVerified" type="success" effect="dark" round>Đã xác minh</ElTag>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="kpi-card bg-gray-50 rounded-xl p-3 text-center">
-            <div class="text-xs text-gray-500 mb-1">
-              Đơn hàng đang hoạt động
-            </div>
+            <div class="text-xs text-gray-500 mb-1">Đơn hàng đang hoạt động</div>
             <div class="text-lg font-bold text-gray-900">
               {{ profile.summary.activeOutputsCount }}
             </div>
@@ -41,11 +35,7 @@
             <div class="text-xs text-gray-500 mb-1">Nhắc nhở quá hạn</div>
             <div
               class="text-lg font-bold"
-              :class="
-                profile.summary.overdueRemindersCount > 0
-                  ? 'text-red-500'
-                  : 'text-gray-900'
-              "
+              :class="profile.summary.overdueRemindersCount > 0 ? 'text-red-500' : 'text-gray-900'"
             >
               {{ profile.summary.overdueRemindersCount }}
             </div>
@@ -63,18 +53,13 @@
         <ElTabPane label="Tổng quan" name="overview">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 p-1">
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3
-                class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2"
-              >
-                <ArtSvgIcon icon="ri:user-line" class="text-blue-500" />Thông
-                tin cá nhân
+              <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <ArtSvgIcon icon="ri:user-line" class="text-blue-500" />Thông tin cá nhân
               </h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Họ tên</span
-                  ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.fullName
-                  }}</span>
+                  ><span class="text-sm font-semibold text-gray-800">{{ profile.fullName }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Số điện thoại</span
@@ -85,58 +70,49 @@
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Email</span
                   ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.email || "—"
+                    profile.email || '—'
                   }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Nguồn</span
-                  ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.source
-                  }}</span>
+                  ><span class="text-sm font-semibold text-gray-800">{{ profile.source }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Giới tính</span
                   ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.gender || "—"
+                    profile.gender || '—'
                   }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Ngày sinh</span
                   ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.birthday
-                      ? dayjs(profile.birthday).format("DD/MM/YYYY")
-                      : "—"
+                    profile.birthday ? dayjs(profile.birthday).format('DD/MM/YYYY') : '—'
                   }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">CCCD</span
                   ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.identificationNumber || "—"
+                    profile.identificationNumber || '—'
                   }}</span>
                 </div>
                 <div class="flex flex-col gap-1">
                   <span class="text-xs text-gray-400">Xếp hạng</span
-                  ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.tier
-                  }}</span>
+                  ><span class="text-sm font-semibold text-gray-800">{{ profile.tier }}</span>
                 </div>
                 <div class="flex flex-col gap-1 sm:col-span-2">
                   <span class="text-xs text-gray-400">Địa chỉ</span
-                  ><span class="text-sm font-semibold text-gray-800">{{
-                    fullAddress
-                  }}</span>
+                  ><span class="text-sm font-semibold text-gray-800">{{ fullAddress }}</span>
                 </div>
                 <div class="flex flex-col gap-1 sm:col-span-2">
                   <span class="text-xs text-gray-400">Xe quan tâm</span
                   ><span class="text-sm font-semibold text-gray-800">{{
-                    profile.interestedVehicle || "—"
+                    profile.interestedVehicle || '—'
                   }}</span>
                 </div>
               </div>
               <div class="mt-4 flex gap-2">
                 <ElButton type="primary" size="small" round @click="handleEdit"
-                  ><ArtSvgIcon icon="ri:edit-line" class="mr-1" /> Chỉnh
-                  sửa</ElButton
+                  ><ArtSvgIcon icon="ri:edit-line" class="mr-1" /> Chỉnh sửa</ElButton
                 >
                 <ElSelect
                   v-model="profile.assignedToId"
@@ -156,19 +132,11 @@
             </div>
 
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3
-                class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2"
-              >
-                <ArtSvgIcon
-                  icon="ri:shopping-cart-line"
-                  class="text-green-500"
-                />
+              <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <ArtSvgIcon icon="ri:shopping-cart-line" class="text-green-500" />
                 Đơn hàng đang hoạt động
               </h3>
-              <div
-                v-if="profile.outputs.length === 0"
-                class="text-center text-gray-400 py-8"
-              >
+              <div v-if="profile.outputs.length === 0" class="text-center text-gray-400 py-8">
                 Chưa có đơn hàng
               </div>
               <div
@@ -177,9 +145,7 @@
                 class="output-item flex items-center justify-between py-2 border-b border-gray-50 last:border-0"
               >
                 <div>
-                  <div class="font-semibold text-gray-800">
-                    Đơn #{{ output.id }}
-                  </div>
+                  <div class="font-semibold text-gray-800">Đơn #{{ output.id }}</div>
                   <div class="text-xs text-gray-500">
                     {{ output.statusDisplayName }}
                   </div>
@@ -189,23 +155,17 @@
                     {{ formatMoney(output.total) }}
                   </div>
                   <div class="text-xs text-gray-500">
-                    {{ output.paymentMethod || "—" }}
+                    {{ output.paymentMethod || '—' }}
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3
-                class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2"
-              >
-                <ArtSvgIcon icon="ri:car-line" class="text-purple-500" /> Xe đã
-                sở hữu
+              <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <ArtSvgIcon icon="ri:car-line" class="text-purple-500" /> Xe đã sở hữu
               </h3>
-              <div
-                v-if="profile.vehicles.length === 0"
-                class="text-center text-gray-400 py-8"
-              >
+              <div v-if="profile.vehicles.length === 0" class="text-center text-gray-400 py-8">
                 Chưa có xe
               </div>
               <div
@@ -215,38 +175,25 @@
               >
                 <div>
                   <div class="font-semibold text-gray-800">
-                    {{ v.licensePlate || "Chưa biển số" }}
+                    {{ v.licensePlate || 'Chưa biển số' }}
                   </div>
-                  <div class="text-xs text-gray-500">
-                    VIN: {{ v.vinNumber }}
-                  </div>
+                  <div class="text-xs text-gray-500">VIN: {{ v.vinNumber }}</div>
                 </div>
-                <ElTag
-                  :type="v.status === 'Sold' ? 'success' : 'info'"
-                  size="small"
-                  round
-                  >{{
-                    v.status === "Sold"
-                      ? "Đã bàn giao"
-                      : v.status === "Available"
-                        ? "Có sẵn / Đang sử dụng"
-                        : v.status || "Đang hoạt động"
-                  }}</ElTag
-                >
+                <ElTag :type="v.status === 'Sold' ? 'success' : 'info'" size="small" round>{{
+                  v.status === 'Sold'
+                    ? 'Đã bàn giao'
+                    : v.status === 'Available'
+                      ? 'Có sẵn / Đang sử dụng'
+                      : v.status || 'Đang hoạt động'
+                }}</ElTag>
               </div>
             </div>
 
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3
-                class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2"
-              >
-                <ArtSvgIcon icon="ri:alarm-line" class="text-amber-500" /> Nhắc
-                nhở chăm sóc
+              <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <ArtSvgIcon icon="ri:alarm-line" class="text-amber-500" /> Nhắc nhở chăm sóc
               </h3>
-              <div
-                v-if="profile.careReminders.length === 0"
-                class="text-center text-gray-400 py-8"
-              >
+              <div v-if="profile.careReminders.length === 0" class="text-center text-gray-400 py-8">
                 Không có nhắc nhờ
               </div>
               <div
@@ -263,13 +210,9 @@
                   </div>
                   <div class="text-xs text-gray-500">{{ r.description }}</div>
                 </div>
-                <ElTag
-                  :type="reminderTagType(r.priority)"
-                  size="small"
-                  effect="plain"
-                  round
-                  >{{ r.priority }}</ElTag
-                >
+                <ElTag :type="reminderTagType(r.priority)" size="small" effect="plain" round>{{
+                  r.priority
+                }}</ElTag>
               </div>
             </div>
           </div>
@@ -277,10 +220,7 @@
 
         <ElTabPane label="Dòng thời gian" name="timeline">
           <div class="p-1">
-            <div
-              v-if="profile.timelineEvents.length === 0"
-              class="text-center text-gray-400 py-12"
-            >
+            <div v-if="profile.timelineEvents.length === 0" class="text-center text-gray-400 py-12">
               Chưa có sự kiện
             </div>
             <div class="timeline-list">
@@ -311,10 +251,7 @@
                   <div class="text-sm font-semibold text-gray-800">
                     {{ evt.title }}
                   </div>
-                  <div
-                    v-if="evt.description"
-                    class="text-xs text-gray-500 mt-0.5"
-                  >
+                  <div v-if="evt.description" class="text-xs text-gray-500 mt-0.5">
                     {{ evt.description }}
                   </div>
                   <div class="text-xs text-gray-400 mt-1">
@@ -328,10 +265,7 @@
 
         <ElTabPane label="Tài sản" name="assets">
           <div class="p-1">
-            <div
-              v-if="profile.vehicles.length === 0"
-              class="text-center text-gray-400 py-12"
-            >
+            <div v-if="profile.vehicles.length === 0" class="text-center text-gray-400 py-12">
               Chưa có tài sản xe máy
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -342,14 +276,11 @@
               >
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 rounded-lg bg-purple-50 flex flex-cc">
-                    <ArtSvgIcon
-                      icon="ri:motorbike-line"
-                      class="text-purple-500 text-lg"
-                    />
+                    <ArtSvgIcon icon="ri:motorbike-line" class="text-purple-500 text-lg" />
                   </div>
                   <div>
                     <div class="font-bold text-gray-900">
-                      {{ v.licensePlate || "Chưa biển số" }}
+                      {{ v.licensePlate || 'Chưa biển số' }}
                     </div>
                     <div class="text-xs text-gray-500">{{ v.vinNumber }}</div>
                   </div>
@@ -365,7 +296,7 @@
                   </div>
                   <div>
                     <span class="text-gray-400">Ngày mua:</span>
-                    {{ dayjs(v.purchaseDate).format("DD/MM/YYYY") }}
+                    {{ dayjs(v.purchaseDate).format('DD/MM/YYYY') }}
                   </div>
                   <div>
                     <span class="text-gray-400">ODO:</span>
@@ -380,10 +311,7 @@
         <ElTabPane label="Lịch sử bảo dưỡng" name="maintenance">
           <div class="p-1">
             <div
-              v-if="
-                !profile.maintenanceHistories ||
-                profile.maintenanceHistories.length === 0
-              "
+              v-if="!profile.maintenanceHistories || profile.maintenanceHistories.length === 0"
               class="text-center text-gray-400 py-12"
             >
               Chưa có lịch sử bảo dưỡng / sửa chữa
@@ -394,9 +322,7 @@
                 :key="m.id"
                 class="asset-card bg-white rounded-xl border border-gray-100 p-4"
               >
-                <div
-                  class="flex items-center justify-between mb-3 border-b border-gray-50 pb-2"
-                >
+                <div class="flex items-center justify-between mb-3 border-b border-gray-50 pb-2">
                   <div>
                     <span class="font-bold text-gray-900"
                       >Phiếu bảo dưỡng #{{ m.maintenanceNumber }}</span
@@ -412,23 +338,17 @@
                 <div class="text-xs flex flex-col gap-2">
                   <div>
                     <span class="text-gray-400 font-medium">Dòng xe:</span>
-                    {{ m.variantName || "Winner X 2024" }} ({{
-                      m.licensePlate || "Chưa biển số"
-                    }})
+                    {{ m.variantName || 'Winner X 2024' }} ({{ m.licensePlate || 'Chưa biển số' }})
                   </div>
                   <div>
-                    <span class="text-gray-400 font-medium"
-                      >Nội dung sửa chữa:</span
-                    >
+                    <span class="text-gray-400 font-medium">Nội dung sửa chữa:</span>
                     {{ m.description }}
                   </div>
                   <div
                     class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-dashed border-gray-100"
                   >
                     <div>
-                      <span class="text-gray-400 block mb-0.5"
-                        >Tiền phụ tùng:</span
-                      >
+                      <span class="text-gray-400 block mb-0.5">Tiền phụ tùng:</span>
                       <span class="font-semibold text-gray-800">{{
                         formatMoney(m.partsCost)
                       }}</span>
@@ -441,9 +361,7 @@
                     </div>
                     <div>
                       <span class="text-gray-400 block mb-0.5">Tổng cộng:</span>
-                      <span class="font-bold text-red-600">{{
-                        formatMoney(m.totalCost)
-                      }}</span>
+                      <span class="font-bold text-red-600">{{ formatMoney(m.totalCost) }}</span>
                     </div>
                   </div>
                 </div>
@@ -455,9 +373,7 @@
         <ElTabPane label="Yêu cầu bảo hành" name="warranty">
           <div class="p-1">
             <div
-              v-if="
-                !profile.warrantyClaims || profile.warrantyClaims.length === 0
-              "
+              v-if="!profile.warrantyClaims || profile.warrantyClaims.length === 0"
               class="text-center text-gray-400 py-12"
             >
               Chưa có yêu cầu bảo hành nào
@@ -469,16 +385,12 @@
                 class="asset-card bg-white rounded-xl border border-gray-100 p-4"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <span class="font-bold text-gray-900"
-                    >Mã yêu cầu: {{ w.claimNumber }}</span
-                  >
+                  <span class="font-bold text-gray-900">Mã yêu cầu: {{ w.claimNumber }}</span>
                   <ElTag type="warning" size="small" round>{{
-                    w.statusText || "Đang xử lý"
+                    w.statusText || 'Đang xử lý'
                   }}</ElTag>
                 </div>
-                <div class="text-xs text-gray-500">
-                  Ngày tạo: {{ formatDate(w.createdAt) }}
-                </div>
+                <div class="text-xs text-gray-500">Ngày tạo: {{ formatDate(w.createdAt) }}</div>
               </div>
             </div>
           </div>
@@ -486,10 +398,7 @@
 
         <ElTabPane label="Chăm sóc" name="care">
           <div class="p-1">
-            <div
-              v-if="profile.careReminders.length === 0"
-              class="text-center text-gray-400 py-12"
-            >
+            <div v-if="profile.careReminders.length === 0" class="text-center text-gray-400 py-12">
               Không có nhắc nhở chăm sóc
             </div>
             <div class="flex flex-col gap-3">
@@ -507,16 +416,12 @@
                     {{ r.description }}
                   </div>
                   <div v-if="r.dueDate" class="text-xs text-gray-400 mt-1">
-                    Hạn: {{ dayjs(r.dueDate).format("DD/MM/YYYY") }}
+                    Hạn: {{ dayjs(r.dueDate).format('DD/MM/YYYY') }}
                   </div>
                 </div>
-                <ElTag
-                  :type="reminderTagType(r.priority)"
-                  size="small"
-                  effect="plain"
-                  round
-                  >{{ r.priority }}</ElTag
-                >
+                <ElTag :type="reminderTagType(r.priority)" size="small" effect="plain" round>{{
+                  r.priority
+                }}</ElTag>
               </div>
             </div>
           </div>
@@ -524,10 +429,7 @@
 
         <ElTabPane label="Tiến độ" name="progress">
           <div class="p-1">
-            <div
-              v-if="profile.outputs.length === 0"
-              class="text-center text-gray-400 py-12"
-            >
+            <div v-if="profile.outputs.length === 0" class="text-center text-gray-400 py-12">
               Chưa có đơn hàng
             </div>
             <div class="flex flex-col gap-4">
@@ -537,15 +439,10 @@
                 class="progress-card bg-white rounded-xl border border-gray-100 p-5"
               >
                 <div class="flex items-center justify-between mb-3">
-                  <div class="font-bold text-gray-900">
-                    Đơn hàng #{{ output.id }}
-                  </div>
-                  <ElTag
-                    :type="getOutputStatusType(output.statusId)"
-                    effect="dark"
-                    round
-                    >{{ output.statusDisplayName }}</ElTag
-                  >
+                  <div class="font-bold text-gray-900">Đơn hàng #{{ output.id }}</div>
+                  <ElTag :type="getOutputStatusType(output.statusId)" effect="dark" round>{{
+                    output.statusDisplayName
+                  }}</ElTag>
                 </div>
                 <ElSteps
                   :active="getOutputStep(output.statusId)"
@@ -553,11 +450,7 @@
                   simple
                   class="progress-steps"
                 >
-                  <ElStep
-                    v-for="step in outputSteps"
-                    :key="step.key"
-                    :title="step.label"
-                  />
+                  <ElStep v-for="step in outputSteps" :key="step.key" :title="step.label" />
                 </ElSteps>
                 <div class="mt-3 text-xs text-gray-400">
                   Tạo: {{ formatDate(output.createdAt)
@@ -576,59 +469,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import dayjs from "dayjs";
-import "dayjs/locale/vi";
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 import {
   fetchGetProfile360,
   fetchAssignLead,
   type Profile360Data,
   type CareReminder,
-} from "@/api/customer/lead.api";
-import { fetchGetUserList } from "@/api/auth/system-manage.api";
-import { ElMessage } from "element-plus";
+} from '@/api/customer/lead.api';
+import { fetchGetUserList } from '@/api/auth/system-manage.api';
+import { ElMessage } from 'element-plus';
 
-dayjs.locale("vi");
-defineOptions({ name: "CustomerProfile360Hub" });
+dayjs.locale('vi');
+defineOptions({ name: 'CustomerProfile360Hub' });
 
 const route = useRoute();
 const router = useRouter();
 const leadId = computed(() => Number(route.params.leadId));
 const profile = ref<Profile360Data | null>(null);
 const loading = ref(false);
-const error = ref("");
-const activeTab = ref("overview");
+const error = ref('');
+const activeTab = ref('overview');
 
 const fullAddress = computed(() => {
-  if (!profile.value) return "";
-  return (
-    [profile.value.ward, profile.value.province].filter(Boolean).join(", ") ||
-    "—"
-  );
+  if (!profile.value) return '';
+  return [profile.value.ward, profile.value.province].filter(Boolean).join(', ') || '—';
 });
 
 const outputSteps = [
-  { key: "pending", label: "Chờ xác nhận" },
-  { key: "waiting_deposit", label: "Chờ đặt cọc" },
-  { key: "deposit_paid", label: "Đã cọc" },
-  { key: "waiting_installment", label: "Chờ duyệt trả góp" },
-  { key: "installment_approved", label: "Đã duyệt trả góp" },
-  { key: "confirmed_cod", label: "Xác nhận COD" },
-  { key: "paid_processing", label: "Đang xử lý" },
-  { key: "delivering", label: "Đang giao" },
-  { key: "waiting_pickup", label: "Chờ lấy" },
-  { key: "completed", label: "Hoàn thành" },
+  { key: 'pending', label: 'Chờ xác nhận' },
+  { key: 'waiting_deposit', label: 'Chờ đặt cọc' },
+  { key: 'deposit_paid', label: 'Đã cọc' },
+  { key: 'waiting_installment', label: 'Chờ duyệt trả góp' },
+  { key: 'installment_approved', label: 'Đã duyệt trả góp' },
+  { key: 'confirmed_cod', label: 'Xác nhận COD' },
+  { key: 'paid_processing', label: 'Đang xử lý' },
+  { key: 'delivering', label: 'Đang giao' },
+  { key: 'waiting_pickup', label: 'Chờ lấy' },
+  { key: 'completed', label: 'Hoàn thành' },
 ];
 
 const loadProfile = async () => {
   loading.value = true;
-  error.value = "";
+  error.value = '';
   try {
     const res = await fetchGetProfile360(leadId.value);
     profile.value = res as Profile360Data;
   } catch (e: any) {
-    error.value = e?.message || "Không thể tải dữ liệu hồ sơ khách hàng.";
+    error.value = e?.message || 'Không thể tải dữ liệu hồ sơ khách hàng.';
   } finally {
     loading.value = false;
   }
@@ -652,36 +542,36 @@ const fetchSalesList = async () => {
   } catch {}
 };
 
-const goBack = () => router.push("/Marketing/customer/profile");
+const goBack = () => router.push('/Marketing/customer/profile');
 const formatMoney = (val?: number) =>
-  val == null ? "—" : new Intl.NumberFormat("vi-VN").format(val) + "đ";
-const formatDate = (val: string) => dayjs(val).format("DD/MM/YYYY HH:mm");
+  val == null ? '—' : new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+const formatDate = (val: string) => dayjs(val).format('DD/MM/YYYY HH:mm');
 
 const getStatusLabel = (status: string) =>
   ({
-    New: "Mới đăng ký",
-    TestDrive: "Đã lái thử",
-    Negotiating: "Thương lượng",
-    Consulting: "Đang tư vấn",
-    Won: "Đã chốt đơn",
-    Official: "Khách chính thức",
-    Potential: "Tiềm năng",
-    Contacted: "Đã liên hệ",
+    New: 'Mới đăng ký',
+    TestDrive: 'Đã lái thử',
+    Negotiating: 'Thương lượng',
+    Consulting: 'Đang tư vấn',
+    Won: 'Đã chốt đơn',
+    Official: 'Khách chính thức',
+    Potential: 'Tiềm năng',
+    Contacted: 'Đã liên hệ',
   })[status] || status;
 
 const getStatusType = (status: string) =>
-  ["Won", "Official"].includes(status)
-    ? "success"
-    : ["TestDrive", "Negotiating"].includes(status)
-      ? "warning"
-      : "info";
+  ['Won', 'Official'].includes(status)
+    ? 'success'
+    : ['TestDrive', 'Negotiating'].includes(status)
+      ? 'warning'
+      : 'info';
 
 const getOutputStatusType = (statusId?: string) => {
-  if (!statusId) return "info";
-  if (statusId === "completed") return "success";
-  if (["cancelled", "refunded"].includes(statusId)) return "danger";
-  if (statusId === "refunding") return "warning";
-  return "primary";
+  if (!statusId) return 'info';
+  if (statusId === 'completed') return 'success';
+  if (['cancelled', 'refunded'].includes(statusId)) return 'danger';
+  if (statusId === 'refunding') return 'warning';
+  return 'primary';
 };
 
 const getOutputStep = (statusId?: string) => {
@@ -691,46 +581,45 @@ const getOutputStep = (statusId?: string) => {
 };
 
 const reminderIcon = (type: string) =>
-  ({ birthday: "ri:cake-line", stalled_order: "ri:alert-line" })[type] ||
-  "ri:information-line";
+  ({ birthday: 'ri:cake-line', stalled_order: 'ri:alert-line' })[type] || 'ri:information-line';
 const reminderIconClass = (priority: string) =>
   ({
-    urgent: "text-red-500",
-    high: "text-amber-500",
-    normal: "text-blue-500",
-    low: "text-gray-400",
-  })[priority] || "text-gray-400";
+    urgent: 'text-red-500',
+    high: 'text-amber-500',
+    normal: 'text-blue-500',
+    low: 'text-gray-400',
+  })[priority] || 'text-gray-400';
 const reminderTagType = (
-  priority: string,
-): "primary" | "success" | "warning" | "info" | "danger" | undefined =>
+  priority: string
+): 'primary' | 'success' | 'warning' | 'info' | 'danger' | undefined =>
   (
     ({
-      urgent: "danger",
-      high: "warning",
-      normal: "primary",
-      low: "info",
+      urgent: 'danger',
+      high: 'warning',
+      normal: 'primary',
+      low: 'info',
     }) as any
-  )[priority] || "info";
+  )[priority] || 'info';
 const timelineDotClass = (type: string) =>
   ({
-    output_created: "bg-blue-400",
-    output_status: "bg-green-400",
-    plate_dossier: "bg-purple-400",
-    service: "bg-amber-400",
-    activity: "bg-gray-300",
-  })[type] || "bg-gray-300";
+    output_created: 'bg-blue-400',
+    output_status: 'bg-green-400',
+    plate_dossier: 'bg-purple-400',
+    service: 'bg-amber-400',
+    activity: 'bg-gray-300',
+  })[type] || 'bg-gray-300';
 
 const handleEdit = () => {
-  if (profile.value) router.push("/Marketing/customer/profile");
+  if (profile.value) router.push('/Marketing/customer/profile');
 };
 const handleAssignSale = async (saleId: string) => {
   if (!profile.value) return;
   try {
     await fetchAssignLead(profile.value.id, saleId);
-    ElMessage.success("Đã phân công nhân viên thành công");
+    ElMessage.success('Đã phân công nhân viên thành công');
     loadProfile();
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi phân công nhân viên");
+    ElMessage.error(err.message || 'Lỗi khi phân công nhân viên');
   }
 };
 </script>

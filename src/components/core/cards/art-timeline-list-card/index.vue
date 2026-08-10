@@ -17,9 +17,7 @@
           <div class="flex-c gap-3">
             <div class="flex-c gap-2">
               <span class="text-sm">{{ item.content }}</span>
-              <span v-if="item.code" class="text-sm text-theme">
-                #{{ item.code }}
-              </span>
+              <span v-if="item.code" class="text-sm text-theme"> #{{ item.code }} </span>
             </div>
           </div>
         </ElTimelineItem>
@@ -29,10 +27,10 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtTimelineListCard" });
+defineOptions({ name: 'ArtTimelineListCard' });
 
 const ITEM_HEIGHT = 65;
-const TIMELINE_PLACEMENT = "top";
+const TIMELINE_PLACEMENT = 'top';
 const DEFAULT_MAX_COUNT = 5;
 
 interface TimelineItem {
@@ -50,8 +48,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: "",
-  subtitle: "",
+  title: '',
+  subtitle: '',
   maxCount: DEFAULT_MAX_COUNT,
 });
 

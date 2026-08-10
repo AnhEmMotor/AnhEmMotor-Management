@@ -107,36 +107,18 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="600px"
-class="resp-dialog"
+      class="resp-dialog"
       append-to-body
       destroy-on-close
     >
-      <ElForm
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        label-width="140px"
-        class="mt-4"
-      >
+      <ElForm ref="formRef" :model="formData" :rules="rules" label-width="140px" class="mt-4">
         <ElFormItem label="Nhà cung cấp" prop="supplierId">
-          <ElSelect
-            v-model="formData.supplierId"
-            placeholder="Chọn nhà cung cấp"
-            class="w-full"
-          >
-            <ElOption
-              v-for="sup in suppliers"
-              :key="sup.id"
-              :label="sup.name"
-              :value="sup.id"
-            />
+          <ElSelect v-model="formData.supplierId" placeholder="Chọn nhà cung cấp" class="w-full">
+            <ElOption v-for="sup in suppliers" :key="sup.id" :label="sup.name" :value="sup.id" />
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Số hợp đồng" prop="contractNumber">
-          <ElInput
-            v-model="formData.contractNumber"
-            placeholder="Nhập số hợp đồng"
-          />
+          <ElInput v-model="formData.contractNumber" placeholder="Nhập số hợp đồng" />
         </ElFormItem>
         <ElFormItem label="Ngày hiệu lực" prop="effectiveDate">
           <ElDatePicker
@@ -159,25 +141,13 @@ class="resp-dialog"
           />
         </ElFormItem>
         <ElFormItem label="Giá trị hợp đồng" prop="contractValue">
-          <ElInputNumber
-            v-model="formData.contractValue"
-            :min="0"
-            class="w-full"
-          />
+          <ElInputNumber v-model="formData.contractValue" :min="0" class="w-full" />
         </ElFormItem>
         <ElFormItem label="Hạn mức tín dụng" prop="creditLimit">
-          <ElInputNumber
-            v-model="formData.creditLimit"
-            :min="0"
-            class="w-full"
-          />
+          <ElInputNumber v-model="formData.creditLimit" :min="0" class="w-full" />
         </ElFormItem>
         <ElFormItem label="Số ngày nợ" prop="paymentWindowDays">
-          <ElInputNumber
-            v-model="formData.paymentWindowDays"
-            :min="0"
-            class="w-full"
-          />
+          <ElInputNumber v-model="formData.paymentWindowDays" :min="0" class="w-full" />
         </ElFormItem>
         <ElFormItem label="Ghi chú" prop="note">
           <ElInput v-model="formData.note" type="textarea" :rows="3" />
@@ -186,9 +156,7 @@ class="resp-dialog"
       <template #footer>
         <div class="dialog-footer">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submit"
-            >Lưu</ElButton
-          >
+          <ElButton type="primary" :loading="submitting" @click="submit">Lưu</ElButton>
         </div>
       </template>
     </ElDialog>
@@ -196,17 +164,17 @@ class="resp-dialog"
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { Plus, Edit, Delete } from "@element-plus/icons-vue";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ArtSearchBar from "@/components/core/forms/art-search-bar/index.vue";
-import ArtTableHeader from "@/components/core/tables/art-table-header/index.vue";
-import ArtTable from "@/components/core/tables/art-table/index.vue";
-import { useSupplierContractTable } from "./hooks/useSupplierContractTable";
-import { SupplierContractApi } from "@/api/supplier/supplier-contract.api";
-import type { FormInstance, FormRules } from "element-plus";
+import { ref, onMounted } from 'vue';
+import { Plus, Edit, Delete } from '@element-plus/icons-vue';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtSearchBar from '@/components/core/forms/art-search-bar/index.vue';
+import ArtTableHeader from '@/components/core/tables/art-table-header/index.vue';
+import ArtTable from '@/components/core/tables/art-table/index.vue';
+import { useSupplierContractTable } from './hooks/useSupplierContractTable';
+import { SupplierContractApi } from '@/api/supplier/supplier-contract.api';
+import type { FormInstance, FormRules } from 'element-plus';
 
-defineOptions({ name: "WarehouseContract" });
+defineOptions({ name: 'WarehouseContract' });
 
 const {
   data,
@@ -240,49 +208,42 @@ const rules = ref<FormRules>({
   supplierId: [
     {
       required: true,
-      message: "Vui lòng chọn nhà cung cấp",
-      trigger: "change",
+      message: 'Vui lòng chọn nhà cung cấp',
+      trigger: 'change',
     },
   ],
-  contractNumber: [
-    { required: true, message: "Vui lòng nhập số hợp đồng", trigger: "blur" },
-  ],
+  contractNumber: [{ required: true, message: 'Vui lòng nhập số hợp đồng', trigger: 'blur' }],
   effectiveDate: [
     {
       required: true,
-      message: "Vui lòng chọn ngày hiệu lực",
-      trigger: "change",
+      message: 'Vui lòng chọn ngày hiệu lực',
+      trigger: 'change',
     },
   ],
 });
 
 const getStatusName = (status: string) => {
   const map: Record<string, string> = {
-    Draft: "Bản nháp",
-    PendingApproval: "Chờ duyệt",
-    Active: "Đang hiệu lực",
-    Expired: "Hết hạn",
-    Terminated: "Đã chấm dứt",
-    Completed: "Hoàn thành",
+    Draft: 'Bản nháp',
+    PendingApproval: 'Chờ duyệt',
+    Active: 'Đang hiệu lực',
+    Expired: 'Hết hạn',
+    Terminated: 'Đã chấm dứt',
+    Completed: 'Hoàn thành',
   };
   return map[status] || status;
 };
 
-const getStatusTag = (
-  status: string,
-): "primary" | "success" | "warning" | "info" | "danger" => {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    Draft: "info",
-    PendingApproval: "warning",
-    Active: "success",
-    Expired: "danger",
-    Terminated: "danger",
-    Completed: "success",
+const getStatusTag = (status: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    Draft: 'info',
+    PendingApproval: 'warning',
+    Active: 'success',
+    Expired: 'danger',
+    Terminated: 'danger',
+    Completed: 'success',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 };
 
 const submit = async () => {
@@ -299,7 +260,7 @@ onMounted(async () => {
     const res = await SupplierContractApi.getSuppliersForSelect();
     suppliers.value = res || [];
   } catch (err) {
-    console.error("Lỗi lấy danh sách nhà cung cấp:", err);
+    console.error('Lỗi lấy danh sách nhà cung cấp:', err);
   }
 });
 </script>

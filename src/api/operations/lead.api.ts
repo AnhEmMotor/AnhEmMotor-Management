@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface LeadActivityResponse {
   id: number;
@@ -42,7 +42,7 @@ export interface LeadPipelineGroupResponse {
 export const leadApi = {
   getPipeline() {
     return request.get<LeadPipelineGroupResponse[]>({
-      url: "/api/v1/lead/pipeline",
+      url: '/api/v1/lead/pipeline',
     });
   },
 };

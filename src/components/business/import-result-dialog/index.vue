@@ -10,25 +10,18 @@
       <div class="flex items-center gap-2 text-lg">
         <ElIcon class="text-success text-2xl"><SuccessFilled /></ElIcon>
         <span
-          >Đã nhập thành công
-          <strong>{{ resultData.successCount }}</strong> dòng.</span
+          >Đã nhập thành công <strong>{{ resultData.successCount }}</strong> dòng.</span
         >
       </div>
 
-      <div
-        v-if="resultData.failedCount > 0"
-        class="flex items-center gap-2 text-lg text-danger"
-      >
+      <div v-if="resultData.failedCount > 0" class="flex items-center gap-2 text-lg text-danger">
         <ElIcon class="text-2xl"><WarningFilled /></ElIcon>
         <span
           >Thất bại <strong>{{ resultData.failedCount }}</strong> dòng.</span
         >
       </div>
 
-      <div
-        v-if="resultData.failedCount > 0"
-        class="mt-4 p-4 bg-gray-50 rounded-lg"
-      >
+      <div v-if="resultData.failedCount > 0" class="mt-4 p-4 bg-gray-50 rounded-lg">
         <p class="mb-3 text-gray-600">
           Bạn có thể tải xuống danh sách các dòng bị lỗi để kiểm tra và sửa lại:
         </p>
@@ -51,8 +44,7 @@
             :href="apiUrl + resultData.errorFileWithReasonUrl"
             download
           >
-            <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm lý
-            do)
+            <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm lý do)
           </ElButton>
         </div>
       </div>
@@ -64,11 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  SuccessFilled,
-  WarningFilled,
-  Download,
-} from "@element-plus/icons-vue";
+import { SuccessFilled, WarningFilled, Download } from '@element-plus/icons-vue';
 
 defineProps<{
   modelValue: boolean;
@@ -77,7 +65,7 @@ defineProps<{
   downloadTemplateText?: string;
 }>();
 
-defineEmits(["update:modelValue", "download-template"]);
+defineEmits(['update:modelValue', 'download-template']);
 
-const apiUrl = import.meta.env.VITE_APP_BASE_API || "";
+const apiUrl = import.meta.env.VITE_APP_BASE_API || '';
 </script>

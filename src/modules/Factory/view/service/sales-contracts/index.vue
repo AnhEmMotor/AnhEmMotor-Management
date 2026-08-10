@@ -54,9 +54,7 @@
         </div>
       </template>
       <div>
-        <div
-          class="mb-4 resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
-        >
+        <div class="mb-4 resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
           <el-input
             v-model="searchQuery"
             placeholder="Số hợp đồng, Tên KH, Số CCCD, Số khung/máy"
@@ -87,26 +85,13 @@
             <el-option label="Honda Vision" value="Vision" />
             <el-option label="Yamaha Exciter" value="Exciter" />
           </el-select>
-          <el-button
-            type="primary"
-            :icon="Search"
-            class="w-full md:w-auto"
-            @click="fetchData"
+          <el-button type="primary" :icon="Search" class="w-full md:w-auto" @click="fetchData"
             >Tìm kiếm</el-button
           >
         </div>
 
-        <el-table
-          :data="tableData"
-          border
-          style="width: 100%"
-          v-loading="loading"
-        >
-          <el-table-column
-            prop="contractNumber"
-            label="Số Hợp Đồng"
-            width="160"
-          />
+        <el-table :data="tableData" border style="width: 100%" v-loading="loading">
+          <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
           <el-table-column label="Mã Đơn Hàng" width="140">
             <template #default="scope">
               <el-button
@@ -119,25 +104,15 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="customerName"
-            label="Khách Hàng"
-            min-width="160"
-          />
-          <el-table-column
-            prop="vehicle"
-            label="Xe Giao Dịch"
-            min-width="180"
-          />
+          <el-table-column prop="customerName" label="Khách Hàng" min-width="160" />
+          <el-table-column prop="vehicle" label="Xe Giao Dịch" min-width="180" />
 
           <el-table-column label="Hạn Bàn Giao" width="130">
             <template #default="scope">
               <div class="flex flex-col items-start">
                 <span
                   :class="{
-                    'text-red-500 font-bold': isOverdue(
-                      scope.row.deliveryDeadline,
-                    ),
+                    'text-red-500 font-bold': isOverdue(scope.row.deliveryDeadline),
                   }"
                 >
                   {{ formatDate(scope.row.deliveryDeadline) }}
@@ -169,12 +144,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            prop="status"
-            label="Trạng Thái HĐ"
-            width="130"
-            align="center"
-          >
+          <el-table-column prop="status" label="Trạng Thái HĐ" width="130" align="center">
             <template #default="scope">
               <el-tag :type="getStatusType(scope.row.status)" effect="dark">
                 {{ scope.row.status }}
@@ -182,19 +152,10 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            label="Thao Tác"
-            width="110"
-            align="center"
-            fixed="right"
-          >
+          <el-table-column label="Thao Tác" width="110" align="center" fixed="right">
             <template #default="scope">
               <el-dropdown trigger="click">
-                <el-button
-                  type="primary"
-                  link
-                  v-auth="Permissions.Factory.CustomerManagement.View"
-                >
+                <el-button type="primary" link v-auth="Permissions.Factory.CustomerManagement.View">
                   Thao tác
                   <el-icon class="el-icon--right"><ArrowDown /></el-icon>
                 </el-button>
@@ -226,9 +187,7 @@
                         disabled
                         v-auth="Permissions.Factory.CustomerManagement.View"
                       >
-                        <el-icon class="text-orange-500"
-                          ><WarningFilled
-                        /></el-icon>
+                        <el-icon class="text-orange-500"><WarningFilled /></el-icon>
                         <span class="text-orange-500">Ký HĐ để giao xe</span>
                       </el-dropdown-item>
                     </template>
@@ -245,9 +204,7 @@
                         disabled
                         v-auth="Permissions.Factory.CustomerManagement.View"
                       >
-                        <el-icon class="text-red-500"
-                          ><WarnTriangleFilled
-                        /></el-icon>
+                        <el-icon class="text-red-500"><WarnTriangleFilled /></el-icon>
                         <span class="text-red-500">Trễ hạn bàn giao!</span>
                       </el-dropdown-item>
                     </template>
@@ -272,7 +229,6 @@
       </div>
     </el-card>
 
-    <!-- Create Contract Dialog -->
     <el-dialog
       v-model="dialogVisible"
       title="Thêm hợp đồng"
@@ -280,12 +236,7 @@
       append-to-body
       destroy-on-close
     >
-      <el-form
-        :model="form"
-        :rules="formRules"
-        ref="formRef"
-        label-position="top"
-      >
+      <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
         <el-form-item label="Chọn đơn hàng" prop="orderId">
           <el-select
             v-model="form.orderId"
@@ -319,18 +270,12 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Thời gian bảo hành">
-              <el-input
-                v-model="form.warrantyPeriod"
-                placeholder="VD: 3 năm hoặc 30.000km"
-              />
+              <el-input v-model="form.warrantyPeriod" placeholder="VD: 3 năm hoặc 30.000km" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Phạm vi bảo hành">
-              <el-input
-                v-model="form.warrantyScope"
-                placeholder="VD: Toàn quốc"
-              />
+              <el-input v-model="form.warrantyScope" placeholder="VD: Toàn quốc" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -361,9 +306,7 @@
                 alt="Xem trước file"
                 class="max-h-[150px] object-contain rounded"
               />
-              <span class="text-xs text-gray-500 mt-2"
-                >Bấm để chọn file khác</span
-              >
+              <span class="text-xs text-gray-500 mt-2">Bấm để chọn file khác</span>
             </div>
             <template v-else>
               <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
@@ -382,9 +325,7 @@
             class="contract-upload-filebar flex items-center justify-between mt-2 p-2 bg-gray-50 border border-gray-100 rounded-lg text-xs"
           >
             <span class="truncate font-medium">{{ contractFileName }}</span>
-            <el-button link type="danger" @click.stop="clearContractFile">
-              Xóa
-            </el-button>
+            <el-button link type="danger" @click.stop="clearContractFile"> Xóa </el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -411,10 +352,10 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import {
   View,
   Search,
@@ -428,18 +369,18 @@ import {
   WarnTriangleFilled,
   ArrowDown,
   Plus,
-} from "@element-plus/icons-vue";
+} from '@element-plus/icons-vue';
 
-import { ElMessage } from "element-plus";
-import { SalesContractApi, SalesOrderApi } from "@/api/sales";
+import { ElMessage } from 'element-plus';
+import { SalesContractApi, SalesOrderApi } from '@/api/sales';
 
 const { t: $t } = useI18n();
 const router = useRouter();
 
 const loading = ref(false);
-const searchQuery = ref("");
-const statusFilter = ref("");
-const vehicleFilter = ref("");
+const searchQuery = ref('');
+const statusFilter = ref('');
+const vehicleFilter = ref('');
 
 const tableData = ref<any[]>([]);
 const statistics = reactive({
@@ -483,16 +424,11 @@ const fetchData = async () => {
     const res = await SalesContractApi.getList(params);
     tableData.value = res.items.map((c: any) => ({
       ...c,
-      progress:
-        c.status === "Fulfilled"
-          ? "delivered"
-          : c.status === "Signed"
-            ? "paid"
-            : "deposit",
+      progress: c.status === 'Fulfilled' ? 'delivered' : c.status === 'Signed' ? 'paid' : 'deposit',
     }));
     pagination.total = res.totalCount;
   } catch (_e) {
-    ElMessage.error("Không tải được danh sách hợp đồng.");
+    ElMessage.error('Không tải được danh sách hợp đồng.');
   } finally {
     loading.value = false;
   }
@@ -505,7 +441,6 @@ const loadStatistics = async () => {
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
   } catch (_e) {
-    // silent fail for stats
   }
 };
 
@@ -516,33 +451,33 @@ onMounted(() => {
 
 const getStatusType = (status: string) => {
   switch (status) {
-    case "Draft":
-      return "warning";
-    case "Signed":
-      return "primary";
-    case "Fulfilled":
-      return "success";
+    case 'Draft':
+      return 'warning';
+    case 'Signed':
+      return 'primary';
+    case 'Fulfilled':
+      return 'success';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    Draft: "Nháp (Draft)",
-    Signed: "Đã ký (Signed)",
-    Fulfilled: "Hoàn tất (Fulfilled)",
+    Draft: 'Nháp (Draft)',
+    Signed: 'Đã ký (Signed)',
+    Fulfilled: 'Hoàn tất (Fulfilled)',
   };
   return map[status] || status;
 };
 
 const getProgressActive = (progress: string) => {
   switch (progress) {
-    case "deposit":
+    case 'deposit':
       return 1;
-    case "paid":
+    case 'paid':
       return 2;
-    case "delivered":
+    case 'delivered':
       return 3;
     default:
       return 0;
@@ -555,8 +490,8 @@ const isOverdue = (dateStr: string) => {
 };
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('vi-VN');
 };
 
 const dialogVisible = ref(false);
@@ -566,8 +501,8 @@ const orderOptions = ref<any[]>([]);
 const formRef = ref<any>(null);
 
 const selectedFile = ref<File | null>(null);
-const contractFileName = ref("");
-const contractFilePreviewUrl = ref("");
+const contractFileName = ref('');
+const contractFilePreviewUrl = ref('');
 
 const customUploadRequest = async (options: any) => {
   const file = options.file as File;
@@ -576,51 +511,46 @@ const customUploadRequest = async (options: any) => {
   if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(file.name)) {
     contractFilePreviewUrl.value = URL.createObjectURL(file);
   } else {
-    contractFilePreviewUrl.value = "";
+    contractFilePreviewUrl.value = '';
   }
   options.onSuccess?.({});
 };
 
 const clearContractFile = () => {
   selectedFile.value = null;
-  contractFileName.value = "";
-  if (
-    contractFilePreviewUrl.value &&
-    contractFilePreviewUrl.value.startsWith("blob:")
-  ) {
+  contractFileName.value = '';
+  if (contractFilePreviewUrl.value && contractFilePreviewUrl.value.startsWith('blob:')) {
     URL.revokeObjectURL(contractFilePreviewUrl.value);
   }
-  contractFilePreviewUrl.value = "";
+  contractFilePreviewUrl.value = '';
 };
 
 const form = reactive({
   orderId: null as number | null,
-  specialTerms: "",
-  warrantyPeriod: "3 năm hoặc 30.000km",
-  warrantyScope: "Toàn quốc",
-  note: "",
+  specialTerms: '',
+  warrantyPeriod: '3 năm hoặc 30.000km',
+  warrantyScope: 'Toàn quốc',
+  note: '',
 });
 
 const formRules = reactive({
-  orderId: [
-    { required: true, message: "Vui lòng chọn đơn hàng", trigger: "change" },
-  ],
+  orderId: [{ required: true, message: 'Vui lòng chọn đơn hàng', trigger: 'change' }],
 });
 
 const handleOpenAddDialog = () => {
   form.orderId = null;
-  form.specialTerms = "";
-  form.warrantyPeriod = "3 năm hoặc 30.000km";
-  form.warrantyScope = "Toàn quốc";
-  form.note = "";
+  form.specialTerms = '';
+  form.warrantyPeriod = '3 năm hoặc 30.000km';
+  form.warrantyScope = 'Toàn quốc';
+  form.note = '';
   selectedFile.value = null;
-  contractFileName.value = "";
-  contractFilePreviewUrl.value = "";
+  contractFileName.value = '';
+  contractFilePreviewUrl.value = '';
   if (formRef.value) {
     formRef.value.resetFields();
   }
   dialogVisible.value = true;
-  searchOrders("");
+  searchOrders('');
 };
 
 const searchOrders = async (query: string) => {
@@ -630,11 +560,11 @@ const searchOrders = async (query: string) => {
       current: 1,
       size: 50,
       Search: query || undefined,
-      Sorts: "-CreatedAt",
+      Sorts: '-CreatedAt',
     });
     orderOptions.value = res.items || [];
   } catch (_e) {
-    ElMessage.error("Không tải được danh sách đơn hàng.");
+    ElMessage.error('Không tải được danh sách đơn hàng.');
   } finally {
     orderSearchLoading.value = false;
   }
@@ -656,18 +586,15 @@ const handleSubmit = async () => {
 
       const createdContractId = res?.id;
       if (createdContractId && selectedFile.value) {
-        await SalesContractApi.uploadScannedFile(
-          createdContractId,
-          selectedFile.value,
-        );
+        await SalesContractApi.uploadScannedFile(createdContractId, selectedFile.value);
       }
 
-      ElMessage.success("Thêm hợp đồng thành công.");
+      ElMessage.success('Thêm hợp đồng thành công.');
       dialogVisible.value = false;
       fetchData();
       loadStatistics();
     } catch (_e) {
-      ElMessage.error("Không thể tạo hợp đồng mới.");
+      ElMessage.error('Không thể tạo hợp đồng mới.');
     } finally {
       submitLoading.value = false;
     }
@@ -675,7 +602,7 @@ const handleSubmit = async () => {
 };
 
 const goToPreview = (id?: string) => {
-  router.push({ name: "SalesContractPreview", params: { id: id || "" } });
+  router.push({ name: 'SalesContractPreview', params: { id: id || '' } });
 };
 </script>
 

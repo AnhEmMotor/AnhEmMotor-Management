@@ -1,66 +1,53 @@
-import type { GuideSection } from "../data/guideData";
-import { Money, Document } from "@element-plus/icons-vue";
+import type { GuideSection } from '../data/guideData';
+import { Money } from '@element-plus/icons-vue';
 
 export const sectionData: GuideSection = {
-  id: "sales",
-  title: "Quản Lý Bán Hàng",
-  subtitle: "Sales Management",
+  id: 'sales',
+  title: 'Quản Lý Bán Hàng & Chính Sách',
+  subtitle: 'Sales Operations',
   description:
-    "Giao diện giám sát toàn bộ hoạt động bán hàng: Hóa đơn, hoàn trả và báo cáo doanh số tổng hợp.",
+    'Cấu hình các chương trình khuyến mãi toàn hệ thống, quản lý khung giá bán (Price book) và giám sát chặt chẽ tỷ lệ hủy/trả đơn hàng.',
   icon: Money,
-  color: "#059669",
-  shadowColor: "rgba(5,150,105,0.15)",
-  route: "/admin/sales",
+  color: '#059669',
+  shadowColor: 'rgba(5,150,105,0.15)',
+  route: '/admin/sales',
+  imageUrl: '/images/manual/sales_invoice_1785990516203.png',
   pages: [
     {
-      id: "s-returns",
-      title: "Quản lý Hủy đơn / Trả hàng",
-      route: "/admin/sales/returns",
+      id: 's-pricing',
+      title: 'Thiết lập Giá & Khuyến mãi (Price Book)',
+      route: '/admin/sales/pricing',
       description:
-        "Giám sát và phê duyệt các yêu cầu hủy đơn hoặc trả lại xe từ khách hàng.",
+        'Cập nhật bảng giá niêm yết đồng loạt cho các chi nhánh, tạo lập các chương trình Voucher/Giảm giá.',
       steps: [
-        "Vào menu Bán hàng -> Quản lý Hủy/Trả đơn.",
-        "Hệ thống sẽ hiển thị danh sách các đơn đang chờ xử lý từ các chi nhánh.",
-        "Nhấp vào một đơn để xem chi tiết lý do khách hàng muốn hủy/trả.",
-        'Admin xem xét và chọn "Đồng ý" hoặc "Từ chối" yêu cầu này.',
+        '1. Vào [Quản Lý Bán Hàng] -> [Bảng Giá & Khuyến Mãi].',
+        '2. Cập nhật Bảng Giá: Khi Hãng có đợt tăng/giảm giá xe, Admin import file Excel bảng giá mới. Hệ thống sẽ tự động áp giá mới cho toàn bộ các chi nhánh.',
+        '3. Thiết lập Khuyến mãi: Bấm [Tạo Chiến Dịch Khuyến Mãi].',
+        '4. Nhập Tên chiến dịch (VD: Back To School), Thời gian áp dụng, và Thể lệ (Giảm 500k cho Sinh Viên mua xe số).',
+        '5. Sinh mã Voucher hàng loạt (VD: BTS_xxxx) và giới hạn số lần sử dụng.',
+        '6. Áp dụng chiến dịch: Chọn áp dụng cho toàn hệ thống hay chỉ cho 1 cửa hàng đang ế khách.',
+        '7. Duyệt phát hành. Từ lúc này, Sales ở các cửa hàng có thể add Voucher vào đơn hàng của khách.',
       ],
       tips: [
-        "Khi đồng ý trả hàng, kho sẽ tự động cộng lại số lượng xe.",
-        "Nên liên hệ trực tiếp chi nhánh hoặc khách hàng nếu lý do trả hàng không rõ ràng.",
+        "Admin có thể cấu hình 'Giá sàn' (Giá bán thấp nhất có thể). Nếu Sales giảm giá quá mức Giá sàn, hệ thống sẽ chặn không cho chốt đơn.",
+        'Việc quản lý giá tập trung ở cấp Admin giúp chống bán phá giá (Dumping) và loạn giá giữa các chi nhánh cùng công ty.',
       ],
     },
     {
-      id: "s-invoices",
-      title: "Hóa đơn Bán hàng",
-      route: "/admin/sales/invoices",
-      description:
-        "Công cụ giám sát toàn bộ hóa đơn đã được lập tại tất cả showroom.",
+      id: 's-returns',
+      title: 'Phê duyệt Hủy Đơn / Trả Xe',
+      route: '/admin/sales/returns',
+      description: 'Kiểm soát các rủi ro tài chính khi khách hàng muốn trả xe, hủy hợp đồng.',
       steps: [
-        "Vào menu Bán hàng -> Hóa đơn.",
-        "Sử dụng bộ lọc nâng cao để tìm kiếm hóa đơn theo Mã HĐ, Tên KH, Số khung, hoặc Số máy.",
-        "Click vào từng dòng để xem chi tiết hóa đơn: thông tin xe, giá tiền, thuế và các khoản giảm trừ.",
-        "Bạn cũng có thể xem và quản lý các voucher/mã giảm giá đã được áp dụng cho hóa đơn đó.",
+        '1. Chuyển sang tab [Quản lý Hủy/Trả Đơn].',
+        "2. Bảng sẽ tổng hợp toàn bộ các phiếu 'Yêu cầu trả xe' từ Quản lý các chi nhánh gửi lên.",
+        '3. Xem chi tiết Lịch sử đơn hàng, Biên bản kiểm tra tình trạng xe, và số tiền khách yêu cầu hoàn lại.',
+        '4. Nếu lý do hợp lý (VD: Lỗi nghiêm trọng từ nhà sản xuất không thể khắc phục), Admin bấm [Phê duyệt Yêu cầu].',
+        '5. Nếu phát hiện khách vi phạm hợp đồng (Trầy xước nặng), Admin ghi chú mức phạt khấu hao và Trả về cho chi nhánh đàm phán lại.',
       ],
       tips: [
-        "Ở quyền Admin, bạn có cái nhìn tổng quát toàn hệ thống thay vì bị giới hạn ở 1 chi nhánh.",
-        "Bạn có thể xuất danh sách hóa đơn ra Excel để gửi cho bộ phận kế toán.",
-      ],
-    },
-    {
-      id: "s-report",
-      title: "Báo cáo Bán hàng",
-      route: "/admin/sales/sales-report",
-      description:
-        "Trích xuất báo cáo doanh số, số lượng xe bán ra theo nhiều tiêu chí.",
-      steps: [
-        "Vào menu Bán hàng -> Báo cáo Bán hàng.",
-        "Chọn khoảng thời gian cần xuất báo cáo (hôm nay, tuần này, tháng này hoặc tùy chỉnh).",
-        "Lọc báo cáo theo từng chi nhánh cụ thể hoặc xem toàn hệ thống.",
-        'Nhấp "Xuất Excel" để tải báo cáo dạng bảng tính về máy.',
-      ],
-      tips: [
-        "Báo cáo cung cấp số liệu thực tế rất quan trọng cho việc ra quyết định nhập hàng.",
-        "Cần có quyền Xem Thống kê (SalesManagement.View) để truy cập trang này.",
+        'Lệnh trả xe là nghiệp vụ cực kỳ phức tạp (liên quan đến Thuế, Đăng ký biển số, Hóa đơn VAT). Do đó quyền quyết định cuối cùng luôn phải nằm ở Ban Giám Đốc/Admin.',
+        'Hệ thống sẽ tự động phong tỏa khoản tiền hoàn trả trên tài khoản của Kế toán cho đến khi Admin duyệt.',
       ],
     },
   ],

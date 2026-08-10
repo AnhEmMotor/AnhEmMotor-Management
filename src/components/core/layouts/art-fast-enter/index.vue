@@ -27,9 +27,7 @@
             class="mr-3 c-p flex-c gap-3 rounded-lg p-2 hover:bg-g-200/70 dark:hover:bg-g-200/90 hover:[&_.app-icon]:!bg-transparent"
             @click="handleApplicationClick(application)"
           >
-            <div
-              class="app-icon size-12 flex-cc rounded-lg bg-g-200/80 dark:bg-g-300/30"
-            >
+            <div class="app-icon size-12 flex-cc rounded-lg bg-g-200/80 dark:bg-g-300/30">
               <ArtSvgIcon
                 class="text-xl"
                 :icon="application.icon"
@@ -66,10 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { useFastEnter } from "@/common/composables/useFastEnter";
-import type { FastEnterApplication, FastEnterQuickLink } from "@/types/config";
+import { useFastEnter } from '@/common/composables/useFastEnter';
+import type { FastEnterApplication, FastEnterQuickLink } from '@/types/config';
 
-defineOptions({ name: "ArtFastEnter" });
+defineOptions({ name: 'ArtFastEnter' });
 
 const router = useRouter();
 const popoverRef = ref();
@@ -80,14 +78,12 @@ const handleNavigate = (routeName?: string, link?: string): void => {
   const targetPath = routeName || link;
 
   if (!targetPath) {
-    console.warn(
-      "Điều hướngCauHinhvôhiệu：thiếuthiểuRoutingdanhtênhoặcliêntiếp",
-    );
+    console.warn('Điều hướngCauHinhvôhiệu：thiếuthiểuRoutingdanhtênhoặcliêntiếp');
     return;
   }
 
-  if (targetPath.startsWith("http")) {
-    window.open(targetPath, "_blank");
+  if (targetPath.startsWith('http')) {
+    window.open(targetPath, '_blank');
   } else {
     router.push({ name: targetPath });
   }

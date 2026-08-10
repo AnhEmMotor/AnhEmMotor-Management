@@ -1,39 +1,31 @@
-import { ref, computed, type ComputedRef } from "vue";
-import { ElMessage } from "element-plus";
-import { VoucherApi } from "@/api/voucher.api";
-import type {
-  VoucherItem,
-  AppliedVoucherInfo,
-} from "@/domain/voucher/voucher.types";
+import { ref, computed, type ComputedRef } from 'vue';
+import { ElMessage } from 'element-plus';
+import { VoucherApi } from '@/api/voucher.api';
+import type { VoucherItem, AppliedVoucherInfo } from '@/domain/voucher/voucher.types';
 
 export function useVoucher(
   orderTotal: ComputedRef<number> | (() => number),
   orderId: ComputedRef<number | undefined> | (() => number | undefined),
-  isMock: boolean = false,
+  isMock: boolean = false
 ) {
   const getTotal = (): number =>
-    typeof orderTotal === "function"
+    typeof orderTotal === 'function'
       ? (orderTotal as () => number)()
       : (orderTotal as ComputedRef<number>).value;
   const getId = () =>
-    typeof orderId === "function"
-      ? orderId()
-      : (orderId as ComputedRef<number | undefined>).value;
+    typeof orderId === 'function' ? orderId() : (orderId as ComputedRef<number | undefined>).value;
 
-  const voucherCode = ref("");
+  const voucherCode = ref('');
   const appliedVoucher = ref<AppliedVoucherInfo | null>(null);
   const applying = ref(false);
   const removing = ref(false);
-  const errorMsg = ref("");
+  const errorMsg = ref('');
 
-  const discountAmount = computed(
-    () => appliedVoucher.value?.discountAmount ?? 0,
-  );
-  const finalTotal = computed(() =>
-    Math.max(0, getTotal() - discountAmount.value),
-  );
+  const discountAmount = computed(() => appliedVoucher.value?.discountAmount ?? 0);
+  const finalTotal = computed(() => Math.max(0, getTotal() - discountAmount.value));
 
   const validateMinSpend = (voucher: VoucherItem): boolean => {
+    if (isMock) return true; // Bypass min spend for new orders (total is not known yet)
     if (voucher.minOrderValue > 0 && getTotal() < voucher.minOrderValue) {
       return false;
     }
@@ -41,7 +33,7 @@ export function useVoucher(
   };
 
   const calculateDiscount = (voucher: VoucherItem): number => {
-    if (voucher.discountType === "PERCENT") {
+    if (voucher.discountType === 'PERCENT') {
       let discount = (getTotal() * voucher.discountValue) / 100;
       if (voucher.maxDiscountAmount && discount > voucher.maxDiscountAmount) {
         discount = voucher.maxDiscountAmount;
@@ -52,10 +44,10 @@ export function useVoucher(
   };
 
   const handleApply = async () => {
-    errorMsg.value = "";
+    errorMsg.value = '';
     const code = voucherCode.value.trim().toUpperCase();
     if (!code) {
-      errorMsg.value = "Vui lòng nhập mã voucher";
+      errorMsg.value = 'Vui lòng nhập mã voucher';
       return;
     }
 
@@ -63,7 +55,7 @@ export function useVoucher(
     try {
       const voucher = await VoucherApi.getByCode(code);
       if (!voucher) {
-        errorMsg.value = "Mã voucher không tồn tại";
+        errorMsg.value = 'Mã voucher không tồn tại';
         appliedVoucher.value = null;
         return;
       }
@@ -75,24 +67,43 @@ export function useVoucher(
       }
 
       const discount = calculateDiscount(voucher);
+
+      let finalOrderVoucherId = 0;
       const oid = getId();
       if (!oid) {
-        errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
+        errorMsg.value = 'Vui lòng lưu đơn hàng trước khi áp dụng voucher';
         appliedVoucher.value = null;
         return;
       }
 
       const validated = await VoucherApi.validate(voucher.id, oid);
       if (!validated.isValid) {
-        errorMsg.value = validated.message || "Voucher không hợp lệ";
+        errorMsg.value = validated.message || 'Voucher không hợp lệ';
         appliedVoucher.value = null;
         return;
       }
 
-      const applied = await VoucherApi.apply(voucher.id, oid);
+      if (!isMock) {
+        const oid = getId();
+        if (!oid) {
+          errorMsg.value = "Vui lòng lưu đơn hàng trước khi áp dụng voucher";
+          appliedVoucher.value = null;
+          return;
+        }
+
+        const validated = await VoucherApi.validate(voucher.id, oid);
+        if (!validated.isValid) {
+          errorMsg.value = validated.message || "Voucher không hợp lệ";
+          appliedVoucher.value = null;
+          return;
+        }
+
+        const applied = await VoucherApi.apply(voucher.id, oid);
+        finalOrderVoucherId = applied.orderVoucherId;
+      }
 
       appliedVoucher.value = {
-        orderVoucherId: applied.orderVoucherId,
+        orderVoucherId: finalOrderVoucherId,
         voucherId: voucher.id,
         code: voucher.code,
         name: voucher.name,
@@ -103,11 +114,9 @@ export function useVoucher(
         minOrderValue: voucher.minOrderValue,
       };
 
-      ElMessage.success(
-        `Đã áp dụng voucher ${voucher.code} - Giảm ${discount.toLocaleString()}đ`,
-      );
+      ElMessage.success(`Đã áp dụng voucher ${voucher.code} - Giảm ${discount.toLocaleString()}đ`);
     } catch (err: any) {
-      errorMsg.value = err?.message || "Không thể áp dụng voucher";
+      errorMsg.value = err?.message || 'Không thể áp dụng voucher';
       appliedVoucher.value = null;
     } finally {
       applying.value = false;
@@ -119,27 +128,25 @@ export function useVoucher(
     removing.value = true;
     try {
       if (!isMock) {
-        const res = await VoucherApi.remove(
-          appliedVoucher.value.orderVoucherId,
-        );
+        const res = await VoucherApi.remove(appliedVoucher.value.orderVoucherId);
         ElMessage.success(
-          `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`,
+          `Đã bỏ voucher ${appliedVoucher.value.code} - Hoàn ${res.refundedAmount.toLocaleString()}đ`
         );
       } else {
         ElMessage.success(`Đã bỏ voucher ${appliedVoucher.value.code}`);
       }
       appliedVoucher.value = null;
     } catch (err: any) {
-      ElMessage.error(err?.message || "Không thể bỏ voucher");
+      ElMessage.error(err?.message || 'Không thể bỏ voucher');
     } finally {
       removing.value = false;
     }
   };
 
   const reset = () => {
-    voucherCode.value = "";
+    voucherCode.value = '';
     appliedVoucher.value = null;
-    errorMsg.value = "";
+    errorMsg.value = '';
   };
 
   return {

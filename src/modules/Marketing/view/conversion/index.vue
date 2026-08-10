@@ -16,12 +16,12 @@
             <h1
               class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
-              {{ $t("marketing.conversionTools.title") }}
+              {{ $t('marketing.conversionTools.title') }}
             </h1>
             <p
               class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2"
             >
-              {{ $t("marketing.conversionTools.subtitle") }}
+              {{ $t('marketing.conversionTools.subtitle') }}
             </p>
           </div>
         </div>
@@ -38,7 +38,7 @@
                 : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
             "
           >
-            {{ $t("marketing.conversionTools.tabPopup") }}
+            {{ $t('marketing.conversionTools.tabPopup') }}
           </button>
           <button
             @click="activeTab = 'landing'"
@@ -49,7 +49,7 @@
                 : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
             "
           >
-            {{ $t("marketing.conversionTools.tabLanding") }}
+            {{ $t('marketing.conversionTools.tabLanding') }}
           </button>
         </div>
       </div>
@@ -61,14 +61,14 @@
           <h3
             class="m-0 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
-            {{ $t("marketing.conversionTools.popupListTitle") }}
+            {{ $t('marketing.conversionTools.popupListTitle') }}
           </h3>
           <button
             @click="handleAddPopup"
             class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-line" class="text-blue-500" />
-            {{ $t("marketing.conversionTools.createPopupBtn") }}
+            {{ $t('marketing.conversionTools.createPopupBtn') }}
           </button>
         </div>
 
@@ -85,11 +85,7 @@
               <div
                 class="size-16 rounded-2xl bg-slate-50 dark:bg-slate-950 flex-cc border border-slate-100 dark:border-slate-850 overflow-hidden shrink-0"
               >
-                <img
-                  v-if="popup.img"
-                  :src="popup.img"
-                  class="w-full h-full object-cover"
-                />
+                <img v-if="popup.img" :src="popup.img" class="w-full h-full object-cover" />
                 <ArtSvgIcon
                   v-else
                   icon="ri:window-line"
@@ -102,21 +98,17 @@
                 >
                   {{ popup.name }}
                 </h4>
-                <p
-                  class="m-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-3"
-                >
+                <p class="m-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-3">
                   "{{ popup.content }}"
                 </p>
                 <div class="flex flex-wrap gap-2">
                   <span
                     class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold uppercase"
-                    >{{ $t("marketing.conversionTools.showAfter") }}:
-                    {{ popup.delay }}s</span
+                    >{{ $t('marketing.conversionTools.showAfter') }}: {{ popup.delay }}s</span
                   >
                   <span
                     class="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[8px] font-bold uppercase"
-                    >{{ $t("marketing.conversionTools.page") }}:
-                    {{ popup.pages }}</span
+                    >{{ $t('marketing.conversionTools.page') }}: {{ popup.pages }}</span
                   >
                 </div>
               </div>
@@ -126,23 +118,18 @@
             >
               <div class="flex gap-4">
                 <div class="flex flex-col">
-                  <span
-                    class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
-                    >{{ $t("marketing.conversionTools.views") }}</span
-                  >
-                  <span
-                    class="text-xs font-bold text-slate-700 dark:text-slate-300"
-                    >{{ popup.views }}</span
-                  >
+                  <span class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase">{{
+                    $t('marketing.conversionTools.views')
+                  }}</span>
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{
+                    popup.views
+                  }}</span>
                 </div>
                 <div class="flex flex-col">
-                  <span
-                    class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
-                    >{{ $t("marketing.conversionTools.clicks") }}</span
-                  >
-                  <span class="text-xs font-bold text-blue-600">{{
-                    popup.clicks
+                  <span class="text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase">{{
+                    $t('marketing.conversionTools.clicks')
                   }}</span>
+                  <span class="text-xs font-bold text-blue-600">{{ popup.clicks }}</span>
                 </div>
               </div>
               <div class="flex gap-2">
@@ -167,14 +154,14 @@
           <h3
             class="m-0 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500"
           >
-            {{ $t("marketing.conversionTools.landingListTitle") }}
+            {{ $t('marketing.conversionTools.landingListTitle') }}
           </h3>
           <button
             @click="handleAddLanding"
             class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:layout-4-line" class="text-blue-500" />
-            {{ $t("marketing.conversionTools.createLandingBtn") }}
+            {{ $t('marketing.conversionTools.createLandingBtn') }}
           </button>
         </div>
 
@@ -184,9 +171,7 @@
             :key="page.id"
             class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all group"
           >
-            <div
-              class="aspect-video bg-slate-100 dark:bg-slate-950 relative overflow-hidden"
-            >
+            <div class="aspect-video bg-slate-100 dark:bg-slate-950 relative overflow-hidden">
               <img
                 :src="page.preview"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -197,15 +182,13 @@
                 <button
                   class="px-6 py-2 bg-white text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl"
                 >
-                  {{ $t("marketing.conversionTools.viewPageBtn") }}
+                  {{ $t('marketing.conversionTools.viewPageBtn') }}
                 </button>
               </div>
             </div>
             <div class="p-6">
               <div class="flex justify-between items-center mb-2">
-                <h4
-                  class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 truncate"
-                >
+                <h4 class="m-0 text-sm font-bold text-slate-800 dark:text-slate-100 truncate">
                   {{ page.name }}
                 </h4>
                 <span
@@ -213,9 +196,7 @@
                   >{{ page.status }}</span
                 >
               </div>
-              <p
-                class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-4 truncate"
-              >
+              <p class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-4 truncate">
                 {{ page.url }}
               </p>
 
@@ -234,9 +215,7 @@
                     >
                       Leads
                     </p>
-                    <p
-                      class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300"
-                    >
+                    <p class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300">
                       {{ page.leads }}
                     </p>
                   </div>
@@ -251,11 +230,9 @@
                     <p
                       class="m-0 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase"
                     >
-                      {{ $t("marketing.conversionTools.clicks") }}
+                      {{ $t('marketing.conversionTools.clicks') }}
                     </p>
-                    <p
-                      class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300"
-                    >
+                    <p class="m-0 text-xs font-bold text-slate-700 dark:text-slate-300">
                       {{ page.clicks }}
                     </p>
                   </div>
@@ -298,17 +275,17 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { ref, computed, onMounted } from "vue";
-import { conversionToolApi } from "@/api/operations/conversion-tool.api";
+import { useI18n } from 'vue-i18n';
+import { ref, computed, onMounted } from 'vue';
+import { conversionToolApi } from '@/api/operations/conversion-tool.api';
 
-defineOptions({ name: "MarketingConversionTools" });
+defineOptions({ name: 'MarketingConversionTools' });
 
 const { t } = useI18n();
 
-const activeTab = ref("popup");
+const activeTab = ref('popup');
 const dialogVisible = ref(false);
-const dialogTitle = ref("");
+const dialogTitle = ref('');
 
 const tools = ref<any[]>([]);
 const loadingTools = ref(false);
@@ -319,7 +296,7 @@ const loadTools = async () => {
     const res = await conversionToolApi.getAll();
     tools.value = (res as any).data || res || [];
   } catch (error) {
-    console.error("Failed to load conversion tools:", error);
+    console.error('Failed to load conversion tools:', error);
   } finally {
     loadingTools.value = false;
   }
@@ -327,43 +304,43 @@ const loadTools = async () => {
 
 const popups = computed(() =>
   tools.value
-    .filter((t: any) => t.type === "Popup")
+    .filter((t: any) => t.type === 'Popup')
     .map((t: any) => ({
       id: t.id,
       name: t.name,
-      content: t.content || "",
+      content: t.content || '',
       delay: t.delaySeconds || 0,
-      pages: t.pages || "",
+      pages: t.pages || '',
       active: t.isActive,
       views: t.views,
       clicks: t.clicks,
-      img: t.imageUrl || "",
-    })),
+      img: t.imageUrl || '',
+    }))
 );
 
 const landingPages = computed(() =>
   tools.value
-    .filter((t: any) => t.type === "Landing")
+    .filter((t: any) => t.type === 'Landing')
     .map((t: any) => ({
       id: t.id,
       name: t.name,
-      url: t.url || "",
-      status: t.status || "draft",
+      url: t.url || '',
+      status: t.status || 'draft',
       leads: t.leads,
       clicks: t.clicks,
       preview:
         t.imageUrl ||
-        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=300",
-    })),
+        'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=300',
+    }))
 );
 
 const handleAddPopup = () => {
-  dialogTitle.value = "Cấu hình Pop-up thông minh";
+  dialogTitle.value = 'Cấu hình Pop-up thông minh';
   dialogVisible.value = true;
 };
 
 const handleAddLanding = () => {
-  dialogTitle.value = "Khởi tạo Landing Page";
+  dialogTitle.value = 'Khởi tạo Landing Page';
   dialogVisible.value = true;
 };
 onMounted(() => {

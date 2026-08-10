@@ -1,8 +1,5 @@
-/* Reporting Red-Black Theme - Thêm vào tailwind.css hoặc file CSS global */
 
-/* Màu đỏ chủ đạo của dự án: #E84A4A */
 
-/* Các biến thể đỏ đen cho báo cáo */
 
 .bg-report-red {
   background-color: #e84a4a !important;
@@ -40,12 +37,10 @@
   color: #1a1a1a !important;
 }
 
-/* Định nghĩa cho các icon style trong báo cáo */
 .reporting-kpi-grid .art-stats-card-icon {
   background-color: #e84a4a !important;
 }
 
-/* Override cho các class Tailwind mặc định trong báo cáo */
 .reporting-page .bg-primary,
 .reporting-page .bg-success,
 .reporting-page .bg-warning,

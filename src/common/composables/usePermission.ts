@@ -1,4 +1,4 @@
-import { useUserStore } from "@/application/store/user";
+import { useUserStore } from '@/application/store/user';
 
 export const usePermission = () => {
   const userStore = useUserStore();

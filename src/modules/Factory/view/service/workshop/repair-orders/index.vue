@@ -3,36 +3,24 @@
     <div class="flex items-start justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">
-          {{ $t("menus.service.workshop.repairOrders") }}
+          {{ $t('menus.service.workshop.repairOrders') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Quản lý phiếu sửa chữa: tiếp nhận, phân công kỹ thuật, cấp phát linh
-          kiện và hoàn tất.
+          Quản lý phiếu sửa chữa: tiếp nhận, phân công kỹ thuật, cấp phát linh kiện và hoàn tất.
         </p>
       </div>
 
       <div class="flex gap-2">
-        <ElButton
-          :icon="Refresh"
-          type="primary"
-          :loading="loading"
-          @click="refreshData"
-        >
+        <ElButton :icon="Refresh" type="primary" :loading="loading" @click="refreshData">
           Làm mới
         </ElButton>
 
-        <ElButton
-          type="success"
-          :icon="Plus"
-          :loading="loading"
-          @click="openCreateDialog"
-        >
+        <ElButton type="success" :icon="Plus" :loading="loading" @click="openCreateDialog">
           Tạo phiếu
         </ElButton>
       </div>
     </div>
 
-    <!-- KPI / Stats theo trạng thái -->
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         icon-style="bg-warning"
@@ -64,7 +52,6 @@
       />
     </div>
 
-    <!-- Search -->
     <ArtSearchBar
       :items="searchItems"
       :label-width="140"
@@ -74,15 +61,9 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
-          <ElTag type="info" class="mr-2">{{
-            "Total: " + (pagination?.total ?? 0)
-          }}</ElTag>
+          <ElTag type="info" class="mr-2">{{ 'Total: ' + (pagination?.total ?? 0) }}</ElTag>
         </template>
       </ArtTableHeader>
 
@@ -96,12 +77,22 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
+        <template #customerName="{ row }">
+          <span v-if="row.customerName" class="font-medium text-gray-800">{{
+            row.customerName
+          }}</span>
+          <span v-else class="text-slate-400 italic">Khách lẻ</span>
+        </template>
+
+        <template #customerPhone="{ row }">
+          <span v-if="row.customerPhone">{{ row.customerPhone }}</span>
+          <span v-else class="text-slate-400 italic">Trống</span>
+        </template>
+
         <template #totalCost="{ row }">
           <span class="font-medium text-emerald-600">
             {{
-              row.totalCost
-                ? new Intl.NumberFormat("vi-VN").format(row.totalCost) + " ₫"
-                : "0 ₫"
+              row.totalCost ? new Intl.NumberFormat('vi-VN').format(row.totalCost) + ' ₫' : '0 ₫'
             }}
           </span>
         </template>
@@ -112,9 +103,8 @@
             class="font-medium text-emerald-600"
             >{{
               row.totalCost
-                ? new Intl.NumberFormat("vi-VN").format(row.voucherDiscount) +
-                  " ₫"
-                : "0 ₫"
+                ? new Intl.NumberFormat('vi-VN').format(row.voucherDiscount) + ' ₫'
+                : '0 ₫'
             }}</span
           >
           <span v-else class="text-slate-300">-</span>
@@ -122,11 +112,10 @@
         <template #voucherFinalTotal="{ row }">
           <span class="font-medium text-orange-600">{{
             row.voucherFinalTotal
-              ? new Intl.NumberFormat("vi-VN").format(row.voucherFinalTotal) +
-                " ₫"
+              ? new Intl.NumberFormat('vi-VN').format(row.voucherFinalTotal) + ' ₫'
               : row.totalCost
-                ? new Intl.NumberFormat("vi-VN").format(row.totalCost) + " ₫"
-                : "0 ₫"
+                ? new Intl.NumberFormat('vi-VN').format(row.totalCost) + ' ₫'
+                : '0 ₫'
           }}</span>
         </template>
         <template #voucherCode="{ row }">
@@ -142,20 +131,11 @@
           <span v-if="row.technicianName" class="font-medium text-gray-700">{{
             row.technicianName
           }}</span>
-          <span
-            v-else-if="row.technicianId"
-            class="font-medium text-gray-700"
-            >{{ getTechnicianName(row.technicianId) }}</span
-          >
+          <span v-else-if="row.technicianId" class="font-medium text-gray-700">{{
+            getTechnicianName(row.technicianId)
+          }}</span>
           <span v-else class="font-medium text-gray-700">
-            {{
-              [
-                "Nguyễn Văn Sơn",
-                "Trần Quốc Đạt",
-                "Lê Hữu Nghĩa",
-                "Phạm Minh Tuấn",
-              ][row.id % 4]
-            }}
+            {{ ['Nguyễn Văn Sơn', 'Trần Quốc Đạt', 'Lê Hữu Nghĩa', 'Phạm Minh Tuấn'][row.id % 4] }}
           </span>
         </template>
 
@@ -166,19 +146,13 @@
         </template>
 
         <template #createdAt="{ row }">
-          {{
-            row.createdAt ? dayjs(row.createdAt).format("DD/MM/YYYY HH:mm") : ""
-          }}
+          {{ row.createdAt ? dayjs(row.createdAt).format('DD/MM/YYYY HH:mm') : '' }}
         </template>
 
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center flex-wrap">
             <ElTooltip content="Chi tiết phiếu" placement="top">
-              <ArtButtonTable
-                type="view"
-                icon="ri:eye-line"
-                @click="openDetail(row)"
-              />
+              <ArtButtonTable type="view" icon="ri:eye-line" @click="openDetail(row)" />
             </ElTooltip>
             <ElTooltip content="Chỉnh sửa phiếu" placement="top">
               <ArtButtonTable
@@ -193,7 +167,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Dialog: Create Repair Order (giai đoạn 1 - tiếp nhận) -->
     <ElDialog
       v-model="createDialogVisible"
       title="Tạo phiếu sửa chữa"
@@ -203,13 +176,7 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm
-        :model="createForm"
-        label-width="140px"
-        class="space-y-4"
-        :disabled="submitting"
-      >
-        <!-- 1) Luôn hỏi SĐT trước -->
+      <ElForm :model="createForm" label-width="140px" class="space-y-4" :disabled="submitting">
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -245,16 +212,13 @@
           Khách chưa có hồ sơ. Vui lòng nhập đầy đủ thông tin khách và xe.
         </div>
 
-        <!-- 2) VIN/Số khung + Biển số + Tên xe/phiên bản/màu -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               VIN / Số khung xe máy
-              <span class="text-red-500" v-if="createForm.isNewCustomer"
-                >*</span
-              >
+              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
             </label>
             <ElInput
               v-model="createForm.vinNumber"
@@ -268,9 +232,7 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Biển số xe
-              <span class="text-red-500" v-if="createForm.isNewCustomer"
-                >*</span
-              >
+              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
             </label>
             <ElInput
               v-model="createForm.licensePlate"
@@ -286,9 +248,7 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Tên xe / Phiên bản
-              <span class="text-red-500" v-if="createForm.isNewCustomer"
-                >*</span
-              >
+              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
             </label>
             <ElInput
               v-model="createForm.vehicleName"
@@ -302,9 +262,7 @@
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
             >
               Màu sắc
-              <span class="text-red-500" v-if="createForm.isNewCustomer"
-                >*</span
-              >
+              <span class="text-red-500" v-if="createForm.isNewCustomer">*</span>
             </label>
             <ElInput
               v-model="createForm.vehicleColor"
@@ -314,7 +272,6 @@
           </div>
         </div>
 
-        <!-- 3) Thợ kỹ thuật -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -344,16 +301,10 @@
             >
               Mileage (km) <span class="text-red-500">*</span>
             </label>
-            <ElInputNumber
-              v-model="createForm.mileage"
-              :min="0"
-              class="w-full"
-              placeholder="0"
-            />
+            <ElInputNumber v-model="createForm.mileage" :min="0" class="w-full" placeholder="0" />
           </div>
         </div>
 
-        <!-- 4) Mã giảm giá -->
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -370,7 +321,6 @@
           <div></div>
         </div>
 
-        <!-- 5) Mô tả tình trạng -->
         <div class="mt-4">
           <label
             class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -388,21 +338,14 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="createDialogVisible = false" :disabled="submitting"
-            >Đóng</ElButton
-          >
-          <ElButton
-            type="primary"
-            :loading="submitting"
-            @click="submitCreate"
-            class="px-8"
+          <ElButton @click="createDialogVisible = false" :disabled="submitting">Đóng</ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitCreate" class="px-8"
             >Tạo</ElButton
           >
         </div>
       </template>
     </ElDialog>
 
-    <!-- Dialog: Assign technician -->
     <ElDialog
       v-model="assignDialogVisible"
       title="Phân công kỹ thuật"
@@ -412,12 +355,7 @@
       append-to-body
       destroy-on-close
     >
-      <ElForm
-        :model="assignForm"
-        label-width="140px"
-        class="space-y-4"
-        :disabled="submitting"
-      >
+      <ElForm :model="assignForm" label-width="140px" class="space-y-4" :disabled="submitting">
         <div>
           <label
             class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -448,14 +386,8 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
-          <ElButton @click="assignDialogVisible = false" :disabled="submitting"
-            >Đóng</ElButton
-          >
-          <ElButton
-            type="primary"
-            :loading="submitting"
-            @click="submitAssign"
-            class="px-8"
+          <ElButton @click="assignDialogVisible = false" :disabled="submitting">Đóng</ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitAssign" class="px-8"
             >Xác nhận</ElButton
           >
         </div>
@@ -465,233 +397,259 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
-import { Permissions } from "@/domain/constants/permissions";
-import { computed, ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { Refresh, Plus, Delete as TrashBin } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import dayjs from 'dayjs';
+import { Permissions } from '@/domain/constants/permissions';
+import { computed, ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { Refresh, Plus, Delete as TrashBin } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 
-import { RepairOrderApi, type RepairOrder } from "@/api/sales";
-import { VehicleApi } from "@/api/vehicle/vehicle.api";
+import { RepairOrderApi, type RepairOrder } from '@/api/sales';
+import { VehicleApi } from '@/api/vehicle/vehicle.api';
 
-import {
-  EmployeeApi,
-  type EmployeeResponse,
-} from "@/api/operations/employee.api";
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.api';
 
-defineOptions({ name: "ServiceWorkshopRepairOrders" });
+defineOptions({ name: 'ServiceWorkshopRepairOrders' });
 
-// NOTE: Dùng useTable pattern dự án nếu có. Ở đây tạo UI tối giản nhưng tương thích shape của ArtTable.
 const loading = ref(false);
 const tableRef = ref();
 
-// Pagination
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
-// Table data
-const data = ref<RepairOrder[]>([]);
 
-// Column checks (ArtTableHeader v-model)
+const allValidItems = ref<any[]>([]);
+const data = ref<RepairOrder[]>([]); 
+
+
+const searchParams = ref<any>({});
+
 const columnChecks = ref<any[]>([]);
 
-// Columns (ArtTable)
 const columns = computed(() => {
   return [
-    { prop: "id", label: "ID", width: 90, align: "center" },
-    { prop: "maintenanceNumber", label: "Mã phiếu", minWidth: 150 },
-    { prop: "customerName", label: "Khách hàng", minWidth: 160 },
-    { prop: "customerPhone", label: "SĐT", minWidth: 120 },
-    { prop: "vehicleInfo", label: "Xe (Biển số)", minWidth: 180 },
+    { prop: 'id', label: 'ID', width: 90, align: 'center' },
+    { prop: 'maintenanceNumber', label: 'Mã phiếu', minWidth: 150 },
     {
-      prop: "technicianName",
-      label: "Kỹ thuật viên",
-      minWidth: 150,
-      useSlot: true,
-      slot: "technicianName",
-    },
-    { prop: "mileage", label: "Km", width: 110, align: "right" },
-    {
-      prop: "totalCost",
-      label: "Tạm tính",
-      width: 140,
-      align: "right",
-      useSlot: true,
-      slot: "totalCost",
-    },
-    {
-      prop: "voucherDiscount",
-      label: "Phí sau voucher",
-      width: 140,
-      align: "right",
-      useSlot: true,
-      slot: "voucherDiscount",
-    },
-    {
-      prop: "voucherFinalTotal",
-      label: "Tổng tiền",
-      width: 140,
-      align: "right",
-      useSlot: true,
-      slot: "voucherFinalTotal",
-    },
-    {
-      prop: "status",
-      label: "Trạng thái",
-      minWidth: 140,
-      align: "center",
-      useSlot: true,
-      slot: "status",
-    },
-    {
-      prop: "createdAt",
-      label: "Tạo lúc",
+      prop: 'customerName',
+      label: 'Khách hàng',
       minWidth: 160,
       useSlot: true,
-      slot: "createdAt",
+      slot: 'customerName',
     },
     {
-      prop: "operation",
-      label: "Hành động",
-      width: 250,
-      align: "center",
-      fixed: "right" as const,
+      prop: 'customerPhone',
+      label: 'SĐT',
+      minWidth: 120,
       useSlot: true,
-      slot: "operation",
+      slot: 'customerPhone',
+    },
+    { prop: 'vehicleInfo', label: 'Xe (Biển số)', minWidth: 180 },
+    {
+      prop: 'technicianName',
+      label: 'Kỹ thuật viên',
+      minWidth: 150,
+      useSlot: true,
+      slot: 'technicianName',
+    },
+    { prop: 'mileage', label: 'Km', width: 110, align: 'right' },
+    {
+      prop: 'totalCost',
+      label: 'Tạm tính',
+      width: 140,
+      align: 'right',
+      useSlot: true,
+      slot: 'totalCost',
+    },
+    {
+      prop: 'voucherDiscount',
+      label: 'Phí sau voucher',
+      width: 140,
+      align: 'right',
+      useSlot: true,
+      slot: 'voucherDiscount',
+    },
+    {
+      prop: 'voucherFinalTotal',
+      label: 'Tổng tiền',
+      width: 140,
+      align: 'right',
+      useSlot: true,
+      slot: 'voucherFinalTotal',
+    },
+    {
+      prop: 'status',
+      label: 'Trạng thái',
+      minWidth: 140,
+      align: 'center',
+      useSlot: true,
+      slot: 'status',
+    },
+    {
+      prop: 'createdAt',
+      label: 'Tạo lúc',
+      minWidth: 160,
+      useSlot: true,
+      slot: 'createdAt',
+    },
+    {
+      prop: 'operation',
+      label: 'Hành động',
+      width: 250,
+      align: 'center',
+      fixed: 'right' as const,
+      useSlot: true,
+      slot: 'operation',
     },
   ];
 });
 
 const searchItems = [
   {
-    key: "licensePlate",
-    label: "VIN / Biển số",
-    prop: "licensePlate",
-    type: "text",
-    placeholder: "Nhập VIN/biển số",
+    key: 'licensePlate',
+    label: 'VIN / Biển số',
+    prop: 'licensePlate',
+    type: 'text',
+    placeholder: 'Nhập VIN/biển số',
   },
   {
-    key: "customerPhone",
-    label: "SĐT",
-    prop: "customerPhone",
-    type: "text",
-    placeholder: "Nhập SĐT",
+    key: 'customerPhone',
+    label: 'SĐT',
+    prop: 'customerPhone',
+    type: 'text',
+    placeholder: 'Nhập SĐT',
   },
   {
-    key: "status",
-    label: "Trạng thái",
-    prop: "status",
-    type: "select",
+    key: 'status',
+    label: 'Trạng thái',
+    prop: 'status',
+    type: 'select',
     options: [
-      "Pending",
-      "InProgress",
-      "QcPending",
-      "Completed",
-      "Cancelled",
-    ].map((s) => ({
-      label: s,
-      value: s,
-    })),
+      { label: 'Chờ xử lý', value: 'Pending' },
+      { label: 'Đang sửa', value: 'InProgress' },
+      { label: 'Chờ QC', value: 'QcPending' },
+      { label: 'Hoàn thành', value: 'Completed' },
+      { label: 'Đã hủy', value: 'Cancelled' },
+    ],
   },
 ];
 
 const refreshData = async () => {
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-  });
+  await fetchData();
 };
 
-const handleSearch = async (params: any) => {
-  const filters: string[] = [];
+const applyLocalFilterAndPagination = () => {
+  let filtered = allValidItems.value;
 
-  if (params.licensePlate) filters.push(`LicensePlate@=${params.licensePlate}`);
-  if (params.customerPhone)
-    filters.push(`CustomerPhone@=${params.customerPhone}`);
-  if (params.status) filters.push(`Status==${params.status}`);
+  if (searchParams.value.licensePlate) {
+    const term = searchParams.value.licensePlate.toLowerCase();
+    filtered = filtered.filter((x) =>
+      (x.vehicleInfo || "").toLowerCase().includes(term),
+    );
+  }
+  if (searchParams.value.customerPhone) {
+    const term = searchParams.value.customerPhone.toLowerCase();
+    filtered = filtered.filter((x) =>
+      (x.customerPhone || "").toLowerCase().includes(term),
+    );
+  }
+  if (searchParams.value.status) {
+    filtered = filtered.filter((x) => x.status === searchParams.value.status);
+  }
 
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-    Filters: filters.join(","),
-  });
+  pagination.value.total = filtered.length;
+
+  const start = (pagination.value.current - 1) * pagination.value.size;
+  const end = start + pagination.value.size;
+  data.value = filtered.slice(start, end);
 };
 
-const handleReset = async () => {
-  await fetchData({
-    Page: pagination.value.current,
-    PageSize: pagination.value.size,
-    Filters: "",
-  });
+const handleSearch = (params: any) => {
+  searchParams.value = params || {};
+  pagination.value.current = 1;
+  applyLocalFilterAndPagination();
 };
 
-const handleSizeChange = async (size: number) => {
+const handleReset = () => {
+  searchParams.value = {};
+  pagination.value.current = 1;
+  applyLocalFilterAndPagination();
+};
+
+const handleSizeChange = (size: number) => {
   pagination.value.size = size;
   pagination.value.current = 1;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
-const handleCurrentChange = async (current: number) => {
+const handleCurrentChange = (current: number) => {
   pagination.value.current = current;
-  await refreshData();
+  applyLocalFilterAndPagination();
 };
 
-const fetchData = async (params: any) => {
+const fetchData = async () => {
   loading.value = true;
   try {
-    // API shape: items + totalCount
-    const res = await RepairOrderApi.getList(params);
-    data.value = (res.items || []).map((item: any) => {
+    const res = await RepairOrderApi.getList({ Page: 1, PageSize: 5000 });
+    const rawItems = res.items || [];
+
+    const validItems = rawItems.filter(
+      (item: any) =>
+        item.customerName &&
+        item.customerPhone &&
+        item.customerName !== "Khách lẻ",
+    );
+
+    allValidItems.value = validItems.map((item: any) => {
       let calcStatus = "InProgress";
       if (item.status) calcStatus = item.status;
-      else if (!item.technicianId && !item.technicianName)
-        calcStatus = "Pending";
-      else if (item.totalCost > 0) calcStatus = "Completed";
+      else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
+      else if (item.totalCost > 0) calcStatus = 'Completed';
 
       return {
         ...item,
         status: calcStatus,
       };
     });
-    pagination.value.total = res.totalCount || 0;
+
+    applyLocalFilterAndPagination();
   } catch (err: any) {
+    allValidItems.value = [];
     data.value = [];
     pagination.value.total = 0;
-    ElMessage.error(err?.message || "Không thể tải danh sách phiếu sửa chữa");
+    ElMessage.error(err?.message || 'Không thể tải danh sách phiếu sửa chữa');
   } finally {
     loading.value = false;
   }
 };
 
-// Stats theo trạng thái
 const counts = computed(() => {
-  const safe = data.value || [];
+  const safe = allValidItems.value || [];
   const byStatus = safe.reduce(
     (acc: any, x: any) => {
       const s = x.status;
-      if (s === "Pending") acc.pending++;
-      else if (s === "InProgress") acc.inProgress++;
-      else if (s === "QcPending") acc.qcPending++;
-      else if (s === "Completed") acc.completed++;
+      if (s === 'Pending') acc.pending++;
+      else if (s === 'InProgress') acc.inProgress++;
+      else if (s === 'QcPending') acc.qcPending++;
+      else if (s === 'Completed') acc.completed++;
       return acc;
     },
-    { pending: 0, inProgress: 0, qcPending: 0, completed: 0 },
+    { pending: 0, inProgress: 0, qcPending: 0, completed: 0 }
   );
   return byStatus;
 });
 
 const statusTagType = (status: string) => {
   switch (status) {
-    case "Completed":
-      return "success";
-    case "Cancelled":
-      return "danger";
-    case "InProgress":
-      return "warning";
-    case "QcPending":
-      return "info";
+    case 'Completed':
+      return 'success';
+    case 'Cancelled':
+      return 'danger';
+    case 'InProgress':
+      return 'warning';
+    case 'QcPending':
+      return 'info';
     default:
-      return "primary";
+      return 'primary';
   }
 };
 
@@ -702,11 +660,11 @@ const getTechnicianName = (id: number) => {
 
 const getStatusText = (status: string) => {
   const map: Record<string, string> = {
-    Pending: "Chờ xử lý",
-    InProgress: "Đang sửa",
-    QcPending: "Chờ QC",
-    Completed: "Hoàn thành",
-    Cancelled: "Đã hủy",
+    Pending: 'Chờ xử lý',
+    InProgress: 'Đang sửa',
+    QcPending: 'Chờ QC',
+    Completed: 'Hoàn thành',
+    Cancelled: 'Đã hủy',
   };
   return map[status] || status;
 };
@@ -717,53 +675,52 @@ const openDetail = (row: RepairOrder) => {
   router.push(`/factory/workshop/repair/${row.id}`);
 };
 
-// Dialog: Create
 const createDialogVisible = ref(false);
 const submitting = ref(false);
 const createForm = ref({
-  customerPhone: "",
-  customerName: "",
+  customerPhone: '',
+  customerName: '',
   mileage: 0,
-  description: "",
-  voucherCode: "",
+  description: '',
+  voucherCode: '',
 
-  // Auto-fill vehicle/customer info (Vehicle Portfolio)
   isNewCustomer: true,
-  vinNumber: "",
-  licensePlate: "",
-  vehicleName: "",
-  vehicleColor: "",
+  vinNumber: '',
+  licensePlate: '',
+  vehicleName: '',
+  vehicleColor: '',
 
-  // Assign technician (main tech)
   technicianId: undefined as number | undefined,
+
+  vehicleId: undefined as number | undefined,
 });
 
 const openCreateDialog = () => {
   createDialogVisible.value = true;
   createForm.value = {
-    customerPhone: "",
-    customerName: "",
+    customerPhone: '',
+    customerName: '',
     mileage: 0,
-    description: "",
-    voucherCode: "",
+    description: '',
+    voucherCode: '',
 
     isNewCustomer: true,
-    vinNumber: "",
-    licensePlate: "",
-    vehicleName: "",
-    vehicleColor: "",
+    vinNumber: '',
+    licensePlate: '',
+    vehicleName: '',
+    vehicleColor: '',
     technicianId: undefined,
+    vehicleId: undefined,
   };
 };
 
-// Auto-fill khi user nhập SĐT
 const handleCustomerPhoneBlur = async () => {
   const phone = createForm.value.customerPhone?.trim();
   if (!phone) return;
   try {
     const res = await VehicleApi.getPortfolio({
       query: phone,
-      queryType: "phone",
+      queryType: 'phone',
       page: 1,
       pageSize: 10,
     });
@@ -771,12 +728,14 @@ const handleCustomerPhoneBlur = async () => {
     if (vehicle && vehicle.fullName) {
       createForm.value.isNewCustomer = false;
       createForm.value.customerName = vehicle.fullName;
-      createForm.value.vinNumber = vehicle.vinNumber || "";
-      createForm.value.licensePlate = vehicle.licensePlate || "";
-      createForm.value.vehicleName = vehicle.variantName || "";
-      createForm.value.vehicleColor = vehicle.colorName || "";
+      createForm.value.vinNumber = vehicle.vinNumber || '';
+      createForm.value.licensePlate = vehicle.licensePlate || '';
+      createForm.value.vehicleName = vehicle.variantName || '';
+      createForm.value.vehicleColor = vehicle.colorName || '';
+      createForm.value.vehicleId = vehicle.id;
     } else {
       createForm.value.isNewCustomer = true;
+      createForm.value.vehicleId = undefined;
     }
   } catch (e) {
     createForm.value.isNewCustomer = true;
@@ -787,40 +746,34 @@ const submitCreate = async () => {
   submitting.value = true;
   try {
     const payload = {
+      vehicleId: createForm.value.isNewCustomer
+        ? undefined
+        : createForm.value.vehicleId,
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,
       description: createForm.value.description,
       voucherCode: createForm.value.voucherCode,
 
-      vinNumber: createForm.value.isNewCustomer
-        ? createForm.value.vinNumber
-        : undefined,
-      licensePlate: createForm.value.isNewCustomer
-        ? createForm.value.licensePlate
-        : undefined,
-      vehicleName: createForm.value.isNewCustomer
-        ? createForm.value.vehicleName
-        : undefined,
-      vehicleColor: createForm.value.isNewCustomer
-        ? createForm.value.vehicleColor
-        : undefined,
+      vinNumber: createForm.value.isNewCustomer ? createForm.value.vinNumber : undefined,
+      licensePlate: createForm.value.isNewCustomer ? createForm.value.licensePlate : undefined,
+      vehicleName: createForm.value.isNewCustomer ? createForm.value.vehicleName : undefined,
+      vehicleColor: createForm.value.isNewCustomer ? createForm.value.vehicleColor : undefined,
       technicianId: createForm.value.technicianId,
     };
 
     await RepairOrderApi.create(payload as any);
 
-    ElMessage.success("Tạo phiếu thành công");
+    ElMessage.success('Tạo phiếu thành công');
     createDialogVisible.value = false;
     await refreshData();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Tạo phiếu thất bại");
+    ElMessage.error(err?.message || 'Tạo phiếu thất bại');
   } finally {
     submitting.value = false;
   }
 };
 
-// Dialog: Assign technician
 const assignDialogVisible = ref(false);
 const assignForm = ref({ repairOrderId: 0, technicianId: 1 });
 const technicians = ref<EmployeeResponse[]>([]);
@@ -830,14 +783,14 @@ const fetchTechnicians = async () => {
     const list = await EmployeeApi.getList();
     const filtered = list.filter(
       (e) =>
-        e.jobTitle?.toLowerCase().includes("technician") ||
-        e.jobTitle?.toLowerCase().includes("kỹ thuật") ||
-        e.jobTitle?.toLowerCase().includes("thợ") ||
-        e.jobTitle?.toLowerCase().includes("tech"),
+        e.jobTitle?.toLowerCase().includes('technician') ||
+        e.jobTitle?.toLowerCase().includes('kỹ thuật') ||
+        e.jobTitle?.toLowerCase().includes('thợ') ||
+        e.jobTitle?.toLowerCase().includes('tech')
     );
     technicians.value = filtered.length > 0 ? filtered : list;
   } catch (err) {
-    ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+    ElMessage.error('Không thể tải danh sách kỹ thuật viên');
   }
 };
 
@@ -857,11 +810,11 @@ const submitAssign = async () => {
   submitting.value = true;
   try {
     await RepairOrderApi.assignTechnician(assignForm.value as any);
-    ElMessage.success("Phân công kỹ thuật thành công");
+    ElMessage.success('Phân công kỹ thuật thành công');
     assignDialogVisible.value = false;
     await refreshData();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Phân công thất bại");
+    ElMessage.error(err?.message || 'Phân công thất bại');
   } finally {
     submitting.value = false;
   }
@@ -870,13 +823,12 @@ const submitAssign = async () => {
 const route = useRoute();
 onMounted(async () => {
   await fetchTechnicians();
-  if (route.query.action === "create" && route.query.phone) {
+  if (route.query.action === 'create' && route.query.phone) {
     createDialogVisible.value = true;
     createForm.value.customerPhone = route.query.phone as string;
     await handleCustomerPhoneBlur();
   }
 });
 
-// Initial load
 refreshData();
 </script>

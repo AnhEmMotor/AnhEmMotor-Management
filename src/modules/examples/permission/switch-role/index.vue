@@ -1,22 +1,22 @@
 <template>
   <div class="py-2">
     <div class="mb-6">
-      <h2 class="m-0 mb-2 text-xl font-medium">{{ $t("admin.t89") }}</h2>
-      <p class="m-0 leading-[1.6] text-g-700">{{ $t("admin.t90") }}</p>
+      <h2 class="m-0 mb-2 text-xl font-medium">{{ $t('admin.t89') }}</h2>
+      <p class="m-0 leading-[1.6] text-g-700">{{ $t('admin.t90') }}</p>
     </div>
 
     <div class="mb-6">
       <ElCard class="art-card-xs">
         <template #header>
           <div class="font-semibold">
-            <span>{{ $t("admin.t91") }}</span>
+            <span>{{ $t('admin.t91') }}</span>
           </div>
         </template>
         <div>
           <div>
             <div class="flex items-start mb-3 last:mb-0">
               <span class="min-w-30 font-semibold">Tên người dùng：</span>
-              <span>{{ currentUser.userName || "ChưaĐăng nhập" }}</span>
+              <span>{{ currentUser.userName || 'ChưaĐăng nhập' }}</span>
             </div>
             <div class="flex items-start mb-3 last:mb-0">
               <span class="min-w-30 font-semibold">VaiTro：</span>
@@ -27,17 +27,10 @@
             <div class="flex items-start mb-3 last:mb-0">
               <span class="min-w-30 font-semibold">QuyenHanmã：</span>
               <div class="flex flex-wrap gap-2">
-                <ElTag
-                  v-for="button in currentUser.buttons"
-                  :key="button"
-                  size="small"
-                  type="info"
-                >
+                <ElTag v-for="button in currentUser.buttons" :key="button" size="small" type="info">
                   {{ button }}
                 </ElTag>
-                <span
-                  v-if="!currentUser.buttons?.length"
-                  class="italic text-g-500"
+                <span v-if="!currentUser.buttons?.length" class="italic text-g-500"
                   >vôQuyenHanmã</span
                 >
               </div>
@@ -60,8 +53,7 @@
             :key="account.key"
             class="p-5 border border-g-400 rounded-lg tad-300"
             :class="{
-              'bg-theme/12 !border-theme':
-                currentUser.userName === account.userName,
+              'bg-theme/12 !border-theme': currentUser.userName === account.userName,
             }"
           >
             <div class="mb-4">
@@ -73,12 +65,8 @@
                   {{ account.description }}
                 </p>
                 <div class="flex flex-col gap-1">
-                  <span class="text-xs text-g-600"
-                    >Tên người dùng: {{ account.userName }}</span
-                  >
-                  <span class="text-xs text-g-600"
-                    >VaiTro: {{ account.roles.join(", ") }}</span
-                  >
+                  <span class="text-xs text-g-600">Tên người dùng: {{ account.userName }}</span>
+                  <span class="text-xs text-g-600">VaiTro: {{ account.roles.join(', ') }}</span>
                 </div>
               </div>
             </div>
@@ -101,12 +89,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useUserStore } from "@/application/store/user";
-import { useI18n } from "vue-i18n";
-import { fetchLogin, fetchGetUserInfo } from "@/api/auth";
+import { computed, ref } from 'vue';
+import { useUserStore } from '@/application/store/user';
+import { useI18n } from 'vue-i18n';
+import { fetchLogin, fetchGetUserInfo } from '@/api/auth';
 
-defineOptions({ name: "PermissionSwitchRole" });
+defineOptions({ name: 'PermissionSwitchRole' });
 
 const { t } = useI18n();
 const userStore = useUserStore();
@@ -117,60 +105,52 @@ const currentUser = computed(() => userStore.info);
 
 const accounts = computed(() => [
   {
-    key: "super",
-    label: t("login.roles.super"),
-    userName: "Super",
-    password: "123456",
-    roles: ["R_SUPER"],
-    color: "#E6A23C",
-    description:
-      "ômcóHeThongnhấtcaoQuyenHan，Có thểlấyTruy cậpnêncócôngnăngmôkhối",
+    key: 'super',
+    label: t('login.roles.super'),
+    userName: 'Super',
+    password: '123456',
+    roles: ['R_SUPER'],
+    color: '#E6A23C',
+    description: 'ômcóHeThongnhấtcaoQuyenHan，Có thểlấyTruy cậpnêncócôngnăngmôkhối',
   },
   {
-    key: "admin",
-    label: t("login.roles.admin"),
-    userName: "Admin",
-    password: "123456",
-    roles: ["R_ADMIN"],
-    color: "#409EFF",
-    description:
-      "ômcóQuản lýQuyenHan，Có thểlấyQuản lýNguoiDungvàbộphầnHeThongCaiDat",
+    key: 'admin',
+    label: t('login.roles.admin'),
+    userName: 'Admin',
+    password: '123456',
+    roles: ['R_ADMIN'],
+    color: '#409EFF',
+    description: 'ômcóQuản lýQuyenHan，Có thểlấyQuản lýNguoiDungvàbộphầnHeThongCaiDat',
   },
   {
-    key: "user",
-    label: t("login.roles.user"),
-    userName: "User",
-    password: "123456",
-    roles: ["R_USER"],
-    color: "#67C23A",
-    description:
-      "phổthôngNguoiDungQuyenHan，chỉnăngTruy cậpCơ bảncôngnăngmôkhối",
+    key: 'user',
+    label: t('login.roles.user'),
+    userName: 'User',
+    password: '123456',
+    roles: ['R_USER'],
+    color: '#67C23A',
+    description: 'phổthôngNguoiDungQuyenHan，chỉnăngTruy cậpCơ bảncôngnăngmôkhối',
   },
 ]);
 
-const getRoleTagType = (
-  role?: string,
-): "info" | "warning" | "primary" | "success" | "danger" => {
-  if (!role) return "info";
-  const roleMap: Record<
-    string,
-    "info" | "warning" | "primary" | "success" | "danger"
-  > = {
-    R_SUPER: "warning",
-    R_ADMIN: "primary",
-    R_USER: "success",
+const getRoleTagType = (role?: string): 'info' | 'warning' | 'primary' | 'success' | 'danger' => {
+  if (!role) return 'info';
+  const roleMap: Record<string, 'info' | 'warning' | 'primary' | 'success' | 'danger'> = {
+    R_SUPER: 'warning',
+    R_ADMIN: 'primary',
+    R_USER: 'success',
   };
-  return roleMap[role] || "info";
+  return roleMap[role] || 'info';
 };
 
 const getRoleDisplayName = (role?: string): string => {
-  if (!role) return "ChưabáoVaiTro";
+  if (!role) return 'ChưabáoVaiTro';
   const roleMap: Record<string, string> = {
-    R_SUPER: "siêucấpQuản lýviên",
-    R_ADMIN: "Quản lýviên",
-    R_USER: "phổthôngNguoiDung",
+    R_SUPER: 'siêucấpQuản lýviên',
+    R_ADMIN: 'Quản lýviên',
+    R_USER: 'phổthôngNguoiDung',
   };
-  return roleMap[role] || "ChưabáoVaiTro";
+  return roleMap[role] || 'ChưabáoVaiTro';
 };
 
 interface AccountInfo {
@@ -191,7 +171,7 @@ const switchRole = async (account: AccountInfo) => {
     } as any)) as any;
 
     if (!token) {
-      throw new Error("Login failed - no token received");
+      throw new Error('Login failed - no token received');
     }
 
     userStore.setToken(token, refreshToken);
@@ -202,11 +182,9 @@ const switchRole = async (account: AccountInfo) => {
       window.location.reload();
     }, 100);
   } catch (error) {
-    if (error !== "cancel") {
-      ElMessage.error(
-        "Chuyển đổiNguoiDungthânThatBai，Vui lòngchútsautrùngthử",
-      );
-      console.error("[SwitchRole] Error:", error);
+    if (error !== 'cancel') {
+      ElMessage.error('Chuyển đổiNguoiDungthânThatBai，Vui lòngchútsautrùngthử');
+      console.error('[SwitchRole] Error:', error);
     }
   } finally {
     switching.value = false;

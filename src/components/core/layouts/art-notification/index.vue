@@ -9,13 +9,9 @@
     @click.stop
   >
     <div class="flex-cb px-3.5 mt-3.5">
-      <span class="text-base font-medium text-g-800">{{
-        $t("notice.title")
-      }}</span>
-      <span
-        class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200"
-      >
-        {{ $t("notice.btnRead") }}
+      <span class="text-base font-medium text-g-800">{{ $t('notice.title') }}</span>
+      <span class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200">
+        {{ $t('notice.btnRead') }}
       </span>
     </div>
 
@@ -43,10 +39,7 @@
               class="size-9 leading-9 text-center rounded-lg flex-cc"
               :class="[getNoticeStyle(item.type).iconClass]"
             >
-              <ArtSvgIcon
-                class="text-lg !bg-transparent"
-                :icon="getNoticeStyle(item.type).icon"
-              />
+              <ArtSvgIcon class="text-lg !bg-transparent" :icon="getNoticeStyle(item.type).icon" />
             </div>
             <div class="w-[calc(100%-45px)] ml-3.5">
               <h4 class="text-sm font-normal leading-5.5 text-g-900">
@@ -90,14 +83,14 @@
         >
           <ArtSvgIcon icon="system-uicons:inbox" class="text-5xl" />
           <p class="mt-3.5 text-xs !bg-transparent">
-            {{ $t("notice.text[0]") }}{{ barList[barActiveIndex].name }}
+            {{ $t('notice.text[0]') }}{{ barList[barActiveIndex].name }}
           </p>
         </div>
       </div>
 
       <div class="relative box-border w-full px-3.5">
         <ElButton class="w-full mt-3" @click="handleViewAll" v-ripple>
-          {{ $t("notice.viewAll") }}
+          {{ $t('notice.viewAll') }}
         </ElButton>
       </div>
     </div>
@@ -107,17 +100,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, type Ref, type ComputedRef } from "vue";
-import { useI18n } from "vue-i18n";
+import { computed, ref, watch, type Ref, type ComputedRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import avatar1 from "@/assets/images/avatar/avatar1.webp";
-import avatar2 from "@/assets/images/avatar/avatar2.webp";
-import avatar3 from "@/assets/images/avatar/avatar3.webp";
-import avatar4 from "@/assets/images/avatar/avatar4.webp";
-import avatar5 from "@/assets/images/avatar/avatar5.webp";
-import avatar6 from "@/assets/images/avatar/avatar6.webp";
+import avatar1 from '@/assets/images/avatar/avatar1.webp';
+import avatar2 from '@/assets/images/avatar/avatar2.webp';
+import avatar3 from '@/assets/images/avatar/avatar3.webp';
+import avatar4 from '@/assets/images/avatar/avatar4.webp';
+import avatar5 from '@/assets/images/avatar/avatar5.webp';
+import avatar6 from '@/assets/images/avatar/avatar6.webp';
 
-defineOptions({ name: "ArtNotification" });
+defineOptions({ name: 'ArtNotification' });
 
 interface NoticeItem {
   title: string;
@@ -153,7 +146,7 @@ interface NoticeStyle {
   iconClass: string;
 }
 
-type NoticeType = "email" | "message" | "collection" | "user" | "notice";
+type NoticeType = 'email' | 'message' | 'collection' | 'user' | 'notice';
 
 const { t } = useI18n();
 
@@ -162,7 +155,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "update:value": [value: boolean];
+  'update:value': [value: boolean];
 }>();
 
 const show = ref(false);
@@ -172,66 +165,66 @@ const barActiveIndex = ref(0);
 const useNotificationData = () => {
   const noticeList = ref<NoticeItem[]>([
     {
-      title: "Thêm mớiquốctếhóa",
-      time: "2024-6-13 0:10",
-      type: "notice",
+      title: 'Thêm mớiquốctếhóa',
+      time: '2024-6-13 0:10',
+      type: 'notice',
     },
     {
-      title: "lạnhthángngốcngốcchobạnphátrồimộtđiềuTinNhan",
-      time: "2024-4-21 8:05",
-      type: "message",
+      title: 'lạnhthángngốcngốcchobạnphátrồimộtđiềuTinNhan',
+      time: '2024-4-21 8:05',
+      type: 'message',
     },
     {
-      title: "tiểubéolợnđóngtâmrồibạn",
-      time: "2020-3-17 21:12",
-      type: "collection",
+      title: 'tiểubéolợnđóngtâmrồibạn',
+      time: '2020-3-17 21:12',
+      type: 'collection',
     },
     {
-      title: "Thêm mớikhiếndùngTaiLieu",
-      time: "2024-02-14 0:20",
-      type: "notice",
+      title: 'Thêm mớikhiếndùngTaiLieu',
+      time: '2024-02-14 0:20',
+      type: 'notice',
     },
     {
-      title: "tiểubéolợnchobạnphátrồimộtphongbưuphần tử",
-      time: "2024-1-20 0:15",
-      type: "email",
+      title: 'tiểubéolợnchobạnphátrồimộtphongbưuphần tử',
+      time: '2024-1-20 0:15',
+      type: 'email',
     },
     {
-      title: "MenumockquyểnđịathậtthựcDữ liệu",
-      time: "2024-1-17 22:06",
-      type: "notice",
+      title: 'MenumockquyểnđịathậtthựcDữ liệu',
+      time: '2024-1-17 22:06',
+      type: 'notice',
     },
   ]);
 
   const msgList = ref<MessageItem[]>([
     {
-      title: "aoKhôngbéo đóngtâmrồibạn",
-      time: "2021-2-26 23:50",
+      title: 'aoKhôngbéo đóngtâmrồibạn',
+      time: '2021-2-26 23:50',
       avatar: avatar1,
     },
     {
-      title: "đườngKhôngkhổ đóngtâmrồibạn",
-      time: "2021-2-21 8:05",
+      title: 'đườngKhôngkhổ đóngtâmrồibạn',
+      time: '2021-2-21 8:05',
       avatar: avatar2,
     },
     {
-      title: "trongtiểucá đóngtâmrồibạn",
-      time: "2020-1-17 21:12",
+      title: 'trongtiểucá đóngtâmrồibạn',
+      time: '2020-1-17 21:12',
       avatar: avatar3,
     },
     {
-      title: "nàotiểusen đóngtâmrồibạn",
-      time: "2021-01-14 0:20",
+      title: 'nàotiểusen đóngtâmrồibạn',
+      time: '2021-01-14 0:20',
       avatar: avatar4,
     },
     {
-      title: " đóngtâmrồibạn",
-      time: "2020-12-20 0:15",
+      title: ' đóngtâmrồibạn',
+      time: '2020-12-20 0:15',
       avatar: avatar5,
     },
     {
-      title: "lạnhthángngốcngốc đóngtâmrồibạn",
-      time: "2020-12-17 22:06",
+      title: 'lạnhthángngốcngốc đóngtâmrồibạn',
+      time: '2020-12-17 22:06',
       avatar: avatar6,
     },
   ]);
@@ -240,15 +233,15 @@ const useNotificationData = () => {
 
   const barList = computed<BarItem[]>(() => [
     {
-      name: computed(() => t("notice.bar[0]")),
+      name: computed(() => t('notice.bar[0]')),
       num: noticeList.value.length,
     },
     {
-      name: computed(() => t("notice.bar[1]")),
+      name: computed(() => t('notice.bar[1]')),
       num: msgList.value.length,
     },
     {
-      name: computed(() => t("notice.bar[2]")),
+      name: computed(() => t('notice.bar[2]')),
       num: pendingList.value.length,
     },
   ]);
@@ -264,31 +257,31 @@ const useNotificationData = () => {
 const useNotificationStyles = () => {
   const noticeStyleMap: Record<NoticeType, NoticeStyle> = {
     email: {
-      icon: "ri:mail-line",
-      iconClass: "bg-warning/12 text-warning",
+      icon: 'ri:mail-line',
+      iconClass: 'bg-warning/12 text-warning',
     },
     message: {
-      icon: "ri:volume-down-line",
-      iconClass: "bg-success/12 text-success",
+      icon: 'ri:volume-down-line',
+      iconClass: 'bg-success/12 text-success',
     },
     collection: {
-      icon: "ri:heart-3-line",
-      iconClass: "bg-danger/12 text-danger",
+      icon: 'ri:heart-3-line',
+      iconClass: 'bg-danger/12 text-danger',
     },
     user: {
-      icon: "ri:volume-down-line",
-      iconClass: "bg-info/12 text-info",
+      icon: 'ri:volume-down-line',
+      iconClass: 'bg-info/12 text-info',
     },
     notice: {
-      icon: "ri:notification-3-line",
-      iconClass: "bg-theme/12 text-theme",
+      icon: 'ri:notification-3-line',
+      iconClass: 'bg-theme/12 text-theme',
     },
   };
 
   const getNoticeStyle = (type: NoticeType): NoticeStyle => {
     const defaultStyle: NoticeStyle = {
-      icon: "ri:arrow-right-circle-line",
-      iconClass: "bg-theme/12 text-theme",
+      icon: 'ri:arrow-right-circle-line',
+      iconClass: 'bg-theme/12 text-theme',
     };
 
     return noticeStyleMap[type] || defaultStyle;
@@ -327,7 +320,7 @@ const useTabManagement = (
     handleNoticeAll: () => void;
     handleMsgAll: () => void;
     handlePendingAll: () => void;
-  },
+  }
 ) => {
   const changeBar = (index: number) => {
     barActiveIndex.value = index;
@@ -350,7 +343,7 @@ const useTabManagement = (
     const handler = viewAllHandlers[barActiveIndex.value];
     handler?.();
 
-    emit("update:value", false);
+    emit('update:value', false);
   };
 
   return {
@@ -362,15 +355,15 @@ const useTabManagement = (
 
 const useBusinessLogic = () => {
   const handleNoticeAll = () => {
-    console.log("XemtoànbộThongBao");
+    console.log('XemtoànbộThongBao');
   };
 
   const handleMsgAll = () => {
-    console.log("XemtoànbộTinNhan");
+    console.log('XemtoànbộTinNhan');
   };
 
   const handlePendingAll = () => {
-    console.log("XemtoànbộViệc cần làm");
+    console.log('XemtoànbộViệc cần làm');
   };
 
   return {
@@ -388,14 +381,14 @@ const { changeBar, currentTabIsEmpty, handleViewAll } = useTabManagement(
   noticeList,
   msgList,
   pendingList,
-  { handleNoticeAll, handleMsgAll, handlePendingAll },
+  { handleNoticeAll, handleMsgAll, handlePendingAll }
 );
 
 watch(
   () => props.value,
   (newValue) => {
     showNotice(newValue);
-  },
+  }
 );
 </script>
 

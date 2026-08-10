@@ -1,5 +1,5 @@
-import { createVNode, render } from "vue";
-import LoadingOverlay from "@/view/common/loading-overlay/index.vue";
+import { createVNode, render } from 'vue';
+import LoadingOverlay from '@/view/common/loading-overlay/index.vue';
 
 interface LoadingInstance {
   close: () => void;
@@ -9,10 +9,10 @@ let loadingInstance: LoadingInstance | null = null;
 let loadingContainer: HTMLElement | null = null;
 
 export const loadingService = {
-  showLoading(text = "Đang tải dữ liệu"): () => void {
+  showLoading(text = 'Đang tải dữ liệu'): () => void {
     if (!loadingInstance) {
       if (!loadingContainer) {
-        loadingContainer = document.createElement("div");
+        loadingContainer = document.createElement('div');
         document.body.appendChild(loadingContainer);
       }
 

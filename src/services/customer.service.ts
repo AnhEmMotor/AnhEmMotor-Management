@@ -1,4 +1,4 @@
-import * as CustomerApis from "@/api/customer";
+import * as CustomerApis from '@/api/customer';
 
 export const CustomerService = {
   ...CustomerApis,

@@ -1,4 +1,4 @@
-import * as SupplierApis from "@/api/supplier";
+import * as SupplierApis from '@/api/supplier';
 
 export const SupplierService = {
   ...SupplierApis,

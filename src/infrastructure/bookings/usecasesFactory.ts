@@ -5,7 +5,7 @@ import {
   RealConfirmBookingUseCase,
   RealCreateBookingUseCase,
   RealGetBookingEventsUseCase,
-} from "@/application/bookings/usecases";
+} from '@/application/bookings/usecases';
 
 export interface BookingUseCases {
   getBookingEvents: GetBookingEventsUseCase;

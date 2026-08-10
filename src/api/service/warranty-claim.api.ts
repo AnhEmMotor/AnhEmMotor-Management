@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface WarrantyClaimPart {
   id?: number;
@@ -64,7 +64,7 @@ export const WarrantyClaimApi = {
   getList(params?: any) {
     const { current, size, ...rest } = params || {};
     return request.get<WarrantyClaimListResponse>({
-      url: "/api/v1/WarrantyClaims",
+      url: '/api/v1/WarrantyClaims',
       params: { page: current, pageSize: size, ...rest },
     });
   },
@@ -93,7 +93,7 @@ export const WarrantyClaimApi = {
     parts?: WarrantyClaimPart[];
   }) {
     return request.post<number>({
-      url: "/api/v1/WarrantyClaims",
+      url: '/api/v1/WarrantyClaims',
       data,
     });
   },
@@ -104,7 +104,7 @@ export const WarrantyClaimApi = {
       status: number;
       isRecall?: boolean;
       manufacturerDecision?: string;
-    },
+    }
   ) {
     return request.patch<boolean>({
       url: `/api/v1/WarrantyClaims/${id}/status`,

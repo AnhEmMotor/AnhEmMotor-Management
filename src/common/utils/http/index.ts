@@ -1,13 +1,9 @@
-import axios, {
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
-import { useUserStore } from "@/application/store/user";
-import { ApiStatus } from "./status";
-import { HttpError, handleError, showError, showSuccess } from "./error";
-import i18n, { $t } from "@/i18n";
-import { BaseResponse } from "@/types";
+import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { useUserStore } from '@/application/store/user';
+import { ApiStatus } from './status';
+import { HttpError, handleError, showError, showSuccess } from './error';
+import i18n, { $t } from '@/i18n';
+import { BaseResponse } from '@/types';
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -41,19 +37,17 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 const { VITE_WITH_CREDENTIALS } = import.meta.env;
-const baseUrl =
-  import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-  "http://localhost:5000";
+const baseUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
 
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   timeout: REQUEST_TIMEOUT,
-  withCredentials: VITE_WITH_CREDENTIALS !== "false",
+  withCredentials: VITE_WITH_CREDENTIALS !== 'false',
   validateStatus: (status) => status >= 200 && status < 300,
   transformResponse: [
     (data, headers) => {
-      const contentType = headers["content-type"] as string;
-      if (contentType?.includes("application/json")) {
+      const contentType = headers['content-type'] as string;
+      if (contentType?.includes('application/json')) {
         try {
           return JSON.parse(data);
         } catch {
@@ -71,9 +65,9 @@ axiosInstance.interceptors.request.use(
     let token = userStore.accessToken;
     if (!token) {
       token =
-        localStorage.getItem("auth_token") ||
+        localStorage.getItem('auth_token') ||
         (() => {
-          const userData = localStorage.getItem("user");
+          const userData = localStorage.getItem('user');
           if (userData) {
             try {
               return JSON.parse(userData).accessToken;
@@ -86,45 +80,38 @@ axiosInstance.interceptors.request.use(
     }
 
     if (token) {
-      request.headers.set("Authorization", `Bearer ${token}`);
+      request.headers.set('Authorization', `Bearer ${token}`);
     }
 
-    request.headers.set("Accept-Language", i18n.global.locale.value);
+    request.headers.set('Accept-Language', i18n.global.locale.value);
 
-    if (
-      request.data &&
-      !(request.data instanceof FormData) &&
-      !request.headers["Content-Type"]
-    ) {
-      request.headers.set("Content-Type", "application/json");
+    if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
+      request.headers.set('Content-Type', 'application/json');
       request.data = JSON.stringify(request.data);
     }
 
     return request;
   },
   (error) => {
-    showError(
-      createHttpError($t("httpMsg.requestConfigError"), ApiStatus.error),
-    );
+    showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error));
     return Promise.reject(error);
-  },
+  }
 );
 
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { status, data } = response;
 
-    if (data && typeof data.code === "number") {
+    if (data && typeof data.code === 'number') {
       if (data.code === ApiStatus.success) return response;
-      if (data.code === ApiStatus.unauthorized)
-        handleUnauthorizedError(data.msg);
-      throw createHttpError(data.msg || $t("httpMsg.requestFailed"), data.code);
+      if (data.code === ApiStatus.unauthorized) handleUnauthorizedError(data.msg);
+      throw createHttpError(data.msg || $t('httpMsg.requestFailed'), data.code);
     }
 
     if (status >= 200 && status < 300) {
       response.data = {
         code: ApiStatus.success,
-        msg: "success",
+        msg: 'success',
         data: data,
       };
       return response;
@@ -146,8 +133,8 @@ axiosInstance.interceptors.response.use(
         if (
           originalRequest &&
           !originalRequest._retry &&
-          originalRequest.url !== "/api/v1/auth/refresh-token" &&
-          originalRequest.url !== "/api/v1/Auth/refresh-token"
+          originalRequest.url !== '/api/v1/auth/refresh-token' &&
+          originalRequest.url !== '/api/v1/Auth/refresh-token'
         ) {
           if (isRefreshing) {
             return new Promise((resolve, reject) => {
@@ -155,7 +142,7 @@ axiosInstance.interceptors.response.use(
             })
               .then((token) => {
                 originalRequest.headers = originalRequest.headers || {};
-                originalRequest.headers["Authorization"] = `Bearer ${token}`;
+                originalRequest.headers['Authorization'] = `Bearer ${token}`;
                 return axiosInstance(originalRequest);
               })
               .catch((err) => Promise.reject(err));
@@ -166,28 +153,25 @@ axiosInstance.interceptors.response.use(
 
           try {
             const refreshResponse = await axios.post(
-              "/api/v1/auth/refresh-token",
+              '/api/v1/auth/refresh-token',
               {},
               {
-                withCredentials:
-                  import.meta.env.VITE_WITH_CREDENTIALS !== "false",
-              },
+                withCredentials: import.meta.env.VITE_WITH_CREDENTIALS !== 'false',
+              }
             );
 
             const newAccessToken =
-              refreshResponse.data?.data?.accessToken ||
-              refreshResponse.data?.accessToken;
+              refreshResponse.data?.data?.accessToken || refreshResponse.data?.accessToken;
 
             if (newAccessToken) {
               const userStore = useUserStore();
               userStore.setToken(newAccessToken);
               originalRequest.headers = originalRequest.headers || {};
-              originalRequest.headers["Authorization"] =
-                `Bearer ${newAccessToken}`;
+              originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
               processQueue(null, newAccessToken);
               return axiosInstance(originalRequest);
             } else {
-              throw new Error("No token returned");
+              throw new Error('No token returned');
             }
           } catch (err) {
             processQueue(err, null);
@@ -196,7 +180,7 @@ axiosInstance.interceptors.response.use(
               data?.Message ||
               data?.msg ||
               data?.message ||
-              "Truy cập không được phép, vui lòng đăng nhập lại";
+              'Truy cập không được phép, vui lòng đăng nhập lại';
             handleUnauthorizedError(backendMsg);
             return Promise.reject(err);
           } finally {
@@ -208,7 +192,7 @@ axiosInstance.interceptors.response.use(
             data?.Message ||
             data?.msg ||
             data?.message ||
-            "Truy cập không được phép, vui lòng đăng nhập lại";
+            'Truy cập không được phép, vui lòng đăng nhập lại';
           handleUnauthorizedError(backendMsg);
         }
       }
@@ -217,9 +201,9 @@ axiosInstance.interceptors.response.use(
         if (Array.isArray(data.errors)) {
           backendMsg = data.errors
             .map((e: any) => e.message || e.Message || JSON.stringify(e))
-            .join(", ");
-        } else if (typeof data.errors === "object") {
-          backendMsg = Object.values(data.errors).flat().join(", ");
+            .join(', ');
+        } else if (typeof data.errors === 'object') {
+          backendMsg = Object.values(data.errors).flat().join(', ');
         }
       }
 
@@ -228,7 +212,7 @@ axiosInstance.interceptors.response.use(
       }
     }
     return Promise.reject(handleError(error));
-  },
+  }
 );
 
 function createHttpError(message: string, code: number) {
@@ -236,19 +220,13 @@ function createHttpError(message: string, code: number) {
 }
 
 function handleUnauthorizedError(message?: string): never {
-  const error = createHttpError(
-    message || $t("httpMsg.unauthorized"),
-    ApiStatus.unauthorized,
-  );
+  const error = createHttpError(message || $t('httpMsg.unauthorized'), ApiStatus.unauthorized);
 
   if (!isUnauthorizedErrorShown) {
     isUnauthorizedErrorShown = true;
     logOut();
 
-    unauthorizedTimer = setTimeout(
-      resetUnauthorizedError,
-      UNAUTHORIZED_DEBOUNCE_TIME,
-    );
+    unauthorizedTimer = setTimeout(resetUnauthorizedError, UNAUTHORIZED_DEBOUNCE_TIME);
 
     showError(error, true);
     throw error;
@@ -281,7 +259,7 @@ function shouldRetry(statusCode: number) {
 
 async function retryRequest<T>(
   config: ExtendedAxiosRequestConfig,
-  retries: number = MAX_RETRIES,
+  retries: number = MAX_RETRIES
 ): Promise<T> {
   try {
     return await request<T>(config);
@@ -298,11 +276,9 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function request<T = any>(
-  config: ExtendedAxiosRequestConfig,
-): Promise<T> {
+async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
   if (
-    ["POST", "PUT"].includes(config.method?.toUpperCase() || "") &&
+    ['POST', 'PUT'].includes(config.method?.toUpperCase() || '') &&
     config.params &&
     !config.data
   ) {
@@ -329,19 +305,19 @@ async function request<T = any>(
 
 const api = {
   get<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: "GET" });
+    return retryRequest<T>({ ...config, method: 'GET' });
   },
   post<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: "POST" });
+    return retryRequest<T>({ ...config, method: 'POST' });
   },
   put<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: "PUT" });
+    return retryRequest<T>({ ...config, method: 'PUT' });
   },
   patch<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: "PATCH" });
+    return retryRequest<T>({ ...config, method: 'PATCH' });
   },
   del<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: "DELETE" });
+    return retryRequest<T>({ ...config, method: 'DELETE' });
   },
   request<T>(config: ExtendedAxiosRequestConfig) {
     return retryRequest<T>(config);

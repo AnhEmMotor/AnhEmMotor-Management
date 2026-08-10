@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
-    <!-- Header Actions -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <ElInput
@@ -34,7 +33,6 @@
       </ElButton>
     </div>
 
-    <!-- Invoice List -->
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
@@ -80,9 +78,7 @@
         </ElTableColumn>
         <ElTableColumn label="Tổng tiền" width="140" align="right">
           <template #default="{ row }">
-            <span class="font-bold text-gray-800">{{
-              formatCurrency(row.totalAmount)
-            }}</span>
+            <span class="font-bold text-gray-800">{{ formatCurrency(row.totalAmount) }}</span>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Thanh toán" width="130" align="center">
@@ -101,12 +97,7 @@
         </ElTableColumn>
         <ElTableColumn label="Thao tác" width="100" align="center">
           <template #default="{ row }">
-            <ElButton
-              link
-              type="primary"
-              size="small"
-              @click.stop="handleView(row)"
-            >
+            <ElButton link type="primary" size="small" @click.stop="handleView(row)">
               Chi tiết
             </ElButton>
           </template>
@@ -114,7 +105,6 @@
       </ElTable>
     </ElCard>
 
-    <!-- Pagination -->
     <div class="flex justify-end mt-4">
       <ElPagination
         v-model:currentPage="pagination.current"
@@ -127,7 +117,6 @@
       />
     </div>
 
-    <!-- Detail Dialog -->
     <ElDialog
       v-model="dialog.visible"
       width="800px"
@@ -153,7 +142,6 @@
       </template>
 
       <div v-if="dialog.invoice" class="premium-invoice-body">
-        <!-- Status Banner -->
         <div
           class="flex justify-between items-center bg-gray-50 p-4 rounded-xl mb-6 border border-gray-100"
         >
@@ -177,7 +165,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-6 mb-6">
-          <!-- Customer Info -->
           <div class="info-card">
             <div
               class="card-header flex items-center gap-2 text-gray-700 font-semibold mb-4 pb-2 border-b"
@@ -188,20 +175,16 @@
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Họ tên:</span>
-                <span class="font-medium text-gray-800">{{
-                  dialog.invoice.customerName
-                }}</span>
+                <span class="font-medium text-gray-800">{{ dialog.invoice.customerName }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Điện thoại:</span>
-                <span class="font-medium text-gray-800">{{
-                  dialog.invoice.customerPhone
-                }}</span>
+                <span class="font-medium text-gray-800">{{ dialog.invoice.customerPhone }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Số CCCD:</span>
                 <span class="font-medium text-gray-800">{{
-                  dialog.invoice.customerIdCard || "-"
+                  dialog.invoice.customerIdCard || '-'
                 }}</span>
               </div>
               <div class="flex flex-col gap-1 mt-1">
@@ -213,7 +196,6 @@
             </div>
           </div>
 
-          <!-- Vehicle Info -->
           <div class="info-card">
             <div
               class="card-header flex items-center gap-2 text-gray-700 font-semibold mb-4 pb-2 border-b"
@@ -224,35 +206,28 @@
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Dòng xe:</span>
-                <span class="font-medium text-gray-800">{{
-                  dialog.invoice.vehicleModel
-                }}</span>
+                <span class="font-medium text-gray-800">{{ dialog.invoice.vehicleModel }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Màu sơn:</span>
-                <span class="font-medium text-gray-800">{{
-                  dialog.invoice.vehicleColor
-                }}</span>
+                <span class="font-medium text-gray-800">{{ dialog.invoice.vehicleColor }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Số khung:</span>
-                <span
-                  class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded text-gray-700"
-                  >{{ dialog.invoice.chassisNo }}</span
-                >
+                <span class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded text-gray-700">{{
+                  dialog.invoice.chassisNo
+                }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500 text-sm">Số máy:</span>
-                <span
-                  class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded text-gray-700"
-                  >{{ dialog.invoice.engineNo }}</span
-                >
+                <span class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded text-gray-700">{{
+                  dialog.invoice.engineNo
+                }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Financial Breakdown -->
         <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
           <div class="flex items-center gap-2 text-blue-800 font-semibold mb-4">
             <Icon icon="ri:bill-line" />
@@ -280,16 +255,11 @@
             </div>
           </div>
 
-          <div
-            class="border-t border-blue-200 pt-3 flex justify-between items-center"
-          >
+          <div class="border-t border-blue-200 pt-3 flex justify-between items-center">
             <div class="text-sm">
               <span class="text-gray-500 block mb-1">Phương thức</span>
               <ElTag size="small" type="info" class="border-gray-200">
-                <Icon
-                  icon="ri:bank-card-line"
-                  class="mr-1 inline-block align-text-bottom"
-                />
+                <Icon icon="ri:bank-card-line" class="mr-1 inline-block align-text-bottom" />
                 {{ getPaymentLabel(dialog.invoice.paymentMethod) }}
               </ElTag>
             </div>
@@ -302,9 +272,7 @@
             <div class="text-sm text-right">
               <span class="text-gray-500 block mb-1">Ngày giao dự kiến</span>
               <span class="font-medium text-gray-800">{{
-                dialog.invoice.deliveryDate
-                  ? formatDate(dialog.invoice.deliveryDate)
-                  : "-"
+                dialog.invoice.deliveryDate ? formatDate(dialog.invoice.deliveryDate) : '-'
               }}</span>
             </div>
           </div>
@@ -322,7 +290,6 @@
       </template>
     </ElDialog>
 
-    <!-- Create Dialog -->
     <ElDialog
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
@@ -426,11 +393,7 @@
             :disabled="voucherApplying"
           >
             <template #append>
-              <ElButton
-                :loading="voucherApplying"
-                type="primary"
-                @click="applyVoucher"
-              >
+              <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher">
                 Áp dụng
               </ElButton>
             </template>
@@ -441,9 +404,7 @@
           class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mb-4"
         >
           <span class="text-emerald-600 text-lg">🎫</span>
-          <span class="text-sm font-bold text-emerald-700">{{
-            appliedVoucher.code
-          }}</span>
+          <span class="text-sm font-bold text-emerald-700">{{ appliedVoucher.code }}</span>
           <span class="text-xs text-emerald-600"
             >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
           >
@@ -481,10 +442,7 @@
         <ElDivider content-position="left">📦 Giao hàng</ElDivider>
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="NV bán hàng">
-            <ElInput
-              v-model="createDialog.form.salesPerson"
-              placeholder="Tên nhân viên bán hàng"
-            />
+            <ElInput v-model="createDialog.form.salesPerson" placeholder="Tên nhân viên bán hàng" />
           </ElFormItem>
           <ElFormItem label="Ngày giao dự kiến">
             <ElDatePicker
@@ -510,23 +468,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { useVoucher } from "@/common/composables/useVoucher";
-import { Search, Plus } from "@element-plus/icons-vue";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { useVoucher } from '@/common/composables/useVoucher';
+import { Search, Plus } from '@element-plus/icons-vue';
 import {
   invoiceApi,
   type AdminInvoiceDetailResponse,
   type AdminInvoiceSummaryResponse,
   type CreateAdminInvoiceRequest,
   type UpdateAdminInvoiceRequest,
-} from "@/api/sales/invoice.api";
-import { purchaseInvoiceApi } from "@/api/purchase-invoice/purchase-invoice.api";
-import type { PurchaseInvoiceListResult } from "@/domain/purchase-invoice/types";
+} from '@/api/sales/invoice.api';
+import { purchaseInvoiceApi } from '@/api/purchase-invoice/purchase-invoice.api';
+import type { PurchaseInvoiceListResult } from '@/domain/purchase-invoice/types';
 
-defineOptions({ name: "SalesInvoices" });
+defineOptions({ name: 'SalesInvoices' });
 
-// ==================== TYPES ====================
 interface InvoiceRow {
   id: number;
   invoiceNumber: string;
@@ -553,19 +510,18 @@ interface InvoiceRow {
   createdAt: string;
 }
 
-// ==================== STATE ====================
 const invoices = ref<InvoiceRow[]>([]);
 const loadingList = ref(false);
 const actionLoading = ref(false);
-const searchQuery = ref("");
-const filterStatus = ref<string>("");
+const searchQuery = ref('');
+const filterStatus = ref<string>('');
 const totalCount = ref(0);
 const pagination = reactive({ current: 1, size: 10 });
 
 const dialog = reactive({
   visible: false,
   readonly: true,
-  title: "",
+  title: '',
   invoice: null as AdminInvoiceDetailResponse | null,
   form: {} as any,
 });
@@ -577,21 +533,21 @@ const createDialog = reactive({
   visible: false,
   form: {
     purchaseInvoiceId: undefined as number | undefined,
-    customerName: "",
-    customerPhone: "",
-    customerIdCard: "",
-    customerAddress: "",
-    vehicleModel: "",
-    vehicleColor: "",
-    chassisNo: "",
-    engineNo: "",
+    customerName: '',
+    customerPhone: '',
+    customerIdCard: '',
+    customerAddress: '',
+    vehicleModel: '',
+    vehicleColor: '',
+    chassisNo: '',
+    engineNo: '',
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
-    paymentMethod: "transfer",
-    bankName: "",
-    salesPerson: "",
-    deliveryDate: "",
+    paymentMethod: 'transfer',
+    bankName: '',
+    salesPerson: '',
+    deliveryDate: '',
     paymentBreakdown: [],
     items: [],
     subTotal: 0,
@@ -601,7 +557,6 @@ const createDialog = reactive({
   } as any,
 });
 
-// ==================== COMPUTED ====================
 const filteredInvoices = computed(() => {
   let result = invoices.value;
   if (searchQuery.value) {
@@ -612,7 +567,7 @@ const filteredInvoices = computed(() => {
         inv.customerName.toLowerCase().includes(q) ||
         inv.chassisNo.toLowerCase().includes(q) ||
         inv.engineNo.toLowerCase().includes(q) ||
-        inv.vehicleModel.toLowerCase().includes(q),
+        inv.vehicleModel.toLowerCase().includes(q)
     );
   }
   if (filterStatus.value) {
@@ -627,7 +582,6 @@ const paginatedInvoices = computed(() => {
   return filteredInvoices.value.slice(start, end);
 });
 
-// ==================== FETCH ====================
 async function fetchInvoices() {
   loadingList.value = true;
   try {
@@ -638,7 +592,7 @@ async function fetchInvoices() {
     invoices.value = res.items ?? [];
     totalCount.value = res.totalCount ?? 0;
   } catch (e) {
-    ElMessage.error("Không thể tải danh sách hóa đơn");
+    ElMessage.error('Không thể tải danh sách hóa đơn');
   } finally {
     loadingList.value = false;
   }
@@ -658,7 +612,6 @@ function handleSearch() {
   fetchInvoices();
 }
 
-// ==================== PURCHASE INVOICE ====================
 async function searchPurchaseInvoices(query: string) {
   if (!query || query.length < 2) {
     purchaseInvoiceOptions.value = [];
@@ -681,10 +634,10 @@ async function searchPurchaseInvoices(query: string) {
 
 function onPurchaseInvoiceSelected(invoiceId: number | undefined) {
   if (!invoiceId) {
-    createDialog.form.customerName = "";
-    createDialog.form.customerPhone = "";
-    createDialog.form.customerAddress = "";
-    createDialog.form.customerIdCard = "";
+    createDialog.form.customerName = '';
+    createDialog.form.customerPhone = '';
+    createDialog.form.customerAddress = '';
+    createDialog.form.customerIdCard = '';
     createDialog.form.items = [];
     createDialog.form.subTotal = 0;
     createDialog.form.taxAmount = 0;
@@ -692,14 +645,13 @@ function onPurchaseInvoiceSelected(invoiceId: number | undefined) {
   }
   const invoice = purchaseInvoiceOptions.value.find((i) => i.id === invoiceId);
   if (invoice) {
-    createDialog.form.customerName = invoice.customerName || "";
-    createDialog.form.customerPhone = invoice.customerPhone || "";
-    createDialog.form.customerAddress = invoice.customerAddress || "";
-    createDialog.form.customerIdCard = invoice.customerIdCard || "";
+    createDialog.form.customerName = invoice.customerName || '';
+    createDialog.form.customerPhone = invoice.customerPhone || '';
+    createDialog.form.customerAddress = invoice.customerAddress || '';
+    createDialog.form.customerIdCard = invoice.customerIdCard || '';
   }
 }
 
-// ==================== DIALOG ACTIONS ====================
 function handleView(row: any) {
   dialog.visible = true;
   dialog.readonly = true;
@@ -732,21 +684,21 @@ const handlePrintInvoice = (invoice: any) => {
 const handleCreate = async () => {
   createDialog.form = {
     purchaseInvoiceId: undefined,
-    customerName: "",
-    customerPhone: "",
-    customerIdCard: "",
-    customerAddress: "",
-    vehicleModel: "",
-    vehicleColor: "",
-    chassisNo: "",
-    engineNo: "",
+    customerName: '',
+    customerPhone: '',
+    customerIdCard: '',
+    customerAddress: '',
+    vehicleModel: '',
+    vehicleColor: '',
+    chassisNo: '',
+    engineNo: '',
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
-    paymentMethod: "transfer",
-    bankName: "",
-    salesPerson: "",
-    deliveryDate: "",
+    paymentMethod: 'transfer',
+    bankName: '',
+    salesPerson: '',
+    deliveryDate: '',
     paymentBreakdown: [],
     items: [],
     subTotal: 0,
@@ -757,15 +709,15 @@ const handleCreate = async () => {
 
 async function handleSave() {
   if (!createDialog.form.customerName) {
-    ElMessage.warning("Vui lòng nhập tên khách hàng");
+    ElMessage.warning('Vui lòng nhập tên khách hàng');
     return;
   }
   if (!createDialog.form.customerPhone) {
-    ElMessage.warning("Vui lòng nhập số điện thoại");
+    ElMessage.warning('Vui lòng nhập số điện thoại');
     return;
   }
   if (!createDialog.form.vehicleModel) {
-    ElMessage.warning("Vui lòng nhập dòng xe");
+    ElMessage.warning('Vui lòng nhập dòng xe');
     return;
   }
   actionLoading.value = true;
@@ -775,22 +727,21 @@ async function handleSave() {
       voucherId: createDialog.form.voucherId,
       discountAmount: createDialog.form.discountAmount,
     });
-    ElMessage.success("Tạo hóa đơn thành công");
+    ElMessage.success('Tạo hóa đơn thành công');
     createDialog.visible = false;
     fetchInvoices();
   } catch (e) {
-    ElMessage.error("Không thể tạo hóa đơn");
+    ElMessage.error('Không thể tạo hóa đơn');
   } finally {
     actionLoading.value = false;
   }
 }
 
-// ==================== VOUCHER ====================
 const voucherTotal = computed(
   () =>
     createDialog.form.vehiclePrice +
       createDialog.form.registrationFee +
-      createDialog.form.insuranceFee || 0,
+      createDialog.form.insuranceFee || 0
 );
 const {
   voucherCode,
@@ -804,7 +755,7 @@ const {
 } = useVoucher(
   () => voucherTotal.value,
   () => undefined,
-  true,
+  true
 );
 
 watch(appliedVoucher, (val) => {
@@ -817,69 +768,57 @@ watch(appliedVoucher, (val) => {
   }
 });
 
-// ==================== HELPERS ====================
 function formatDate(dateStr: string) {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('vi-VN');
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     minimumFractionDigits: 0,
   }).format(value);
 }
 
 function getStatusLabel(status: string) {
   const map: Record<string, string> = {
-    pending: "📝 Chờ thanh toán",
-    completed: "✅ Đã hoàn tất",
-    processing: "🔄 Đang xử lý",
-    cancelled: "❌ Đã hủy",
+    pending: '📝 Chờ thanh toán',
+    completed: '✅ Đã hoàn tất',
+    processing: '🔄 Đang xử lý',
+    cancelled: '❌ Đã hủy',
   };
   return map[status] || status;
 }
 
-function getStatusTagType(
-  status: string,
-): "primary" | "success" | "warning" | "info" | "danger" {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    pending: "warning",
-    completed: "success",
-    processing: "info",
-    cancelled: "danger",
+function getStatusTagType(status: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    pending: 'warning',
+    completed: 'success',
+    processing: 'info',
+    cancelled: 'danger',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
 function getPaymentLabel(method: string) {
   const map: Record<string, string> = {
-    transfer: "Chuyển khoản",
-    cash: "Tiền mặt",
-    installment: "Trả góp",
+    transfer: 'Chuyển khoản',
+    cash: 'Tiền mặt',
+    installment: 'Trả góp',
   };
   return map[method] || method;
 }
 
-function getPaymentTagType(
-  method: string,
-): "primary" | "success" | "warning" | "info" | "danger" {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    transfer: "primary",
-    cash: "success",
-    installment: "warning",
+function getPaymentTagType(method: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    transfer: 'primary',
+    cash: 'success',
+    installment: 'warning',
   };
-  return map[method] || "info";
+  return map[method] || 'info';
 }
 
-// ==================== LIFECYCLE ====================
 onMounted(() => {
   fetchInvoices();
 });
@@ -987,24 +926,20 @@ html.dark {
     height: 297mm !important;
   }
 
-  /* Hide the main dashboard during print */
   #app {
     display: none !important;
   }
 
-  /* Hide all Element Plus overlays by default */
   .el-overlay {
     display: none !important;
   }
 
-  /* Only display the overlay containing the invoice modal */
   .el-overlay:has(.premium-invoice-modal) {
     display: block !important;
     position: static !important;
     z-index: auto !important;
   }
 
-  /* Reset overlay dialog wrapper container */
   .el-overlay:has(.premium-invoice-modal) .el-overlay-dialog {
     position: static !important;
     height: auto !important;
@@ -1013,7 +948,6 @@ html.dark {
     background: white !important;
   }
 
-  /* Reset dialog dimensions to fit the print page width */
   .premium-invoice-modal {
     position: static !important;
     display: block !important;

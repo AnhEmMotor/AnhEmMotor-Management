@@ -1,13 +1,12 @@
 <template>
   <div class="resp-page p-6 bg-slate-50 min-h-screen">
-    <!-- Header -->
     <div
       class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
       <div>
         <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
           <el-icon class="text-primary"><ChatDotRound /></el-icon>
-          {{ $t("menus.service.warrantyAndComplaints.complaints") }}
+          {{ $t('menus.service.warrantyAndComplaints.complaints') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
           Quản lý danh sách khiếu nại và phản hồi của khách hàng.
@@ -15,13 +14,8 @@
       </div>
     </div>
 
-    <!-- Filters & Actions -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
-      <el-form
-        :inline="true"
-        :model="filters"
-        class="flex flex-wrap gap-4 items-center"
-      >
+      <el-form :inline="true" :model="filters" class="flex flex-wrap gap-4 items-center">
         <el-form-item label="Tìm kiếm" class="mb-0">
           <el-input
             v-model="filters.search"
@@ -53,10 +47,7 @@
       </el-form>
     </div>
 
-    <!-- Table List -->
-    <div
-      class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden"
-    >
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <el-table
         :data="tableData"
         border
@@ -64,15 +55,9 @@
         v-loading="loading"
         header-cell-class-name="bg-slate-50 text-slate-700 font-semibold"
       >
-        <el-table-column
-          prop="complaintNumber"
-          label="Mã Khiếu Nại"
-          min-width="150"
-        >
+        <el-table-column prop="complaintNumber" label="Mã Khiếu Nại" min-width="150">
           <template #default="{ row }">
-            <span
-              class="font-mono font-semibold text-primary cursor-pointer hover:underline"
-            >
+            <span class="font-mono font-semibold text-primary cursor-pointer hover:underline">
               {{ row.complaintNumber }}
             </span>
           </template>
@@ -80,30 +65,19 @@
         <el-table-column prop="customerName" label="Khách Hàng" min-width="160">
           <template #default="{ row }">
             <div class="font-medium text-slate-800">
-              {{ row.customerName || "N/A" }}
+              {{ row.customerName || 'N/A' }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="customerPhone"
-          label="Số Điện Thoại"
-          min-width="130"
-        />
+        <el-table-column prop="customerPhone" label="Số Điện Thoại" min-width="130" />
         <el-table-column prop="vehiclePlate" label="Biển Số Xe" min-width="130">
           <template #default="{ row }">
-            <el-tag
-              effect="plain"
-              class="font-bold border-slate-300 text-slate-700"
-            >
-              {{ row.vehiclePlate || "N/A" }}
+            <el-tag effect="plain" class="font-bold border-slate-300 text-slate-700">
+              {{ row.vehiclePlate || 'N/A' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="complaintType"
-          label="Loại Khiếu Nại"
-          min-width="150"
-        />
+        <el-table-column prop="complaintType" label="Loại Khiếu Nại" min-width="150" />
         <el-table-column prop="createdAt" label="Ngày Tạo" min-width="150">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
@@ -111,21 +85,12 @@
         </el-table-column>
         <el-table-column prop="statusText" label="Trạng Thái" min-width="150">
           <template #default="{ row }">
-            <el-tag
-              :type="getStatusTagType(row.statusText)"
-              effect="dark"
-              class="capitalize"
-            >
+            <el-tag :type="getStatusTagType(row.statusText)" effect="dark" class="capitalize">
               {{ getStatusLabel(row.statusText) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          label="Hành động"
-          min-width="120"
-          fixed="right"
-          align="center"
-        >
+        <el-table-column label="Hành động" min-width="120" fixed="right" align="center">
           <template #default="{ row }">
             <el-button
               type="primary"
@@ -141,7 +106,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- Pagination -->
       <div class="flex justify-end p-4 border-t border-slate-100">
         <el-pagination
           v-model:current-page="pagination.current"
@@ -158,22 +122,21 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import { Search, View, ChatDotRound } from "@element-plus/icons-vue";
-import { ComplaintApi } from "@/api/service/complaint.api";
-import dayjs from "dayjs";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
+import { Search, View, ChatDotRound } from '@element-plus/icons-vue';
+import { ComplaintApi } from '@/api/service/complaint.api';
+import dayjs from 'dayjs';
 
 const router = useRouter();
 
-// Filters & State
 const loading = ref(false);
 const filters = reactive({
-  search: "",
-  status: "" as any,
+  search: '',
+  status: '' as any,
 });
 
 const pagination = reactive({
@@ -196,20 +159,20 @@ type ComplaintRow = {
 const tableData = ref<ComplaintRow[]>([]);
 
 const formatDate = (val: string) => {
-  if (!val) return "N/A";
-  return dayjs(val).format("DD/MM/YYYY HH:mm");
+  if (!val) return 'N/A';
+  return dayjs(val).format('DD/MM/YYYY HH:mm');
 };
 
 const getStatusTagType = (status: string) => {
-  const s = status ? status.toLowerCase() : "";
-  if (s.includes("đã giải quyết") || s.includes("resolved")) return "success";
-  if (s.includes("đang xử lý") || s.includes("processing")) return "warning";
-  if (s.includes("đã đóng") || s.includes("closed")) return "info";
-  return "danger";
+  const s = status ? status.toLowerCase() : '';
+  if (s.includes('đã giải quyết') || s.includes('resolved')) return 'success';
+  if (s.includes('đang xử lý') || s.includes('processing')) return 'warning';
+  if (s.includes('đã đóng') || s.includes('closed')) return 'info';
+  return 'danger';
 };
 
 const getStatusLabel = (status: string) => {
-  return status || "N/A";
+  return status || 'N/A';
 };
 
 async function loadData() {
@@ -226,7 +189,7 @@ async function loadData() {
     const res = await ComplaintApi.getList({
       current: pagination.current,
       size: pagination.size,
-      filters: sieveFilters.join(","),
+      filters: sieveFilters.join(','),
     });
 
     if (res && res.items) {
@@ -237,8 +200,8 @@ async function loadData() {
       pagination.total = 0;
     }
   } catch (error: any) {
-    console.error("Lỗi khi tải danh sách khiếu nại:", error);
-    ElMessage.error("Không thể tải danh sách khiếu nại.");
+    console.error('Lỗi khi tải danh sách khiếu nại:', error);
+    ElMessage.error('Không thể tải danh sách khiếu nại.');
   } finally {
     loading.value = false;
   }
@@ -250,8 +213,8 @@ function handleSearch() {
 }
 
 function resetFilters() {
-  filters.search = "";
-  filters.status = "";
+  filters.search = '';
+  filters.status = '';
   handleSearch();
 }
 
@@ -266,9 +229,7 @@ function handleCurrentChange(page: number) {
 }
 
 function openDetail(id: number) {
-  router
-    .push({ name: "ServiceComplaintDetail", params: { id } })
-    .catch(() => null);
+  router.push({ name: 'ServiceComplaintDetail', params: { id } }).catch(() => null);
 }
 
 onMounted(() => {

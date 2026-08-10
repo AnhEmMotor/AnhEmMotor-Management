@@ -1,58 +1,58 @@
-import { AppRouteRecord } from "@/types/router";
-import { Permissions } from "@/domain/constants/permissions";
+import { AppRouteRecord } from '@/types/router';
+import { Permissions } from '@/domain/constants/permissions';
 
 export const dashboardRoutes: AppRouteRecord = {
-  name: "Dashboard",
-  path: "/admin/dashboard",
-  redirect: "/admin/dashboard/intro",
-  component: "/index/index",
+  name: 'Dashboard',
+  path: '/admin/dashboard',
+  redirect: '/admin/dashboard/intro',
+  component: '/index/index',
   meta: {
-    title: "menus.dashboard.title",
-    icon: "ri:pie-chart-line",
-    roles: ["Admin", "SuperAdmin"],
-    permissions: ["Permissions.Admin"],
+    title: 'menus.dashboard.title',
+    icon: 'ri:pie-chart-line',
+    roles: ['Admin', 'SuperAdmin'],
+    permissions: ['Permissions.Admin'],
   },
   children: [
     {
-      path: "intro",
-      name: "AdminIntro",
-      component: "/Admin/view/intro/index",
+      path: 'intro',
+      name: 'AdminIntro',
+      component: '/Admin/view/intro/index',
       meta: {
-        title: "Giới thiệu",
-        icon: "ri:image-line",
+        title: 'Giới thiệu',
+        icon: 'ri:image-line',
         isHide: true,
       },
     },
     {
-      path: "console",
-      name: "Console",
-      component: "/Admin/view/dashboard",
+      path: 'console',
+      name: 'Console',
+      component: '/Admin/view/dashboard',
       meta: {
-        title: "menus.dashboard.console",
-        icon: "ri:home-smile-2-line",
+        title: 'menus.dashboard.console',
+        icon: 'ri:home-smile-2-line',
         keepAlive: false,
         fixedTab: false,
       },
     },
     {
-      path: "analysis",
-      name: "Analysis",
-      component: "/Admin/view/dashboard/analysis",
+      path: 'analysis',
+      name: 'Analysis',
+      component: '/Admin/view/dashboard/analysis',
       meta: {
-        title: "menus.dashboard.analysis",
-        icon: "ri:align-item-bottom-line",
+        title: 'menus.dashboard.analysis',
+        icon: 'ri:align-item-bottom-line',
         keepAlive: false,
         permission: Permissions.Admin.DashboardManagement.View,
         isHide: true,
       },
     },
     {
-      path: "ecommerce",
-      name: "Ecommerce",
-      component: "/Admin/view/dashboard/ecommerce",
+      path: 'ecommerce',
+      name: 'Ecommerce',
+      component: '/Admin/view/dashboard/ecommerce',
       meta: {
-        title: "menus.dashboard.ecommerce",
-        icon: "ri:bar-chart-box-line",
+        title: 'menus.dashboard.ecommerce',
+        icon: 'ri:bar-chart-box-line',
         keepAlive: false,
         permission: Permissions.Admin.DashboardManagement.View,
       },

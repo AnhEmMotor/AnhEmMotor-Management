@@ -1,20 +1,10 @@
 <template>
   <div class="resp-page">
     <ElRow :gutter="20" class="flex">
-      <ElCol
-        v-for="item in dataList"
-        :key="item.label"
-        :sm="12"
-        :md="6"
-        :lg="6"
-      >
-        <div
-          class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4"
-        >
+      <ElCol v-for="item in dataList" :key="item.label" :sm="12" :md="6" :lg="6">
+        <div class="art-card relative flex flex-col justify-center h-35 px-5 mb-5 max-sm:mb-4">
           <span class="text-g-700 text-sm">{{ item.label }}</span>
-          <h2
-            class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1"
-          >
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1">
             {{ item.value }}
           </h2>
           <div class="flex-c mt-1">
@@ -32,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { fetchDashboardKpis } from "@/api/dashboard.api";
+import { ref, reactive } from 'vue';
+import { fetchDashboardKpis } from '@/api/dashboard.api';
 
 interface DataItem {
   label: string;
@@ -45,7 +35,7 @@ const dataList = reactive<DataItem[]>([]);
 const isLoading = ref(false);
 
 function fmt(v: number): string {
-  return v.toLocaleString("vi-VN");
+  return v.toLocaleString('vi-VN');
 }
 
 async function load() {

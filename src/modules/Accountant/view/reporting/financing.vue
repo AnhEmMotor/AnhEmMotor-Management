@@ -12,11 +12,7 @@
           v-model:end-date="periodEnd"
           @update:modelValue="onPeriodChange"
         />
-        <ElButton
-          type="success"
-          :disabled="!installments.length"
-          @click="exportFinancingExcel"
-        >
+        <ElButton type="success" :disabled="!installments.length" @click="exportFinancingExcel">
           <ArtSvgIcon icon="ri:file-excel-2-line" />
           Xuất Excel
         </ElButton>
@@ -43,9 +39,7 @@
         :count="kpi.pendingCount"
         description="Cần theo dõi tiến độ ngân hàng"
         icon="ri:time-line"
-        :icon-style="
-          kpi.pendingCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
-        "
+        :icon-style="kpi.pendingCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
       />
       <ArtStatsCard
         title="Tỷ lệ duyệt thành công"
@@ -78,19 +72,13 @@
         <ElTableColumn prop="partnerName" label="Đối tác tài chính" />
         <ElTableColumn prop="vehicleName" label="Xe" />
         <ElTableColumn prop="amount" label="Số tiền" width="140">
-          <template #default="{ row }">{{
-            formatCurrency(row.amount)
-          }}</template>
+          <template #default="{ row }">{{ formatCurrency(row.amount) }}</template>
         </ElTableColumn>
         <ElTableColumn prop="status" label="Trạng thái" width="160">
           <template #default="{ row }">
-            <ElTag
-              :type="statusType(row.status)"
-              size="small"
-              effect="light"
-              round
-              >{{ row.status }}</ElTag
-            >
+            <ElTag :type="statusType(row.status)" size="small" effect="light" round>{{
+              row.status
+            }}</ElTag>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="cavetStatus" label="Cavet" width="140">
@@ -108,9 +96,7 @@
           </template>
         </ElTableColumn>
         <ElTableColumn prop="createdAt" label="Ngày tạo" width="120">
-          <template #default="{ row }">{{
-            formatDate(row.createdAt)
-          }}</template>
+          <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
         </ElTableColumn>
       </ElTable>
     </ElCard>
@@ -118,19 +104,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { statisticsApi } from "@/api/operations";
-import { AnalyticsService } from "@/services/analytics.service";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import ReportPlaceholder from "./ReportPlaceholder.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { computed, onMounted, ref } from 'vue';
+import { statisticsApi } from '@/api/operations';
+import { AnalyticsService } from '@/services/analytics.service';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import ReportPlaceholder from './ReportPlaceholder.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref('');
+const periodEnd = ref('');
 
 const kpi = ref({
   totalApplications: 0,
@@ -155,33 +141,33 @@ const loading = ref(false);
 const approvalRate = ref(0);
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
 function formatDate(iso: string) {
-  if (!iso) return "-";
-  return new Date(iso).toLocaleDateString("vi-VN");
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('vi-VN');
 }
 
 function statusType(status: string) {
-  const map: Record<string, "success" | "warning" | "danger" | "info"> = {
-    "Đã giải ngân": "success",
-    "Đang chờ": "warning",
-    Từ_chối: "danger",
+  const map: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
+    'Đã giải ngân': 'success',
+    'Đang chờ': 'warning',
+    Từ_chối: 'danger',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
 function cavetType(status: string) {
-  const map: Record<string, "success" | "warning" | "danger" | "info"> = {
-    "Đã cấp": "success",
-    "Đang xử lý": "warning",
-    Từ_chối: "danger",
+  const map: Record<string, 'success' | 'warning' | 'danger' | 'info'> = {
+    'Đã cấp': 'success',
+    'Đang xử lý': 'warning',
+    Từ_chối: 'danger',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
 async function loadData() {
@@ -215,10 +201,10 @@ function onPeriodChange() {
 
 function exportFinancingExcel() {
   exportReportWorkbook({
-    fileName: "Bao_cao_tra_gop",
+    fileName: 'Bao_cao_tra_gop',
     sheets: [
       {
-        name: "Ho so tra gop",
+        name: 'Ho so tra gop',
         rows: installments.value.map((row) => ({
           Ma_ho_so: row.applicationCode,
           Khach_hang: row.customerName,
@@ -226,7 +212,7 @@ function exportFinancingExcel() {
           Xe: row.vehicleName,
           So_tien: row.amount,
           Trang_thai: row.status,
-          Cavet: row.cavetStatus ?? "",
+          Cavet: row.cavetStatus ?? '',
           Ngay_tao: row.createdAt,
         })),
       },

@@ -15,7 +15,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- TẦNG 1: BỘ CHỈ SỐ KPI -->
     <div v-if="loading" class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng lead mới"
@@ -81,7 +80,6 @@
       />
     </div>
 
-    <!-- TẦNG 2: CẶP BIỂU ĐỒ TRUNG TÂM -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Phễu chuyển đổi theo kênh</template>
@@ -93,13 +91,11 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 3: BIỂU ĐỒ PHÂN BỔ ĐIỂM LEAD (FULL-WIDTH) -->
     <ElCard class="reporting-card mt-4">
       <template #header>Phân bổ điểm Lead (Chất lượng khách hàng)</template>
       <div ref="histogramChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 4: BẢNG DANH SÁCH LEAD ƯU TIÊN -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="flex justify-between items-center">
@@ -109,17 +105,13 @@
               v-model="searchQuery"
               placeholder="Tìm tên khách hàng..."
               class="w-64"
+              @input="leadCurrentPage = 1"
             >
               <template #prefix>
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
-            <ElButton
-              type="primary"
-              plain
-              :disabled="loading"
-              @click="exportCustomerExcel"
-            >
+            <ElButton type="primary" :disabled="loading" @click="exportCustomerExcel">
               <div class="i-ri-file-excel-2-line mr-1"></div>
               Xuất Excel
             </ElButton>
@@ -128,7 +120,7 @@
       </template>
       <ElTable
         v-loading="loading"
-        :data="filteredLeads"
+        :data="paginatedLeads"
         class="reporting-table resp-table"
         empty-text="Không tìm thấy khách hàng"
       >
@@ -140,11 +132,7 @@
         <ElTableColumn prop="phone" label="Số điện thoại" min-width="130" />
         <ElTableColumn prop="source" label="Nguồn" min-width="120">
           <template #default="{ row }">
-            <ElTag
-              :type="getSourceType(row.source) as any"
-              effect="light"
-              round
-            >
+            <ElTag :type="getSourceType(row.source) as any" effect="light" round>
               {{ row.source }}
             </ElTag>
           </template>
@@ -153,11 +141,9 @@
         <ElTableColumn prop="score" label="Lead Score" min-width="200">
           <template #default="{ row }">
             <div class="flex items-center gap-3">
-              <span
-                class="w-8 font-semibold"
-                :class="getScoreTextColor(row.leadScore)"
-                >{{ row.leadScore }}</span
-              >
+              <span class="w-8 font-semibold" :class="getScoreTextColor(row.leadScore)">{{
+                row.leadScore
+              }}</span>
               <ElProgress
                 class="flex-1"
                 :percentage="row.leadScore"
@@ -168,27 +154,30 @@
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="lastContact"
-          label="Liên hệ gần nhất"
-          min-width="160"
-        />
-        <ElTableColumn
-          label="Thao tác"
-          width="100"
-          align="center"
-          fixed="right"
-        >
+        <ElTableColumn prop="lastContact" label="Liên hệ gần nhất" min-width="160">
           <template #default="{ row }">
-            <ElButton link type="primary" @click="handleViewDetail(row)">
-              Chi tiết
-            </ElButton>
+            {{ formatDate(row.lastContact) }}
+          </template>
+        </ElTableColumn>
+        <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
+          <template #default="{ row }">
+            <ElButton link type="primary" @click="handleViewDetail(row)"> Chi tiết </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
+
+      <div class="flex justify-end mt-4">
+        <ElPagination
+          v-model:current-page="leadCurrentPage"
+          v-model:page-size="leadPageSize"
+          :page-sizes="[10, 20, 50]"
+          :total="filteredLeads.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+        />
+      </div>
     </ElCard>
 
-    <!-- DIALOG CHI TIẾT LEAD -->
     <ElDialog
       v-model="detailVisible"
       title="Chi tiết khách hàng / Lead"
@@ -203,15 +192,11 @@
         </div>
         <div class="flex justify-between border-b pb-2">
           <span class="text-gray-500 font-semibold">Số điện thoại:</span>
-          <span>{{ selectedLead.phone || "Chưa cập nhật" }}</span>
+          <span>{{ selectedLead.phone || 'Chưa cập nhật' }}</span>
         </div>
         <div class="flex justify-between border-b pb-2">
           <span class="text-gray-500 font-semibold">Nguồn:</span>
-          <ElTag
-            :type="getSourceType(selectedLead.source) as any"
-            effect="light"
-            round
-          >
+          <ElTag :type="getSourceType(selectedLead.source) as any" effect="light" round>
             {{ selectedLead.source }}
           </ElTag>
         </div>
@@ -220,13 +205,8 @@
           <span>{{ selectedLead.status }}</span>
         </div>
         <div class="flex justify-between border-b pb-2">
-          <span class="text-gray-500 font-semibold"
-            >Điểm đánh giá (Score):</span
-          >
-          <span
-            :class="getScoreTextColor(selectedLead.leadScore)"
-            class="font-bold"
-          >
+          <span class="text-gray-500 font-semibold">Điểm đánh giá (Score):</span>
+          <span :class="getScoreTextColor(selectedLead.leadScore)" class="font-bold">
             {{ selectedLead.leadScore }}
           </span>
         </div>
@@ -246,23 +226,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import * as echarts from "echarts";
-import { ElMessage } from "element-plus";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import { fetchCustomerAnalytics } from "@/api/operations";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import * as echarts from 'echarts';
+import { ElMessage } from 'element-plus';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import { fetchCustomerAnalytics } from '@/api/operations';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
 
 const funnelChartRef = ref<HTMLElement | null>(null);
 const sourceChartRef = ref<HTMLElement | null>(null);
 const histogramChartRef = ref<HTMLElement | null>(null);
-const searchQuery = ref("");
+const searchQuery = ref('');
 const loading = ref(false);
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const leadCurrentPage = ref(1);
+const leadPageSize = ref(10);
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref('');
+const periodEnd = ref('');
 
 const kpi = ref({ totalLeads: 0, newCustomers: 0, hotLeads: 0 });
 const leads = ref<
@@ -282,10 +264,8 @@ const selectedLead = ref<any>(null);
 
 const conversionRate = computed(() => {
   if (kpi.value.totalLeads === 0) return 0;
-  const converted = leads.value.filter(
-    (l) => l.status === "Đã chuyển đổi",
-  ).length;
-  return ((converted / kpi.value.totalLeads) * 100).toFixed(1);
+  const converted = leads.value.filter((l) => l.status === 'Đã chuyển đổi').length;
+  return ((converted / leads.value.length) * 100).toFixed(1);
 });
 
 const filteredLeads = computed(() => {
@@ -294,32 +274,47 @@ const filteredLeads = computed(() => {
   return leads.value.filter((l) => l.customerName.toLowerCase().includes(q));
 });
 
+const paginatedLeads = computed(() => {
+  const start = (leadCurrentPage.value - 1) * leadPageSize.value;
+  return filteredLeads.value.slice(start, start + leadPageSize.value);
+});
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return '—';
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return '—';
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 function getSourceType(source: string) {
   const map: Record<string, string> = {
-    Website: "danger",
-    Showroom: "success",
-    Facebook: "primary",
+    Website: 'danger',
+    Showroom: 'success',
+    Facebook: 'primary',
   };
-  return map[source] || "warning";
+  return map[source] || 'warning';
 }
 
 function getScoreColor(score: number) {
-  if (score > 80) return "#ef4444";
-  if (score > 60) return "#f97316";
-  if (score > 30) return "#3b82f6";
-  return "#9ca3af";
+  if (score > 80) return '#ef4444';
+  if (score > 60) return '#f97316';
+  if (score > 30) return '#3b82f6';
+  return '#9ca3af';
 }
 
 function getScoreTextColor(score: number) {
-  if (score > 80) return "text-red-500";
-  if (score > 60) return "text-orange-500";
-  if (score > 30) return "text-blue-500";
-  return "text-gray-500";
+  if (score > 80) return 'text-red-500';
+  if (score > 60) return 'text-orange-500';
+  if (score > 30) return 'text-blue-500';
+  return 'text-gray-500';
 }
 
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const chartTextColor = '#aeb0bd';
+const chartAxisLineColor = 'rgba(255, 255, 255, 0.16)';
+const chartGridLineColor = 'rgba(255, 255, 255, 0.1)';
 
 let funnelChart: echarts.ECharts | null = null;
 let sourceChart: echarts.ECharts | null = null;
@@ -334,26 +329,26 @@ function exportCustomerExcel() {
     fileName: `Bao_cao_khach_hang_${new Date().toISOString().slice(0, 10)}`,
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
-            "Tổng lead": kpi.value.totalLeads,
-            "Khách hàng mới": kpi.value.newCustomers,
-            "Lead nóng": kpi.value.hotLeads,
-            "Tỷ lệ chuyển đổi": `${conversionRate.value}%`,
+            'Tổng lead': kpi.value.totalLeads,
+            'Khách hàng mới': kpi.value.newCustomers,
+            'Lead nóng': kpi.value.hotLeads,
+            'Tỷ lệ chuyển đổi': `${conversionRate.value}%`,
           },
         ],
       },
       {
-        name: "Danh sách khách hàng",
+        name: 'Danh sách khách hàng',
         rows: filteredLeads.value.map((item) => ({
-          "Mã lead": item.id,
-          "Khách hàng": item.customerName,
-          "Số điện thoại": item.phone,
+          'Mã lead': item.id,
+          'Khách hàng': item.customerName,
+          'Số điện thoại': item.phone,
           Nguồn: item.source,
-          "Điểm lead": item.leadScore,
-          "Trạng thái": item.status,
-          "Liên hệ gần nhất": item.lastContact,
+          'Điểm lead': item.leadScore,
+          'Trạng thái': item.status,
+          'Liên hệ gần nhất': formatDate(item.lastContact),
         })),
       },
     ],
@@ -361,140 +356,130 @@ function exportCustomerExcel() {
 }
 
 function renderCharts() {
-  // 1. Funnel: Phân bổ điểm Lead (bar chart theo score range)
   if (funnelChartRef.value) {
     if (!funnelChart) funnelChart = echarts.init(funnelChartRef.value);
     const scoreBuckets = [
-      { label: "0-30", min: 0, max: 30 },
-      { label: "31-60", min: 31, max: 60 },
-      { label: "61-80", min: 61, max: 80 },
-      { label: "81-100", min: 81, max: 100 },
+      { label: '0-30', min: 0, max: 30 },
+      { label: '31-60', min: 31, max: 60 },
+      { label: '61-80', min: 61, max: 80 },
+      { label: '81-100', min: 81, max: 100 },
     ];
     const bucketCounts = scoreBuckets.map(
-      (b) =>
-        leads.value.filter((l) => l.leadScore >= b.min && l.leadScore <= b.max)
-          .length,
+      (b) => leads.value.filter((l) => l.leadScore >= b.min && l.leadScore <= b.max).length
     );
-    const bucketColors = ["#9ca3af", "#3b82f6", "#f97316", "#ef4444"];
+    const bucketColors = ['#9ca3af', '#3b82f6', '#f97316', '#ef4444'];
     funnelChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "5%",
-        top: "10%",
+        left: '3%',
+        right: '4%',
+        bottom: '5%',
+        top: '10%',
         containLabel: true,
       },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: scoreBuckets.map((b) => b.label),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
-        type: "value",
-        name: "Số lượng Lead",
+        type: 'value',
+        name: 'Số lượng Lead',
         nameTextStyle: { color: chartTextColor },
         axisLabel: { color: chartTextColor },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: bucketCounts.map((v, i) => ({
             value: v,
             itemStyle: { color: bucketColors[i], borderRadius: [4, 4, 0, 0] },
           })),
-          barWidth: "45%",
+          barWidth: '45%',
         },
       ],
     });
   }
 
-  // 2. Donut Chart: Nguồn khách hàng
   if (sourceChartRef.value) {
     if (!sourceChart) sourceChart = echarts.init(sourceChartRef.value);
     const sourceMap = new Map<string, number>();
     leads.value.forEach((l) => {
-      const s = l.source || "Khác";
+      const s = l.source || 'Khác';
       sourceMap.set(s, (sourceMap.get(s) || 0) + 1);
     });
     const pieData = Array.from(sourceMap.entries()).map(([name, value]) => ({
       name,
       value,
     }));
-    const pieColors = ["#ef4444", "#22c55e", "#3b82f6", "#eab308", "#a855f7"];
+    const pieColors = ['#ef4444', '#22c55e', '#3b82f6', '#eab308', '#a855f7'];
     sourceChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
       legend: { top: 0, textStyle: { color: chartTextColor } },
       series: [
         {
-          type: "pie",
-          radius: ["40%", "65%"],
-          center: ["50%", "55%"],
+          type: 'pie',
+          radius: ['40%', '65%'],
+          center: ['50%', '55%'],
           data: pieData,
-          label: { formatter: "{b}: {c}", color: chartTextColor },
+          label: { formatter: '{b}: {c}', color: chartTextColor },
         },
       ],
       color: pieColors,
     });
   }
 
-  // 3. Histogram Chart: Phân bổ nguồn theo trạng thái (stacked bar)
   if (histogramChartRef.value) {
     if (!histogramChart) histogramChart = echarts.init(histogramChartRef.value);
-    const sources = Array.from(
-      new Set(leads.value.map((l) => l.source || "Khác")),
-    );
+    const sources = Array.from(new Set(leads.value.map((l) => l.source || 'Khác')));
     const statuses = Array.from(new Set(leads.value.map((l) => l.status)));
     const seriesData = sources.map((src) => {
       return {
         name: src,
-        type: "bar",
-        stack: "status",
+        type: 'bar',
+        stack: 'status',
         data: statuses.map(
-          (st) =>
-            leads.value.filter(
-              (l) => (l.source || "Khác") === src && l.status === st,
-            ).length,
+          (st) => leads.value.filter((l) => (l.source || 'Khác') === src && l.status === st).length
         ),
       };
     });
     histogramChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
       legend: {
         data: statuses,
         textStyle: { color: chartTextColor },
         top: 0,
       },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "5%",
-        top: "15%",
+        left: '3%',
+        right: '4%',
+        bottom: '5%',
+        top: '15%',
         containLabel: true,
       },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: statuses,
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
-        type: "value",
-        name: "Số lượng Lead",
+        type: 'value',
+        name: 'Số lượng Lead',
         nameTextStyle: { color: chartTextColor },
         axisLabel: { color: chartTextColor },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       series: seriesData,
-      color: ["#3b82f6", "#a855f7", "#f97316", "#ef4444", "#22c55e", "#eab308"],
+      color: ['#3b82f6', '#a855f7', '#f97316', '#ef4444', '#22c55e', '#eab308'],
     });
   }
 }
@@ -524,7 +509,7 @@ async function loadData() {
       lastContact: l.lastContact,
     }));
   } catch (e: any) {
-    ElMessage.error(e?.message || "Không thể tải dữ liệu khách hàng");
+    ElMessage.error(e?.message || 'Không thể tải dữ liệu khách hàng');
   } finally {
     loading.value = false;
   }
@@ -538,11 +523,11 @@ function handleViewDetail(row: any) {
 onMounted(async () => {
   await loadData();
   setTimeout(renderCharts, 100);
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   funnelChart?.dispose();
   sourceChart?.dispose();
   histogramChart?.dispose();
@@ -550,5 +535,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* kept minimal to match project style */
 </style>

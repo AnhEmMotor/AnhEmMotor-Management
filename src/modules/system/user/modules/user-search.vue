@@ -26,9 +26,9 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", value: UserSearchFormParams): void;
-  (e: "search", params: UserSearchFormParams): void;
-  (e: "reset"): void;
+  (e: 'update:modelValue', value: UserSearchFormParams): void;
+  (e: 'search', params: UserSearchFormParams): void;
+  (e: 'reset'): void;
 }
 
 const props = defineProps<Props>();
@@ -37,67 +37,67 @@ const emit = defineEmits<Emits>();
 const searchBarRef = ref();
 const formData = computed({
   get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", val),
+  set: (val) => emit('update:modelValue', val),
 });
 
 const rules = {};
 
 const statusOptions = ref([
-  { label: "Hoạt động", value: "Active" },
-  { label: "Bị khóa", value: "Banned" },
+  { label: 'Hoạt động', value: 'Active' },
+  { label: 'Bị khóa', value: 'Banned' },
 ]);
 
 const formItems = computed(() => [
   {
-    label: "",
-    key: "userName",
-    type: "input",
-    placeholder: "Nhập tên đăng nhập...",
+    label: '',
+    key: 'userName',
+    type: 'input',
+    placeholder: 'Nhập tên đăng nhập...',
     clearable: true,
   },
   {
-    label: "",
-    key: "fullName",
-    type: "input",
-    placeholder: "Nhập tên đầy đủ...",
+    label: '',
+    key: 'fullName',
+    type: 'input',
+    placeholder: 'Nhập tên đầy đủ...',
     clearable: true,
   },
   {
-    label: "",
-    key: "userPhone",
-    type: "input",
+    label: '',
+    key: 'userPhone',
+    type: 'input',
     props: {
-      placeholder: "Nhập số điện thoại...",
-      maxlength: "11",
+      placeholder: 'Nhập số điện thoại...',
+      maxlength: '11',
       clearable: true,
     },
   },
   {
-    label: "",
-    key: "userEmail",
-    type: "input",
-    props: { placeholder: "Nhập địa chỉ email...", clearable: true },
+    label: '',
+    key: 'userEmail',
+    type: 'input',
+    props: { placeholder: 'Nhập địa chỉ email...', clearable: true },
   },
   {
-    label: "",
-    key: "status",
-    type: "select",
+    label: '',
+    key: 'status',
+    type: 'select',
     props: {
-      placeholder: "Chọn trạng thái...",
+      placeholder: 'Chọn trạng thái...',
       options: statusOptions.value,
       clearable: true,
     },
   },
   {
-    label: "",
-    key: "userGender",
-    type: "select",
+    label: '',
+    key: 'userGender',
+    type: 'select',
     props: {
-      placeholder: "Chọn giới tính...",
+      placeholder: 'Chọn giới tính...',
       options: [
-        { label: "Nam", value: "Male" },
-        { label: "Nữ", value: "Female" },
-        { label: "Khác", value: "Other" },
+        { label: 'Nam', value: 'Male' },
+        { label: 'Nữ', value: 'Female' },
+        { label: 'Khác', value: 'Other' },
       ],
       clearable: true,
     },
@@ -105,11 +105,11 @@ const formItems = computed(() => [
 ]);
 
 function handleReset() {
-  emit("reset");
+  emit('reset');
 }
 
 async function handleSearch(params: UserSearchFormParams) {
   await searchBarRef.value.validate();
-  emit("search", params);
+  emit('search', params);
 }
 </script>

@@ -1,5 +1,5 @@
-import { ref, computed, watch, onMounted } from "vue";
-import { useElementSize } from "@vueuse/core";
+import { ref, computed, watch, onMounted } from 'vue';
+import { useElementSize } from '@vueuse/core';
 
 interface LayoutHeightOptions {
   extraSpacing?: number;
@@ -10,11 +10,7 @@ interface LayoutHeightOptions {
 }
 
 export function useLayoutHeight(options: LayoutHeightOptions = {}) {
-  const {
-    extraSpacing = 15,
-    updateCssVar = true,
-    cssVarName = "--art-full-height",
-  } = options;
+  const { extraSpacing = 15, updateCssVar = true, cssVarName = '--art-full-height' } = options;
 
   const headerRef = ref<HTMLElement>();
   const contentHeaderRef = ref<HTMLElement>();
@@ -23,8 +19,7 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
   const { height: contentHeaderHeight } = useElementSize(contentHeaderRef);
 
   const containerMinHeight = computed(() => {
-    const totalHeight =
-      headerHeight.value + contentHeaderHeight.value + extraSpacing;
+    const totalHeight = headerHeight.value + contentHeaderHeight.value + extraSpacing;
     return `calc(100vh - ${totalHeight}px)`;
   });
 
@@ -36,7 +31,7 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
           document.documentElement.style.setProperty(cssVarName, newHeight);
         });
       },
-      { immediate: true },
+      { immediate: true }
     );
   }
 
@@ -54,14 +49,10 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
 }
 
 export function useAutoLayoutHeight(
-  headerIds: string[] = ["app-header", "app-content-header"],
-  options: LayoutHeightOptions = {},
+  headerIds: string[] = ['app-header', 'app-content-header'],
+  options: LayoutHeightOptions = {}
 ) {
-  const {
-    extraSpacing = 15,
-    updateCssVar = true,
-    cssVarName = "--art-full-height",
-  } = options;
+  const { extraSpacing = 15, updateCssVar = true, cssVarName = '--art-full-height' } = options;
 
   const headerRef = ref<HTMLElement>();
   const contentHeaderRef = ref<HTMLElement>();
@@ -70,8 +61,7 @@ export function useAutoLayoutHeight(
   const { height: contentHeaderHeight } = useElementSize(contentHeaderRef);
 
   const containerMinHeight = computed(() => {
-    const totalHeight =
-      headerHeight.value + contentHeaderHeight.value + extraSpacing;
+    const totalHeight = headerHeight.value + contentHeaderHeight.value + extraSpacing;
     return `calc(100vh - ${totalHeight}px)`;
   });
 
@@ -83,12 +73,12 @@ export function useAutoLayoutHeight(
           document.documentElement.style.setProperty(cssVarName, newHeight);
         });
       },
-      { immediate: true },
+      { immediate: true }
     );
   }
 
   onMounted(() => {
-    if (typeof document !== "undefined") {
+    if (typeof document !== 'undefined') {
       requestAnimationFrame(() => {
         const header = document.getElementById(headerIds[0]);
         const contentHeader = document.getElementById(headerIds[1]);

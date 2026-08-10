@@ -1,3 +1,3 @@
-import { createWarrantyTermUseCases } from "./warranty-category.usecases";
+import { createWarrantyTermUseCases } from './warranty-category.usecases';
 
 export { createWarrantyTermUseCases };

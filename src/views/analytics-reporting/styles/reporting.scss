@@ -1,5 +1,4 @@
 .reporting-page {
-  // Light mode (default) - sử dụng Element Plus theme variables
   --report-bg: var(--el-bg-color-overlay);
   --report-panel: var(--el-bg-color-overlay);
   --report-panel-soft: var(--el-fill-color-light);
@@ -14,7 +13,6 @@
   --report-input-bg: var(--el-fill-color-blank);
   --report-radio-bg: var(--el-fill-color-blank);
 
-  // Element Plus color overrides for consistent red theme
   --el-color-primary: var(--report-red);
   --el-color-primary-light-3: #f26f6f;
   --el-color-primary-light-5: #f58f8f;
@@ -211,9 +209,7 @@
   border-left-color: var(--report-border-strong);
 }
 
-.reporting-page
-  .el-radio-button__original-radio:checked
-  + .el-radio-button__inner {
+.reporting-page .el-radio-button__original-radio:checked + .el-radio-button__inner {
   color: #fff;
   background: var(--report-red);
   border-color: var(--report-red);
@@ -271,11 +267,7 @@
   border-bottom-color: var(--report-border);
 }
 
-.reporting-page
-  .el-table--enable-row-hover
-  .el-table__body
-  tr:hover
-  > td.el-table__cell {
+.reporting-page .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
   background: var(--report-panel-soft);
 }
 
@@ -462,10 +454,7 @@
   background: #111214;
 }
 
-.reporting-date-popper
-  .el-date-table
-  td.current:not(.disabled)
-  .el-date-table-cell__text,
+.reporting-date-popper .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
 .reporting-date-popper .el-month-table td.current:not(.disabled) .cell,
 .reporting-date-popper .el-year-table td.current:not(.disabled) .cell,
 .reporting-select-popper .el-select-dropdown__item.is-selected {
@@ -625,10 +614,7 @@ html.dark {
     background: #111214;
   }
 
-  .reporting-date-popper
-    .el-date-table
-    td.current:not(.disabled)
-    .el-date-table-cell__text,
+  .reporting-date-popper .el-date-table td.current:not(.disabled) .el-date-table-cell__text,
   .reporting-date-popper .el-month-table td.current:not(.disabled) .cell,
   .reporting-date-popper .el-year-table td.current:not(.disabled) .cell,
   .reporting-select-popper .el-select-dropdown__item.is-selected {

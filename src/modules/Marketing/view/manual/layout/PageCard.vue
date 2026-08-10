@@ -14,25 +14,13 @@
     <div class="steps-box">
       <div v-for="(step, i) in page.steps" :key="i" class="step-row">
         <span class="step-num">{{ i + 1 }}</span>
-        <div
-          style="
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-          "
-        >
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start">
           <span class="step-text" v-html="processStepHtml(step)"></span>
-          <div
-            v-if="isAdmin && getStepFileName(step)"
-            style="margin-top: 10px; margin-left: 12px"
-          >
+          <div v-if="isAdmin && getStepFileName(step)" style="margin-top: 10px; margin-left: 12px">
             <el-upload
               action="#"
               :show-file-list="false"
-              :http-request="
-                (options) => handleUpload(options, getStepFileName(step))
-              "
+              :http-request="(options) => handleUpload(options, getStepFileName(step))"
               accept="image/*"
             >
               <el-button size="small" type="primary" plain :icon="Upload">
@@ -43,13 +31,8 @@
         </div>
       </div>
     </div>
-    <el-alert
-      v-if="page.tips && page.tips.length"
-      type="info"
-      :closable="false"
-      class="tips-box"
-    >
-      <template #title><strong>Meo huu ich:</strong></template>
+    <el-alert v-if="page.tips && page.tips.length" type="info" :closable="false" class="tips-box">
+      <template #title><strong>Mẹo hữu ích:</strong></template>
       <ul class="tips-list">
         <li v-for="(t, i) in page.tips" :key="i">{{ t }}</li>
       </ul>
@@ -58,12 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Location, Upload } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import type { GuidePage } from "../data/guideData";
-import { FileApi } from "@/api/operations";
-import { useUserStore } from "@/application/store/user";
+import { ref, computed } from 'vue';
+import { Location, Upload } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import type { GuidePage } from '../data/guideData';
+import { FileApi } from '@/api/operations';
+import { useUserStore } from '@/application/store/user';
 
 defineProps<{
   page: GuidePage;
@@ -78,13 +61,13 @@ const isAdmin = computed(() => {
 
 const getStepFileName = (step: string) => {
   const match = step.match(/\/manuals\/([^./]+)\.webp/);
-  return match ? match[1] : "";
+  return match ? match[1] : '';
 };
 
 const processStepHtml = (step: string) => {
-  if (!step.includes("<img")) return step;
+  if (!step.includes('<img')) return step;
   return step.replace(/src='([^']+)'/g, (match, src) => {
-    const separator = src.includes("?") ? "&" : "?";
+    const separator = src.includes('?') ? '&' : '?';
     return `src='${src}${separator}cb=${cacheBuster.value}'`;
   });
 };
@@ -93,9 +76,9 @@ const handleUpload = async (options: any, targetFileName: string) => {
   try {
     await FileApi.uploadManualImage(options.file, targetFileName);
     cacheBuster.value = Date.now();
-    ElMessage.success("Cập nhật ảnh minh họa thành công!");
+    ElMessage.success('Cập nhật ảnh minh họa thành công!');
   } catch (err: any) {
-    ElMessage.error(err.message || "Tải ảnh lên thất bại");
+    ElMessage.error(err.message || 'Tải ảnh lên thất bại');
   }
 };
 </script>
@@ -112,7 +95,7 @@ const handleUpload = async (options: any, targetFileName: string) => {
   overflow: hidden;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -176,7 +159,7 @@ const handleUpload = async (options: any, targetFileName: string) => {
   }
 
   code {
-    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 12px;
     color: var(--el-color-primary);
     font-weight: 600;
@@ -213,11 +196,7 @@ const handleUpload = async (options: any, targetFileName: string) => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary),
-    var(--el-color-primary-light-3)
-  );
+  background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
   color: white;
   display: flex;
   align-items: center;

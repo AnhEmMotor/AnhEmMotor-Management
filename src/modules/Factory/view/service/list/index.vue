@@ -33,11 +33,7 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleAdd">
             <ElIcon><Plus /></ElIcon> Thêm dịch vụ
@@ -76,7 +72,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Create/Edit Dialog -->
     <ElDialog
       v-model="dialogVisible"
       :title="dialogTitle"
@@ -94,10 +89,7 @@
             >
               Tên dịch vụ <span class="text-red-500">*</span>
             </label>
-            <ElInput
-              v-model="formData.name"
-              placeholder="Nhập tên dịch vụ..."
-            />
+            <ElInput v-model="formData.name" placeholder="Nhập tên dịch vụ..." />
           </div>
 
           <div>
@@ -112,12 +104,7 @@
               class="w-full"
               :loading="loadingCategories"
             >
-              <ElOption
-                v-for="cat in categories"
-                :key="cat.id"
-                :label="cat.name"
-                :value="cat.id"
-              />
+              <ElOption v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
             </ElSelect>
           </div>
         </div>
@@ -175,12 +162,7 @@
       <template #footer>
         <div class="flex justify-end gap-3 mt-2">
           <ElButton @click="dialogVisible = false">Đóng</ElButton>
-          <ElButton
-            type="primary"
-            :loading="submitting"
-            @click="submitForm"
-            class="px-8"
-          >
+          <ElButton type="primary" :loading="submitting" @click="submitForm" class="px-8">
             Lưu dịch vụ
           </ElButton>
         </div>
@@ -190,14 +172,14 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { computed } from "vue";
-import { Plus } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { useServiceTable } from "@/modules/Factory/logic/service/list/hooks/useServiceTable";
-import { ServiceApi } from "@/api/service";
+import { Permissions } from '@/domain/constants/permissions';
+import { computed } from 'vue';
+import { Plus } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { useServiceTable } from '@/modules/Factory/logic/service/list/hooks/useServiceTable';
+import { ServiceApi } from '@/api/service';
 
-defineOptions({ name: "ServiceList" });
+defineOptions({ name: 'ServiceList' });
 
 const {
   categories,
@@ -224,28 +206,28 @@ const {
 
 const searchItems = [
   {
-    label: "Tên dịch vụ",
-    key: "name",
-    prop: "name",
-    type: "text",
-    placeholder: "Nhập tên dịch vụ...",
+    label: 'Tên dịch vụ',
+    key: 'name',
+    prop: 'name',
+    type: 'text',
+    placeholder: 'Nhập tên dịch vụ...',
   },
   {
-    label: "Danh mục",
-    key: "categoryId",
-    prop: "categoryId",
-    type: "select",
+    label: 'Danh mục',
+    key: 'categoryId',
+    prop: 'categoryId',
+    type: 'select',
     options: categories.value.map((c) => ({ label: c.name, value: c.id })),
   },
   {
-    label: "Trạng thái",
-    key: "isActive",
-    prop: "isActive",
-    type: "select",
+    label: 'Trạng thái',
+    key: 'isActive',
+    prop: 'isActive',
+    type: 'select',
     options: [
-      { label: "Tất cả", value: "" },
-      { label: "Kích hoạt", value: true },
-      { label: "Vô hiệu hóa", value: false },
+      { label: 'Tất cả', value: '' },
+      { label: 'Kích hoạt', value: true },
+      { label: 'Vô hiệu hóa', value: false },
     ],
   },
 ];
@@ -261,14 +243,13 @@ const inactiveCount = computed(() => {
 const toggleActive = async (row: any) => {
   try {
     await ServiceApi.update(row.id, { isActive: row.isActive });
-    ElMessage.success("Cập nhật trạng thái thành công");
+    ElMessage.success('Cập nhật trạng thái thành công');
   } catch (err: any) {
-    row.isActive = !row.isActive; // revert
-    ElMessage.error(err.message || "Cập nhật trạng thái thất bại");
+    row.isActive = !row.isActive; 
+    ElMessage.error(err.message || 'Cập nhật trạng thái thất bại');
   }
 };
 </script>
 
 <style scoped>
-/* Optional: custom styles */
 </style>

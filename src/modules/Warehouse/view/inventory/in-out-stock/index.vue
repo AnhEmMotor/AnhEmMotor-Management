@@ -33,9 +33,7 @@
       <ArtTableHeader :showColumns="false" @refresh="refreshData">
         <template #left>
           <div class="flex items-center gap-2">
-            <h4 class="m-0 font-bold text-gray-800 text-lg">
-              Báo cáo Xuất - Nhập - Tồn
-            </h4>
+            <h4 class="m-0 font-bold text-gray-800 text-lg">Báo cáo Xuất - Nhập - Tồn</h4>
             <ElButton
               v-if="tableData && tableData.length > 0"
               type="primary"
@@ -48,12 +46,8 @@
           </div>
         </template>
         <template #right>
-          <ElButton type="primary" link @click="expandAll"
-            >Mở rộng tất cả</ElButton
-          >
-          <ElButton type="info" link @click="collapseAll"
-            >Thu gọn tất cả</ElButton
-          >
+          <ElButton type="primary" link @click="expandAll">Mở rộng tất cả</ElButton>
+          <ElButton type="info" link @click="collapseAll">Thu gọn tất cả</ElButton>
         </template>
       </ArtTableHeader>
 
@@ -78,10 +72,7 @@
           <span v-if="row.inStock === 0" class="text-red-500 font-bold">
             {{ row.inStock }}
           </span>
-          <span
-            v-else-if="row.inStock <= inventoryThreshold"
-            class="text-yellow-500 font-bold"
-          >
+          <span v-else-if="row.inStock <= inventoryThreshold" class="text-yellow-500 font-bold">
             {{ row.inStock }}
           </span>
           <span v-else>
@@ -108,17 +99,13 @@
       v-model="dialogVisible"
       :title="`Lịch sử giao dịch biến động kho: ${selectedRowName}`"
       width="850px"
-class="resp-dialog"
+      class="resp-dialog"
       append-to-body
       destroy-on-close
     >
       <div v-if="selectedRow" class="flex flex-col gap-4">
-        <div
-          class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600"
-        >
-          <div>
-            <strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe
-          </div>
+        <div class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600">
+          <div><strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe</div>
           <div><strong>Đã nhập:</strong> {{ selectedRow.imported }} xe</div>
           <div><strong>Đã xuất:</strong> {{ selectedRow.exported }} xe</div>
         </div>
@@ -131,56 +118,20 @@ class="resp-dialog"
               </span>
             </template>
             <ElTable :data="mockReceipts" border stripe style="width: 100%">
-              <ElTableColumn
-                prop="supplier"
-                label="Nhà cung cấp"
-                min-width="180"
-              />
-              <ElTableColumn
-                prop="quantity"
-                label="SL nhập"
-                width="100"
-                align="right"
-              />
-              <ElTableColumn
-                prop="price"
-                label="Đơn giá nhập"
-                width="150"
-                align="right"
-              >
-                <template #default="{ row }">
-                  {{ row.price.toLocaleString() }} VNĐ
-                </template>
+              <ElTableColumn prop="supplier" label="Nhà cung cấp" min-width="180" />
+              <ElTableColumn prop="quantity" label="SL nhập" width="100" align="right" />
+              <ElTableColumn prop="price" label="Đơn giá nhập" width="150" align="right">
+                <template #default="{ row }"> {{ row.price.toLocaleString() }} VNĐ </template>
               </ElTableColumn>
-              <ElTableColumn
-                prop="date"
-                label="Ngày nhập"
-                width="140"
-                align="center"
-              />
-              <ElTableColumn
-                prop="status"
-                label="Trạng thái"
-                width="120"
-                align="center"
-              >
+              <ElTableColumn prop="date" label="Ngày nhập" width="140" align="center" />
+              <ElTableColumn prop="status" label="Trạng thái" width="120" align="center">
                 <template #default>
                   <ElTag type="success" size="small">Đã nhập kho</ElTag>
                 </template>
               </ElTableColumn>
-              <ElTableColumn
-                label="Thao tác"
-                width="100"
-                align="center"
-                fixed="right"
-              >
+              <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
                 <template #default="{ row }">
-                  <ElButton
-                    link
-                    type="primary"
-                    size="small"
-                    @click="viewReceiptDetail(row.id)"
-                  >
+                  <ElButton link type="primary" size="small" @click="viewReceiptDetail(row.id)">
                     Xem phiếu
                   </ElButton>
                 </template>
@@ -195,39 +146,13 @@ class="resp-dialog"
               </span>
             </template>
             <ElTable :data="mockInvoices" border stripe style="width: 100%">
-              <ElTableColumn
-                prop="customer"
-                label="Khách hàng"
-                min-width="180"
-              />
-              <ElTableColumn
-                prop="quantity"
-                label="SL bán"
-                width="100"
-                align="right"
-              />
-              <ElTableColumn
-                prop="price"
-                label="Đơn giá bán"
-                width="150"
-                align="right"
-              >
-                <template #default="{ row }">
-                  {{ row.price.toLocaleString() }} VNĐ
-                </template>
+              <ElTableColumn prop="customer" label="Khách hàng" min-width="180" />
+              <ElTableColumn prop="quantity" label="SL bán" width="100" align="right" />
+              <ElTableColumn prop="price" label="Đơn giá bán" width="150" align="right">
+                <template #default="{ row }"> {{ row.price.toLocaleString() }} VNĐ </template>
               </ElTableColumn>
-              <ElTableColumn
-                prop="date"
-                label="Ngày xuất"
-                width="140"
-                align="center"
-              />
-              <ElTableColumn
-                prop="status"
-                label="Trạng thái"
-                width="120"
-                align="center"
-              >
+              <ElTableColumn prop="date" label="Ngày xuất" width="140" align="center" />
+              <ElTableColumn prop="status" label="Trạng thái" width="120" align="center">
                 <template #default>
                   <ElTag type="success" size="small">Đã bàn giao</ElTag>
                 </template>
@@ -263,15 +188,13 @@ class="resp-dialog"
             <strong>Ngày tạo:</strong>
             {{
               receiptDetailData.createdAt
-                ? new Date(receiptDetailData.createdAt).toLocaleDateString(
-                    "vi-VN",
-                  )
-                : "--"
+                ? new Date(receiptDetailData.createdAt).toLocaleDateString('vi-VN')
+                : '--'
             }}
           </div>
           <div>
             <strong>Ghi chú:</strong>
-            {{ receiptDetailData.notes || "Không có ghi chú" }}
+            {{ receiptDetailData.notes || 'Không có ghi chú' }}
           </div>
         </div>
 
@@ -291,12 +214,7 @@ class="resp-dialog"
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
                   <span class="font-medium text-gray-800">{{ row.name }}</span>
-                  <ElTag
-                    v-if="row.productVariantColorName"
-                    size="small"
-                    type="info"
-                    class="w-fit"
-                  >
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
                     Màu: {{ row.productVariantColorName }}
                   </ElTag>
                 </div>
@@ -304,25 +222,15 @@ class="resp-dialog"
             </ElTableColumn>
             <ElTableColumn label="Nhà cung cấp" width="160">
               <template #default="{ row }">
-                <span>{{ row.supplierName || "N/A" }}</span>
+                <span>{{ row.supplierName || 'N/A' }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Đơn giá" width="130" align="right">
               <template #default="{ row }">
-                <span
-                  >{{
-                    row.unitPrice ? row.unitPrice.toLocaleString() : "0"
-                  }}
-                  VNĐ</span
-                >
+                <span>{{ row.unitPrice ? row.unitPrice.toLocaleString() : '0' }} VNĐ</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn
-              prop="quantity"
-              label="Số lượng"
-              width="90"
-              align="center"
-            />
+            <ElTableColumn prop="quantity" label="Số lượng" width="90" align="center" />
           </ElTable>
         </div>
       </div>
@@ -336,14 +244,14 @@ class="resp-dialog"
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from "vue";
-import { Download, Memo } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { InventoryReportApi } from "@/api/inventory";
-import { InventoryReceiptApi } from "@/api/inventory";
-import { SettingApi } from "@/api/setting.api";
+import { ref, computed, nextTick, onMounted } from 'vue';
+import { Download, Memo } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { InventoryReportApi } from '@/api/inventory';
+import { InventoryReceiptApi } from '@/api/inventory';
+import { SettingApi } from '@/api/setting.api';
 
-defineOptions({ name: "InventoryInOutStock" });
+defineOptions({ name: 'InventoryInOutStock' });
 
 interface StockItem {
   id: string;
@@ -376,35 +284,31 @@ interface MockInvoice {
   date: string;
 }
 
-const searchQuery = ref("");
-const searchMonthYear = ref("");
+const searchQuery = ref('');
+const searchMonthYear = ref('');
 const tableRef = ref();
 const exporting = ref(false);
 const loadingData = ref(false);
 const inventoryThreshold = ref(5);
 
-// Pagination state
 const paginationState = ref({
   current: 1,
   size: 10,
   total: 0,
 });
 
-// Dialog & Detail viewing state
 const dialogVisible = ref(false);
-const activeTab = ref("receipts");
+const activeTab = ref('receipts');
 const selectedRow = ref<StockItem | null>(null);
-const selectedRowName = ref("");
+const selectedRowName = ref('');
 const mockReceipts = ref<MockReceipt[]>([]);
 const mockInvoices = ref<MockInvoice[]>([]);
 
-// Receipt full detail dialog state
 const receiptDetailVisible = ref(false);
 const receiptDetailData = ref<any>(null);
 
 const tableData = ref<StockItem[]>([]);
 
-// Fetch full receipt details
 const viewReceiptDetail = async (id?: number) => {
   if (!id) return;
   try {
@@ -415,11 +319,10 @@ const viewReceiptDetail = async (id?: number) => {
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải chi tiết phiếu nhập!");
+    ElMessage.error('Không thể tải chi tiết phiếu nhập!');
   }
 };
 
-// API mapper function
 const mapToStockItems = (apiItems: any[]): StockItem[] => {
   if (!apiItems) return [];
   return apiItems.map((prod: any) => {
@@ -468,14 +371,13 @@ const mapToStockItems = (apiItems: any[]): StockItem[] => {
   });
 };
 
-// Fetch data from API
 const fetchData = async () => {
   loadingData.value = true;
   try {
     let month: number | undefined = undefined;
     let year: number | undefined = undefined;
     if (searchMonthYear.value) {
-      const parts = searchMonthYear.value.split("-");
+      const parts = searchMonthYear.value.split('-');
       if (parts.length === 2) {
         year = parseInt(parts[0], 10);
         month = parseInt(parts[1], 10);
@@ -495,7 +397,7 @@ const fetchData = async () => {
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải báo cáo xuất nhập tồn!");
+    ElMessage.error('Không thể tải báo cáo xuất nhập tồn!');
   } finally {
     loadingData.value = false;
   }
@@ -509,12 +411,11 @@ onMounted(async () => {
       if (Number.isFinite(parsed)) inventoryThreshold.value = parsed;
     }
   } catch (err) {
-    console.error("Lỗi khi tải cài đặt tồn kho", err);
+    console.error('Lỗi khi tải cài đặt tồn kho', err);
   }
   fetchData();
 });
 
-// Compute overall stats for the cards based on current page table data
 const totalStats = computed(() => {
   return tableData.value.reduce(
     (acc, p) => {
@@ -523,75 +424,71 @@ const totalStats = computed(() => {
       acc.inStock += p.inStock;
       return acc;
     },
-    { imported: 0, exported: 0, inStock: 0 },
+    { imported: 0, exported: 0, inStock: 0 }
   );
 });
 
-// Table columns definition
 const columns = [
   {
-    label: "Tên Sản phẩm / Biến thể / Màu sắc",
-    prop: "name",
+    label: 'Tên Sản phẩm / Biến thể / Màu sắc',
+    prop: 'name',
     minWidth: 320,
     useSlot: true,
   },
-  { label: "Tồn kho đầu kỳ", prop: "beginning", width: 160, align: "right" },
-  { label: "Số lượng đã nhập", prop: "imported", width: 160, align: "right" },
-  { label: "Số lượng đã xuất", prop: "exported", width: 160, align: "right" },
+  { label: 'Tồn kho đầu kỳ', prop: 'beginning', width: 160, align: 'right' },
+  { label: 'Số lượng đã nhập', prop: 'imported', width: 160, align: 'right' },
+  { label: 'Số lượng đã xuất', prop: 'exported', width: 160, align: 'right' },
   {
-    label: "Số lượng tồn kho",
-    prop: "inStock",
+    label: 'Số lượng tồn kho',
+    prop: 'inStock',
     width: 160,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Thao tác",
-    prop: "operation",
+    label: 'Thao tác',
+    prop: 'operation',
     width: 150,
-    align: "center",
+    align: 'center',
     useSlot: true,
   },
 ];
 
 const searchItems = computed(() => [
   {
-    key: "name",
-    label: "Tên sản phẩm",
-    type: "input",
-    props: { placeholder: "Nhập tên xe, phiên bản hoặc màu sắc..." },
+    key: 'name',
+    label: 'Tên sản phẩm',
+    type: 'input',
+    props: { placeholder: 'Nhập tên xe, phiên bản hoặc màu sắc...' },
   },
   {
-    key: "monthYear",
-    label: "Tháng",
-    type: "date",
+    key: 'monthYear',
+    label: 'Tháng',
+    type: 'date',
     props: {
-      type: "month",
-      format: "MM/YYYY",
-      valueFormat: "YYYY-MM",
-      placeholder: "Chọn tháng (Mặc định tháng hiện tại)",
+      type: 'month',
+      format: 'MM/YYYY',
+      valueFormat: 'YYYY-MM',
+      placeholder: 'Chọn tháng (Mặc định tháng hiện tại)',
       clearable: true,
     },
   },
 ]);
 
 const isLeafNode = (row: StockItem): boolean => {
-  return (
-    row.level === 2 ||
-    (row.level === 1 && (!row.children || row.children.length === 0))
-  );
+  return row.level === 2 || (row.level === 1 && (!row.children || row.children.length === 0));
 };
 
 const handleSearch = (form: Record<string, any>) => {
-  searchQuery.value = form.name || "";
-  searchMonthYear.value = form.monthYear || "";
+  searchQuery.value = form.name || '';
+  searchMonthYear.value = form.monthYear || '';
   paginationState.value.current = 1;
   fetchData();
 };
 
 const handleReset = () => {
-  searchQuery.value = "";
-  searchMonthYear.value = "";
+  searchQuery.value = '';
+  searchMonthYear.value = '';
   paginationState.value.current = 1;
   fetchData();
 };
@@ -611,16 +508,14 @@ const handleCurrentChange = (val: number) => {
   fetchData();
 };
 
-// Filter tree recursively (just return tableData since filtered at backend)
 const filteredTableData = computed(() => {
   return tableData.value;
 });
 
-// Table row styling helpers
 const getNameClass = (row: StockItem) => {
-  if (row.level === 0) return "text-gray-900 font-bold text-sm md:text-base";
-  if (row.level === 1) return "text-gray-700 font-medium text-sm";
-  return "text-gray-500 text-sm italic";
+  if (row.level === 0) return 'text-gray-900 font-bold text-sm md:text-base';
+  if (row.level === 1) return 'text-gray-700 font-medium text-sm';
+  return 'text-gray-500 text-sm italic';
 };
 
 const handleExport = async () => {
@@ -629,7 +524,7 @@ const handleExport = async () => {
     let month: number | undefined = undefined;
     let year: number | undefined = undefined;
     if (searchMonthYear.value) {
-      const parts = searchMonthYear.value.split("-");
+      const parts = searchMonthYear.value.split('-');
       if (parts.length === 2) {
         year = parseInt(parts[0], 10);
         month = parseInt(parts[1], 10);
@@ -642,17 +537,17 @@ const handleExport = async () => {
       year,
     });
     const url = window.URL.createObjectURL(new Blob([resBlob]));
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "Bao_cao_ton_kho.xlsx");
+    link.setAttribute('download', 'Bao_cao_ton_kho.xlsx');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-    ElMessage.success("Đã xuất báo cáo Xuất - Nhập - Tồn thành công!");
+    ElMessage.success('Đã xuất báo cáo Xuất - Nhập - Tồn thành công!');
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể xuất báo cáo!");
+    ElMessage.error('Không thể xuất báo cáo!');
   } finally {
     exporting.value = false;
   }
@@ -662,42 +557,35 @@ const handleViewHistory = async (row: StockItem) => {
   if (row.variantId === undefined) return;
   selectedRow.value = row;
   selectedRowName.value = row.name;
-  activeTab.value = "receipts";
+  activeTab.value = 'receipts';
   mockReceipts.value = [];
   mockInvoices.value = [];
 
   try {
-    const details = await InventoryReportApi.getDetail(
-      row.variantId,
-      row.colorId,
-    );
+    const details = await InventoryReportApi.getDetail(row.variantId, row.colorId);
     if (details) {
-      mockReceipts.value = (details.imports || []).map(
-        (imp: any, idx: number) => ({
-          id: imp.id,
-          code: imp.code || `PN-${idx + 1}`,
-          supplier: imp.partnerName || "Nhà cung cấp",
-          quantity: imp.qty || 0,
-          price: imp.price || 0,
-          date: imp.date ? new Date(imp.date).toLocaleDateString("vi-VN") : "-",
-        }),
-      );
+      mockReceipts.value = (details.imports || []).map((imp: any, idx: number) => ({
+        id: imp.id,
+        code: imp.code || `PN-${idx + 1}`,
+        supplier: imp.partnerName || 'Nhà cung cấp',
+        quantity: imp.qty || 0,
+        price: imp.price || 0,
+        date: imp.date ? new Date(imp.date).toLocaleDateString('vi-VN') : '-',
+      }));
 
-      mockInvoices.value = (details.exports || []).map(
-        (exp: any, idx: number) => ({
-          id: exp.id,
-          code: exp.code || `PX-${idx + 1}`,
-          customer: exp.partnerName || "Khách hàng",
-          quantity: exp.qty || 0,
-          price: exp.price || 0,
-          date: exp.date ? new Date(exp.date).toLocaleDateString("vi-VN") : "-",
-        }),
-      );
+      mockInvoices.value = (details.exports || []).map((exp: any, idx: number) => ({
+        id: exp.id,
+        code: exp.code || `PX-${idx + 1}`,
+        customer: exp.partnerName || 'Khách hàng',
+        quantity: exp.qty || 0,
+        price: exp.price || 0,
+        date: exp.date ? new Date(exp.date).toLocaleDateString('vi-VN') : '-',
+      }));
     }
     dialogVisible.value = true;
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải lịch sử giao dịch!");
+    ElMessage.error('Không thể tải lịch sử giao dịch!');
   }
 };
 

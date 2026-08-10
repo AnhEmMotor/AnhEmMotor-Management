@@ -1,19 +1,19 @@
 export type SearchComponentType =
-  | "input"
-  | "select"
-  | "radio"
-  | "checkbox"
-  | "date"
-  | "datetime"
-  | "daterange"
-  | "datetimerange"
-  | "month"
-  | "monthrange"
-  | "year"
-  | "yearrange"
-  | "week"
-  | "time"
-  | "timerange";
+  | 'input'
+  | 'select'
+  | 'radio'
+  | 'checkbox'
+  | 'date'
+  | 'datetime'
+  | 'daterange'
+  | 'datetimerange'
+  | 'month'
+  | 'monthrange'
+  | 'year'
+  | 'yearrange'
+  | 'week'
+  | 'time'
+  | 'timerange';
 
 export interface SearchChangeParams {
   prop: string;
@@ -21,7 +21,7 @@ export interface SearchChangeParams {
 }
 
 export interface ColumnOption<T = any> {
-  type?: "selection" | "expand" | "index" | "globalIndex";
+  type?: 'selection' | 'expand' | 'index' | 'globalIndex';
 
   prop?: string;
 
@@ -31,9 +31,9 @@ export interface ColumnOption<T = any> {
 
   minWidth?: string | number;
 
-  fixed?: boolean | "left" | "right";
+  fixed?: boolean | 'left' | 'right';
 
-  sortable?: boolean | "custom";
+  sortable?: boolean | 'custom';
 
   filters?: any[];
 

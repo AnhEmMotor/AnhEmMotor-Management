@@ -30,11 +30,7 @@
         <p
           v-else
           class="m-0 font-semibold text-black dark:text-white leading-tight"
-          :class="
-            typeof count === 'string' && count.length > 15
-              ? 'text-sm'
-              : 'text-xl'
-          "
+          :class="typeof count === 'string' && count.length > 15 ? 'text-sm' : 'text-xl'"
           :style="{ color: textColor }"
         >
           {{ count }}
@@ -55,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtStatsCard" });
+defineOptions({ name: 'ArtStatsCard' });
 
 interface StatsCardProps {
   boxStyle?: string;
@@ -83,6 +79,6 @@ withDefaults(defineProps<StatsCardProps>(), {
   iconSize: 30,
   iconBgRadius: 50,
   decimals: 0,
-  separator: ",",
+  separator: ',',
 });
 </script>

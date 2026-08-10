@@ -2,7 +2,6 @@
   <div
     class="resp-page voucher-save-page flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#020617] overflow-hidden"
   >
-    <!-- Header -->
     <div
       class="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 shadow-sm z-10"
     >
@@ -17,16 +16,12 @@
           <h2
             class="m-0 text-base font-bold text-gray-800 dark:text-slate-100 tracking-tight uppercase"
           >
-            {{ isEdit ? "CHỈNH SỬA VOUCHER" : "TẠO VOUCHER MỚI" }}
+            {{ isEdit ? 'CHỈNH SỬA VOUCHER' : 'TẠO VOUCHER MỚI' }}
           </h2>
           <span
             class="text-[9px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest leading-none"
           >
-            {{
-              isEdit
-                ? "Cập nhật thông tin khuyến mãi"
-                : "Thiết lập chương trình mới"
-            }}
+            {{ isEdit ? 'Cập nhật thông tin khuyến mãi' : 'Thiết lập chương trình mới' }}
           </span>
         </div>
       </div>
@@ -36,27 +31,18 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
       <div class="max-w-7xl mx-auto flex flex-col gap-6">
-        <!-- General Info -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
           <h3
             class="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-6 flex items-center gap-2"
           >
-            <ArtSvgIcon
-              icon="ri:information-line"
-              class="text-blue-500 text-lg"
-            />
+            <ArtSvgIcon icon="ri:information-line" class="text-blue-500 text-lg" />
             Thông tin chung
           </h3>
-          <ElForm
-            :model="form"
-            label-position="top"
-            class="grid grid-cols-2 gap-x-6 gap-y-2"
-          >
+          <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-2">
             <ElFormItem label="Mã Voucher" class="is-required">
               <ElInput
                 v-model="form.code"
@@ -66,10 +52,7 @@
               />
             </ElFormItem>
             <ElFormItem label="Tên chương trình" class="is-required">
-              <ElInput
-                v-model="form.name"
-                placeholder="VD: Khuyến mãi Tết..."
-              />
+              <ElInput v-model="form.name" placeholder="VD: Khuyến mãi Tết..." />
             </ElFormItem>
             <ElFormItem label="Phạm vi áp dụng" class="col-span-1">
               <ElRadioGroup v-model="form.applyFor" class="custom-radio-group">
@@ -85,10 +68,7 @@
                 <ElRadioButton value="WEBSITE">Website</ElRadioButton>
               </ElRadioGroup>
             </ElFormItem>
-            <ElFormItem
-              label="Thời gian áp dụng"
-              class="col-span-2 is-required"
-            >
+            <ElFormItem label="Thời gian áp dụng" class="col-span-2 is-required">
               <ElDatePicker
                 v-model="dateRange"
                 type="daterange"
@@ -103,24 +83,16 @@
           </ElForm>
         </div>
 
-        <!-- Value Config -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
           <h3
             class="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-6 flex items-center gap-2"
           >
-            <ArtSvgIcon
-              icon="ri:money-dollar-circle-line"
-              class="text-emerald-500 text-lg"
-            />
+            <ArtSvgIcon icon="ri:money-dollar-circle-line" class="text-emerald-500 text-lg" />
             Cấu hình giá trị
           </h3>
-          <ElForm
-            :model="form"
-            label-position="top"
-            class="grid grid-cols-2 gap-x-6 gap-y-2"
-          >
+          <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-2">
             <ElFormItem label="Loại giảm giá">
               <ElSelect v-model="form.discountType" class="w-full">
                 <ElOption label="Giảm theo %" value="PERCENT" />
@@ -152,24 +124,16 @@
           </ElForm>
         </div>
 
-        <!-- Usage Limits -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6"
         >
           <h3
             class="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-6 flex items-center gap-2"
           >
-            <ArtSvgIcon
-              icon="ri:shield-flash-line"
-              class="text-amber-500 text-lg"
-            />
+            <ArtSvgIcon icon="ri:shield-flash-line" class="text-amber-500 text-lg" />
             Giới hạn sử dụng
           </h3>
-          <ElForm
-            :model="form"
-            label-position="top"
-            class="grid grid-cols-2 gap-x-6 gap-y-2"
-          >
+          <ElForm :model="form" label-position="top" class="grid grid-cols-2 gap-x-6 gap-y-2">
             <ElFormItem label="Tổng số lượt sử dụng tối đa">
               <ElInputNumber
                 v-model="form.totalUsageLimit"
@@ -191,7 +155,6 @@
           </ElForm>
         </div>
 
-        <!-- Audience Config -->
         <div
           class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 mb-10"
         >
@@ -203,20 +166,15 @@
           </h3>
           <ElForm :model="form" label-position="top">
             <ElFormItem label="Loại Voucher">
-              <ElRadioGroup
-                v-model="form.type"
-                class="custom-radio-group w-full"
-              >
+              <ElRadioGroup v-model="form.type" class="custom-radio-group w-full">
                 <ElRadioButton value="PUBLIC" class="flex-1 text-center">
                   <div class="flex items-center justify-center gap-2">
-                    <ArtSvgIcon icon="ri:global-line" /> Công khai (Ai cũng dùng
-                    được)
+                    <ArtSvgIcon icon="ri:global-line" /> Công khai (Ai cũng dùng được)
                   </div>
                 </ElRadioButton>
                 <ElRadioButton value="PRIVATE" class="flex-1 text-center">
                   <div class="flex items-center justify-center gap-2">
-                    <ArtSvgIcon icon="ri:user-star-line" /> Tri ân đặc biệt
-                    (Dành cho KH cụ thể)
+                    <ArtSvgIcon icon="ri:user-star-line" /> Tri ân đặc biệt (Dành cho KH cụ thể)
                   </div>
                 </ElRadioButton>
               </ElRadioGroup>
@@ -227,8 +185,7 @@
               class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-slate-700 mt-4"
             >
               <label class="el-form-item__label block mb-2 font-bold text-xs"
-                >Chỉ định khách hàng ({{ form.assignedCustomers.length }} đã
-                chọn)</label
+                >Chỉ định khách hàng ({{ form.assignedCustomers.length }} đã chọn)</label
               >
               <ElSelect
                 v-model="form.assignedCustomers"
@@ -249,9 +206,7 @@
                 >
                   <div class="flex justify-between items-center w-full">
                     <span class="font-bold">{{ lead.fullName }}</span>
-                    <span class="text-gray-400 text-xs">{{
-                      lead.phoneNumber
-                    }}</span>
+                    <span class="text-gray-400 text-xs">{{ lead.phoneNumber }}</span>
                   </div>
                 </ElOption>
               </ElSelect>
@@ -259,16 +214,11 @@
           </ElForm>
         </div>
 
-        <!-- Bottom Actions -->
         <div
           class="flex justify-end gap-4 mb-10 border-t border-gray-100 dark:border-slate-800 pt-6"
         >
           <ElButton size="large" @click="goBack" class="w-32">Hủy bỏ</ElButton>
-          <ElButton
-            size="large"
-            type="primary"
-            @click="handleSave"
-            class="w-48 shadow-md"
+          <ElButton size="large" type="primary" @click="handleSave" class="w-48 shadow-md"
             >Lưu Voucher</ElButton
           >
         </div>
@@ -278,18 +228,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { ElMessage } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import {
-  createVoucher,
-  updateVoucher,
-  getVoucherById,
-} from "@/api/marketing/voucher.api";
-import { fetchGetLeadList } from "@/api/customer/lead.api";
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
+import { createVoucher, updateVoucher, getVoucherById } from '@/api/marketing/voucher.api';
+import { fetchGetLeadList } from '@/api/customer/lead.api';
 
-defineOptions({ name: "CustomerVoucherSave" });
+defineOptions({ name: 'CustomerVoucherSave' });
 
 const router = useRouter();
 const route = useRoute();
@@ -299,12 +245,12 @@ const voucherId = ref<number | null>(null);
 const dateRange = ref<[string, string] | null>(null);
 
 const form = ref<any>({
-  code: "",
-  name: "",
-  applyFor: "ALL",
-  channel: "ALL",
-  type: "PUBLIC",
-  discountType: "PERCENT",
+  code: '',
+  name: '',
+  applyFor: 'ALL',
+  channel: 'ALL',
+  type: 'PUBLIC',
+  discountType: 'PERCENT',
   discountValue: 0,
   maxDiscountAmount: undefined,
   totalUsageLimit: 0,
@@ -316,21 +262,19 @@ const leadOptions = ref<any[]>([]);
 const loadingLeads = ref(false);
 
 const goBack = () => {
-  router.push("/Marketing/customer/voucher");
+  router.push('/Marketing/customer/voucher');
 };
 
 const searchLeads = async (query: string) => {
   loadingLeads.value = true;
   try {
     const res = await fetchGetLeadList({
-      Filters: query ? `search=${query}` : "",
+      Filters: query ? `search=${query}` : '',
       PageSize: 20,
     });
-    leadOptions.value = Array.isArray(res)
-      ? res
-      : (res as any).items || (res as any).records || [];
+    leadOptions.value = Array.isArray(res) ? res : (res as any).items || (res as any).records || [];
   } catch (error) {
-    console.error("Failed to load leads", error);
+    console.error('Failed to load leads', error);
   } finally {
     loadingLeads.value = false;
   }
@@ -344,7 +288,7 @@ const handleSave = async () => {
     !dateRange.value[0] ||
     !dateRange.value[1]
   ) {
-    ElMessage.warning("Vui lòng nhập đầy đủ Mã, Tên và Thời hạn áp dụng!");
+    ElMessage.warning('Vui lòng nhập đầy đủ Mã, Tên và Thời hạn áp dụng!');
     return;
   }
 
@@ -352,37 +296,29 @@ const handleSave = async () => {
     ...form.value,
     validFrom: new Date(dateRange.value[0]).toISOString(),
     validTo: new Date(dateRange.value[1]).toISOString(),
-    // Convert ENUMS
-    applyFor:
-      form.value.applyFor === "ALL"
-        ? 0
-        : form.value.applyFor === "VEHICLE"
-          ? 1
-          : 2,
-    channel:
-      form.value.channel === "ALL" ? 0 : form.value.channel === "STORE" ? 1 : 2,
-    type: form.value.type === "PUBLIC" ? 0 : 1,
-    discountType: form.value.discountType === "PERCENT" ? 0 : 1,
-    assignedCustomerIds:
-      form.value.type === "PRIVATE" ? form.value.assignedCustomers : [],
+    applyFor: form.value.applyFor === 'ALL' ? 0 : form.value.applyFor === 'VEHICLE' ? 1 : 2,
+    channel: form.value.channel === 'ALL' ? 0 : form.value.channel === 'STORE' ? 1 : 2,
+    type: form.value.type === 'PUBLIC' ? 0 : 1,
+    discountType: form.value.discountType === 'PERCENT' ? 0 : 1,
+    assignedCustomerIds: form.value.type === 'PRIVATE' ? form.value.assignedCustomers : [],
   };
 
   try {
     if (isEdit.value && voucherId.value) {
       await updateVoucher(voucherId.value, payload);
-      ElMessage.success("Cập nhật voucher thành công!");
+      ElMessage.success('Cập nhật voucher thành công!');
     } else {
       await createVoucher(payload);
-      ElMessage.success("Tạo voucher mới thành công!");
+      ElMessage.success('Tạo voucher mới thành công!');
     }
     goBack();
   } catch (error) {
-    ElMessage.error("Có lỗi xảy ra, vui lòng thử lại!");
+    ElMessage.error('Có lỗi xảy ra, vui lòng thử lại!');
   }
 };
 
 onMounted(async () => {
-  searchLeads("");
+  searchLeads('');
   const id = route.query.id;
   if (id) {
     isEdit.value = true;
@@ -393,20 +329,10 @@ onMounted(async () => {
       if (data) {
         form.value = {
           ...data,
-          applyFor:
-            data.applyFor === 0
-              ? "ALL"
-              : data.applyFor === 1
-                ? "VEHICLE"
-                : "PART",
-          channel:
-            data.channel === 0
-              ? "ALL"
-              : data.channel === 1
-                ? "STORE"
-                : "WEBSITE",
-          type: data.type === 0 ? "PUBLIC" : "PRIVATE",
-          discountType: data.discountType === 0 ? "PERCENT" : "AMOUNT",
+          applyFor: data.applyFor === 0 ? 'ALL' : data.applyFor === 1 ? 'VEHICLE' : 'PART',
+          channel: data.channel === 0 ? 'ALL' : data.channel === 1 ? 'STORE' : 'WEBSITE',
+          type: data.type === 0 ? 'PUBLIC' : 'PRIVATE',
+          discountType: data.discountType === 0 ? 'PERCENT' : 'AMOUNT',
           assignedCustomers: data.assignedCustomerIds || [],
         };
         if (data.validFrom && data.validTo) {
@@ -414,7 +340,7 @@ onMounted(async () => {
         }
       }
     } catch (e) {
-      ElMessage.error("Không thể lấy thông tin voucher");
+      ElMessage.error('Không thể lấy thông tin voucher');
     }
   }
 });

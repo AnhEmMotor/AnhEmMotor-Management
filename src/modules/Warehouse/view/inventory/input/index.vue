@@ -66,7 +66,7 @@
             >
               <ElButton v-ripple :loading="importing" :disabled="importing">
                 <ElIcon class="mr-1"><Upload /></ElIcon>
-                {{ importing ? "Đang nhập..." : "Nhập Excel" }}
+                {{ importing ? 'Đang nhập...' : 'Nhập Excel' }}
                 <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
               </ElButton>
               <template #dropdown>
@@ -96,9 +96,7 @@
             <ElButton
               v-if="
                 selectedRows.length > 0 &&
-                selectedRows.every(
-                  (row) => row.statusId?.toLowerCase() === 'draft',
-                )
+                selectedRows.every((row) => row.statusId?.toLowerCase() === 'draft')
               "
               type="danger"
               class="btn-bulk"
@@ -108,9 +106,7 @@
               @click="handleDeleteMany"
               style="margin-left: 0"
             >
-              <ElIcon class="mr-1"><Delete /></ElIcon> Xóa ({{
-                selectedRows.length
-              }})
+              <ElIcon class="mr-1"><Delete /></ElIcon> Xóa ({{ selectedRows.length }})
             </ElButton>
 
             <ElButton
@@ -155,12 +151,7 @@
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ElTooltip content="Xem chi tiết" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="info"
-                @click="handleViewDetail(row)"
-              >
+              <ElButton circle size="small" type="info" @click="handleViewDetail(row)">
                 <ElIcon><View /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -183,12 +174,7 @@
               content="Gửi phiếu"
               placement="top"
             >
-              <ElButton
-                circle
-                size="small"
-                type="warning"
-                @click="handleSendReceipt(row.id)"
-              >
+              <ElButton circle size="small" type="warning" @click="handleSendReceipt(row.id)">
                 <ElIcon><Promotion /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -257,9 +243,7 @@
                 >
                   Yêu cầu mua hàng #{{ formData.purchaseRequestId }}
                 </span>
-                <span v-else class="text-gray-400"
-                  >Chọn Yêu cầu mua hàng (PR)...</span
-                >
+                <span v-else class="text-gray-400">Chọn Yêu cầu mua hàng (PR)...</span>
                 <ElIcon class="text-gray-400"><ArrowDown /></ElIcon>
               </div>
               <ElButton
@@ -285,9 +269,7 @@
 
         <div class="border-t border-gray-100 pt-4 mt-4">
           <div class="flex justify-between items-center mb-3">
-            <span class="text-sm font-semibold text-gray-700"
-              >Chi tiết sản phẩm nhập kho</span
-            >
+            <span class="text-sm font-semibold text-gray-700">Chi tiết sản phẩm nhập kho</span>
           </div>
 
           <ElTable :data="formData.products" border size="small" class="w-full">
@@ -296,27 +278,14 @@
                 <div class="text-xs font-semibold text-gray-800 py-1">
                   {{ getProductNameById(row.productVariantId) }}
                 </div>
-                <ElTag
-                  v-if="getProductColorName(row)"
-                  size="small"
-                  type="info"
-                  class="mt-1 w-fit"
-                >
+                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
                   Màu: {{ getProductColorName(row) }}
                 </ElTag>
-                <div
-                  v-if="isVinManagedProduct(row)"
-                  class="flex items-center gap-2 mt-1"
-                >
+                <div v-if="isVinManagedProduct(row)" class="flex items-center gap-2 mt-1">
                   <ElTag size="small" type="warning">
                     VIN {{ getVehicleIdentityProgress(row) }}
                   </ElTag>
-                  <ElButton
-                    link
-                    type="primary"
-                    size="small"
-                    @click="openVinDialog($index)"
-                  >
+                  <ElButton link type="primary" size="small" @click="openVinDialog($index)">
                     Nhập VIN
                   </ElButton>
                 </div>
@@ -379,7 +348,7 @@
         <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
           <ElButton type="primary" :loading="submitting" @click="submitForm">
-            {{ isEdit ? "Cập nhật" : "Lưu phiếu" }}
+            {{ isEdit ? 'Cập nhật' : 'Lưu phiếu' }}
           </ElButton>
         </div>
       </template>
@@ -395,47 +364,30 @@
       top="2vh"
     >
       <div v-if="activeVinRow" class="flex flex-col gap-3">
-        <div
-          class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3"
-        >
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3">
           <div class="min-w-0">
             <div class="text-sm font-semibold text-gray-800 truncate">
               {{ getProductNameById(activeVinRow.productVariantId) }}
             </div>
             <div class="text-xs text-gray-500">
               Số lượng: {{ activeVinRow.count || 0 }} xe · Đã nhập:
-              {{ getCompletedVehicleIdentityCount(activeVinRow) }}/{{
-                activeVinRow.count || 0
-              }}
+              {{ getCompletedVehicleIdentityCount(activeVinRow) }}/{{ activeVinRow.count || 0 }}
             </div>
           </div>
           <ElTag type="warning">Quản lý theo VIN</ElTag>
         </div>
 
         <div class="vin-dialog-table">
-          <ElTable
-            :data="activeVinRow.vehicles"
-            border
-            size="small"
-            class="w-full"
-          >
+          <ElTable :data="activeVinRow.vehicles" border size="small" class="w-full">
             <ElTableColumn label="#" type="index" width="56" align="center" />
             <ElTableColumn label="Số khung (VIN)" min-width="210">
               <template #default="{ row: vehicle }">
-                <ElInput
-                  v-model="vehicle.vinNumber"
-                  placeholder="Nhập số khung"
-                  clearable
-                />
+                <ElInput v-model="vehicle.vinNumber" placeholder="Nhập số khung" clearable />
               </template>
             </ElTableColumn>
             <ElTableColumn label="Số máy" min-width="210">
               <template #default="{ row: vehicle }">
-                <ElInput
-                  v-model="vehicle.engineNumber"
-                  placeholder="Nhập số máy"
-                  clearable
-                />
+                <ElInput v-model="vehicle.engineNumber" placeholder="Nhập số máy" clearable />
               </template>
             </ElTableColumn>
             <ElTableColumn label="Thao tác" width="80" align="center">
@@ -452,9 +404,7 @@
       <template #footer>
         <div class="flex justify-end gap-2 border-t border-gray-50 pt-3">
           <ElButton @click="vinDialogVisible = false">Đóng</ElButton>
-          <ElButton type="primary" @click="vinDialogVisible = false"
-            >Xong</ElButton
-          >
+          <ElButton type="primary" @click="vinDialogVisible = false">Xong</ElButton>
         </div>
       </template>
     </ElDialog>
@@ -471,15 +421,11 @@
         <div class="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-3 text-sm">
           <div>
             <span class="text-gray-500">Mã phiếu nhập:</span>
-            <span class="ml-2 text-gray-800 font-bold"
-              >#{{ detailData.id }}</span
-            >
+            <span class="ml-2 text-gray-800 font-bold">#{{ detailData.id }}</span>
           </div>
           <div>
             <span class="text-gray-500">Mã Yêu cầu mua hàng (PR):</span>
-            <span class="ml-2 text-gray-800 font-medium"
-              >#{{ detailData.purchaseRequestId }}</span
-            >
+            <span class="ml-2 text-gray-800 font-medium">#{{ detailData.purchaseRequestId }}</span>
           </div>
           <div>
             <span class="text-gray-500">Trạng thái:</span>
@@ -491,48 +437,28 @@
           </div>
           <div>
             <span class="text-gray-500">Thời gian tạo:</span>
-            <span class="ml-2 text-gray-700">{{
-              formatDateTime(detailData.createdAt)
-            }}</span>
+            <span class="ml-2 text-gray-700">{{ formatDateTime(detailData.createdAt) }}</span>
           </div>
           <div>
             <span class="text-gray-500">Người tạo:</span>
             <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.createdByName || "N/A"
+              detailData.createdByName || 'N/A'
             }}</span>
           </div>
           <div v-if="detailData.sentByName">
             <span class="text-gray-500">Người gửi:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.sentByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.sentByName }}</span>
           </div>
-          <div
-            v-if="
-              detailData.statusId?.toLowerCase() === 'approve' &&
-              detailData.approvedByName
-            "
-          >
+          <div v-if="detailData.statusId?.toLowerCase() === 'approve' && detailData.approvedByName">
             <span class="text-gray-500">Người duyệt:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.approvedByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.approvedByName }}</span>
           </div>
-          <div
-            v-if="
-              detailData.statusId?.toLowerCase() === 'reject' &&
-              detailData.rejectedByName
-            "
-          >
+          <div v-if="detailData.statusId?.toLowerCase() === 'reject' && detailData.rejectedByName">
             <span class="text-gray-500">Người từ chối:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.rejectedByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.rejectedByName }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
-            <span class="text-gray-500 font-medium"
-              >Ghi chú (Có thể chỉnh sửa):</span
-            >
+            <span class="text-gray-500 font-medium">Ghi chú (Có thể chỉnh sửa):</span>
             <ElInput
               v-model="detailNotes"
               type="textarea"
@@ -544,26 +470,14 @@
         </div>
 
         <div class="mt-2">
-          <h4 class="text-sm font-semibold text-gray-700 mb-2">
-            Danh sách sản phẩm nhập
-          </h4>
-          <ElTable
-            :data="detailData.products"
-            border
-            size="small"
-            class="w-full"
-          >
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách sản phẩm nhập</h4>
+          <ElTable :data="detailData.products" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
             <ElTableColumn label="Tên sản phẩm" minWidth="220">
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
                   <span class="font-medium text-gray-800">{{ row.name }}</span>
-                  <ElTag
-                    v-if="row.productVariantColorName"
-                    size="small"
-                    type="info"
-                    class="w-fit"
-                  >
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
                     Màu: {{ row.productVariantColorName }}
                   </ElTag>
                 </div>
@@ -571,7 +485,7 @@
             </ElTableColumn>
             <ElTableColumn label="Nhà cung cấp" width="180">
               <template #default="{ row }">
-                <span>{{ row.supplierName || "N/A" }}</span>
+                <span>{{ row.supplierName || 'N/A' }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Đơn giá" width="130" align="right">
@@ -579,24 +493,13 @@
                 <span>{{ formatCurrency(row.unitPrice) }}</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn
-              prop="quantity"
-              label="Số lượng nhập"
-              width="100"
-              align="center"
-            />
+            <ElTableColumn prop="quantity" label="Số lượng nhập" width="100" align="center" />
             <ElTableColumn label="Định danh xe" minWidth="260">
               <template #default="{ row }">
-                <div
-                  v-if="row.vehicles?.length"
-                  class="flex flex-col gap-1 text-xs text-gray-600"
-                >
+                <div v-if="row.vehicles?.length" class="flex flex-col gap-1 text-xs text-gray-600">
                   <div
                     v-for="vehicle in row.vehicles"
-                    :key="
-                      vehicle.id ||
-                      `${vehicle.vinNumber}-${vehicle.engineNumber}`
-                    "
+                    :key="vehicle.id || `${vehicle.vinNumber}-${vehicle.engineNumber}`"
                     class="rounded border border-gray-100 bg-gray-50 px-2 py-1"
                   >
                     <div>
@@ -616,16 +519,9 @@
         </div>
       </div>
       <template #footer>
-        <div
-          class="flex justify-between items-center border-t border-gray-50 pt-3"
-        >
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
           <div>
-            <ElButton
-              v-if="detailData?.id"
-              type="primary"
-              plain
-              @click="auditTrailVisible = true"
-            >
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
               <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
             </ElButton>
           </div>
@@ -707,20 +603,12 @@
           >
             <div class="text-xs text-gray-500 space-y-1">
               <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-gray-800 text-sm"
-                  >Mã PR: #{{ pr.id ?? pr.Id }}</span
-                >
+                <span class="font-bold text-gray-800 text-sm">Mã PR: #{{ pr.id ?? pr.Id }}</span>
                 <ElTag size="small" type="success">Đã phê duyệt</ElTag>
               </div>
               <div>
                 <span class="font-medium text-gray-400">Ghi chú:</span>
-                {{
-                  pr.notes ||
-                  pr.note ||
-                  pr.Notes ||
-                  pr.Note ||
-                  "Không có ghi chú"
-                }}
+                {{ pr.notes || pr.note || pr.Notes || pr.Note || 'Không có ghi chú' }}
               </div>
               <div>
                 <span class="font-medium text-gray-400">Ngày yêu cầu:</span>
@@ -733,9 +621,7 @@
             class="flex flex-col items-center justify-center py-10 text-gray-400"
           >
             <ElIcon size="32"><InfoFilled /></ElIcon>
-            <span class="mt-2 text-sm"
-              >Không tìm thấy yêu cầu mua hàng nào hợp lệ</span
-            >
+            <span class="mt-2 text-sm">Không tìm thấy yêu cầu mua hàng nào hợp lệ</span>
           </div>
         </div>
 
@@ -762,9 +648,7 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="mb-4 flex justify-between items-center">
-        <span class="text-sm text-gray-500"
-          >Chọn các phiếu nhập để khôi phục</span
-        >
+        <span class="text-sm text-gray-500">Chọn các phiếu nhập để khôi phục</span>
         <ElButton
           type="primary"
           :disabled="selectedDeletedReceipts.length === 0"
@@ -783,12 +667,7 @@
         <ElTableColumn type="selection" width="50" align="center" />
         <ElTableColumn prop="id" label="Mã PN" width="80" align="center" />
         <ElTableColumn prop="notes" label="Ghi chú" min-width="200" />
-        <ElTableColumn
-          prop="deleted_at"
-          label="Thời gian xóa"
-          width="160"
-          align="center"
-        >
+        <ElTableColumn prop="deleted_at" label="Thời gian xóa" width="160" align="center">
           <template #default="{ row }">
             {{ formatDateTime(row.deleted_at) }}
           </template>
@@ -807,10 +686,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from "vue";
-import { useAuth } from "@/common/composables/useAuth";
-import { useUserStore } from "@/application/store/user";
-import { useRouter } from "vue-router";
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useAuth } from '@/common/composables/useAuth';
+import { useUserStore } from '@/application/store/user';
+import { useRouter } from 'vue-router';
 import {
   Plus,
   Edit,
@@ -825,23 +704,20 @@ import {
   RefreshLeft,
   Upload,
   Download,
-} from "@element-plus/icons-vue";
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { useDebounceFn } from "@vueuse/core";
-import { InventoryReceiptApi } from "@/api/inventory";
-import { PurchaseRequestApi } from "@/api/inventory";
-import { Permissions } from "@/domain/constants/permissions";
-import type {
-  InventoryReceipt,
-  InputInfo,
-} from "@/domain/inventory/receipt.types";
-import AuditTrailModal from "@/components/business/audit-trail-modal/index.vue";
-import ImportResultDialog from "@/components/business/import-result-dialog/index.vue";
-import { useInventoryReceiptTable } from "@/views/inventory/input/hooks/useInventoryReceiptTable";
+} from '@element-plus/icons-vue';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { useDebounceFn } from '@vueuse/core';
+import { InventoryReceiptApi } from '@/api/inventory';
+import { PurchaseRequestApi } from '@/api/inventory';
+import { Permissions } from '@/domain/constants/permissions';
+import type { InventoryReceipt, InputInfo } from '@/domain/inventory/receipt.types';
+import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue';
+import ImportResultDialog from '@/components/business/import-result-dialog/index.vue';
+import { useInventoryReceiptTable } from '@/views/inventory/input/hooks/useInventoryReceiptTable';
 
-defineOptions({ name: "InventoryReceipt" });
+defineOptions({ name: 'InventoryReceipt' });
 
 const {
   data,
@@ -882,54 +758,53 @@ const startTour = () => {
   const driverObj = driver({
     showProgress: true,
     animate: true,
-    nextBtnText: "Tiếp theo",
-    prevBtnText: "Quay lại",
-    doneBtnText: "Hoàn thành",
+    nextBtnText: 'Tiếp theo',
+    prevBtnText: 'Quay lại',
+    doneBtnText: 'Hoàn thành',
     steps: [
       {
-        element: ".art-table-card",
+        element: '.art-table-card',
         popover: {
-          title: "Bảng dữ liệu",
-          description: "Hiển thị danh sách phiếu nhập kho.",
-          side: "top",
-          align: "start",
+          title: 'Bảng dữ liệu',
+          description: 'Hiển thị danh sách phiếu nhập kho.',
+          side: 'top',
+          align: 'start',
         },
       },
       {
-        element: ".btn-add",
+        element: '.btn-add',
         popover: {
-          title: "Thêm phiếu nhập",
-          description: "Click vào đây để tạo mới một phiếu nhập kho.",
-          side: "bottom",
-          align: "start",
+          title: 'Thêm phiếu nhập',
+          description: 'Click vào đây để tạo mới một phiếu nhập kho.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-import",
+        element: '.btn-import',
         popover: {
-          title: "Nhập/Xuất Excel",
-          description: "Bạn có thể nhập hoặc xuất danh sách bằng Excel.",
-          side: "bottom",
-          align: "start",
+          title: 'Nhập/Xuất Excel',
+          description: 'Bạn có thể nhập hoặc xuất danh sách bằng Excel.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-bulk",
+        element: '.btn-bulk',
         popover: {
-          title: "Thao tác hàng loạt",
-          description:
-            "Chọn các hàng trong bảng để xóa hoặc nhân bản hàng loạt.",
-          side: "bottom",
-          align: "start",
+          title: 'Thao tác hàng loạt',
+          description: 'Chọn các hàng trong bảng để xóa hoặc nhân bản hàng loạt.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-restore",
+        element: '.btn-restore',
         popover: {
-          title: "Khôi phục dữ liệu",
-          description: "Xem và khôi phục các phiếu nhập kho đã bị xóa.",
-          side: "bottom",
-          align: "start",
+          title: 'Khôi phục dữ liệu',
+          description: 'Xem và khôi phục các phiếu nhập kho đã bị xóa.',
+          side: 'bottom',
+          align: 'start',
         },
       },
     ],
@@ -959,10 +834,10 @@ type ReceiptProductRow = {
   needVin?: boolean;
 };
 
-const VIN_MANAGEMENT_TYPE = "vin_number";
+const VIN_MANAGEMENT_TYPE = 'vin_number';
 
 const dialogVisible = ref(false);
-const dialogTitle = ref("Tạo phiếu nhập mới");
+const dialogTitle = ref('Tạo phiếu nhập mới');
 const submitting = ref(false);
 const isEdit = ref(false);
 const vinDialogVisible = ref(false);
@@ -974,7 +849,7 @@ const activeVinRow = computed(() => {
 
 const detailDialogVisible = ref(false);
 const detailData = ref<any>(null);
-const detailNotes = ref("");
+const detailNotes = ref('');
 const detailSubmitting = ref(false);
 
 const router = useRouter();
@@ -996,10 +871,9 @@ const hasAuth = (auth: string): boolean => {
 
 const canEdit = (row?: InventoryReceipt | null) => {
   if (!row) return false;
-  const status = (row.statusId || "").toLowerCase();
-  if (status === "approve" || status === "reject") return false;
-  if (status === "sent")
-    return hasAuth(Permissions.InventoryReceiptsApproveReject);
+  const status = (row.statusId || '').toLowerCase();
+  if (status === 'approve' || status === 'reject') return false;
+  if (status === 'sent') return hasAuth(Permissions.InventoryReceiptsApproveReject);
   return (
     hasAuth(Permissions.InventoryReceiptsEdit) ||
     hasAuth(Permissions.InventoryReceiptsApproveReject)
@@ -1008,10 +882,9 @@ const canEdit = (row?: InventoryReceipt | null) => {
 
 const canDelete = (row?: InventoryReceipt | null) => {
   if (!row) return false;
-  const status = (row.statusId || "").toLowerCase();
-  if (status === "approve" || status === "reject") return false;
-  if (status === "sent")
-    return hasAuth(Permissions.InventoryReceiptsApproveReject);
+  const status = (row.statusId || '').toLowerCase();
+  if (status === 'approve' || status === 'reject') return false;
+  if (status === 'sent') return hasAuth(Permissions.InventoryReceiptsApproveReject);
   return (
     hasAuth(Permissions.InventoryReceiptsDelete) ||
     hasAuth(Permissions.InventoryReceiptsApproveReject)
@@ -1021,58 +894,53 @@ const canDelete = (row?: InventoryReceipt | null) => {
 const handleSendReceipt = async (id: number) => {
   try {
     await ElMessageBox.confirm(
-      "Bạn có chắc chắn muốn gửi phiếu nhập này? Sau khi gửi, bạn sẽ không thể tự chỉnh sửa hoặc xóa nữa (trừ người có quyền phê duyệt).",
-      "Xác nhận gửi",
+      'Bạn có chắc chắn muốn gửi phiếu nhập này? Sau khi gửi, bạn sẽ không thể tự chỉnh sửa hoặc xóa nữa (trừ người có quyền phê duyệt).',
+      'Xác nhận gửi',
       {
-        confirmButtonText: "Gửi",
-        cancelButtonText: "Hủy",
-        type: "info",
-      },
+        confirmButtonText: 'Gửi',
+        cancelButtonText: 'Hủy',
+        type: 'info',
+      }
     );
     detailSubmitting.value = true;
     await InventoryReceiptApi.send(id);
-    ElMessage.success("Gửi phiếu nhập thành công");
+    ElMessage.success('Gửi phiếu nhập thành công');
     detailDialogVisible.value = false;
     refreshData();
   } catch (error: any) {
-    if (error !== "cancel") {
-      console.error("Failed to send receipt:", error);
-      ElMessage.error(error.message || "Gửi thất bại");
+    if (error !== 'cancel') {
+      console.error('Failed to send receipt:', error);
+      ElMessage.error(error.message || 'Gửi thất bại');
     }
   } finally {
     detailSubmitting.value = false;
   }
 };
 
-const handleApproveRejectReceipt = async (
-  id: number,
-  action: "approve" | "reject",
-) => {
-  const isApprove = action === "approve";
-  const title = isApprove ? "Xác nhận phê duyệt" : "Xác nhận từ chối";
+const handleApproveRejectReceipt = async (id: number, action: 'approve' | 'reject') => {
+  const isApprove = action === 'approve';
+  const title = isApprove ? 'Xác nhận phê duyệt' : 'Xác nhận từ chối';
   const message = isApprove
-    ? "Bạn có chắc chắn muốn phê duyệt phiếu nhập này? Số lượng sản phẩm sẽ được cộng vào kho."
-    : "Bạn có chắc chắn muốn từ chối phê duyệt phiếu nhập này?";
+    ? 'Bạn có chắc chắn muốn phê duyệt phiếu nhập này? Số lượng sản phẩm sẽ được cộng vào kho.'
+    : 'Bạn có chắc chắn muốn từ chối phê duyệt phiếu nhập này?';
 
   try {
     await ElMessageBox.confirm(message, title, {
-      confirmButtonText: isApprove ? "Duyệt" : "Từ chối",
-      cancelButtonText: "Hủy",
-      type: isApprove ? "success" : "warning",
+      confirmButtonText: isApprove ? 'Duyệt' : 'Từ chối',
+      cancelButtonText: 'Hủy',
+      type: isApprove ? 'success' : 'warning',
     });
     detailSubmitting.value = true;
     await InventoryReceiptApi.updateStatus(id, action);
     ElMessage.success(
-      isApprove
-        ? "Phê duyệt phiếu nhập thành công"
-        : "Từ chối phiếu nhập thành công",
+      isApprove ? 'Phê duyệt phiếu nhập thành công' : 'Từ chối phiếu nhập thành công'
     );
     detailDialogVisible.value = false;
     refreshData();
   } catch (error: any) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(`Failed to ${action} receipt:`, error);
-      ElMessage.error(error.message || "Thao tác thất bại");
+      ElMessage.error(error.message || 'Thao tác thất bại');
     }
   } finally {
     detailSubmitting.value = false;
@@ -1088,19 +956,17 @@ const productCache = reactive(
       managementType?: string;
       colorName?: string;
     }
-  >(),
+  >()
 );
 
 const getProductNameById = (id?: number) => {
-  if (!id) return "";
+  if (!id) return '';
   return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`;
 };
 
 const getProductColorName = (row: any) => {
   return (
-    row.productVariantColorName ||
-    productCache.get(Number(row.productVariantId))?.colorName ||
-    ""
+    row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
   );
 };
 
@@ -1109,8 +975,8 @@ const isVinManagedProduct = (row: any) => {
 };
 
 const createEmptyVehicle = (defaultPrice = 0): VehicleIdentification => ({
-  vinNumber: "",
-  engineNumber: "",
+  vinNumber: '',
+  engineNumber: '',
   importPrice: defaultPrice,
 });
 
@@ -1131,14 +997,10 @@ const syncVehicleRows = (row: any) => {
 
   const newVehicles = [...currentVehicles];
 
-  for (
-    let i = 0;
-    i < invoicedList.length && newVehicles.length < targetCount;
-    i++
-  ) {
+  for (let i = 0; i < invoicedList.length && newVehicles.length < targetCount; i++) {
     const inv = invoicedList[i];
     const alreadyInList = newVehicles.some(
-      (v: any) => v.vinNumber === inv.vinNumber && inv.vinNumber !== "",
+      (v: any) => v.vinNumber === inv.vinNumber && inv.vinNumber !== ''
     );
     if (!alreadyInList) {
       newVehicles.push({
@@ -1163,12 +1025,10 @@ const handleProductCountChange = (row: any) => {
 
   if (newCount < currentVehicles.length) {
     const removedVehicles = currentVehicles.slice(newCount);
-    const hasData = removedVehicles.some(
-      (v: any) => v.vinNumber?.trim() || v.engineNumber?.trim(),
-    );
+    const hasData = removedVehicles.some((v: any) => v.vinNumber?.trim() || v.engineNumber?.trim());
     if (hasData) {
       ElMessage.warning(
-        "Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.",
+        'Số lượng giảm ảnh hưởng đến thông tin số khung/số máy đã nhập. Vui lòng mở hộp thoại Nhập VIN và xóa trực tiếp dòng xe mong muốn.'
       );
       row.count = currentVehicles.length;
       return;
@@ -1186,7 +1046,7 @@ const removeVehicleRow = (index: number) => {
 
 const getCompletedVehicleIdentityCount = (row: any) => {
   return (row.vehicles ?? []).filter(
-    (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim(),
+    (vehicle: any) => vehicle.vinNumber?.trim() && vehicle.engineNumber?.trim()
   ).length;
 };
 
@@ -1210,52 +1070,52 @@ const formData = ref<{
   products: ReceiptProductRow[];
 }>({
   purchaseRequestId: undefined,
-  notes: "",
-  statusId: "working",
+  notes: '',
+  statusId: 'working',
   products: [],
 });
 
 const prSelectorVisible = ref(false);
-const prSelectorMode = ref<"form" | "template">("form");
+const prSelectorMode = ref<'form' | 'template'>('form');
 const prSelectorLoading = ref(false);
 const prSelectorItems = ref<any[]>([]);
 const prSelectorPage = ref(1);
 const prSelectorPageSize = ref(10);
 const prSelectorTotal = ref(0);
-const prSelectorQuery = ref("");
+const prSelectorQuery = ref('');
 
 const fetchSelectorPrs = async () => {
   prSelectorLoading.value = true;
   try {
-    const filters = ["IsFullyImported==false"];
+    const filters = ['IsFullyImported==false'];
     if (prSelectorQuery.value.trim()) {
       filters.push(`Id==${prSelectorQuery.value.trim()}`);
     }
     const res = await PurchaseRequestApi.getApprovedList({
       current: prSelectorPage.value,
       size: prSelectorPageSize.value,
-      Filters: filters.join(","),
+      Filters: filters.join(','),
     });
     prSelectorItems.value = res.items || [];
     prSelectorTotal.value = res.totalCount || 0;
   } catch (err) {
-    console.error("Failed to fetch selector PRs:", err);
+    console.error('Failed to fetch selector PRs:', err);
   } finally {
     prSelectorLoading.value = false;
   }
 };
 
 const openPrSelector = () => {
-  prSelectorMode.value = "form";
-  prSelectorQuery.value = "";
+  prSelectorMode.value = 'form';
+  prSelectorQuery.value = '';
   prSelectorPage.value = 1;
   prSelectorVisible.value = true;
   fetchSelectorPrs();
 };
 
 const openPrSelectorForTemplate = () => {
-  prSelectorMode.value = "template";
-  prSelectorQuery.value = "";
+  prSelectorMode.value = 'template';
+  prSelectorQuery.value = '';
   prSelectorPage.value = 1;
   prSelectorVisible.value = true;
   fetchSelectorPrs();
@@ -1274,7 +1134,7 @@ const clearPrSelection = () => {
 const selectPurchaseRequest = async (pr: any) => {
   const prId = pr.id ?? pr.Id;
 
-  if (prSelectorMode.value === "template") {
+  if (prSelectorMode.value === 'template') {
     prSelectorVisible.value = false;
     await handleDownloadTemplate(prId);
     return;
@@ -1301,13 +1161,13 @@ const selectPurchaseRequest = async (pr: any) => {
         purchaseRequestItemId: item.id,
         maxUnimportedQuantity: remainingQty,
         needVin: isVin,
-        managementType: isVin ? VIN_MANAGEMENT_TYPE : "sku",
+        managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
         vehicles: [],
       };
 
       productCache.set(item.productVariantId, {
         displayName: item.productName || `Sản phẩm #${item.productVariantId}`,
-        managementType: isVin ? VIN_MANAGEMENT_TYPE : "sku",
+        managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
         colorName: item.productVariantColorName,
       });
 
@@ -1316,61 +1176,59 @@ const selectPurchaseRequest = async (pr: any) => {
     });
 
     const rows = await Promise.all(productPromises);
-    formData.value.products = rows.filter(
-      (r) => r !== null,
-    ) as ReceiptProductRow[];
+    formData.value.products = rows.filter((r) => r !== null) as ReceiptProductRow[];
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể nạp thông tin Yêu cầu mua hàng");
+    ElMessage.error('Không thể nạp thông tin Yêu cầu mua hàng');
   } finally {
     loading.value = false;
   }
 };
 
 const formatCurrency = (val?: number) => {
-  if (val === undefined || val === null) return "0 đ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (val === undefined || val === null) return '0 đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 };
 
 const formatDateTime = (dateStr?: string) => {
-  if (!dateStr) return "-";
+  if (!dateStr) return '-';
   const date = new Date(dateStr);
-  return date.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 const getStatusLabel = (statusId?: string) => {
-  if (!statusId) return "-";
+  if (!statusId) return '-';
   return statuses.value[statusId] || statusId;
 };
 
 const getStatusTagType = (statusId?: string) => {
-  if (!statusId) return "info";
+  if (!statusId) return 'info';
   switch (statusId.toLowerCase()) {
-    case "draft":
-      return "info";
-    case "sent":
-      return "warning";
-    case "approve":
-      return "success";
-    case "reject":
-      return "danger";
+    case 'draft':
+      return 'info';
+    case 'sent':
+      return 'warning';
+    case 'approve':
+      return 'success';
+    case 'reject':
+      return 'danger';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const getProductSummaryText = (products?: InputInfo[]) => {
-  if (!products || products.length === 0) return "Không có sản phẩm";
-  return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(", ");
+  if (!products || products.length === 0) return 'Không có sản phẩm';
+  return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(', ');
 };
 
 const handleViewDetail = async (row: InventoryReceipt) => {
@@ -1378,11 +1236,11 @@ const handleViewDetail = async (row: InventoryReceipt) => {
     loading.value = true;
     const res = await InventoryReceiptApi.getById(row.id);
     detailData.value = res;
-    detailNotes.value = res.notes || "";
+    detailNotes.value = res.notes || '';
     detailDialogVisible.value = true;
   } catch (error) {
-    console.error("Failed to load receipt details:", error);
-    ElMessage.error("Không thể tải chi tiết phiếu nhập");
+    console.error('Failed to load receipt details:', error);
+    ElMessage.error('Không thể tải chi tiết phiếu nhập');
   } finally {
     loading.value = false;
   }
@@ -1390,11 +1248,11 @@ const handleViewDetail = async (row: InventoryReceipt) => {
 
 const handleAdd = () => {
   isEdit.value = false;
-  dialogTitle.value = "Tạo phiếu nhập mới";
+  dialogTitle.value = 'Tạo phiếu nhập mới';
   formData.value = {
     purchaseRequestId: undefined,
-    notes: "",
-    statusId: "working",
+    notes: '',
+    statusId: 'working',
     products: [],
   };
   dialogVisible.value = true;
@@ -1405,35 +1263,28 @@ const handleEdit = async (row: InventoryReceipt) => {
     loading.value = true;
     const receipt = await InventoryReceiptApi.getById(row.id);
     isEdit.value = true;
-    dialogTitle.value = "Cập nhật phiếu nhập";
+    dialogTitle.value = 'Cập nhật phiếu nhập';
 
     let prDetail: any = null;
     if (receipt.purchaseRequestId) {
       try {
-        prDetail = await PurchaseRequestApi.getApprovedById(
-          receipt.purchaseRequestId,
-          receipt.id,
-        );
+        prDetail = await PurchaseRequestApi.getApprovedById(receipt.purchaseRequestId, receipt.id);
       } catch (e) {
-        console.error("Cannot load PR details for editing receipt", e);
+        console.error('Cannot load PR details for editing receipt', e);
       }
     }
-    const prItemsMap = prDetail
-      ? new Map(prDetail.items.map((i: any) => [i.id, i]))
-      : new Map();
+    const prItemsMap = prDetail ? new Map(prDetail.items.map((i: any) => [i.id, i])) : new Map();
 
     formData.value = {
       id: receipt.id,
       purchaseRequestId: receipt.purchaseRequestId,
-      notes: receipt.notes || "",
-      statusId: receipt.statusId || "working",
+      notes: receipt.notes || '',
+      statusId: receipt.statusId || 'working',
       products: await Promise.all(
         (receipt.products || []).map(async (p: any) => {
           const prItem: any = prItemsMap.get(p.purchaseRequestItemId);
           const isVin =
-            (p.vehicles && p.vehicles.length > 0) ||
-            (prItem && prItem.needVin) ||
-            false;
+            (p.vehicles && p.vehicles.length > 0) || (prItem && prItem.needVin) || false;
           productCache.set(p.productVariantId, {
             displayName: p.name || `Sản phẩm #${p.productVariantId}`,
             colorName: p.productVariantColorName,
@@ -1445,24 +1296,24 @@ const handleEdit = async (row: InventoryReceipt) => {
             productVariantColorId: p.productVariantColorId,
             productVariantColorName: p.productVariantColorName,
             count: p.quantity || 0,
-            managementType: isVin ? VIN_MANAGEMENT_TYPE : "sku",
+            managementType: isVin ? VIN_MANAGEMENT_TYPE : 'sku',
             needVin: isVin,
             purchaseRequestItemId: p.purchaseRequestItemId,
             maxUnimportedQuantity: p.maxAllowedQuantity ?? (p.quantity || 0),
             invoicedVehicles: prItem ? prItem.invoicedVehicles || [] : [],
             vehicles: (p.vehicles || []).map((vehicle: any) => ({
               id: vehicle.id,
-              vinNumber: vehicle.vinNumber || "",
-              engineNumber: vehicle.engineNumber || "",
+              vinNumber: vehicle.vinNumber || '',
+              engineNumber: vehicle.engineNumber || '',
             })),
           };
-        }),
+        })
       ),
     };
     dialogVisible.value = true;
   } catch (error) {
-    console.error("Failed to load receipt details for editing:", error);
-    ElMessage.error("Không thể tải chi tiết phiếu nhập");
+    console.error('Failed to load receipt details for editing:', error);
+    ElMessage.error('Không thể tải chi tiết phiếu nhập');
   } finally {
     loading.value = false;
   }
@@ -1472,27 +1323,27 @@ const handleDelete = async (row: InventoryReceipt) => {
   try {
     await ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa phiếu nhập số #${row.id}?`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     );
     await InventoryReceiptApi.delete(row.id);
-    ElMessage.success("Xóa phiếu nhập thành công");
+    ElMessage.success('Xóa phiếu nhập thành công');
     refreshData();
   } catch (error) {
-    if (error !== "cancel") {
-      console.error("Failed to delete receipt:", error);
-      ElMessage.error("Xóa phiếu nhập thất bại");
+    if (error !== 'cancel') {
+      console.error('Failed to delete receipt:', error);
+      ElMessage.error('Xóa phiếu nhập thất bại');
     }
   }
 };
 
 const handleRemoveProductRow = (index: number) => {
   if (formData.value.products.length <= 1) {
-    ElMessage.warning("Phiếu nhập phải chứa ít nhất một sản phẩm");
+    ElMessage.warning('Phiếu nhập phải chứa ít nhất một sản phẩm');
     return;
   }
   formData.value.products.splice(index, 1);
@@ -1500,15 +1351,13 @@ const handleRemoveProductRow = (index: number) => {
 
 const submitForm = async () => {
   if (formData.value.purchaseRequestId === undefined) {
-    ElMessage.warning("Vui lòng chọn yêu cầu mua hàng (PR)");
+    ElMessage.warning('Vui lòng chọn yêu cầu mua hàng (PR)');
     return;
   }
 
-  const invalidCount = formData.value.products.filter(
-    (p) => (p.count || 0) <= 0,
-  );
+  const invalidCount = formData.value.products.filter((p) => (p.count || 0) <= 0);
   if (invalidCount.length > 0) {
-    ElMessage.error("Số lượng nhập của tất cả sản phẩm phải lớn hơn 0!");
+    ElMessage.error('Số lượng nhập của tất cả sản phẩm phải lớn hơn 0!');
     return;
   }
 
@@ -1518,32 +1367,26 @@ const submitForm = async () => {
     syncVehicleRows(product);
     const vehicles = product.vehicles ?? [];
     if (vehicles.length !== product.count) {
-      ElMessage.warning("Số dòng định danh xe phải đúng bằng số lượng nhập");
+      ElMessage.warning('Số dòng định danh xe phải đúng bằng số lượng nhập');
       return;
     }
 
     const hasMissingRequiredCode = vehicles.some(
-      (vehicle) => !vehicle.vinNumber?.trim() || !vehicle.engineNumber?.trim(),
+      (vehicle) => !vehicle.vinNumber?.trim() || !vehicle.engineNumber?.trim()
     );
     if (hasMissingRequiredCode) {
-      ElMessage.warning(
-        "Vui lòng nhập đủ số khung (VIN) và số máy cho sản phẩm quản lý theo VIN",
-      );
+      ElMessage.warning('Vui lòng nhập đủ số khung (VIN) và số máy cho sản phẩm quản lý theo VIN');
       return;
     }
 
-    const normalizedVins = vehicles.map((vehicle) =>
-      vehicle.vinNumber.trim().toLowerCase(),
-    );
-    const normalizedEngines = vehicles.map((vehicle) =>
-      vehicle.engineNumber.trim().toLowerCase(),
-    );
+    const normalizedVins = vehicles.map((vehicle) => vehicle.vinNumber.trim().toLowerCase());
+    const normalizedEngines = vehicles.map((vehicle) => vehicle.engineNumber.trim().toLowerCase());
     if (new Set(normalizedVins).size !== normalizedVins.length) {
-      ElMessage.warning("Số khung (VIN) bị trùng trong cùng dòng sản phẩm");
+      ElMessage.warning('Số khung (VIN) bị trùng trong cùng dòng sản phẩm');
       return;
     }
     if (new Set(normalizedEngines).size !== normalizedEngines.length) {
-      ElMessage.warning("Số máy bị trùng trong cùng dòng sản phẩm");
+      ElMessage.warning('Số máy bị trùng trong cùng dòng sản phẩm');
       return;
     }
   }
@@ -1573,7 +1416,7 @@ const submitForm = async () => {
         products: payloadProducts,
       };
       await InventoryReceiptApi.update(formData.value.id, payload);
-      ElMessage.success("Cập nhật phiếu nhập thành công");
+      ElMessage.success('Cập nhật phiếu nhập thành công');
     } else {
       const payload = {
         notes: formData.value.notes,
@@ -1591,17 +1434,17 @@ const submitForm = async () => {
             productVariantColorId,
             count,
             vehicles,
-          }),
+          })
         ),
       };
       await InventoryReceiptApi.create(payload);
-      ElMessage.success("Tạo phiếu nhập thành công");
+      ElMessage.success('Tạo phiếu nhập thành công');
     }
     dialogVisible.value = false;
     refreshData();
   } catch (e: any) {
     console.error(e);
-    ElMessage.error(e.message || "Lưu phiếu nhập thất bại");
+    ElMessage.error(e.message || 'Lưu phiếu nhập thất bại');
   } finally {
     submitting.value = false;
   }

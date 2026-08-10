@@ -1,9 +1,9 @@
-import { useTimeoutFn, useIntervalFn, useDateFormat } from "@vueuse/core";
-import { storeToRefs } from "pinia";
-import { computed } from "vue";
-import { useSettingStore } from "@/application/store/setting";
-import { mittBus } from "@/common/utils/sys";
-import { festivalConfigList } from "@/config/modules/festival";
+import { useTimeoutFn, useIntervalFn, useDateFormat } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import { useSettingStore } from '@/application/store/setting';
+import { mittBus } from '@/common/utils/sys';
+import { festivalConfigList } from '@/config/modules/festival';
 
 const FESTIVAL_CONFIG = {
   INITIAL_DELAY: 300,
@@ -24,7 +24,7 @@ export function useCeremony() {
   const isDateInRange = (
     currentDate: string,
     festivalDate: string,
-    festivalEndDate?: string,
+    festivalEndDate?: string
   ): boolean => {
     if (!festivalEndDate) {
       return currentDate === festivalDate;
@@ -38,18 +38,16 @@ export function useCeremony() {
   };
 
   const currentFestivalData = computed(() => {
-    const currentDate = useDateFormat(new Date(), "YYYY-MM-DD").value;
-    return festivalConfigList.find((item) =>
-      isDateInRange(currentDate, item.date, item.endDate),
-    );
+    const currentDate = useDateFormat(new Date(), 'YYYY-MM-DD').value;
+    return festivalConfigList.find((item) => isDateInRange(currentDate, item.date, item.endDate));
   });
 
   const updateFestivalDate = () => {
-    settingStore.setFestivalDate(currentFestivalData.value?.date || "");
+    settingStore.setFestivalDate(currentFestivalData.value?.date || '');
   };
 
   const triggerFirework = () => {
-    mittBus.emit("triggerFireworks", currentFestivalData.value?.image);
+    mittBus.emit('triggerFireworks', currentFestivalData.value?.image);
   };
 
   const showFestivalText = () => {
@@ -64,9 +62,7 @@ export function useCeremony() {
   const startFireworksLoop = () => {
     let playedCount = 0;
 
-    const count =
-      currentFestivalData.value?.count ??
-      FESTIVAL_CONFIG.DEFAULT_FIREWORKS_COUNT;
+    const count = currentFestivalData.value?.count ?? FESTIVAL_CONFIG.DEFAULT_FIREWORKS_COUNT;
 
     const { pause } = useIntervalFn(() => {
       triggerFirework();
@@ -86,10 +82,7 @@ export function useCeremony() {
       return;
     }
 
-    const { start } = useTimeoutFn(
-      startFireworksLoop,
-      FESTIVAL_CONFIG.INITIAL_DELAY,
-    );
+    const { start } = useTimeoutFn(startFireworksLoop, FESTIVAL_CONFIG.INITIAL_DELAY);
     start();
   };
 

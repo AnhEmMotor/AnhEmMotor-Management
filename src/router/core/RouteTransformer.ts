@@ -1,12 +1,12 @@
-import type { RouteRecordRaw } from "vue-router";
-import type { AppRouteRecord } from "@/types/router";
-import { ComponentLoader } from "./ComponentLoader";
-import { IframeRouteManager } from "./IframeRouteManager";
+import type { RouteRecordRaw } from 'vue-router';
+import type { AppRouteRecord } from '@/types/router';
+import { ComponentLoader } from './ComponentLoader';
+import { IframeRouteManager } from './IframeRouteManager';
 
-interface ConvertedRoute extends Omit<RouteRecordRaw, "children"> {
+interface ConvertedRoute extends Omit<RouteRecordRaw, 'children'> {
   id?: number;
   children?: ConvertedRoute[];
-  component?: RouteRecordRaw["component"] | (() => Promise<any>);
+  component?: RouteRecordRaw['component'] | (() => Promise<any>);
 }
 
 export class RouteTransformer {
@@ -35,9 +35,7 @@ export class RouteTransformer {
     }
 
     if (children?.length) {
-      converted.children = children.map((child) =>
-        this.transform(child, depth + 1),
-      );
+      converted.children = children.map((child) => this.transform(child, depth + 1));
     }
 
     return converted;
@@ -50,12 +48,12 @@ export class RouteTransformer {
   private handleIframeRoute(
     targetRoute: ConvertedRoute,
     sourceRoute: AppRouteRecord,
-    depth: number,
+    depth: number
   ): void {
     if (depth === 0) {
       targetRoute.component = this.componentLoader.loadLayout();
-      targetRoute.path = this.extractFirstSegment(sourceRoute.path || "");
-      targetRoute.name = "";
+      targetRoute.path = this.extractFirstSegment(sourceRoute.path || '');
+      targetRoute.name = '';
 
       targetRoute.children = [
         {
@@ -73,11 +71,11 @@ export class RouteTransformer {
   private handleFirstLevelRoute(
     converted: ConvertedRoute,
     route: AppRouteRecord,
-    component: string | undefined,
+    component: string | undefined
   ): void {
     converted.component = this.componentLoader.loadLayout();
-    converted.path = this.extractFirstSegment(route.path || "");
-    converted.name = "";
+    converted.path = this.extractFirstSegment(route.path || '');
+    converted.name = '';
     route.meta.isFirstLevel = true;
 
     converted.children = [
@@ -88,17 +86,14 @@ export class RouteTransformer {
     ];
   }
 
-  private handleNormalRoute(
-    converted: ConvertedRoute,
-    component: string | undefined,
-  ): void {
+  private handleNormalRoute(converted: ConvertedRoute, component: string | undefined): void {
     if (component) {
       converted.component = this.componentLoader.load(component);
     }
   }
 
   private extractFirstSegment(path: string): string {
-    const segments = path.split("/").filter(Boolean);
-    return segments.length > 0 ? `/${segments[0]}` : "/";
+    const segments = path.split('/').filter(Boolean);
+    return segments.length > 0 ? `/${segments[0]}` : '/';
   }
 }

@@ -19,11 +19,7 @@
 
       <ElScrollbar style="height: calc(100% - 135px)">
         <ul>
-          <li
-            v-for="menu in firstLevelMenus"
-            :key="menu.path"
-            @click="handleMenuJump(menu, true)"
-          >
+          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
             <ElTooltip
               class="box-item"
               effect="dark"
@@ -53,10 +49,7 @@
                 <span v-if="dualMenuShowText" class="text-md text-g-700">
                   {{ $t(menu.meta.title) }}
                 </span>
-                <div
-                  v-if="menu.meta.showBadge"
-                  class="art-badge art-badge-dual"
-                />
+                <div v-if="menu.meta.showBadge" class="art-badge art-badge-dual" />
               </div>
             </ElTooltip>
           </li>
@@ -71,6 +64,15 @@
     </div>
 
     <div
+      class="menu-model"
+      @click="handleMenuClose"
+      :style="{
+        opacity: !menuOpen ? 0 : 1,
+        transform: showMobileModal ? 'scale(1)' : 'scale(0)',
+      }"
+    />
+
+    <div
       v-show="menuList.length > 0"
       class="menu-left"
       :class="`menu-left-${getMenuTheme.theme} menu-left-${!menuOpen ? 'close' : 'open'}`"
@@ -78,14 +80,15 @@
     >
       <div
         class="header"
-        @click="navigateToHome"
+        @click="!isMobileScreen && navigateToHome()"
         :style="{
           background: getMenuTheme.background,
         }"
       >
-        <ArtLogo v-if="!isDualMenu" class="logo" />
+        <ArtLogo v-if="!isDualMenu && !isMobileScreen" class="logo" />
 
         <p
+          v-if="!isMobileScreen"
           :class="{ 'is-dual-menu-name': isDualMenu }"
           :style="{
             color: getMenuTheme.systemNameColor,
@@ -94,6 +97,10 @@
         >
           {{ AppConfig.systemInfo.name }}
         </p>
+
+        <div v-if="isMobileScreen" class="mobile-close-btn" @click.stop="handleMenuClose">
+          <ArtSvgIcon icon="ri:close-line" />
+        </div>
       </div>
       <ElScrollbar :style="scrollbarStyle">
         <ElMenu
@@ -116,48 +123,33 @@
         </ElMenu>
       </ElScrollbar>
 
-      <div
-        class="dual-menu-collapse-btn"
-        v-if="isDualMenu"
-        @click="toggleMenuVisibility"
-      >
+      <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
         <ArtSvgIcon
           class="text-g-500/70"
-          :icon="
-            menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'
-          "
+          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
         />
       </div>
-
-      <div
-        class="menu-model"
-        @click="toggleMenuVisibility"
-        :style="{
-          opacity: !menuOpen ? 0 : 1,
-          transform: showMobileModal ? 'scale(1)' : 'scale(0)',
-        }"
-      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import AppConfig from "@/config";
-import { useSettingStore } from "@/application/store/setting";
-import { MenuTypeEnum, MenuWidth } from "@/common/enums/appEnum";
-import { useMenuStore } from "@/application/store/menu";
-import { isIframe } from "@/common/utils/navigation";
-import { handleMenuJump } from "@/common/utils/navigation";
-import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
-import { useWindowSize, useTimeoutFn } from "@vueuse/core";
-import { adminMenu } from "@/modules/Admin/Menu";
-import { factoryMenu } from "@/modules/Factory/Menu";
-import { marketingMenu } from "@/modules/Marketing/Menu";
-import { orderMenu } from "@/modules/Order/Menu";
-import { warehouseMenu } from "@/modules/Warehouse/Menu";
-import { accountancyMenu } from "@/modules/Accountant/Menu";
+import AppConfig from '@/config';
+import { useSettingStore } from '@/application/store/setting';
+import { MenuTypeEnum, MenuWidth } from '@/common/enums/appEnum';
+import { useMenuStore } from '@/application/store/menu';
+import { isIframe } from '@/common/utils/navigation';
+import { handleMenuJump } from '@/common/utils/navigation';
+import SidebarSubmenu from './widget/SidebarSubmenu.vue';
+import { useWindowSize, useTimeoutFn } from '@vueuse/core';
+import { adminMenu } from '@/modules/Admin/Menu';
+import { factoryMenu } from '@/modules/Factory/Menu';
+import { marketingMenu } from '@/modules/Marketing/Menu';
+import { orderMenu } from '@/modules/Order/Menu';
+import { warehouseMenu } from '@/modules/Warehouse/Menu';
+import { accountancyMenu } from '@/modules/Accountant/Menu';
 
-defineOptions({ name: "ArtSidebarMenu" });
+defineOptions({ name: 'ArtSidebarMenu' });
 
 const MOBILE_BREAKPOINT = 800;
 const ANIMATION_DELAY = 350;
@@ -181,9 +173,7 @@ const menuclosewidth = computed(() => MENU_CLOSE_WIDTH);
 
 const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT);
 const showLeftMenu = computed(
-  () =>
-    menuType.value === MenuTypeEnum.LEFT ||
-    menuType.value === MenuTypeEnum.TOP_LEFT,
+  () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT
 );
 const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU);
 
@@ -200,11 +190,9 @@ const menuList = computed(() => {
   const menuStore = useMenuStore();
   const allMenus = menuStore.menuList;
 
-  // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
   const isPathInMenu = (menus: any[], targetPath: string): boolean => {
     return menus.some((m) => {
-      if (m.path && m.path.startsWith("/") && targetPath.startsWith(m.path))
-        return true;
+      if (m.path && m.path.startsWith('/') && targetPath.startsWith(m.path)) return true;
       if (m.children) return isPathInMenu(m.children, targetPath);
       return false;
     });
@@ -231,15 +219,12 @@ const menuList = computed(() => {
   } else if (isAccountant) {
     allowedPaths = accountancyMenu.map((m) => m.path);
   } else {
-    // Mặc định fallback về admin nếu không match
     allowedPaths = adminMenu.map((m) => m.path);
   }
 
   const workspaceMenus = allMenus.filter((m) => allowedPaths.includes(m.path));
 
   if (!isTopLeftMenu.value && !isDualMenu.value) {
-    // Nếu phân hệ chỉ có 1 root wrapper (vd: /Accountant, /Marketing, /Order, /Warehouse)
-    // thì trả về children trực tiếp để sidebar hiển thị phẳng (không lồng thêm 1 cấp)
     if (workspaceMenus.length === 1 && workspaceMenus[0].children?.length) {
       return workspaceMenus[0].children;
     }
@@ -254,29 +239,18 @@ const menuList = computed(() => {
     return [];
   }
 
-  const currentTopPath = `/${route.path.split("/")[1]}`;
-  const currentMenu = workspaceMenus.find(
-    (menu) => menu.path === currentTopPath,
-  );
+  const currentTopPath = `/${route.path.split('/')[1]}`;
+  const currentMenu = workspaceMenus.find((menu) => menu.path === currentTopPath);
   return currentMenu?.children ?? [];
 });
 
-// Nếu quyền hạn thay đổi khiến sidebar của phân hệ đang xem trở nên rỗng,
-// tự động đưa người dùng về trang workspace thay vì để họ kẹt lại trang không còn quyền.
-watch(menuList, (list) => {
-  if (route.path === "/workspace" || route.meta.isFirstLevel) return;
-  if (isIframe(route.path)) return;
-  if (list.length === 0) {
-    router.replace("/workspace");
-  }
-});
 
 const scrollbarStyle = computed(() => {
   const isCollapsed = isDualMenu.value && !menuOpen.value;
   return {
-    transform: isCollapsed ? "translateY(-50px)" : "translateY(0)",
-    height: isCollapsed ? "calc(100% + 50px)" : "calc(100% - 60px)",
-    transition: "transform 0.3s ease",
+    transform: isCollapsed ? 'translateY(-50px)' : 'translateY(0)',
+    height: isCollapsed ? 'calc(100% + 50px)' : 'calc(100% - 60px)',
+    transition: 'transform 0.3s ease',
   };
 });
 
@@ -285,7 +259,7 @@ const { start: delayHideMobileModal } = useTimeoutFn(
     showMobileModal.value = false;
   },
   ANIMATION_DELAY,
-  { immediate: false },
+  { immediate: false }
 );
 
 const findIframeMenuList = (currentPath: string, menuList: any[]) => {
@@ -309,10 +283,9 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
   return [];
 };
 
-// Removed unused homePath
 
 const navigateToHome = (): void => {
-  router.push("/workspace");
+  router.push('/workspace');
 };
 
 const toggleMenuVisibility = (): void => {
@@ -338,36 +311,46 @@ const toggleDualMenuMode = (): void => {
   settingStore.setDualMenuShowText(!dualMenuShowText.value);
 };
 
-watch(width, (newWidth: number) => {
-  if (newWidth < MOBILE_BREAKPOINT) {
+let menuOpenBeforeMobile: boolean | null = null;
+
+watch(width, (newWidth: number, oldWidth: number) => {
+  const isMobile = newWidth < MOBILE_BREAKPOINT;
+  const wasMobile = oldWidth < MOBILE_BREAKPOINT;
+  if (isMobile && !wasMobile) {
+    menuOpenBeforeMobile = menuOpen.value;
     settingStore.setMenuOpen(false);
-    if (!menuOpen.value) {
-      showMobileModal.value = false;
-    }
-  } else {
+    showMobileModal.value = false;
+  } else if (!isMobile && wasMobile) {
+    settingStore.setMenuOpen(menuOpenBeforeMobile ?? true);
+    showMobileModal.value = false;
+  } else if (!isMobile) {
     showMobileModal.value = false;
   }
 });
 
-watch(menuOpen, (isMenuOpen: boolean) => {
-  if (!isMobileScreen.value) {
-    showMobileModal.value = false;
-  } else {
-    if (isMenuOpen) {
-      showMobileModal.value = true;
+watch(
+  menuOpen,
+  (isMenuOpen: boolean) => {
+    if (!isMobileScreen.value) {
+      showMobileModal.value = false;
     } else {
-      delayHideMobileModal();
+      if (isMenuOpen) {
+        showMobileModal.value = true;
+      } else {
+        delayHideMobileModal();
+      }
     }
-  }
-});
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
-@use "./style";
+@use './style';
 </style>
 
 <style lang="scss">
-@use "./theme";
+@use './theme';
 
 .layout-sidebar {
   .el-menu:not(.el-menu--collapse) {

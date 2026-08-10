@@ -1,9 +1,7 @@
 <template>
   <div class="error-page">
     <div class="login-bg-overlay"></div>
-    <div
-      class="login-container relative z-10 flex items-center justify-center min-h-screen"
-    >
+    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
       <el-card class="login-card max-w-lg w-full m-4 border-0" shadow="hover">
         <div class="text-center py-8">
           <div class="flex justify-center mb-6">
@@ -21,12 +19,10 @@
           >
             403
           </h1>
-          <h2 class="text-3xl font-bold title tracking-tight mb-4">
-            Truy cập bị từ chối
-          </h2>
+          <h2 class="text-3xl font-bold title tracking-tight mb-4">Truy cập bị từ chối</h2>
           <p class="text-base subtitle px-6 mb-10">
-            Xin lỗi, bạn không có quyền truy cập trang này. Vui lòng liên hệ
-            quản trị viên nếu cần hỗ trợ.
+            Xin lỗi, bạn không có quyền truy cập trang này. Vui lòng liên hệ quản trị viên nếu cần
+            hỗ trợ.
           </p>
 
           <div class="flex justify-center gap-4">
@@ -34,12 +30,7 @@
               <el-icon class="mr-2"><Back /></el-icon>
               Quay lại
             </el-button>
-            <el-button
-              type="primary"
-              size="large"
-              @click="goHome"
-              class="custom-btn submit-btn"
-            >
+            <el-button type="primary" size="large" @click="goHome" class="custom-btn submit-btn">
               <el-icon class="mr-2"><HomeFilled /></el-icon>
               Về trang chủ
             </el-button>
@@ -51,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { Lock, HomeFilled, Back } from "@element-plus/icons-vue";
+import { useRouter } from 'vue-router';
+import { Lock, HomeFilled, Back } from '@element-plus/icons-vue';
 
 const router = useRouter();
 
@@ -61,7 +52,7 @@ const goBack = () => {
 };
 
 const goHome = () => {
-  router.push("/");
+  router.push('/');
 };
 </script>
 
@@ -71,7 +62,7 @@ const goHome = () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920");
+  background-image: url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920');
   background-attachment: fixed;
   background-position: center;
   background-size: cover;

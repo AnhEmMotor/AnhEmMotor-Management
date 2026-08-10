@@ -28,7 +28,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Thu nhập -->
           <tr class="pnl-row pnl-row--income">
             <td class="p-4">TỔNG THU NHẬP</td>
             <td class="p-4 text-right">
@@ -36,15 +35,12 @@
             </td>
           </tr>
           <tr class="pnl-row">
-            <td class="p-4 pl-8 pnl-row__muted">
-              Doanh thu từ đơn hàng hoàn tất
-            </td>
+            <td class="p-4 pl-8 pnl-row__muted">Doanh thu từ đơn hàng hoàn tất</td>
             <td class="p-4 text-right">
               {{ formatCurrency(displayReport.totalRevenue) }}
             </td>
           </tr>
 
-          <!-- Giá vốn -->
           <tr class="pnl-row pnl-row--cost">
             <td class="p-4">GIÁ VỐN HÀNG BÁN (COGS)</td>
             <td class="p-4 text-right">
@@ -52,7 +48,6 @@
             </td>
           </tr>
 
-          <!-- Lợi nhuận gộp -->
           <tr class="pnl-row pnl-row--gross">
             <td class="p-4 text-lg">LỢI NHUẬN GỘP</td>
             <td class="p-4 text-right text-lg">
@@ -60,7 +55,6 @@
             </td>
           </tr>
 
-          <!-- Chi phí vận hành -->
           <tr class="pnl-row pnl-row--expense">
             <td class="p-4">CHI PHÍ VẬN HÀNH</td>
             <td class="p-4 text-right">
@@ -78,7 +72,6 @@
             </td>
           </tr>
 
-          <!-- Lợi nhuận ròng -->
           <tr class="pnl-row pnl-row--net">
             <td class="p-4">LỢI NHUẬN RÒNG CUỐI CÙNG</td>
             <td class="p-4 text-right">
@@ -95,13 +88,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-import { AnalyticsService } from "@/services/analytics.service";
-import type { PnlReport } from "@/services/analytics.types";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { computed, ref, onMounted } from 'vue';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
+import { AnalyticsService } from '@/services/analytics.service';
+import type { PnlReport } from '@/services/analytics.types';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -110,16 +103,16 @@ const props = withDefaults(
   }>(),
   {
     loading: false,
-  },
+  }
 );
 
 const emit = defineEmits<{
   load: [month: number, year: number];
 }>();
 
-const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // YYYY-MM
+const selectedMonth = ref(new Date().toISOString().slice(0, 7)); 
 const localReport = ref<PnlReport>({
-  period: "",
+  period: '',
   totalRevenue: 0,
   totalCostOfGoodsSold: 0,
   totalOperatingExpenses: 0,
@@ -131,9 +124,9 @@ const localReport = ref<PnlReport>({
 const displayReport = computed(() => props.report ?? localReport.value);
 
 async function loadReport() {
-  const [year, month] = selectedMonth.value.split("-").map(Number);
+  const [year, month] = selectedMonth.value.split('-').map(Number);
   if (props.report) {
-    emit("load", month, year);
+    emit('load', month, year);
     return;
   }
   localReport.value = await AnalyticsService.getPnlReport(month, year);
@@ -142,23 +135,23 @@ async function loadReport() {
 function exportPnlExcel() {
   const r = displayReport.value;
   exportReportWorkbook({
-    fileName: "Bao_cao_loi_nhuan",
+    fileName: 'Bao_cao_loi_nhuan',
     sheets: [
       {
-        name: "P&L Tổng hợp",
+        name: 'P&L Tổng hợp',
         rows: [
-          { Hạng_mục: "Tổng thu nhập", Giá_trị: r.totalRevenue },
+          { Hạng_mục: 'Tổng thu nhập', Giá_trị: r.totalRevenue },
           {
-            Hạng_mục: "Giá vốn hàng bán (COGS)",
+            Hạng_mục: 'Giá vốn hàng bán (COGS)',
             Giá_trị: r.totalCostOfGoodsSold,
           },
-          { Hạng_mục: "Lợi nhuận gộp", Giá_trị: r.grossProfit },
-          { Hạng_mục: "Chi phí vận hành", Giá_trị: r.totalOperatingExpenses },
-          { Hạng_mục: "Lợi nhuận ròng cuối cùng", Giá_trị: r.netProfit },
+          { Hạng_mục: 'Lợi nhuận gộp', Giá_trị: r.grossProfit },
+          { Hạng_mục: 'Chi phí vận hành', Giá_trị: r.totalOperatingExpenses },
+          { Hạng_mục: 'Lợi nhuận ròng cuối cùng', Giá_trị: r.netProfit },
         ],
       },
       {
-        name: "Chi phí chi tiết",
+        name: 'Chi phí chi tiết',
         rows: r.expenseDetails.map((e: any) => ({
           Phan_loai: e.category,
           So_tien: e.amount,
@@ -168,9 +161,9 @@ function exportPnlExcel() {
   });
 }
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 

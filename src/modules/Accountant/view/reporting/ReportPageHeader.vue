@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import "@/modules/Accountant/logic/reporting.scss";
+import '@/modules/Accountant/logic/reporting.scss';
 
-defineOptions({ name: "ReportPageHeader" });
+defineOptions({ name: 'ReportPageHeader' });
 
 defineProps<{
   title: string;

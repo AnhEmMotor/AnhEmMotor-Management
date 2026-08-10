@@ -1,12 +1,12 @@
-import { computed } from "vue";
-import { useWindowSize } from "@vueuse/core";
+import { computed } from 'vue';
+import { useWindowSize } from '@vueuse/core';
 
 const BP = {
   sm: 640,
   md: 768,
   lg: 1024,
   xl: 1280,
-  "2xl": 1536,
+  '2xl': 1536,
 } as const;
 
 export function useResponsive() {
@@ -22,12 +22,7 @@ export function useResponsive() {
   const between = (lo: keyof typeof BP, hi: keyof typeof BP) =>
     computed(() => width.value >= BP[lo] && width.value < BP[hi]);
 
-  const colSpan = (
-    sm: number,
-    md: number,
-    lg = md,
-    xl = lg,
-  ) =>
+  const colSpan = (sm: number, md: number, lg = md, xl = lg) =>
     computed(() => {
       if (width.value >= BP.xl) return xl;
       if (width.value >= BP.lg) return lg;
@@ -37,7 +32,7 @@ export function useResponsive() {
 
   const sidebarWidth = computed(() => (width.value < 800 ? 0 : 220));
 
-  const containerClass = (mobile = "p-2", tablet = "p-3", desktop = "p-4") =>
+  const containerClass = (mobile = 'p-2', tablet = 'p-3', desktop = 'p-4') =>
     computed(() => {
       if (width.value < BP.md) return mobile;
       if (width.value < BP.lg) return tablet;

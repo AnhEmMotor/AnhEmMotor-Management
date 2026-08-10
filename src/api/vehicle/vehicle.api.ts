@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface Vehicle {
   id: number;
@@ -25,7 +25,7 @@ export interface Vehicle {
 
 export interface VehiclePortfolioResponse {
   vehicle: Vehicle;
-  history: any[]; // Replace 'any' with RepairOrder if imported
+  history: any[];
   totalHistoryCount: number;
 }
 
@@ -38,7 +38,7 @@ export const VehicleApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<VehicleList>({
-      url: "/api/v1/Vehicle",
+      url: '/api/v1/Vehicle',
       params: {
         Page: current,
         PageSize: size,
@@ -55,7 +55,7 @@ export const VehicleApi = {
 
   create(data: any) {
     return request.post<Vehicle>({
-      url: "/api/v1/Vehicle",
+      url: '/api/v1/Vehicle',
       data,
     });
   },
@@ -67,14 +67,9 @@ export const VehicleApi = {
     });
   },
 
-  getPortfolio(params: {
-    query: string;
-    queryType: string;
-    page: number;
-    pageSize: number;
-  }) {
+  getPortfolio(params: { query: string; queryType: string; page: number; pageSize: number }) {
     return request.get<VehiclePortfolioResponse>({
-      url: "/api/v1/Vehicle/portfolio",
+      url: '/api/v1/Vehicle/portfolio',
       params,
     });
   },

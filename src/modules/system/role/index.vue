@@ -7,10 +7,7 @@
       @reset="resetSearchParams"
     ></RoleSearch>
 
-    <ElCard
-      class="art-table-card"
-      :style="{ 'margin-top': showSearchBar ? '12px' : '0' }"
-    >
+    <ElCard class="art-table-card" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
       <ArtTableHeader
         v-model:columns="columnChecks"
         v-model:showSearchBar="showSearchBar"
@@ -57,16 +54,16 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonMoreItem } from "@/components/core/forms/art-button-more/index.vue";
-import { useTable } from "@/common/composables/useTable";
-import { fetchGetRoleList, fetchDeleteRole } from "@/api/auth";
-import ArtButtonMore from "@/components/core/forms/art-button-more/index.vue";
-import RoleSearch from "./modules/role-search.vue";
-import RoleEditDialog from "./modules/role-edit-dialog.vue";
-import RolePermissionDialog from "./modules/role-permission-dialog.vue";
-import { ElMessageBox } from "element-plus";
-import { Permissions } from "@/domain/constants/permissions.ts";
-defineOptions({ name: "Role" });
+import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue';
+import { useTable } from '@/common/composables/useTable';
+import { fetchGetRoleList, fetchDeleteRole } from '@/api/auth';
+import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue';
+import RoleSearch from './modules/role-search.vue';
+import RoleEditDialog from './modules/role-edit-dialog.vue';
+import RolePermissionDialog from './modules/role-permission-dialog.vue';
+import { ElMessageBox } from 'element-plus';
+import { Permissions } from '@/domain/constants/permissions.ts';
+defineOptions({ name: 'Role' });
 
 type RoleSearchFormParams = {
   roleName?: string;
@@ -99,8 +96,8 @@ const {
   core: {
     apiFn: fetchGetRoleList,
     paginationKey: {
-      current: "Page",
-      size: "PageSize",
+      current: 'Page',
+      size: 'PageSize',
     },
     apiParams: {
       Page: 1,
@@ -108,42 +105,42 @@ const {
     },
     columnsFactory: () => [
       {
-        prop: "name",
-        label: "Tên vai trò",
+        prop: 'name',
+        label: 'Tên vai trò',
         minWidth: 150,
       },
       {
-        prop: "description",
-        label: "Mô tả",
+        prop: 'description',
+        label: 'Mô tả',
         minWidth: 250,
         showOverflowTooltip: true,
       },
       {
-        prop: "operation",
-        label: "Hành động",
+        prop: 'operation',
+        label: 'Hành động',
         width: 80,
-        fixed: "right",
+        fixed: 'right',
         formatter: (row) =>
-          h("div", [
+          h('div', [
             h(ArtButtonMore, {
               list: [
                 {
-                  key: "permission",
-                  label: "Phân quyền hạn",
-                  icon: "ri:shield-keyhole-line",
+                  key: 'permission',
+                  label: 'Phân quyền hạn',
+                  icon: 'ri:shield-keyhole-line',
                   auth: Permissions.Admin.RoleManagement.Edit,
                 },
                 {
-                  key: "edit",
-                  label: "Chỉnh sửa vai trò",
-                  icon: "ri:edit-2-line",
+                  key: 'edit',
+                  label: 'Chỉnh sửa vai trò',
+                  icon: 'ri:edit-2-line',
                   auth: Permissions.Admin.RoleManagement.Edit,
                 },
                 {
-                  key: "delete",
-                  label: "Xóa vai trò",
-                  icon: "ri:delete-bin-4-line",
-                  color: "#f56c6c",
+                  key: 'delete',
+                  label: 'Xóa vai trò',
+                  icon: 'ri:delete-bin-4-line',
+                  color: '#f56c6c',
                   auth: Permissions.Admin.RoleManagement.Delete,
                 },
               ],
@@ -155,9 +152,9 @@ const {
   },
 });
 
-const dialogType = ref<"add" | "edit">("add");
+const dialogType = ref<'add' | 'edit'>('add');
 
-const showDialog = (type: "add" | "edit", row?: any) => {
+const showDialog = (type: 'add' | 'edit', row?: any) => {
   dialogVisible.value = true;
   dialogType.value = type;
   currentRoleData.value = row;
@@ -172,20 +169,20 @@ const handleSearch = (params: RoleSearchFormParams) => {
     filters.push(`Description@=${params.description}`);
   }
   replaceSearchParams({
-    Filters: filters.join(",") || undefined,
+    Filters: filters.join(',') || undefined,
   });
   getData();
 };
 
 const buttonMoreClick = (item: ButtonMoreItem, row: any) => {
   switch (item.key) {
-    case "permission":
+    case 'permission':
       showPermissionDialog(row);
       break;
-    case "edit":
-      showDialog("edit", row);
+    case 'edit':
+      showDialog('edit', row);
       break;
-    case "delete":
+    case 'delete':
       deleteRole(row);
       break;
   }
@@ -199,20 +196,20 @@ const showPermissionDialog = (row?: any) => {
 const deleteRole = (row: any) => {
   ElMessageBox.confirm(
     `Bạn chắc chắn muốn xóa vai trò "${row.name}"? Hành động này không thể khôi phục!`,
-    "Xác nhận xóa vai trò",
+    'Xác nhận xóa vai trò',
     {
-      confirmButtonText: "Xác định",
-      cancelButtonText: "Hủy",
-      type: "warning",
-    },
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    }
   )
     .then(async () => {
       await fetchDeleteRole(row.id);
-      ElMessage.success("Xóa vai trò thành công");
+      ElMessage.success('Xóa vai trò thành công');
       refreshData();
     })
     .catch(() => {
-      ElMessage.info("Đã hủy thao tác xóa");
+      ElMessage.info('Đã hủy thao tác xóa');
     });
 };
 </script>

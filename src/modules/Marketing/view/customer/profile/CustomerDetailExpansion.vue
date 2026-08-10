@@ -2,7 +2,6 @@
   <div
     class="resp-page lead-detail-expansion bg-gray-50/50 dark:bg-slate-950 p-6 border-t border-gray-100 dark:border-slate-700 shadow-inner"
   >
-    <!-- Thể hiện lỗi thân thiện khi API 360 bị lỗi 404/500 -->
     <div
       v-if="error"
       class="bg-white dark:bg-slate-900 rounded-3xl p-8 text-center border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[200px]"
@@ -19,10 +18,7 @@
             class="qr-wrapper bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl mb-4 border border-dashed border-gray-200 dark:border-slate-700"
           >
             <img
-              :src="
-                'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' +
-                lead.id
-              "
+              :src="'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + lead.id"
               alt="QR"
               class="w-24 h-24 opacity-80"
             />
@@ -31,9 +27,7 @@
             class="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest"
             >Mã định danh</span
           >
-          <h3
-            class="m-0 text-base font-bold text-gray-700 dark:text-slate-100 tracking-tighter"
-          >
+          <h3 class="m-0 text-base font-bold text-gray-700 dark:text-slate-100 tracking-tighter">
             {{ lead.id }}
           </h3>
         </div>
@@ -42,9 +36,7 @@
           class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700"
         >
           <div class="flex items-center gap-2 mb-6">
-            <div
-              class="size-8 bg-blue-50 dark:bg-blue-950/40 text-blue-500 rounded-lg flex-cc"
-            >
+            <div class="size-8 bg-blue-50 dark:bg-blue-950/40 text-blue-500 rounded-lg flex-cc">
               <ArtSvgIcon icon="ri:government-line" />
             </div>
             <h4
@@ -68,10 +60,7 @@
                 class="premium-input"
               >
                 <template #suffix>
-                  <ArtSvgIcon
-                    icon="ri:qr-scan-2-line"
-                    class="cursor-pointer hover:text-blue-500"
-                  />
+                  <ArtSvgIcon icon="ri:qr-scan-2-line" class="cursor-pointer hover:text-blue-500" />
                 </template>
               </ElInput>
             </div>
@@ -106,14 +95,10 @@
                 @click="handleVerify"
               >
                 <ArtSvgIcon
-                  :icon="
-                    isVerified
-                      ? 'ri:shield-check-line'
-                      : 'ri:shield-keyhole-line'
-                  "
+                  :icon="isVerified ? 'ri:shield-check-line' : 'ri:shield-keyhole-line'"
                   class="mr-2"
                 />
-                {{ isVerified ? "ĐÃ XÁC THỰC" : "XÁC THỰC HỒ SƠ" }}
+                {{ isVerified ? 'ĐÃ XÁC THỰC' : 'XÁC THỰC HỒ SƠ' }}
               </ElButton>
             </div>
           </div>
@@ -138,15 +123,11 @@
               </h4>
             </div>
             <div class="flex gap-1">
-              <ElTag size="small" type="warning" effect="plain"
-                >Nhật ký hoạt động</ElTag
-              >
+              <ElTag size="small" type="warning" effect="plain">Nhật ký hoạt động</ElTag>
             </div>
           </div>
 
-          <div
-            class="flex-1 overflow-y-auto pr-2 max-h-[450px] timeline-wrapper"
-          >
+          <div class="flex-1 overflow-y-auto pr-2 max-h-[450px] timeline-wrapper">
             <ElTimeline v-if="timelineEvents && timelineEvents.length > 0">
               <ElTimelineItem
                 v-for="event in timelineEvents"
@@ -173,18 +154,15 @@
                       class="text-[9px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500"
                     >
                       {{
-                        event.type === "service"
-                          ? "Sửa chữa / Bảo dưỡng"
-                          : event.type === "output_created" ||
-                              event.type === "output_status"
-                            ? "Giao dịch"
-                            : "Ghi chú Sale"
+                        event.type === 'service'
+                          ? 'Sửa chữa / Bảo dưỡng'
+                          : event.type === 'output_created' || event.type === 'output_status'
+                            ? 'Giao dịch'
+                            : 'Ghi chú Sale'
                       }}
                     </span>
                   </div>
-                  <p
-                    class="m-0 text-xs text-gray-700 dark:text-slate-300 leading-relaxed"
-                  >
+                  <p class="m-0 text-xs text-gray-700 dark:text-slate-300 leading-relaxed">
                     {{ event.content }}
                   </p>
                 </div>
@@ -195,9 +173,7 @@
             </div>
           </div>
 
-          <div
-            class="mt-4 pt-4 border-t border-gray-50 dark:border-slate-700 flex gap-2"
-          >
+          <div class="mt-4 pt-4 border-t border-gray-50 dark:border-slate-700 flex gap-2">
             <ElInput
               v-model="newNote"
               placeholder="Nhập ghi chú nhanh..."
@@ -224,11 +200,7 @@
             <div class="size-8 bg-white/20 rounded-lg flex-cc">
               <ArtSvgIcon icon="ri:sparkling-2-line" />
             </div>
-            <h4
-              class="m-0 font-bold uppercase text-[10px] tracking-wider opacity-80"
-            >
-              AI Insight
-            </h4>
+            <h4 class="m-0 font-bold uppercase text-[10px] tracking-wider opacity-80">Quan Tâm</h4>
           </div>
 
           <div class="flex flex-col gap-3">
@@ -239,9 +211,7 @@
               <p class="m-0 text-xs font-bold">Đỏ Đen / Đen Nhám</p>
             </div>
             <div class="bg-white/10 p-3 rounded-xl border border-white/10">
-              <span class="text-[9px] font-bold uppercase opacity-60 block mb-1"
-                >Hành vi</span
-              >
+              <span class="text-[9px] font-bold uppercase opacity-60 block mb-1">Hành vi</span>
               <p class="m-0 text-xs font-bold">Đã xem SH 125i (5 lần)</p>
             </div>
           </div>
@@ -251,9 +221,7 @@
           class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-700"
         >
           <div class="flex items-center gap-2 mb-6">
-            <div
-              class="size-8 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-lg flex-cc"
-            >
+            <div class="size-8 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-lg flex-cc">
               <ArtSvgIcon icon="ri:motorbike-line" />
             </div>
             <h4
@@ -263,10 +231,7 @@
             </h4>
           </div>
 
-          <div
-            v-if="vehicles.length === 0"
-            class="text-xs text-gray-400 text-center py-4"
-          >
+          <div v-if="vehicles.length === 0" class="text-xs text-gray-400 text-center py-4">
             Chưa sở hữu xe
           </div>
           <div
@@ -275,10 +240,9 @@
             class="p-3 mb-2 rounded-xl border border-gray-50 dark:border-slate-700 bg-gray-50/30 dark:bg-slate-800"
           >
             <div class="flex justify-between items-center mb-1">
-              <span
-                class="text-[10px] font-bold text-gray-700 dark:text-slate-200"
-                >{{ v.variantName || "Winner X 2024" }}</span
-              >
+              <span class="text-[10px] font-bold text-gray-700 dark:text-slate-200">{{
+                v.variantName || 'Winner X 2024'
+              }}</span>
               <ElTag
                 size="small"
                 :type="v.status === 'Sold' ? 'success' : 'info'"
@@ -286,20 +250,18 @@
                 class="text-[9px]"
               >
                 {{
-                  v.status === "Sold"
-                    ? "Đã bàn giao"
-                    : v.status === "Available"
-                      ? "Có sẵn / Đang sử dụng"
-                      : v.status || "Đang hoạt động"
+                  v.status === 'Sold'
+                    ? 'Đã bàn giao'
+                    : v.status === 'Available'
+                      ? 'Có sẵn / Đang sử dụng'
+                      : v.status || 'Đang hoạt động'
                 }}
               </ElTag>
             </div>
             <span class="text-[10px] font-bold text-blue-600 block">{{
-              v.licensePlate || "Chưa biển số"
+              v.licensePlate || 'Chưa biển số'
             }}</span>
-            <span class="text-[9px] text-gray-400 block mt-1"
-              >VIN: {{ v.vinNumber }}</span
-            >
+            <span class="text-[9px] text-gray-400 block mt-1">VIN: {{ v.vinNumber }}</span>
           </div>
         </div>
       </div>
@@ -308,9 +270,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useCustomerProfile } from "@/modules/Marketing/logic/useCustomerProfile";
-import type { Lead } from "@/api/customer/lead.api";
+import { ref, watch } from 'vue';
+import { useCustomerProfile } from '@/modules/Marketing/logic/useCustomerProfile';
+import type { Lead } from '@/api/customer/lead.api';
 
 const props = defineProps<{
   lead: Lead;
@@ -335,15 +297,15 @@ watch(
       loadFromLead(newLead);
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
-const newNote = ref("");
+const newNote = ref('');
 
 const handleNoteSubmit = () => {
   if (!newNote.value.trim()) return;
   addNote(newNote.value);
-  newNote.value = "";
+  newNote.value = '';
 };
 </script>
 
@@ -361,17 +323,30 @@ const handleNoteSubmit = () => {
   }
 }
 
-:global(.dark) .lead-detail-expansion {
+:global(html.dark) .lead-detail-expansion {
   background-color: #0f172a !important;
 
-  .premium-input :deep(.el-input__wrapper) {
+  .premium-input :deep(.el-input__wrapper),
+  .premium-input :deep(.el-input__wrapper.is-focus),
+  .premium-input :deep(.el-input__wrapper:focus-within) {
     background-color: #1e293b !important;
-    border-color: #334155 !important;
+    border-color: #3b82f6 !important;
     box-shadow: none !important;
   }
 
-  .premium-input :deep(.el-input__inner) {
+  .premium-input :deep(.el-input__inner),
+  .premium-input :deep(.el-input__inner:focus) {
+    background-color: transparent !important;
     color: #f8fafc !important;
+  }
+
+  .premium-input :deep(.el-input__inner:-webkit-autofill),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:hover),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:focus),
+  .premium-input :deep(.el-input__inner:-webkit-autofill:active) {
+    -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    transition: background-color 5000s ease-in-out 0s;
   }
 
   .premium-input :deep(.el-input__inner::placeholder) {

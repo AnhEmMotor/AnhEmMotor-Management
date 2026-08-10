@@ -1,19 +1,26 @@
 export const sectionData = {
-  title: "Khách hàng",
+  title: 'Chăm Sóc Khách Hàng CRM (Khách VIP)',
   description:
-    "Quản lý cơ sở dữ liệu khách hàng tiềm năng, hồ sơ, và tài sản xe.",
+    'Trình quản lý cơ sở dữ liệu khách hàng (CDP) và cá nhân hóa trải nghiệm. Nâng cấp hạng thành viên, tặng điểm thưởng và gửi quà sinh nhật.',
   pages: [
     {
-      id: "customer-management",
-      title: "Khách hàng",
-      description: "Quản trị toàn diện thông tin 360 độ của khách hàng.",
-      route: "/Marketing/customer/profile",
+      id: 'customer-loyalty',
+      title: 'Chương trình Khách hàng Thân thiết',
+      description:
+        'Theo dõi điểm tích lũy (Loyalty Points), phân hạng Thẻ (Đồng, Bạc, Vàng, Kim Cương) và kịch bản chăm sóc.',
+      route: '/marketing/customer/loyalty',
       steps: [
-        "Quản lý Khách hàng tiềm năng (Leads).",
-        "Xem hồ sơ Khách hàng và các tài sản (xe) tương ứng.",
-        "Thiết lập, phát hành thẻ Voucher & quản lý chăm sóc.",
+        '1. Vào [Chăm Sóc Khách Hàng].',
+        '2. Tra cứu Hồ sơ 360 độ của một khách hàng: Xem tổng số tiền họ đã chi tiêu từ trước đến nay, số lần vào xưởng, các dòng xe đang sở hữu.',
+        '3. Thiết lập cơ chế Tích điểm: (Ví dụ: Cứ tiêu 100k thì được 1 điểm. 1 điểm = 1000 VNĐ).',
+        '4. Cài đặt thăng hạng tự động: Khi khách đạt 500 điểm -> Lên thẻ Vàng (Được giảm giá vĩnh viễn 10% tiền công sửa xe).',
+        '5. Cấu hình kịch bản Gửi tin nhắn SMS chúc mừng sinh nhật tự động kèm Voucher rửa xe miễn phí.',
+        '6. Chạy các chiến dịch Email Marketing gửi cho nhóm Khách hàng Vàng để mời dự sự kiện ra mắt xe mới.',
       ],
-      tips: ["Góc nhìn 360 độ giúp thấu hiểu khách hàng tốt hơn."],
+      tips: [
+        'Chi phí giữ chân 1 khách hàng cũ rẻ hơn gấp 5 lần so với việc tìm kiếm khách hàng mới. Hãy tận dụng tối đa phân hệ này.',
+        "Lọc ra danh sách 'Khách hàng ngủ đông' (Những người đã 1 năm không quay lại xưởng) để gửi SMS tặng Voucher kích cầu.",
+      ],
     },
   ],
 };

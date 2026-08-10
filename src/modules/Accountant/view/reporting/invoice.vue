@@ -15,7 +15,6 @@
       </template>
     </ReportPageHeader>
 
-    <!-- TẦNG 1: 4 THẺ CHỈ SỐ KPI NHANH -->
     <div class="reporting-kpi-grid">
       <ArtStatsCard
         title="Tổng giá trị hóa đơn"
@@ -47,13 +46,11 @@
       />
     </div>
 
-    <!-- TẦNG 2: BIỂU ĐỒ XU HƯỚNG FULL-WIDTH -->
     <ElCard class="reporting-card mt-4">
       <template #header>Biến động doanh thu hóa đơn theo kênh</template>
       <div ref="trendChartRef" class="reporting-chart"></div>
     </ElCard>
 
-    <!-- TẦNG 3: CẶP ĐÔI BIỂU ĐỒ PHÂN TÍCH TỶ LỆ (CHIA ĐÔI 50/50) -->
     <div class="reporting-section-grid two-columns mt-4">
       <ElCard class="reporting-card">
         <template #header>Cơ cấu dòng sản phẩm</template>
@@ -65,27 +62,17 @@
       </ElCard>
     </div>
 
-    <!-- TẦNG 4: BẢNG DỮ LIỆU CHI TIẾT (ĐẨY XUỐNG ĐÁY TRANG) -->
     <ElCard class="reporting-card mt-4">
       <template #header>
         <div class="flex justify-between items-center">
           <span>Bảng kê chi tiết hóa đơn</span>
           <div class="flex gap-2">
-            <ElInput
-              v-model="searchQuery"
-              placeholder="Tìm mã hóa đơn, tên KH..."
-              class="w-64"
-            >
+            <ElInput v-model="searchQuery" placeholder="Tìm mã hóa đơn, tên KH..." class="w-64">
               <template #prefix>
                 <div class="i-ri-search-line"></div>
               </template>
             </ElInput>
-            <ElButton
-              type="primary"
-              plain
-              :disabled="isLoading"
-              @click="exportInvoiceExcel"
-            >
+            <ElButton type="primary" :disabled="isLoading" @click="exportInvoiceExcel">
               <div class="i-ri-file-excel-2-line mr-1"></div>
               Xuất Excel
             </ElButton>
@@ -102,29 +89,16 @@
         <ElTableColumn prop="date" label="Ngày tạo" min-width="110" />
         <ElTableColumn prop="channel" label="Kênh" min-width="120">
           <template #default="{ row }">
-            <span>{{
-              row.channel === "Offline" ? "🏪 Tại quầy" : "🌐 Online"
-            }}</span>
+            <span>{{ row.channel === 'Offline' ? '🏪 Tại quầy' : '🌐 Online' }}</span>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="category" label="Loại hàng" min-width="120">
           <template #default="{ row }">
-            <span>{{
-              row.category === "Xe máy" ? "🏍️ Xe máy" : "⚙️ Phụ tùng"
-            }}</span>
+            <span>{{ row.category === 'Xe máy' ? '🏍️ Xe máy' : '⚙️ Phụ tùng' }}</span>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="paymentMethod"
-          label="Phương thức"
-          min-width="150"
-        />
-        <ElTableColumn
-          prop="amount"
-          label="Tổng tiền"
-          min-width="140"
-          align="right"
-        >
+        <ElTableColumn prop="paymentMethod" label="Phương thức" min-width="150" />
+        <ElTableColumn prop="amount" label="Tổng tiền" min-width="140" align="right">
           <template #default="{ row }">
             <span class="font-semibold">{{ formatCurrency(row.amount) }}</span>
           </template>
@@ -140,16 +114,9 @@
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          label="Thao tác"
-          width="120"
-          align="center"
-          fixed="right"
-        >
+        <ElTableColumn label="Thao tác" width="120" align="center" fixed="right">
           <template #default="{ row }">
-            <ElButton link type="primary" @click="openDetail(row)"
-              >Chi tiết</ElButton
-            >
+            <ElButton size="small" type="primary" @click="openDetail(row)"> Chi tiết </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
@@ -165,12 +132,12 @@
       </div>
     </ElCard>
 
-    <!-- DRAWER: CHI TIẾT HÓA ĐƠN -->
-    <ElDrawer
+    <ElDialog
       v-model="drawerVisible"
       title="Chi tiết hóa đơn"
-      size="400px"
+      width="550px"
       append-to-body
+      align-center
     >
       <template v-if="selectedInvoice">
         <div class="mb-6">
@@ -180,9 +147,7 @@
               selectedInvoice.status
             }}</ElTag>
           </div>
-          <p class="text-sm text-gray-500">
-            Ngày tạo: {{ selectedInvoice.date }}
-          </p>
+          <p class="text-sm text-gray-500">Ngày tạo: {{ selectedInvoice.date }}</p>
         </div>
 
         <div class="space-y-4">
@@ -190,7 +155,7 @@
             <div class="flex justify-between mb-2">
               <span class="text-gray-500">Kênh bán:</span>
               <span class="font-medium">{{
-                selectedInvoice.channel === "Offline" ? "Tại quầy" : "Online"
+                selectedInvoice.channel === 'Offline' ? 'Tại quầy' : 'Online'
               }}</span>
             </div>
             <div class="flex justify-between mb-2">
@@ -199,9 +164,7 @@
             </div>
             <div class="flex justify-between mb-2">
               <span class="text-gray-500">Thanh toán:</span>
-              <span class="font-medium">{{
-                selectedInvoice.paymentMethod
-              }}</span>
+              <span class="font-medium">{{ selectedInvoice.paymentMethod }}</span>
             </div>
             <div class="flex justify-between border-t pt-2 mt-2">
               <span class="text-gray-500">Tổng tiền:</span>
@@ -211,14 +174,11 @@
             </div>
           </div>
 
-          <!-- Thông tin chuyên sâu (Drill-down) -->
           <div
             v-if="selectedInvoice.category === 'Xe máy'"
             class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
           >
-            <h4
-              class="font-semibold mb-3 border-b pb-2 flex items-center gap-2"
-            >
+            <h4 class="font-semibold mb-3 border-b pb-2 flex items-center gap-2">
               <div class="i-ri-motorbike-line"></div>
               Chi tiết xe bán
             </h4>
@@ -246,13 +206,8 @@
             </div>
           </div>
 
-          <div
-            v-else
-            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
-          >
-            <h4
-              class="font-semibold mb-3 border-b pb-2 flex items-center gap-2"
-            >
+          <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 class="font-semibold mb-3 border-b pb-2 flex items-center gap-2">
               <div class="i-ri-settings-4-line"></div>
               Chi tiết phụ tùng & Vận đơn
             </h4>
@@ -269,9 +224,7 @@
               </div>
             </div>
             <div class="mt-4">
-              <p class="text-xs text-gray-500 mb-2 uppercase font-semibold">
-                Danh sách phụ tùng
-              </p>
+              <p class="text-xs text-gray-500 mb-2 uppercase font-semibold">Danh sách phụ tùng</p>
               <div
                 v-for="(item, idx) in selectedInvoice.details.items"
                 :key="idx"
@@ -284,31 +237,28 @@
           </div>
         </div>
       </template>
-    </ElDrawer>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import * as echarts from "echarts";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { statisticsApi } from "@/api/operations";
-import { exportReportWorkbook } from "@/utils/report-excel";
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import * as echarts from 'echarts';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import { statisticsApi } from '@/api/operations';
+import { exportReportWorkbook } from '@/utils/report-excel';
 
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
 const periodStart = ref(
-  new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    .toISOString()
-    .split("T")[0],
+  new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]
 );
-const periodEnd = ref(new Date().toISOString().split("T")[0]);
-const searchQuery = ref("");
+const periodEnd = ref(new Date().toISOString().split('T')[0]);
+const searchQuery = ref('');
 const drawerVisible = ref(false);
 const selectedInvoice = ref<any>(null);
 
-// Refs cho ECharts
 const trendChartRef = ref<HTMLElement | null>(null);
 const productChartRef = ref<HTMLElement | null>(null);
 const paymentChartRef = ref<HTMLElement | null>(null);
@@ -317,9 +267,9 @@ let trendChart: echarts.ECharts | null = null;
 let productChart: echarts.ECharts | null = null;
 let paymentChart: echarts.ECharts | null = null;
 
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const chartTextColor = '#aeb0bd';
+const chartAxisLineColor = 'rgba(255, 255, 255, 0.16)';
+const chartGridLineColor = 'rgba(255, 255, 255, 0.1)';
 
 const summaryData = ref({
   totalInvoiced: 0,
@@ -338,9 +288,7 @@ const filteredInvoices = computed(() => {
   if (!searchQuery.value) return invoicesData.value;
   const q = searchQuery.value.toLowerCase();
   return invoicesData.value.filter(
-    (i) =>
-      i.id.toLowerCase().includes(q) ||
-      i.details?.customerName?.toLowerCase().includes(q),
+    (i) => i.id.toLowerCase().includes(q) || i.details?.customerName?.toLowerCase().includes(q)
   );
 });
 
@@ -358,57 +306,57 @@ function exportInvoiceExcel() {
     fileName: `Thong_ke_hoa_don_${periodStart.value}_${periodEnd.value}`,
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
-            "Từ ngày": periodStart.value,
-            "Đến ngày": periodEnd.value,
-            "Tổng giá trị hóa đơn": summaryData.value.totalInvoiced,
-            "Đã thu đủ": summaryData.value.collectedCash,
-            "Đang chờ đối soát": summaryData.value.pendingTransit,
-            "Giá trị đã hủy": summaryData.value.canceledAmount,
+            'Từ ngày': periodStart.value,
+            'Đến ngày': periodEnd.value,
+            'Tổng giá trị hóa đơn': summaryData.value.totalInvoiced,
+            'Đã thu đủ': summaryData.value.collectedCash,
+            'Đang chờ đối soát': summaryData.value.pendingTransit,
+            'Giá trị đã hủy': summaryData.value.canceledAmount,
           },
         ],
       },
       {
-        name: "Danh sách hóa đơn",
+        name: 'Danh sách hóa đơn',
         rows: filteredInvoices.value.map((item) => ({
-          "Mã hóa đơn": item.id,
+          'Mã hóa đơn': item.id,
           Ngày: item.date,
           Kênh: item.channel,
-          "Dòng sản phẩm": item.category,
-          "Phương thức thanh toán": item.paymentMethod,
-          "Số tiền": item.amount,
-          "Trạng thái": item.status,
-          "Khách hàng": item.details?.customerName,
+          'Dòng sản phẩm': item.category,
+          'Phương thức thanh toán': item.paymentMethod,
+          'Số tiền': item.amount,
+          'Trạng thái': item.status,
+          'Khách hàng': item.details?.customerName,
           CCCD: item.details?.cccd,
-          "Sản phẩm": item.details?.productName,
+          'Sản phẩm': item.details?.productName,
           VIN: item.details?.vin,
-          "Số máy": item.details?.engineNo,
-          "Đơn vị vận chuyển": item.details?.shippingProvider,
-          "Mã vận đơn": item.details?.trackingCode,
+          'Số máy': item.details?.engineNo,
+          'Đơn vị vận chuyển': item.details?.shippingProvider,
+          'Mã vận đơn': item.details?.trackingCode,
         })),
       },
       {
-        name: "Xu hướng doanh thu",
+        name: 'Xu hướng doanh thu',
         rows: trendData.value.map((item) => ({
           Ngày: item.day,
-          "Doanh thu tại quầy": item.offlineRev,
-          "Doanh thu online": item.onlineRev,
+          'Doanh thu tại quầy': item.offlineRev,
+          'Doanh thu online': item.onlineRev,
         })),
       },
       {
-        name: "Theo dòng sản phẩm",
+        name: 'Theo dòng sản phẩm',
         rows: productData.value.map((item) => ({
-          "Dòng sản phẩm": item.name,
-          "Giá trị": item.value,
+          'Dòng sản phẩm': item.name,
+          'Giá trị': item.value,
         })),
       },
       {
-        name: "Phương thức thanh toán",
+        name: 'Phương thức thanh toán',
         rows: paymentData.value.map((item) => ({
-          "Phương thức": item.name,
-          "Tỷ lệ": item.value,
+          'Phương thức': item.name,
+          'Tỷ lệ': item.value,
         })),
       },
     ],
@@ -423,10 +371,7 @@ function openDetail(row: any) {
 async function onPeriodChange() {
   isLoading.value = true;
   try {
-    const res = await statisticsApi.getInvoiceOverview(
-      periodStart.value,
-      periodEnd.value,
-    );
+    const res = await statisticsApi.getInvoiceOverview(periodStart.value, periodEnd.value);
     summaryData.value = res.kpi;
     trendData.value = res.trendData;
     productData.value = res.productData;
@@ -434,110 +379,112 @@ async function onPeriodChange() {
     invoicesData.value = res.invoicesData;
     renderCharts();
   } catch (error) {
-    console.error("Failed to load invoice overview", error);
+    console.error('Failed to load invoice overview', error);
   } finally {
     isLoading.value = false;
   }
 }
 
 function renderCharts() {
-  // 1. Line Chart: Xu hướng kênh
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor, fontSize: 13 },
-      tooltip: { trigger: "axis" },
+      tooltip: { trigger: 'axis' },
       legend: { top: 0, textStyle: { color: chartTextColor } },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "5%",
-        top: "15%",
+        left: '3%',
+        right: '4%',
+        bottom: '5%',
+        top: '15%',
         containLabel: true,
       },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: trendData.value.map((d) => d.day),
         axisLabel: { color: chartTextColor, fontSize: 13 },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: { color: chartTextColor, fontSize: 13 },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       series: [
         {
-          name: "Offline (Tại quầy)",
-          type: "line",
+          name: 'Offline (Tại quầy)',
+          type: 'line',
           smooth: true,
           data: trendData.value.map((d) => d.offlineRev),
-          itemStyle: { color: "#22c55e" }, // Xanh lục
-          lineStyle: { color: "#22c55e", width: 3 },
+          itemStyle: { color: '#22c55e' }, 
+          lineStyle: { color: '#22c55e', width: 3 },
         },
         {
-          name: "Online (Web/App)",
-          type: "line",
+          name: 'Online (Web/App)',
+          type: 'line',
           smooth: true,
           data: trendData.value.map((d) => d.onlineRev),
-          itemStyle: { color: "#3b82f6" }, // Xanh dương
-          lineStyle: { color: "#3b82f6", width: 3 },
+          itemStyle: { color: '#3b82f6' }, 
+          lineStyle: { color: '#3b82f6', width: 3 },
         },
       ],
     });
   }
 
-  // 2. Bar Chart: Cơ cấu dòng sản phẩm
   if (productChartRef.value) {
     if (!productChart) productChart = echarts.init(productChartRef.value);
     productChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor, fontSize: 13 },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      grid: { left: "3%", right: "10%", bottom: "3%", containLabel: true },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: '3%', right: '10%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "value",
-        axisLabel: { color: chartTextColor, fontSize: 13 },
+        type: 'value',
+        axisLabel: {
+          color: chartTextColor,
+          fontSize: 13,
+          formatter: (value: number) => formatShortCurrency(value),
+        },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
-        type: "category",
+        type: 'category',
         data: productData.value.map((r) => r.name),
         axisLabel: { color: chartTextColor, fontSize: 13 },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: productData.value.map((r) => r.value),
-          itemStyle: { color: "#e84a4a", borderRadius: [0, 4, 4, 0] },
-          barWidth: "40%",
+          itemStyle: { color: '#e84a4a', borderRadius: [0, 4, 4, 0] },
+          barWidth: '40%',
         },
       ],
     });
   }
 
-  // 3. Pie Chart: Phương thức thanh toán
   if (paymentChartRef.value) {
     if (!paymentChart) paymentChart = echarts.init(paymentChartRef.value);
     paymentChart.setOption({
-      backgroundColor: "transparent",
-      color: ["#e84a4a", "#3b82f6", "#22c55e", "#f97316", "#a855f7"],
+      backgroundColor: 'transparent',
+      color: ['#e84a4a', '#3b82f6', '#22c55e', '#f97316', '#a855f7'],
       textStyle: { color: chartTextColor, fontSize: 13 },
-      tooltip: { trigger: "item", formatter: "{b}: {c}%" },
+      tooltip: { trigger: 'item', formatter: '{b}: {c}%' },
       legend: { bottom: 0, textStyle: { color: chartTextColor } },
       series: [
         {
-          type: "pie",
-          radius: ["40%", "60%"],
-          center: ["50%", "45%"],
+          type: 'pie',
+          radius: ['40%', '60%'],
+          center: ['50%', '45%'],
           data: paymentData.value.map((d) => ({
             name: d.name,
             value: d.value,
           })),
           label: {
-            formatter: "{b}: {c}%",
+            show: false,
+            formatter: '{b}: {c}%',
             color: chartTextColor,
             fontSize: 14,
           },
@@ -548,28 +495,28 @@ function renderCharts() {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
 function formatShortCurrency(value: number) {
   if (value >= 1000000000) {
-    return (value / 1000000000).toFixed(2).replace(/\.00$/, "") + " Tỷ đ";
+    return (value / 1000000000).toFixed(2).replace(/\.00$/, '') + ' Tỷ đ';
   }
   if (value >= 1000000) {
-    return (value / 1000000).toFixed(0) + " Triệu đ";
+    return (value / 1000000).toFixed(0) + ' Triệu đ';
   }
   return formatCurrency(value);
 }
 
 function getStatusType(status: string) {
-  if (status.includes("Đã thu đủ")) return "success";
-  if (status.includes("Chờ đối soát")) return "warning";
-  if (status.includes("Đã hủy")) return "danger";
-  if (status.includes("Lỗi")) return "info";
-  return "primary";
+  if (status.includes('Đã thu đủ')) return 'success';
+  if (status.includes('Chờ đối soát')) return 'warning';
+  if (status.includes('Đã hủy')) return 'danger';
+  if (status.includes('Lỗi')) return 'info';
+  return 'primary';
 }
 
 function handleResize() {
@@ -580,11 +527,11 @@ function handleResize() {
 
 onMounted(() => {
   onPeriodChange();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   trendChart?.dispose();
   productChart?.dispose();
   paymentChart?.dispose();
@@ -594,7 +541,6 @@ onUnmounted(() => {
 <style scoped>
 @reference '@styles/core/tailwind.css';
 
-/* Optional styles to make the icons in the drawer header display block */
 .i-ri-motorbike-line,
 .i-ri-settings-4-line {
   display: inline-block;

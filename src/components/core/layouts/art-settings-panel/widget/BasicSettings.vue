@@ -12,12 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import SectionTitle from "./SectionTitle.vue";
-import SettingItem from "./SettingItem.vue";
-import { useSettingStore } from "@/application/store/setting";
-import { useSettingsConfig } from "../composables/useSettingsConfig";
-import { useSettingsHandlers } from "../composables/useSettingsHandlers";
-import { storeToRefs } from "pinia";
+import SectionTitle from './SectionTitle.vue';
+import SettingItem from './SettingItem.vue';
+import { useSettingStore } from '@/application/store/setting';
+import { useSettingsConfig } from '../composables/useSettingsConfig';
+import { useSettingsHandlers } from '../composables/useSettingsHandlers';
+import { storeToRefs } from 'pinia';
 
 const settingStore = useSettingStore();
 const { basicSettingsConfig } = useSettingsConfig();
@@ -64,7 +64,7 @@ const getSettingValue = (key: string) => {
 
 const handleSettingChange = (handlerName: string, value: any) => {
   const handler = (basicHandlers as any)[handlerName];
-  if (typeof handler === "function") {
+  if (typeof handler === 'function') {
     handler(value);
   } else {
     console.warn(`Handler "${handlerName}" not found in basicHandlers`);

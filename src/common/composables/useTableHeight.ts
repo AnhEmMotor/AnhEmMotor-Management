@@ -1,4 +1,4 @@
-import { computed, type Ref } from "vue";
+import { computed, type Ref } from 'vue';
 
 interface TableHeightOptions {
   showTableHeader: Ref<boolean>;
@@ -19,7 +19,7 @@ class TableHeightCalculator {
   calculate(): { height: string } {
     const offset = this.calculateOffset();
     return {
-      height: offset === 0 ? "100%" : `calc(100% - ${offset}px)`,
+      height: offset === 0 ? '100%' : `calc(100% - ${offset}px)`,
     };
   }
 
@@ -31,25 +31,18 @@ class TableHeightCalculator {
     const headerHeight = this.getHeaderHeight();
     const paginationOffset = this.calculatePaginationOffset();
 
-    return (
-      headerHeight +
-      paginationOffset +
-      TableHeightCalculator.TABLE_HEADER_SPACING
-    );
+    return headerHeight + paginationOffset + TableHeightCalculator.TABLE_HEADER_SPACING;
   }
 
   private getHeaderHeight(): number {
     return (
-      this.options.tableHeaderHeight.value ||
-      TableHeightCalculator.DEFAULT_TABLE_HEADER_HEIGHT
+      this.options.tableHeaderHeight.value || TableHeightCalculator.DEFAULT_TABLE_HEADER_HEIGHT
     );
   }
 
   private calculatePaginationOffset(): number {
     const { paginationHeight, paginationSpacing } = this.options;
-    return paginationHeight.value === 0
-      ? 0
-      : paginationHeight.value + paginationSpacing.value;
+    return paginationHeight.value === 0 ? 0 : paginationHeight.value + paginationSpacing.value;
   }
 }
 

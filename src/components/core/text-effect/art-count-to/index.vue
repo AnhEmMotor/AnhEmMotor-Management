@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick, onUnmounted, shallowRef } from "vue";
-import { useTransition, TransitionPresets } from "@vueuse/core";
+import { computed, watch, nextTick, onUnmounted, shallowRef } from 'vue';
+import { useTransition, TransitionPresets } from '@vueuse/core';
 
 interface CountToProps {
   target: number;
@@ -57,7 +57,7 @@ const EPSILON = Number.EPSILON;
 const MIN_DURATION = 100;
 const MAX_DURATION = 60000;
 const MAX_DECIMALS = 10;
-const DEFAULT_EASING = "easeOutExpo";
+const DEFAULT_EASING = 'easeOutExpo';
 const DEFAULT_DURATION = 2000;
 
 const props = withDefaults(defineProps<CountToProps>(), {
@@ -65,21 +65,17 @@ const props = withDefaults(defineProps<CountToProps>(), {
   duration: DEFAULT_DURATION,
   autoStart: true,
   decimals: 0,
-  decimal: ".",
-  separator: "",
-  prefix: "",
-  suffix: "",
+  decimal: '.',
+  separator: '',
+  prefix: '',
+  suffix: '',
   easing: DEFAULT_EASING,
   disabled: false,
 });
 
 const emit = defineEmits<CountToEmits>();
 
-const validateNumber = (
-  value: number,
-  name: string,
-  defaultValue: number,
-): number => {
+const validateNumber = (value: number, name: string, defaultValue: number): number => {
   if (!Number.isFinite(value)) {
     console.warn(`[CountTo] Invalid ${name} value:`, value);
     return defaultValue;
@@ -95,13 +91,12 @@ const formatNumber = (
   value: number,
   decimals: number,
   decimal: string,
-  separator: string,
+  separator: string
 ): string => {
-  let result =
-    decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString();
+  let result = decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString();
 
-  if (decimal !== "." && result.includes(".")) {
-    result = result.replace(".", decimal);
+  if (decimal !== '.' && result.includes('.')) {
+    result = result.replace('.', decimal);
   }
 
   if (separator) {
@@ -113,21 +108,17 @@ const formatNumber = (
   return result;
 };
 
-const safeTarget = computed(() => validateNumber(props.target, "target", 0));
+const safeTarget = computed(() => validateNumber(props.target, 'target', 0));
 const safeDuration = computed(() =>
-  clamp(
-    validateNumber(props.duration, "duration", DEFAULT_DURATION),
-    MIN_DURATION,
-    MAX_DURATION,
-  ),
+  clamp(validateNumber(props.duration, 'duration', DEFAULT_DURATION), MIN_DURATION, MAX_DURATION)
 );
 const safeDecimals = computed(() =>
-  clamp(validateNumber(props.decimals, "decimals", 0), 0, MAX_DECIMALS),
+  clamp(validateNumber(props.decimals, 'decimals', 0), 0, MAX_DECIMALS)
 );
 const safeEasing = computed(() => {
   const easing = props.easing;
   if (!(easing in TransitionPresets)) {
-    console.warn("[CountTo] Invalid easing value:", easing);
+    console.warn('[CountTo] Invalid easing value:', easing);
     return DEFAULT_EASING;
   }
   return easing;
@@ -145,12 +136,12 @@ const transitionValue = useTransition(currentValue, {
   onStarted: () => {
     isRunning.value = true;
     isPaused.value = false;
-    emit("started", targetValue.value);
+    emit('started', targetValue.value);
   },
   onFinished: () => {
     isRunning.value = false;
     isPaused.value = false;
-    emit("finished", targetValue.value);
+    emit('finished', targetValue.value);
   },
 });
 
@@ -161,12 +152,7 @@ const formattedValue = computed(() => {
     return `${props.prefix}0${props.suffix}`;
   }
 
-  const formattedNumber = formatNumber(
-    value,
-    safeDecimals.value,
-    props.decimal,
-    props.separator,
-  );
+  const formattedNumber = formatNumber(value, safeDecimals.value, props.decimal, props.separator);
   return `${props.prefix}${formattedNumber}${props.suffix}`;
 });
 
@@ -182,14 +168,14 @@ const resetPauseState = (): void => {
 
 const start = (target?: number): void => {
   if (props.disabled) {
-    console.warn("[CountTo] Animation is disabled");
+    console.warn('[CountTo] Animation is disabled');
     return;
   }
 
   const finalTarget = target !== undefined ? target : targetValue.value;
 
   if (!Number.isFinite(finalTarget)) {
-    console.warn("[CountTo] Invalid target value for start:", finalTarget);
+    console.warn('[CountTo] Invalid target value for start:', finalTarget);
     return;
   }
 
@@ -218,22 +204,22 @@ const pause = (): void => {
   pausedValue.value = transitionValue.value;
   currentValue.value = pausedValue.value;
 
-  emit("paused", pausedValue.value);
+  emit('paused', pausedValue.value);
 };
 
 const reset = (newTarget = 0): void => {
-  const target = validateNumber(newTarget, "reset target", 0);
+  const target = validateNumber(newTarget, 'reset target', 0);
 
   currentValue.value = target;
   targetValue.value = target;
   resetPauseState();
 
-  emit("reset");
+  emit('reset');
 };
 
 const setTarget = (target: number): void => {
   if (!Number.isFinite(target)) {
-    console.warn("[CountTo] Invalid target value for setTarget:", target);
+    console.warn('[CountTo] Invalid target value for setTarget:', target);
     return;
   }
 
@@ -248,7 +234,7 @@ const stop = (): void => {
   if (isRunning.value || isPaused.value) {
     currentValue.value = 0;
     resetPauseState();
-    emit("paused", 0);
+    emit('paused', 0);
   }
 };
 
@@ -261,7 +247,7 @@ watch(
       targetValue.value = newTarget;
     }
   },
-  { immediate: props.autoStart && !props.disabled },
+  { immediate: props.autoStart && !props.disabled }
 );
 
 watch(
@@ -270,7 +256,7 @@ watch(
     if (disabled && isRunning.value) {
       stop();
     }
-  },
+  }
 );
 
 onUnmounted(() => {

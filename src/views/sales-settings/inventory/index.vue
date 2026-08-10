@@ -5,14 +5,9 @@
         <div class="card-header">
           <div>
             <h3>Cài đặt cảnh báo tồn kho</h3>
-            <p>
-              Cấu hình ngưỡng để backend tính trạng thái còn hàng, sắp hết hàng
-              hoặc hết hàng.
-            </p>
+            <p>Cấu hình ngưỡng để backend tính trạng thái còn hàng, sắp hết hàng hoặc hết hàng.</p>
           </div>
-          <ElButton type="primary" :loading="saving" @click="handleSave"
-            >Lưu cài đặt</ElButton
-          >
+          <ElButton type="primary" :loading="saving" @click="handleSave">Lưu cài đặt</ElButton>
         </div>
       </template>
 
@@ -36,11 +31,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-import { SettingApi } from "@/api/setting.api";
+import { onMounted, reactive, ref } from 'vue';
+import { ElMessage } from 'element-plus';
+import { SettingApi } from '@/api/setting.api';
 
-defineOptions({ name: "SalesInventorySettings" });
+defineOptions({ name: 'SalesInventorySettings' });
 
 const DEFAULT_INVENTORY_ALERT_LEVEL = 5;
 
@@ -62,7 +57,7 @@ const loadSettings = async () => {
     const data = await SettingApi.getAll();
     settings.inventoryAlertLevel = toNumber(
       data.Inventory_alert_level,
-      DEFAULT_INVENTORY_ALERT_LEVEL,
+      DEFAULT_INVENTORY_ALERT_LEVEL
     );
   } finally {
     loadingSettings.value = false;
@@ -75,7 +70,7 @@ const handleSave = async () => {
     await SettingApi.update({
       Inventory_alert_level: String(Math.round(settings.inventoryAlertLevel)),
     });
-    ElMessage.success("Đã lưu cài đặt tồn kho");
+    ElMessage.success('Đã lưu cài đặt tồn kho');
     await loadSettings();
   } finally {
     saving.value = false;

@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="resp-page article-publish-page min-h-screen text-[#0F172A] dark:text-slate-100 pb-10"
-  >
+  <div class="resp-page article-publish-page min-h-screen text-[#0F172A] dark:text-slate-100 pb-10">
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 sticky top-0 z-[100] shadow-sm flex justify-between items-center"
     >
@@ -19,7 +17,7 @@
             <span
               class="px-2 py-0.5 rounded text-[9px] font-bold uppercase text-white shadow-sm"
               :class="isPublished ? 'bg-blue-500' : 'bg-slate-400'"
-              >{{ isPublished ? "Đã xuất bản" : "Bản nháp" }}</span
+              >{{ isPublished ? 'Đã xuất bản' : 'Bản nháp' }}</span
             >
           </h1>
         </div>
@@ -35,11 +33,7 @@
           @click="submit"
           class="h-10 px-8 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
         >
-          {{
-            pageMode === PageModeEnum.Edit
-              ? "Cập nhật bài viết"
-              : "Xuất bản ngay"
-          }}
+          {{ pageMode === PageModeEnum.Edit ? 'Cập nhật bài viết' : 'Xuất bản ngay' }}
         </button>
       </div>
     </div>
@@ -102,16 +96,11 @@
           <div
             class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/40 flex justify-between items-center"
           >
-            <span
-              class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
               >Nội dung bài viết</span
             >
           </div>
-          <ArtWangEditor
-            v-if="showEditor"
-            v-model="editorHtml"
-            class="flex-1"
-          />
+          <ArtWangEditor v-if="showEditor" v-model="editorHtml" class="flex-1" />
         </div>
       </div>
 
@@ -135,14 +124,9 @@
                 :src="ogImage"
                 class="w-full h-full object-cover transition-transform group-hover:scale-105"
               />
-              <div
-                v-else
-                class="w-full h-full flex-cc flex-col gap-2 text-slate-400"
-              >
+              <div v-else class="w-full h-full flex-cc flex-col gap-2 text-slate-400">
                 <ArtSvgIcon icon="ri:image-add-line" class="text-3xl" />
-                <span class="text-[9px] font-bold uppercase"
-                  >Tải ảnh bìa Social</span
-                >
+                <span class="text-[9px] font-bold uppercase">Tải ảnh bìa Social</span>
               </div>
             </div>
           </div>
@@ -170,19 +154,12 @@
               :key="p.id"
               class="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-950/20 rounded-xl border border-slate-100 dark:border-slate-800 group"
             >
-              <img
-                :src="p.img"
-                class="size-10 rounded-lg object-cover shadow-sm"
-              />
+              <img :src="p.img" class="size-10 rounded-lg object-cover shadow-sm" />
               <div class="flex-1 overflow-hidden">
-                <h4
-                  class="m-0 text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate"
-                >
+                <h4 class="m-0 text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">
                   {{ p.name }}
                 </h4>
-                <span class="text-[9px] font-bold text-slate-400">{{
-                  p.price
-                }}</span>
+                <span class="text-[9px] font-bold text-slate-400">{{ p.price }}</span>
               </div>
               <button
                 @click="removeProduct(p.id)"
@@ -196,15 +173,13 @@
               class="py-8 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl flex-cc flex-col gap-2 opacity-30"
             >
               <ArtSvgIcon icon="ri:car-line" class="text-3xl" />
-              <span
-                class="text-[9px] font-bold uppercase tracking-tighter text-center"
+              <span class="text-[9px] font-bold uppercase tracking-tighter text-center"
                 >Chưa chọn xe tư vấn</span
               >
             </div>
           </div>
           <p class="m-0 text-[9px] font-bold text-slate-400">
-            Khách hàng sẽ thấy nút "Xem giá xe này" và "Lái thử" ngay dưới bài
-            viết cho các xe trên.
+            Khách hàng sẽ thấy nút "Xem giá xe này" và "Lái thử" ngay dưới bài viết cho các xe trên.
           </p>
         </div>
       </div>
@@ -239,7 +214,7 @@
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
                 <ElImage
-                  :src="variant.coverImageUrl || ''"
+                  :src="formatImageUrl(variant.coverImageUrl) || ''"
                   class="w-12 h-12 rounded object-cover border border-gray-100 flex-shrink-0"
                   fit="cover"
                 >
@@ -276,9 +251,7 @@
                       v-if="getSelectedVariantColor(variant)"
                       class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
                       :style="{
-                        backgroundColor:
-                          getSelectedVariantColor(variant)?.colorCode ||
-                          '#ffffff',
+                        backgroundColor: getSelectedVariantColor(variant)?.colorCode || '#ffffff',
                       }"
                     ></span>
                   </template>
@@ -299,12 +272,7 @@
                     </div>
                   </ElOption>
                 </ElSelect>
-                <ElButton
-                  type="primary"
-                  size="small"
-                  plain
-                  @click="selectProductVariant(variant)"
-                >
+                <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
                   Chọn
                 </ElButton>
               </div>
@@ -337,27 +305,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onActivated, onDeactivated } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { InfoFilled } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { useDebounceFn } from "@vueuse/core";
-import { PageModeEnum } from "@/common/enums/formEnum";
-import { useCommon } from "@/common/composables/useCommon";
-import { NewsApi } from "@/api/marketing";
-import { ProductApi } from "@/api/product";
-import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
+import { ref, reactive, onMounted, onActivated, onDeactivated } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { InfoFilled } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { useDebounceFn } from '@vueuse/core';
+import { PageModeEnum } from '@/common/enums/formEnum';
+import { useCommon } from '@/common/composables/useCommon';
+import { NewsApi } from '@/api/marketing';
+import { ProductApi } from '@/api/product';
+import type { ProductVariantLiteForInput } from '@/domain/product/product.types';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "ArticlePublishWorkflow" });
+defineOptions({ name: 'ArticlePublishWorkflow' });
 
 const router = useRouter();
 const route = useRoute();
 
-const articleName = ref("");
-const articleSlug = ref("");
+const articleName = ref('');
+const articleSlug = ref('');
 const articleType = ref<number>();
-const editorHtml = ref("");
-const ogImage = ref("");
+const editorHtml = ref('');
+const ogImage = ref('');
 const isPublished = ref(false);
 const pageMode = ref(PageModeEnum.Add);
 const showEditor = ref(true);
@@ -371,11 +340,11 @@ onDeactivated(() => {
 });
 
 const resetForm = () => {
-  articleName.value = "";
-  articleSlug.value = "";
+  articleName.value = '';
+  articleSlug.value = '';
   articleType.value = undefined;
-  editorHtml.value = "";
-  ogImage.value = "";
+  editorHtml.value = '';
+  ogImage.value = '';
   isPublished.value = false;
   pageMode.value = PageModeEnum.Add;
   selectedProducts.value = [];
@@ -393,8 +362,8 @@ const loadArticleTypes = async () => {
       articleTypes.value = res.items;
     }
   } catch (error) {
-    console.error("Failed to load article types", error);
-    ElMessage.error("Không thể tải danh sách danh mục");
+    console.error('Failed to load article types', error);
+    ElMessage.error('Không thể tải danh sách danh mục');
   }
 };
 
@@ -402,21 +371,18 @@ const availableProducts = ref<ProductVariantLiteForInput[]>([]);
 const productCurrentPage = ref(1);
 const productPageSize = ref(10);
 const productTotal = ref(0);
-const productQuery = ref("");
+const productQuery = ref('');
 const productLoading = ref(false);
 const selectedVariantColors = reactive<Record<string, number | undefined>>({});
 
-const getVariantColorKey = (variant: ProductVariantLiteForInput) =>
-  String(variant.id);
+const getVariantColorKey = (variant: ProductVariantLiteForInput) => String(variant.id);
 
 const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
   const selectedColorId = selectedVariantColors[getVariantColorKey(variant)];
   return variant.colors?.find((color) => color.id === selectedColorId);
 };
 
-const initializeVariantColorSelection = (
-  variants: ProductVariantLiteForInput[],
-) => {
+const initializeVariantColorSelection = (variants: ProductVariantLiteForInput[]) => {
   variants.forEach((variant) => {
     const key = getVariantColorKey(variant);
     if (selectedVariantColors[key] || !variant.colors?.length) return;
@@ -434,7 +400,7 @@ const loadProducts = async () => {
     const res = await ProductApi.getVariantsForInput({
       current: productCurrentPage.value,
       size: productPageSize.value,
-      Filters: filters.join(","),
+      Filters: filters.join(','),
     });
     if (res && res.items) {
       availableProducts.value = res.items;
@@ -442,8 +408,8 @@ const loadProducts = async () => {
       productTotal.value = res.totalCount || 0;
     }
   } catch (error) {
-    console.error("Failed to load products", error);
-    ElMessage.error("Không thể tải danh sách sản phẩm");
+    console.error('Failed to load products', error);
+    ElMessage.error('Không thể tải danh sách sản phẩm');
   } finally {
     productLoading.value = false;
   }
@@ -456,7 +422,7 @@ const handleProductSearch = useDebounceFn(async (query: string) => {
 }, 300);
 
 const openProductSelector = async () => {
-  productQuery.value = "";
+  productQuery.value = '';
   productCurrentPage.value = 1;
   await loadProducts();
   productDialogVisible.value = true;
@@ -464,59 +430,56 @@ const openProductSelector = async () => {
 
 const selectProductVariant = (variant: ProductVariantLiteForInput) => {
   if (!variant.id) return;
-  const productVariantColorId =
-    selectedVariantColors[getVariantColorKey(variant)];
+  const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)];
   if (variant.colors?.length && !productVariantColorId) {
-    ElMessage.warning("Vui lòng chọn màu cho biến thể sản phẩm này");
+    ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này');
     return;
   }
 
   const selectedColor = getSelectedVariantColor(variant);
   const displayName = variant.displayName || `Sản phẩm #${variant.id}`;
-  const colorName = selectedColor?.colorName
-    ? ` - ${selectedColor.colorName}`
-    : "";
+  const colorName = selectedColor?.colorName ? ` - ${selectedColor.colorName}` : '';
 
-  const uniqueId = `${variant.id}_${productVariantColorId || "none"}`;
+  const uniqueId = `${variant.id}_${productVariantColorId || 'none'}`;
 
   if (selectedProducts.value.some((p) => p.id === uniqueId)) {
-    ElMessage.warning("Sản phẩm này đã được chọn!");
+    ElMessage.warning('Sản phẩm này đã được chọn!');
     return;
   }
 
   selectedProducts.value.push({
     id: uniqueId,
     name: `${displayName}${colorName}`,
-    price: "Liên hệ",
-    img: variant.coverImageUrl || "",
+    price: 'Liên hệ',
+    img: variant.coverImageUrl || '',
   });
 
   productDialogVisible.value = false;
-  ElMessage.success("Đã thêm sản phẩm liên kết");
+  ElMessage.success('Đã thêm sản phẩm liên kết');
 };
 const removeProduct = (id: any) =>
   (selectedProducts.value = selectedProducts.value.filter((p) => p.id !== id));
 
 const triggerImageUpload = () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
   input.onchange = async (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     try {
       const res = await NewsApi.uploadCoverImage(formData);
       if (res && res.url) {
         ogImage.value = res.url;
-        ElMessage.success("Đã tải lên ảnh bìa thành công");
+        ElMessage.success('Đã tải lên ảnh bìa thành công');
       }
     } catch (error) {
-      console.error("Upload failed", error);
-      ElMessage.error("Tải lên ảnh bìa thất bại");
+      console.error('Upload failed', error);
+      ElMessage.error('Tải lên ảnh bìa thất bại');
     }
   };
   input.click();
@@ -539,29 +502,24 @@ const getPayload = (publishStatus: boolean) => ({
 
 const validateForm = () => {
   if (!articleName.value || !articleName.value.trim()) {
-    ElMessage.warning("Vui lòng nhập tiêu đề bài viết!");
+    ElMessage.warning('Vui lòng nhập tiêu đề bài viết!');
     return false;
   }
   if (!articleSlug.value || !articleSlug.value.trim()) {
-    ElMessage.warning("Vui lòng nhập đường dẫn tĩnh!");
+    ElMessage.warning('Vui lòng nhập đường dẫn tĩnh!');
     return false;
   }
   if (!articleType.value) {
-    ElMessage.warning("Vui lòng chọn danh mục bài viết!");
+    ElMessage.warning('Vui lòng chọn danh mục bài viết!');
     return false;
   }
   if (!ogImage.value) {
-    ElMessage.warning("Vui lòng tải lên ảnh bìa cho bài viết!");
+    ElMessage.warning('Vui lòng tải lên ảnh bìa cho bài viết!');
     return false;
   }
-  const htmlContent = editorHtml.value
-    ? editorHtml.value.replace(/<[^>]*>/g, "").trim()
-    : "";
-  if (
-    !htmlContent &&
-    !(editorHtml.value && editorHtml.value.includes("<img"))
-  ) {
-    ElMessage.warning("Vui lòng nhập nội dung bài viết!");
+  const htmlContent = editorHtml.value ? editorHtml.value.replace(/<[^>]*>/g, '').trim() : '';
+  if (!htmlContent && !(editorHtml.value && editorHtml.value.includes('<img'))) {
+    ElMessage.warning('Vui lòng nhập nội dung bài viết!');
     return false;
   }
   return true;
@@ -576,8 +534,8 @@ const handleSaveDraft = async () => {
     } else {
       await NewsApi.create(payload);
     }
-    ElMessage.success("Đã lưu bản nháp thành công");
-    router.push("/Marketing/article");
+    ElMessage.success('Đã lưu bản nháp thành công');
+    router.push('/Marketing/article');
   } catch (error) {
     console.error(error);
   }
@@ -592,8 +550,8 @@ const submit = async () => {
     } else {
       await NewsApi.create(payload);
     }
-    ElMessage.success("Bài viết đã được xuất bản thành công!");
-    router.push("/Marketing/article");
+    ElMessage.success('Bài viết đã được xuất bản thành công!');
+    router.push('/Marketing/article');
   } catch (error) {
     console.error(error);
   }
@@ -617,7 +575,7 @@ const initData = async () => {
 
         if (res.linkedProducts && res.linkedProducts.length > 0) {
           selectedProducts.value = res.linkedProducts.map((p: any) => {
-            const colorSuffix = p.colorName ? ` - ${p.colorName}` : "";
+            const colorSuffix = p.colorName ? ` - ${p.colorName}` : '';
             return {
               name: `${p.variantName}${colorSuffix}`,
               price: p.price,
@@ -627,25 +585,25 @@ const initData = async () => {
         }
       }
     } catch {
-      ElMessage.error("Không thể tải dữ liệu bài viết");
+      ElMessage.error('Không thể tải dữ liệu bài viết');
     }
   } else {
     resetForm();
   }
 };
 
-import { watch } from "vue";
+import { watch } from 'vue';
 
 onMounted(() => {});
 
 watch(
   () => [route.query.id, route.params.id],
   () => {
-    if (route.name === "ArticlePublish" || route.name === "ArticleEdit") {
+    if (route.name === 'ArticlePublish' || route.name === 'ArticleEdit') {
       initData();
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 </script>
 

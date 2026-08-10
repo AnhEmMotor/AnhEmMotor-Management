@@ -2,22 +2,18 @@
   <div class="resp-page p-4">
     <el-card shadow="never" class="border-none">
       <template #header>
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        >
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div class="flex min-w-0 items-center gap-3">
             <ElButton @click="goBack" circle size="small"
               ><ElIcon><Back /></ElIcon
             ></ElButton>
-            <span
-              class="font-bold uppercase text-gray-800 dark:text-gray-100 text-lg"
-            >
+            <span class="font-bold uppercase text-gray-800 dark:text-gray-100 text-lg">
               {{
                 isCreating
-                  ? "Tạo Chính Sách Mới"
+                  ? 'Tạo Chính Sách Mới'
                   : isEditing
-                    ? "Chỉnh Sửa Chính Sách"
-                    : "Chi Tiết Chính Sách"
+                    ? 'Chỉnh Sửa Chính Sách'
+                    : 'Chi Tiết Chính Sách'
               }}
             </span>
             <ElTag
@@ -26,7 +22,7 @@
               effect="dark"
               round
             >
-              {{ getStatusLabel(editForm.status || "") }}
+              {{ getStatusLabel(editForm.status || '') }}
             </ElTag>
           </div>
 
@@ -40,25 +36,17 @@
               >
                 Xóa
               </ElButton>
-              <ElButton
-                v-if="editForm.status === 'expired'"
-                plain
-                @click="duplicatePolicy"
-              >
+              <ElButton v-if="editForm.status === 'expired'" plain @click="duplicatePolicy">
                 Nhân bản
               </ElButton>
-              <ElButton
-                v-if="editForm.status !== 'expired'"
-                type="primary"
-                @click="enableEdit"
-              >
+              <ElButton v-if="editForm.status !== 'expired'" type="primary" @click="enableEdit">
                 Chỉnh sửa
               </ElButton>
             </template>
             <template v-else>
               <ElButton @click="cancelEdit">Hủy bỏ</ElButton>
               <ElButton type="success" :loading="saving" @click="savePolicy">
-                {{ isCreating ? "Kích hoạt" : "Lưu thay đổi" }}
+                {{ isCreating ? 'Kích hoạt' : 'Lưu thay đổi' }}
               </ElButton>
             </template>
           </div>
@@ -117,10 +105,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
               <ElFormItem label="Tên chính sách" class="md:col-span-2">
-                <ElInput
-                  v-model="editForm.name"
-                  placeholder="Nhập tên chính sách..."
-                />
+                <ElInput v-model="editForm.name" placeholder="Nhập tên chính sách..." />
               </ElFormItem>
 
               <ElFormItem label="Ngày bắt đầu hiệu lực">
@@ -135,16 +120,9 @@
               </ElFormItem>
 
               <ElFormItem label="Phân hệ áp dụng">
-                <ElSelect
-                  v-model="editForm.department"
-                  class="w-full"
-                  :disabled="!isCreating"
-                >
+                <ElSelect v-model="editForm.department" class="w-full" :disabled="!isCreating">
                   <ElOption label="Sale Xe máy" value="vehicle_sales" />
-                  <ElOption
-                    label="Sale Phụ tùng / Online"
-                    value="parts_sales"
-                  />
+                  <ElOption label="Sale Phụ tùng / Online" value="parts_sales" />
                   <ElOption label="Kỹ thuật viên" value="mechanic" />
                 </ElSelect>
               </ElFormItem>
@@ -200,9 +178,7 @@
                     clearable
                     class="w-full"
                     :placeholder="currentProductConfig.colorPlaceholder"
-                    :disabled="
-                      !editForm.productVariantId || colorOptions.length === 0
-                    "
+                    :disabled="!editForm.productVariantId || colorOptions.length === 0"
                     @change="handleColorChange"
                     @clear="clearColorSelection"
                   >
@@ -213,10 +189,7 @@
                       :value="color.id"
                     >
                       <div class="flex items-center gap-2">
-                        <span
-                          class="vehicle-color-swatch"
-                          :style="getColorSwatchStyle(color)"
-                        />
+                        <span class="vehicle-color-swatch" :style="getColorSwatchStyle(color)" />
                         <span>{{ getColorLabel(color) }}</span>
                       </div>
                     </ElOption>
@@ -268,12 +241,9 @@
                 class="mb-3 rounded border border-blue-100 bg-blue-50 px-3 py-2 text-xs text-blue-700"
               >
                 <span v-if="selectedRewardBasePrice > 0">
-                  Giá quy đổi: {{ formatCurrency(selectedRewardBasePrice) }} /
-                  xe
+                  Giá quy đổi: {{ formatCurrency(selectedRewardBasePrice) }} / xe
                 </span>
-                <span v-else>
-                  Chọn xe hoặc phiên bản xe để hệ thống quy đổi % ra số tiền.
-                </span>
+                <span v-else> Chọn xe hoặc phiên bản xe để hệ thống quy đổi % ra số tiền. </span>
               </div>
 
               <div v-if="enableTiers" class="space-y-2">
@@ -312,8 +282,7 @@
                     </ElInput>
                     <div class="mt-1 text-xs leading-5 text-gray-500">
                       <span v-if="selectedRewardBasePrice > 0">
-                        Quy ra {{ formatCurrency(getTierBonusAmount(tier)) }} /
-                        xe
+                        Quy ra {{ formatCurrency(getTierBonusAmount(tier)) }} / xe
                       </span>
                       <span v-else> Chưa có giá xe để quy đổi </span>
                     </div>
@@ -384,7 +353,6 @@
           </ElCard>
         </ElForm>
 
-        <!-- STEP 3: Simulator -->
         <ElCard shadow="never" class="mb-6 bg-blue-50/50 border-blue-100">
           <template #header>
             <div class="font-bold flex items-center gap-2 text-blue-800">
@@ -397,13 +365,8 @@
           </template>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
-            <div
-              class="flex-1 w-full"
-              v-if="editForm.department === 'vehicle_sales'"
-            >
-              <label class="block text-sm text-gray-700 mb-2"
-                >Số lượng xe bán được</label
-              >
+            <div class="flex-1 w-full" v-if="editForm.department === 'vehicle_sales'">
+              <label class="block text-sm text-gray-700 mb-2">Số lượng xe bán được</label>
               <ElInputNumber
                 v-model="simInput"
                 :min="0"
@@ -411,16 +374,9 @@
                 controls-position="right"
               />
             </div>
-            <div
-              class="flex-1 w-full"
-              v-else-if="editForm.department === 'parts_sales'"
-            >
+            <div class="flex-1 w-full" v-else-if="editForm.department === 'parts_sales'">
               <label class="block text-sm text-gray-700 mb-2">
-                {{
-                  editForm.basis === "profit"
-                    ? "Lợi nhuận gộp (VNĐ)"
-                    : "Doanh thu (VNĐ)"
-                }}
+                {{ editForm.basis === 'profit' ? 'Lợi nhuận gộp (VNĐ)' : 'Doanh thu (VNĐ)' }}
               </label>
               <ElInput
                 v-model="simInputVal"
@@ -436,9 +392,7 @@
               v-else-if="editForm.department === 'mechanic'"
             >
               <div>
-                <label class="block text-sm text-gray-700 mb-2"
-                  >Tiền công (VNĐ)</label
-                >
+                <label class="block text-sm text-gray-700 mb-2">Tiền công (VNĐ)</label>
                 <ElInput
                   v-model="simLabor"
                   data-testid="mechanic-labor-input"
@@ -449,9 +403,7 @@
                 />
               </div>
               <div>
-                <label class="block text-sm text-gray-700 mb-2"
-                  >Phụ tùng (VNĐ)</label
-                >
+                <label class="block text-sm text-gray-700 mb-2">Phụ tùng (VNĐ)</label>
                 <ElInput
                   v-model="simParts"
                   data-testid="mechanic-parts-input"
@@ -472,15 +424,10 @@
             >
           </div>
 
-          <div
-            v-if="simResult !== null"
-            class="mt-4 p-4 bg-white border border-blue-200 rounded"
-          >
+          <div v-if="simResult !== null" class="mt-4 p-4 bg-white border border-blue-200 rounded">
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Hoa hồng dự kiến:</span>
-              <span class="text-2xl font-bold text-green-600">{{
-                formatCurrency(simResult)
-              }}</span>
+              <span class="text-2xl font-bold text-green-600">{{ formatCurrency(simResult) }}</span>
             </div>
             <div
               v-if="simBreakdown"
@@ -496,27 +443,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
   commissionPolicyApi,
   type CommissionPolicyResponse,
-} from "@/api/operations/commission-policy.api";
-import { ProductApi } from "@/api/product";
-import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Delete, Back, Money, InfoFilled } from "@element-plus/icons-vue";
+} from '@/api/operations/commission-policy.api';
+import { ProductApi } from '@/api/product';
+import type { ProductVariantLiteForInput } from '@/domain/product/product.types';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Plus, Delete, Back, Money, InfoFilled } from '@element-plus/icons-vue';
 import {
   calculateMechanicCommission,
   calculatePartsCommission,
   parseCurrencyInput,
-} from "./commission-simulator";
+} from './commission-simulator';
 
-defineOptions({ name: "HRCommissionPolicyDetail" });
+defineOptions({ name: 'HRCommissionPolicyDetail' });
 
-type ProductVariantColorOption = NonNullable<
-  ProductVariantLiteForInput["colors"]
->[number];
+type ProductVariantColorOption = NonNullable<ProductVariantLiteForInput['colors']>[number];
 
 interface ProductOption {
   productId: number;
@@ -524,7 +469,7 @@ interface ProductOption {
   categoryId?: number | null;
 }
 
-type DepartmentKey = "vehicle_sales" | "parts_sales" | "mechanic";
+type DepartmentKey = 'vehicle_sales' | 'parts_sales' | 'mechanic';
 
 interface DepartmentProductConfig {
   productLabel: string;
@@ -595,87 +540,81 @@ const allPolicies = ref<PolicyFormModel[]>([]);
 const vehicleVariants = ref<ProductVariantLiteForInput[]>([]);
 const vehicleOptionsLoading = ref(false);
 
-const vehicleKeywords = ["xe", "motor", "motorcycle", "scooter"];
+const vehicleKeywords = ['xe', 'motor', 'motorcycle', 'scooter'];
 
 const getVehicleDisplayName = (variant: ProductVariantLiteForInput) => {
   const displayName = variant.displayName?.trim();
   if (!displayName) return `Xe #${variant.productId || variant.id}`;
 
-  const strippedName = displayName.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  const strippedName = displayName.replace(/\s*\([^)]*\)\s*$/, '').trim();
   return strippedName || displayName;
 };
 
 const isVehicleVariant = (variant: ProductVariantLiteForInput) => {
   const managementType = variant.managementType?.toLowerCase();
-  if (managementType) return managementType === "vin_number";
+  if (managementType) return managementType === 'vin_number';
 
-  const displayName = variant.displayName?.toLowerCase() || "";
+  const displayName = variant.displayName?.toLowerCase() || '';
   return vehicleKeywords.some((keyword) => displayName.includes(keyword));
 };
 
-const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> =
-  {
-    vehicle_sales: {
-      productLabel: "Xe",
-      productPlaceholder: "Chọn xe từ quản lý sản phẩm",
-      variantLabel: "Phiên bản xe",
-      variantPlaceholder: "Chọn phiên bản xe",
-      colorLabel: "Màu xe",
-      colorPlaceholder: "Chọn màu xe",
-      priceLabel: "Giá xe",
-      targetGroup: "VehicleSales",
-      unit: "xe",
-      accepts: isVehicleVariant,
-    },
-    parts_sales: {
-      productLabel: "Phụ tùng / phụ kiện",
-      productPlaceholder: "Chọn phụ tùng hoặc phụ kiện",
-      variantLabel: "Phiên bản / quy cách",
-      variantPlaceholder: "Chọn phiên bản hoặc quy cách",
-      colorLabel: "Màu / thuộc tính",
-      colorPlaceholder: "Chọn màu hoặc thuộc tính",
-      priceLabel: "Giá phụ tùng / phụ kiện",
-      targetGroup: "PartsSales",
-      unit: "sản phẩm",
-      accepts: (variant) => !isVehicleVariant(variant),
-    },
-    mechanic: {
-      productLabel: "Phụ tùng áp dụng tại xưởng",
-      productPlaceholder: "Chọn phụ tùng áp dụng tại xưởng",
-      variantLabel: "Phiên bản / quy cách",
-      variantPlaceholder: "Chọn phiên bản hoặc quy cách",
-      colorLabel: "Màu / thuộc tính",
-      colorPlaceholder: "Chọn màu hoặc thuộc tính",
-      priceLabel: "Giá phụ tùng",
-      targetGroup: "Mechanic",
-      unit: "phiếu",
-      accepts: (variant) => !isVehicleVariant(variant),
-    },
-  };
+const departmentProductConfig: Record<DepartmentKey, DepartmentProductConfig> = {
+  vehicle_sales: {
+    productLabel: 'Xe',
+    productPlaceholder: 'Chọn xe từ quản lý sản phẩm',
+    variantLabel: 'Phiên bản xe',
+    variantPlaceholder: 'Chọn phiên bản xe',
+    colorLabel: 'Màu xe',
+    colorPlaceholder: 'Chọn màu xe',
+    priceLabel: 'Giá xe',
+    targetGroup: 'VehicleSales',
+    unit: 'xe',
+    accepts: isVehicleVariant,
+  },
+  parts_sales: {
+    productLabel: 'Phụ tùng / phụ kiện',
+    productPlaceholder: 'Chọn phụ tùng hoặc phụ kiện',
+    variantLabel: 'Phiên bản / quy cách',
+    variantPlaceholder: 'Chọn phiên bản hoặc quy cách',
+    colorLabel: 'Màu / thuộc tính',
+    colorPlaceholder: 'Chọn màu hoặc thuộc tính',
+    priceLabel: 'Giá phụ tùng / phụ kiện',
+    targetGroup: 'PartsSales',
+    unit: 'sản phẩm',
+    accepts: (variant) => !isVehicleVariant(variant),
+  },
+  mechanic: {
+    productLabel: 'Phụ tùng áp dụng tại xưởng',
+    productPlaceholder: 'Chọn phụ tùng áp dụng tại xưởng',
+    variantLabel: 'Phiên bản / quy cách',
+    variantPlaceholder: 'Chọn phiên bản hoặc quy cách',
+    colorLabel: 'Màu / thuộc tính',
+    colorPlaceholder: 'Chọn màu hoặc thuộc tính',
+    priceLabel: 'Giá phụ tùng',
+    targetGroup: 'Mechanic',
+    unit: 'phiếu',
+    accepts: (variant) => !isVehicleVariant(variant),
+  },
+};
 
 const currentDepartment = computed<DepartmentKey>(() => {
   const department = editForm.value.department as DepartmentKey;
-  return departmentProductConfig[department] ? department : "vehicle_sales";
+  return departmentProductConfig[department] ? department : 'vehicle_sales';
 });
 
-const currentProductConfig = computed(
-  () => departmentProductConfig[currentDepartment.value],
-);
+const currentProductConfig = computed(() => departmentProductConfig[currentDepartment.value]);
 
 const productOptions = computed<ProductOption[]>(() => {
-  const matchingItems = vehicleVariants.value.filter(
-    currentProductConfig.value.accepts,
-  );
+  const matchingItems = vehicleVariants.value.filter(currentProductConfig.value.accepts);
   const sourceItems =
-    currentDepartment.value === "vehicle_sales" && matchingItems.length === 0
+    currentDepartment.value === 'vehicle_sales' && matchingItems.length === 0
       ? vehicleVariants.value
       : matchingItems;
   const optionsByProductId = new Map<number, ProductOption>();
 
   sourceItems.forEach((variant) => {
     const productId = Number(variant.productId);
-    if (!Number.isFinite(productId) || optionsByProductId.has(productId))
-      return;
+    if (!Number.isFinite(productId) || optionsByProductId.has(productId)) return;
 
     optionsByProductId.set(productId, {
       productId,
@@ -685,25 +624,20 @@ const productOptions = computed<ProductOption[]>(() => {
   });
 
   return Array.from(optionsByProductId.values()).sort((a, b) =>
-    a.label.localeCompare(b.label, "vi"),
+    a.label.localeCompare(b.label, 'vi')
   );
 });
 
 const variantOptions = computed(() => {
   const productId = Number(editForm.value.productId);
   if (!Number.isFinite(productId)) return [];
-  return vehicleVariants.value.filter(
-    (variant) => Number(variant.productId) === productId,
-  );
+  return vehicleVariants.value.filter((variant) => Number(variant.productId) === productId);
 });
 
 const selectedVariant = computed(() => {
   const variantId = Number(editForm.value.productVariantId);
   if (!Number.isFinite(variantId)) return null;
-  return (
-    variantOptions.value.find((variant) => Number(variant.id) === variantId) ||
-    null
-  );
+  return variantOptions.value.find((variant) => Number(variant.id) === variantId) || null;
 });
 
 const colorOptions = computed<ProductVariantColorOption[]>(() => {
@@ -718,9 +652,9 @@ const getVariantLabel = (variant: ProductVariantLiteForInput) => {
   const suffix = displayName.startsWith(vehicleName)
     ? displayName.slice(vehicleName.length).trim()
     : displayName;
-  const cleanSuffix = suffix.replace(/^\((.*)\)$/, "$1").trim();
+  const cleanSuffix = suffix.replace(/^\((.*)\)$/, '$1').trim();
 
-  return cleanSuffix || "Phiên bản mặc định";
+  return cleanSuffix || 'Phiên bản mặc định';
 };
 
 const getColorLabel = (color: ProductVariantColorOption) => {
@@ -728,45 +662,42 @@ const getColorLabel = (color: ProductVariantColorOption) => {
 };
 
 const getColorSwatchStyle = (color: ProductVariantColorOption) => ({
-  backgroundColor: color.colorCode || "#ffffff",
+  backgroundColor: color.colorCode || '#ffffff',
 });
 
 const syncVehicleSelectionMetadata = () => {
   const selectedVehicle = productOptions.value.find(
-    (vehicle) => vehicle.productId === Number(editForm.value.productId),
+    (vehicle) => vehicle.productId === Number(editForm.value.productId)
   );
   const selectedColor = colorOptions.value.find(
-    (color) =>
-      Number(color.id) === Number(editForm.value.productVariantColorId),
+    (color) => Number(color.id) === Number(editForm.value.productVariantColorId)
   );
 
-  editForm.value.vehicleName = selectedVehicle?.label || "";
+  editForm.value.vehicleName = selectedVehicle?.label || '';
   editForm.value.categoryId = selectedVehicle?.categoryId ?? null;
   editForm.value.vehicleVariantName = selectedVariant.value
     ? getVariantLabel(selectedVariant.value)
-    : "";
-  editForm.value.vehicleColorName = selectedColor
-    ? getColorLabel(selectedColor)
-    : "";
-  editForm.value.vehicleColorCode = selectedColor?.colorCode || "";
+    : '';
+  editForm.value.vehicleColorName = selectedColor ? getColorLabel(selectedColor) : '';
+  editForm.value.vehicleColorCode = selectedColor?.colorCode || '';
 };
 
 const clearColorSelection = () => {
   editForm.value.productVariantColorId = null;
-  editForm.value.vehicleColorName = "";
-  editForm.value.vehicleColorCode = "";
+  editForm.value.vehicleColorName = '';
+  editForm.value.vehicleColorCode = '';
 };
 
 const clearVariantSelection = () => {
   editForm.value.productVariantId = null;
-  editForm.value.vehicleVariantName = "";
+  editForm.value.vehicleVariantName = '';
   clearColorSelection();
 };
 
 const clearVehicleSelection = () => {
   editForm.value.productId = null;
   editForm.value.categoryId = null;
-  editForm.value.vehicleName = "";
+  editForm.value.vehicleName = '';
   clearVariantSelection();
 };
 
@@ -799,7 +730,7 @@ const handleColorChange = () => {
   syncVehicleSelectionMetadata();
 };
 
-const loadVehicleOptions = async (search = "") => {
+const loadVehicleOptions = async (search = '') => {
   vehicleOptionsLoading.value = true;
   try {
     const filters: string[] = [];
@@ -811,14 +742,14 @@ const loadVehicleOptions = async (search = "") => {
     const res = await ProductApi.getVariantsForInput({
       current: 1,
       size: 100,
-      Filters: filters.join(",") || undefined,
+      Filters: filters.join(',') || undefined,
     });
 
     vehicleVariants.value = res.items || [];
     syncVehicleSelectionMetadata();
   } catch (error) {
-    console.error("Failed to load vehicle options:", error);
-    ElMessage.error("Không thể tải danh sách sản phẩm áp dụng");
+    console.error('Failed to load vehicle options:', error);
+    ElMessage.error('Không thể tải danh sách sản phẩm áp dụng');
   } finally {
     vehicleOptionsLoading.value = false;
   }
@@ -834,31 +765,30 @@ watch(
     if (previousDepartment && department !== previousDepartment) {
       clearVehicleSelection();
     }
-  },
+  }
 );
 
-// Simulator state
 const simInput = ref(0);
-const simInputVal = ref("");
-const simLabor = ref("");
-const simParts = ref("");
+const simInputVal = ref('');
+const simLabor = ref('');
+const simParts = ref('');
 const simResult = ref<number | null>(null);
-const simBreakdown = ref<string>("");
+const simBreakdown = ref<string>('');
 
 const formatDate = (dateStr?: string) => {
-  if (!dateStr) return "---";
+  if (!dateStr) return '---';
   const date = new Date(dateStr);
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
@@ -876,35 +806,35 @@ const selectedRewardBasePrice = computed(() => {
 const selectedProductPriceLabel = computed(() => {
   return selectedRewardBasePrice.value > 0
     ? formatCurrency(selectedRewardBasePrice.value)
-    : "Chưa có giá bán";
+    : 'Chưa có giá bán';
 });
 
 const recognitionConditionText = computed(() => {
-  if (currentDepartment.value === "vehicle_sales") {
-    return "Điều kiện ghi nhận: hóa đơn xe đã thanh toán 100% hoặc xe đã bàn giao.";
+  if (currentDepartment.value === 'vehicle_sales') {
+    return 'Điều kiện ghi nhận: hóa đơn xe đã thanh toán 100% hoặc xe đã bàn giao.';
   }
 
-  if (currentDepartment.value === "parts_sales") {
-    return "Điều kiện ghi nhận: sản phẩm đã thanh toán và không thuộc đơn hoàn trả.";
+  if (currentDepartment.value === 'parts_sales') {
+    return 'Điều kiện ghi nhận: sản phẩm đã thanh toán và không thuộc đơn hoàn trả.';
   }
 
-  return "Điều kiện ghi nhận: phiếu sửa chữa đã hoàn tất và đã xác nhận thanh toán.";
+  return 'Điều kiện ghi nhận: phiếu sửa chữa đã hoàn tất và đã xác nhận thanh toán.';
 });
 
 const hasTierBonusRate = (tier: CommissionTier) => {
   const value = tier.bonusRate;
-  return value !== undefined && value !== null && `${value}`.trim() !== "";
+  return value !== undefined && value !== null && `${value}`.trim() !== '';
 };
 
-const normalizeBonusRate = (value: CommissionTier["bonusRate"]) => {
-  const normalized = `${value ?? ""}`.replace(",", ".").trim();
+const normalizeBonusRate = (value: CommissionTier['bonusRate']) => {
+  const normalized = `${value ?? ''}`.replace(',', '.').trim();
   const numericValue = Number(normalized);
   return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
 };
 
 const calculateTierBonusAmount = (
-  bonusRate: CommissionTier["bonusRate"],
-  basePrice = selectedRewardBasePrice.value,
+  bonusRate: CommissionTier['bonusRate'],
+  basePrice = selectedRewardBasePrice.value
 ) => {
   const price = Number(basePrice) || 0;
   if (price <= 0) return 0;
@@ -949,25 +879,21 @@ const syncTierBonusAmounts = () => {
 watch(
   () => [
     selectedRewardBasePrice.value,
-    editForm.value.tiers?.map((tier) => `${tier.bonusRate ?? ""}`).join("|"),
+    editForm.value.tiers?.map((tier) => `${tier.bonusRate ?? ''}`).join('|'),
   ],
   () => {
     syncTierBonusAmounts();
-  },
+  }
 );
 
-const POLICY_UI_CONFIG_PREFIX = "AEM_POLICY_UI_V1:";
+const POLICY_UI_CONFIG_PREFIX = 'AEM_POLICY_UI_V1:';
 
 const parsePolicyUiConfiguration = (notes?: string): PolicyUiConfiguration => {
   if (!notes?.startsWith(POLICY_UI_CONFIG_PREFIX)) return {};
 
   try {
-    const parsed: unknown = JSON.parse(
-      notes.slice(POLICY_UI_CONFIG_PREFIX.length),
-    );
-    return parsed && typeof parsed === "object"
-      ? (parsed as PolicyUiConfiguration)
-      : {};
+    const parsed: unknown = JSON.parse(notes.slice(POLICY_UI_CONFIG_PREFIX.length));
+    return parsed && typeof parsed === 'object' ? (parsed as PolicyUiConfiguration) : {};
   } catch {
     return {};
   }
@@ -975,51 +901,45 @@ const parsePolicyUiConfiguration = (notes?: string): PolicyUiConfiguration => {
 
 const mapBackendPolicy = (p: CommissionPolicyResponse): PolicyFormModel => {
   const uiConfiguration = parsePolicyUiConfiguration(p.notes);
-  const target = p.targetGroup || "";
+  const target = p.targetGroup || '';
   const dept =
     uiConfiguration.department ||
-    (target.includes("Kỹ thuật") || target === "Mechanic"
-      ? "mechanic"
-      : target.includes("Phụ tùng") || target === "PartsSales"
-        ? "parts_sales"
-        : "vehicle_sales");
+    (target.includes('Kỹ thuật') || target === 'Mechanic'
+      ? 'mechanic'
+      : target.includes('Phụ tùng') || target === 'PartsSales'
+        ? 'parts_sales'
+        : 'vehicle_sales');
 
   return {
     id: p.id,
     name: p.name,
     department: dept,
-    status: p.isActive ? "active" : "expired",
+    status: p.isActive ? 'active' : 'expired',
     productId: p.productId ?? null,
     categoryId: p.categoryId ?? null,
     productVariantId: uiConfiguration.productVariantId ?? null,
     productVariantColorId: uiConfiguration.productVariantColorId ?? null,
-    startDate: p.effectiveDate?.split("T")[0] || "",
-    target: uiConfiguration.note || "",
-    percentage: p.type === "Percentage" ? Number(p.value) : undefined,
-    basis: uiConfiguration.basis || "revenue",
+    startDate: p.effectiveDate?.split('T')[0] || '',
+    target: uiConfiguration.note || '',
+    percentage: p.type === 'Percentage' ? Number(p.value) : undefined,
+    basis: uiConfiguration.basis || 'revenue',
     laborPercentage:
-      uiConfiguration.laborPercentage ??
-      (dept === "mechanic" ? Number(p.value) : undefined),
+      uiConfiguration.laborPercentage ?? (dept === 'mechanic' ? Number(p.value) : undefined),
     partsPercentage: uiConfiguration.partsPercentage,
     tiers:
-      dept === "vehicle_sales"
-        ? uiConfiguration.tiers || [
-            { from: 1, to: 999, bonus: Number(p.value) },
-          ]
+      dept === 'vehicle_sales'
+        ? uiConfiguration.tiers || [{ from: 1, to: 999, bonus: Number(p.value) }]
         : undefined,
   };
 };
 
 const goBack = () => {
-  router.push({ name: "HRCommissionPolicy" });
+  router.push({ name: 'HRCommissionPolicy' });
 };
 
 onMounted(async () => {
   try {
-    const [policies] = await Promise.all([
-      commissionPolicyApi.getAll(),
-      loadVehicleOptions(),
-    ]);
+    const [policies] = await Promise.all([commissionPolicyApi.getAll(), loadVehicleOptions()]);
     allPolicies.value = (policies || []).map(mapBackendPolicy);
   } catch {
     allPolicies.value = [];
@@ -1032,8 +952,8 @@ onMounted(async () => {
     isCreating.value = true;
     isEditing.value = true;
     editForm.value = {
-      department: dept || "vehicle_sales",
-      status: "pending",
+      department: dept || 'vehicle_sales',
+      status: 'pending',
       productId: null,
       categoryId: null,
       productVariantId: null,
@@ -1045,7 +965,7 @@ onMounted(async () => {
       percentage: 0,
       laborPercentage: 0,
       partsPercentage: 0,
-      basis: "revenue",
+      basis: 'revenue',
     };
     syncVehicleSelectionMetadata();
     enableTiers.value = true;
@@ -1056,12 +976,10 @@ onMounted(async () => {
         const policy = mapBackendPolicy(res);
         editForm.value = JSON.parse(JSON.stringify(policy));
         syncVehicleSelectionMetadata();
-        enableTiers.value = !!(
-          editForm.value.tiers && editForm.value.tiers.length > 0
-        );
+        enableTiers.value = !!(editForm.value.tiers && editForm.value.tiers.length > 0);
       }
     } catch (error) {
-      ElMessage.error("Không tìm thấy chính sách");
+      ElMessage.error('Không tìm thấy chính sách');
       goBack();
     }
   }
@@ -1074,14 +992,12 @@ const handleClonePolicy = (id: number) => {
     editForm.value = {
       ...JSON.parse(JSON.stringify(policyToClone)),
       id: undefined,
-      name: policyToClone.name + " (Bản sao)",
-      status: "pending",
+      name: policyToClone.name + ' (Bản sao)',
+      status: 'pending',
     };
     syncVehicleSelectionMetadata();
-    enableTiers.value = !!(
-      editForm.value.tiers && editForm.value.tiers.length > 0
-    );
-    ElMessage.success("Đã nạp dữ liệu từ mẫu cũ!");
+    enableTiers.value = !!(editForm.value.tiers && editForm.value.tiers.length > 0);
+    ElMessage.success('Đã nạp dữ liệu từ mẫu cũ!');
   }
 };
 
@@ -1103,14 +1019,12 @@ const cancelEdit = () => {
 };
 
 const getConfiguredPolicyValue = () => {
-  if (currentDepartment.value === "vehicle_sales") {
-    const firstTier = [...(editForm.value.tiers || [])].sort(
-      (a, b) => a.from - b.from,
-    )[0];
+  if (currentDepartment.value === 'vehicle_sales') {
+    const firstTier = [...(editForm.value.tiers || [])].sort((a, b) => a.from - b.from)[0];
     return firstTier ? getTierBonusAmount(firstTier) : 0;
   }
 
-  if (currentDepartment.value === "parts_sales") {
+  if (currentDepartment.value === 'parts_sales') {
     return Number(editForm.value.percentage) || 0;
   }
 
@@ -1122,60 +1036,52 @@ const getConfiguredPolicyValue = () => {
 const buildPolicyPayload = (): Partial<CommissionPolicyResponse> => {
   const uiConfiguration: PolicyUiConfiguration = {
     department: currentDepartment.value,
-    basis: editForm.value.basis || "revenue",
+    basis: editForm.value.basis || 'revenue',
     productVariantId: editForm.value.productVariantId ?? null,
     productVariantColorId: editForm.value.productVariantColorId ?? null,
     note: editForm.value.target?.trim() || undefined,
   };
 
-  if (currentDepartment.value === "vehicle_sales") {
+  if (currentDepartment.value === 'vehicle_sales') {
     uiConfiguration.tiers = editForm.value.tiers || [];
-  } else if (currentDepartment.value === "mechanic") {
-    uiConfiguration.laborPercentage =
-      Number(editForm.value.laborPercentage) || 0;
-    uiConfiguration.partsPercentage =
-      Number(editForm.value.partsPercentage) || 0;
+  } else if (currentDepartment.value === 'mechanic') {
+    uiConfiguration.laborPercentage = Number(editForm.value.laborPercentage) || 0;
+    uiConfiguration.partsPercentage = Number(editForm.value.partsPercentage) || 0;
   }
 
   return {
     id: editForm.value.id,
-    name: editForm.value.name?.trim() || "",
-    type:
-      currentDepartment.value === "vehicle_sales"
-        ? "FixedAmount"
-        : "Percentage",
+    name: editForm.value.name?.trim() || '',
+    type: currentDepartment.value === 'vehicle_sales' ? 'FixedAmount' : 'Percentage',
     value: getConfiguredPolicyValue(),
     productId: editForm.value.productId ?? undefined,
     categoryId: editForm.value.categoryId ?? undefined,
     targetGroup: currentProductConfig.value.targetGroup,
-    effectiveDate:
-      editForm.value.startDate || new Date().toISOString().split("T")[0],
+    effectiveDate: editForm.value.startDate || new Date().toISOString().split('T')[0],
     notes: `${POLICY_UI_CONFIG_PREFIX}${JSON.stringify(uiConfiguration)}`,
     unit: currentProductConfig.value.unit,
-    isActive: editForm.value.status !== "expired",
+    isActive: editForm.value.status !== 'expired',
   };
 };
 
 const validatePolicy = () => {
   if (!editForm.value.name?.trim()) {
-    ElMessage.warning("Vui lòng nhập tên chính sách");
+    ElMessage.warning('Vui lòng nhập tên chính sách');
     return false;
   }
 
   if (!editForm.value.startDate) {
-    ElMessage.warning("Vui lòng chọn ngày bắt đầu hiệu lực");
+    ElMessage.warning('Vui lòng chọn ngày bắt đầu hiệu lực');
     return false;
   }
 
   if (!editForm.value.productId) {
-    ElMessage.warning(
-      `Vui lòng chọn ${currentProductConfig.value.productLabel.toLowerCase()}`,
-    );
+    ElMessage.warning(`Vui lòng chọn ${currentProductConfig.value.productLabel.toLowerCase()}`);
     return false;
   }
 
   if (getConfiguredPolicyValue() <= 0) {
-    ElMessage.warning("Mức hoa hồng phải lớn hơn 0");
+    ElMessage.warning('Mức hoa hồng phải lớn hơn 0');
     return false;
   }
 
@@ -1196,14 +1102,12 @@ const savePolicy = async () => {
     }
 
     ElMessage.success(
-      isCreating.value
-        ? "Kích hoạt chính sách mới thành công"
-        : "Lưu thay đổi thành công",
+      isCreating.value ? 'Kích hoạt chính sách mới thành công' : 'Lưu thay đổi thành công'
     );
     goBack();
   } catch (error) {
-    console.error("Failed to save commission policy:", error);
-    ElMessage.error("Không thể lưu chính sách hoa hồng");
+    console.error('Failed to save commission policy:', error);
+    ElMessage.error('Không thể lưu chính sách hoa hồng');
   } finally {
     saving.value = false;
   }
@@ -1211,14 +1115,13 @@ const savePolicy = async () => {
 
 const deletePolicy = async () => {
   try {
-    await ElMessageBox.confirm("Xóa chính sách này?", "Xác nhận", {
-      type: "error",
+    await ElMessageBox.confirm('Xóa chính sách này?', 'Xác nhận', {
+      type: 'error',
     });
     await commissionPolicyApi.delete(Number(editForm.value.id));
-    ElMessage.success("Đã xóa chính sách");
+    ElMessage.success('Đã xóa chính sách');
     goBack();
   } catch {
-    // Người dùng đóng hộp thoại xác nhận hoặc API từ chối thao tác.
   }
 };
 
@@ -1226,16 +1129,15 @@ const duplicatePolicy = () => {
   const cloned = {
     ...JSON.parse(JSON.stringify(editForm.value)),
     id: undefined,
-    name: editForm.value.name + " (Bản sao)",
-    status: "pending",
+    name: editForm.value.name + ' (Bản sao)',
+    status: 'pending',
   };
   editForm.value = cloned;
   isEditing.value = true;
   isCreating.value = true;
-  ElMessage.success("Đã nhân bản thành bản nháp mới!");
+  ElMessage.success('Đã nhân bản thành bản nháp mới!');
 };
 
-// Tier logic
 const addTier = () => {
   if (!editForm.value.tiers) editForm.value.tiers = [];
   editForm.value.tiers.push({ from: 1, to: 999, bonus: 0, bonusRate: 0 });
@@ -1249,12 +1151,12 @@ const removeTier = (index: number) => {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
-    case "active":
-      return "🟢 ĐANG ÁP DỤNG";
-    case "pending":
-      return "🟡 CHỜ KÍCH HOẠT";
-    case "expired":
-      return "⚪ HẾT HIỆU LỰC";
+    case 'active':
+      return '🟢 ĐANG ÁP DỤNG';
+    case 'pending':
+      return '🟡 CHỜ KÍCH HOẠT';
+    case 'expired':
+      return '⚪ HẾT HIỆU LỰC';
     default:
       return status;
   }
@@ -1262,47 +1164,45 @@ const getStatusLabel = (status: string) => {
 
 const getStatusType = (status: string) => {
   switch (status) {
-    case "active":
-      return "success";
-    case "pending":
-      return "warning";
-    case "expired":
-      return "info";
+    case 'active':
+      return 'success';
+    case 'pending':
+      return 'warning';
+    case 'expired':
+      return 'info';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const getStatusRibbonClass = (status: string) => {
   switch (status) {
-    case "active":
-      return "bg-green-100 text-green-700 border-green-200 border";
-    case "pending":
-      return "bg-yellow-100 text-yellow-700 border-yellow-200 border";
-    case "expired":
-      return "bg-slate-200 text-slate-700 border-slate-300 border";
+    case 'active':
+      return 'bg-green-100 text-green-700 border-green-200 border';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-700 border-yellow-200 border';
+    case 'expired':
+      return 'bg-slate-200 text-slate-700 border-slate-300 border';
     default:
-      return "bg-slate-200 text-slate-700";
+      return 'bg-slate-200 text-slate-700';
   }
 };
 
-// Simulator Logic
 const runSimulation = () => {
   const dataToUse = editForm.value;
-  simBreakdown.value = "";
+  simBreakdown.value = '';
   simResult.value = null;
 
-  if (dataToUse.department === "vehicle_sales") {
+  if (dataToUse.department === 'vehicle_sales') {
     const qty = Number(simInput.value) || 0;
     if (qty <= 0) {
-      ElMessage.warning("Vui lòng nhập số lượng xe bán được");
+      ElMessage.warning('Vui lòng nhập số lượng xe bán được');
       return;
     }
 
     let totalBonus = 0;
 
     if (enableTiers.value && dataToUse.tiers && dataToUse.tiers.length > 0) {
-      // Sort tiers to be safe
       const sortedTiers = [...dataToUse.tiers].sort((a, b) => a.from - b.from);
       let remainingQty = qty;
       let breakdownTexts: string[] = [];
@@ -1311,7 +1211,6 @@ const runSimulation = () => {
         const tier = sortedTiers[i];
         if (remainingQty <= 0) break;
 
-        // Calculate max items in this tier
         const tierMax = tier.to ? tier.to - tier.from + 1 : 99999;
         const itemsInTier = Math.min(remainingQty, tierMax);
 
@@ -1319,43 +1218,35 @@ const runSimulation = () => {
           const tierBonusAmount = getTierBonusAmount(tier);
           const tierTotal = itemsInTier * tierBonusAmount;
           totalBonus += tierTotal;
-          breakdownTexts.push(
-            `${itemsInTier} xe mốc ${i + 1} (${formatCurrency(tierTotal)})`,
-          );
+          breakdownTexts.push(`${itemsInTier} xe mốc ${i + 1} (${formatCurrency(tierTotal)})`);
           remainingQty -= itemsInTier;
         }
       }
 
       simBreakdown.value =
-        `Bán ${qty} xe: ` +
-        breakdownTexts.join(" + ") +
-        ` = Tổng ${formatCurrency(totalBonus)}`;
+        `Bán ${qty} xe: ` + breakdownTexts.join(' + ') + ` = Tổng ${formatCurrency(totalBonus)}`;
     }
 
     simResult.value = totalBonus;
-  } else if (dataToUse.department === "parts_sales") {
+  } else if (dataToUse.department === 'parts_sales') {
     const amount = parseCurrencyInput(simInputVal.value);
     const pct = Number(dataToUse.percentage) || 0;
     if (amount <= 0) {
       ElMessage.warning(
-        dataToUse.basis === "profit"
-          ? "Vui lòng nhập lợi nhuận gộp"
-          : "Vui lòng nhập doanh thu",
+        dataToUse.basis === 'profit' ? 'Vui lòng nhập lợi nhuận gộp' : 'Vui lòng nhập doanh thu'
       );
       return;
     }
 
     simResult.value = calculatePartsCommission(amount, pct);
-    simBreakdown.value = `${formatCurrency(amount)} × ${pct}% = ${formatCurrency(
-      simResult.value,
-    )}`;
-  } else if (dataToUse.department === "mechanic") {
+    simBreakdown.value = `${formatCurrency(amount)} × ${pct}% = ${formatCurrency(simResult.value)}`;
+  } else if (dataToUse.department === 'mechanic') {
     const labor = parseCurrencyInput(simLabor.value);
     const parts = parseCurrencyInput(simParts.value);
     const lPct = Number(dataToUse.laborPercentage) || 0;
     const pPct = Number(dataToUse.partsPercentage) || 0;
     if (labor <= 0 && parts <= 0) {
-      ElMessage.warning("Vui lòng nhập tiền công hoặc giá trị phụ tùng");
+      ElMessage.warning('Vui lòng nhập tiền công hoặc giá trị phụ tùng');
       return;
     }
 
@@ -1374,7 +1265,6 @@ const runSimulation = () => {
 
 <style scoped lang="scss">
 .policy-detail-page {
-  // Styles for the new page
 }
 
 .vehicle-color-swatch {
@@ -1393,7 +1283,6 @@ const runSimulation = () => {
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%) !important;
 }
 
-/* Make disabled inputs look elegant and readable */
 :deep(.el-form--disabled .el-input__wrapper),
 :deep(.el-form--disabled .el-select__wrapper) {
   background-color: #f8fafc !important;
@@ -1408,9 +1297,7 @@ const runSimulation = () => {
   -webkit-text-fill-color: #334155 !important;
 }
 
-:deep(
-  .el-form--disabled .el-radio__input.is-disabled.is-checked .el-radio__inner
-) {
+:deep(.el-form--disabled .el-radio__input.is-disabled.is-checked .el-radio__inner) {
   background-color: #3b82f6 !important;
   border-color: #3b82f6 !important;
 }

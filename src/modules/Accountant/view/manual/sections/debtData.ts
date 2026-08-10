@@ -1,18 +1,24 @@
 export const sectionData = {
-  title: "Báo cáo công nợ",
-  description: "Theo dõi công nợ khách hàng và nhà cung cấp.",
+  title: 'Công Nợ & Thu Hồi (AR/AP)',
+  description:
+    'Quản lý khoản phải thu của khách hàng (AR) và khoản phải trả nhà cung cấp (AP), đặc biệt quản lý công nợ xấu.',
   pages: [
     {
-      id: "debt-management",
-      title: "Quản lý công nợ",
-      description: "Liệt kê các khoản nợ quá hạn và sắp đến hạn.",
-      route: "/Accountant/debt",
+      id: 'debt-collection',
+      title: 'Quản lý Công Nợ',
+      description: 'Đánh giá tuổi nợ và gửi thông báo nhắc nợ tự động.',
+      route: '/accountant/debt/management',
       steps: [
-        "Mở tab công nợ phải thu hoặc phải trả.",
-        "Lọc theo khoảng thời gian và đối tượng.",
-        "Tiến hành ghi nhận thanh toán khi có giao dịch.",
+        '1. Truy cập [Công Nợ & Thu Hồi].',
+        '2. Xem Báo cáo Phân tích Tuổi nợ (Aging Report): Chia ra các cột Nợ trong hạn, Quá hạn 30 ngày, 60 ngày, >90 ngày.',
+        '3. Chọn các khách hàng đang quá hạn, nhấn nút [Gửi Email/SMS nhắc nợ].',
+        '4. Nếu khách hàng trả nợ, lập Phiếu Thu tiền mặt hoặc Báo Có ngân hàng để cấn trừ (Clear) khoản nợ đó.',
+        '5. Đối với Công nợ Phải trả (Nhà cung cấp phụ tùng, Honda/Yamaha): Kế toán lập kế hoạch dòng tiền để lên UNC thanh toán đúng hạn, tránh bị phạt lãi.',
       ],
-      tips: ["Chú ý các khoản nợ được đánh dấu đỏ (quá hạn)."],
+      tips: [
+        'Công nợ > 90 ngày sẽ tự động bôi đỏ cảnh báo nguy cơ nợ xấu.',
+        'Nên thiết lập hạn mức tín dụng (Credit Limit) cho các khách sỉ. Vượt hạn mức này hệ thống sẽ khóa chức năng xuất hàng.',
+      ],
     },
   ],
 };

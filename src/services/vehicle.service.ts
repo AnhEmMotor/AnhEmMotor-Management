@@ -1,4 +1,4 @@
-import * as VehicleApis from "@/api/vehicle";
+import * as VehicleApis from '@/api/vehicle';
 
 export const VehicleService = {
   ...VehicleApis,

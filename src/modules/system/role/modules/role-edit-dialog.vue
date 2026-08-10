@@ -7,13 +7,7 @@
     @close="handleClose"
   >
     <div v-loading="dialogType === 'add' ? loadingStructure : false">
-      <ElForm
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-position="left"
-        label-width="100px"
-      >
+      <ElForm ref="formRef" :model="form" :rules="rules" label-position="left" label-width="100px">
         <ElFormItem label="Tên vai trò" prop="name">
           <ElInput v-model="form.name" placeholder="Ví dụ: Admin, Staff,..." />
         </ElFormItem>
@@ -26,18 +20,15 @@
           />
         </ElFormItem>
 
-        <div
-          v-if="dialogType === 'add'"
-          class="mt-6 pt-4 border-t border-gray-100"
-        >
+        <div v-if="dialogType === 'add'" class="mt-6 pt-4 border-t border-gray-100">
           <div class="flex justify-between items-center mb-3">
             <div class="section-title mb-0">Quyền hạn gán cho vai trò</div>
             <div>
               <ElButton size="small" link @click="toggleExpandAll">
-                {{ isExpandAll ? "Thu gọn" : "Mở rộng" }}
+                {{ isExpandAll ? 'Thu gọn' : 'Mở rộng' }}
               </ElButton>
               <ElButton size="small" link @click="toggleSelectAll">
-                {{ isSelectAll ? "Hủy chọn" : "Chọn tất cả" }}
+                {{ isSelectAll ? 'Hủy chọn' : 'Chọn tất cả' }}
               </ElButton>
             </div>
           </div>
@@ -68,36 +59,34 @@
     </div>
     <template #footer>
       <ElButton @click="handleClose">Hủy</ElButton>
-      <ElButton type="primary" @click="handleSubmit" :loading="submitting"
-        >Lưu</ElButton
-      >
+      <ElButton type="primary" @click="handleSubmit" :loading="submitting">Lưu</ElButton>
     </template>
   </ElDialog>
 </template>
 
 <script setup lang="ts">
-import type { FormInstance, FormRules } from "element-plus";
+import type { FormInstance, FormRules } from 'element-plus';
 import {
   fetchCreateRole,
   fetchUpdateRole,
   fetchGetRolePermissions,
   fetchGetPermissionStructure,
-} from "@/api/auth";
+} from '@/api/auth';
 
 interface Props {
   modelValue: boolean;
-  dialogType: "add" | "edit";
+  dialogType: 'add' | 'edit';
   roleData?: any;
 }
 
 interface Emits {
-  (e: "update:modelValue", value: boolean): void;
-  (e: "success"): void;
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'success'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
-  dialogType: "add",
+  dialogType: 'add',
   roleData: undefined,
 });
 
@@ -123,26 +112,26 @@ const permissionConflicts = ref<Record<string, string[]>>({});
 const lastCheckedKeys = ref<string[]>([]);
 
 const defaultProps = {
-  children: "children",
-  label: "label",
+  children: 'children',
+  label: 'label',
 };
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value: boolean) => emit("update:modelValue", value),
+  set: (value: boolean) => emit('update:modelValue', value),
 });
 
 const rules = reactive<FormRules>({
   name: [
-    { required: true, message: "Vui lòng nhập tên vai trò", trigger: "blur" },
-    { min: 2, max: 50, message: "Độ dài từ 2 đến 50 ký tự", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhập tên vai trò', trigger: 'blur' },
+    { min: 2, max: 50, message: 'Độ dài từ 2 đến 50 ký tự', trigger: 'blur' },
   ],
 });
 
 const form = reactive({
-  id: "",
-  name: "",
-  description: "",
+  id: '',
+  name: '',
+  description: '',
 });
 
 const loadPermissionStructure = async () => {
@@ -153,31 +142,29 @@ const loadPermissionStructure = async () => {
     permissionDependencies.value = res.dependencies || {};
     permissionConflicts.value = res.conflicts || {};
 
-    const nodes: TreePermissionNode[] = ((res as any).modules || []).map(
-      (mod: any) => {
-        return {
-          id: mod.id,
-          label: mod.name,
-          children: (mod.features || []).map((feat: any) => {
-            return {
-              id: feat.id,
-              label: feat.name,
-              children: (feat.permissions || []).map((perm: any) => {
-                return {
-                  id: perm.id,
-                  label: perm.name,
-                  description: perm.description,
-                };
-              }),
-            };
-          }),
-        };
-      },
-    );
+    const nodes: TreePermissionNode[] = ((res as any).modules || []).map((mod: any) => {
+      return {
+        id: mod.id,
+        label: mod.name,
+        children: (mod.features || []).map((feat: any) => {
+          return {
+            id: feat.id,
+            label: feat.name,
+            children: (feat.permissions || []).map((perm: any) => {
+              return {
+                id: perm.id,
+                label: perm.name,
+                description: perm.description,
+              };
+            }),
+          };
+        }),
+      };
+    });
     treeData.value = nodes;
   } catch (error) {
-    console.error("Failed to load permission structure:", error);
-    ElMessage.error("Không thể lấy cấu trúc quyền từ backend");
+    console.error('Failed to load permission structure:', error);
+    ElMessage.error('Không thể lấy cấu trúc quyền từ backend');
   } finally {
     loadingStructure.value = false;
   }
@@ -188,7 +175,7 @@ watch(
   async (newVal: boolean) => {
     if (newVal) {
       initForm();
-      if (props.dialogType === "add") {
+      if (props.dialogType === 'add') {
         await loadPermissionStructure();
         nextTick(() => {
           treeRef.value?.setCheckedKeys([]);
@@ -197,18 +184,18 @@ watch(
         });
       }
     }
-  },
+  }
 );
 
 const initForm = () => {
-  if (props.dialogType === "edit" && props.roleData) {
-    form.id = props.roleData.id || "";
-    form.name = props.roleData.name || "";
-    form.description = props.roleData.description || "";
+  if (props.dialogType === 'edit' && props.roleData) {
+    form.id = props.roleData.id || '';
+    form.name = props.roleData.name || '';
+    form.description = props.roleData.description || '';
   } else {
-    form.id = "";
-    form.name = "";
-    form.description = "";
+    form.id = '';
+    form.name = '';
+    form.description = '';
   }
 };
 
@@ -299,19 +286,18 @@ const handleTreeCheck = (data: any, state: any) => {
 
   if (newlyUnchecked.length > 0) {
     const removeDependents = (key: string) => {
-      (
-        Object.entries(permissionDependencies.value) as [string, string[]][]
-      ).forEach(([dependentKey, deps]) => {
-        if (
-          deps.includes(key) &&
-          (checkedKeys.includes(dependentKey) ||
-            newlyChecked.includes(dependentKey)) &&
-          !keysToRemove.has(dependentKey)
-        ) {
-          keysToRemove.add(dependentKey);
-          removeDependents(dependentKey);
+      (Object.entries(permissionDependencies.value) as [string, string[]][]).forEach(
+        ([dependentKey, deps]) => {
+          if (
+            deps.includes(key) &&
+            (checkedKeys.includes(dependentKey) || newlyChecked.includes(dependentKey)) &&
+            !keysToRemove.has(dependentKey)
+          ) {
+            keysToRemove.add(dependentKey);
+            removeDependents(dependentKey);
+          }
         }
-      });
+      );
     };
     newlyUnchecked.forEach(removeDependents);
   }
@@ -325,8 +311,7 @@ const handleTreeCheck = (data: any, state: any) => {
 
   const allKeys = getAllNodeKeys(treeData.value);
   const currentChecked = treeRef.value?.getCheckedKeys() || [];
-  isSelectAll.value =
-    currentChecked.length === allKeys.length && allKeys.length > 0;
+  isSelectAll.value = currentChecked.length === allKeys.length && allKeys.length > 0;
 };
 
 const handleSubmit = async () => {
@@ -336,23 +321,22 @@ const handleSubmit = async () => {
     await formRef.value.validate();
     submitting.value = true;
 
-    if (props.dialogType === "add") {
-      const checkedKeys = (treeRef.value?.getCheckedKeys(true) ||
-        []) as string[];
-      const realPermissions = checkedKeys.filter((id) => id.includes("."));
+    if (props.dialogType === 'add') {
+      const checkedKeys = (treeRef.value?.getCheckedKeys(true) || []) as string[];
+      const realPermissions = checkedKeys.filter((id) => id.includes('.'));
 
       await fetchCreateRole({
         roleName: form.name,
         description: form.description,
         permissions: realPermissions,
       });
-      ElMessage.success("Thêm mới vai trò thành công!");
+      ElMessage.success('Thêm mới vai trò thành công!');
     } else {
       let currentPermissions: string[] = [];
       try {
         currentPermissions = await fetchGetRolePermissions(form.id);
       } catch (err) {
-        console.warn("Failed to retrieve current permissions of role:", err);
+        console.warn('Failed to retrieve current permissions of role:', err);
       }
 
       await fetchUpdateRole(form.id, {
@@ -360,13 +344,13 @@ const handleSubmit = async () => {
         description: form.description,
         permissions: currentPermissions || [],
       });
-      ElMessage.success("Cập nhật thông tin vai trò thành công!");
+      ElMessage.success('Cập nhật thông tin vai trò thành công!');
     }
 
-    emit("success");
+    emit('success');
     handleClose();
   } catch (error: any) {
-    console.error("Form submit failed:", error);
+    console.error('Form submit failed:', error);
   } finally {
     submitting.value = false;
   }

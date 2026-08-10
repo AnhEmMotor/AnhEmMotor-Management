@@ -1,5 +1,5 @@
-import request from "@/common/utils/http";
-import type { PagedResult } from "@/types/api";
+import request from '@/common/utils/http';
+import type { PagedResult } from '@/types/api';
 import type {
   SupplierContractAuditLogDto,
   SupplierContractDto,
@@ -7,19 +7,19 @@ import type {
   SupplierContractMutation,
   SupplierContractStatisticsResponse,
   SupplierContractStatus,
-} from "@/domain/supplier/contract.types";
+} from '@/domain/supplier/contract.types';
 
 export type {
   SupplierContractDto,
   SupplierContractListParams,
   SupplierContractStatisticsResponse,
-} from "@/domain/supplier/contract.types";
+} from '@/domain/supplier/contract.types';
 
 export const SupplierContractApi = {
   getList(params: SupplierContractListParams) {
     const { current, size, filters, sorts, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
-      url: "/api/v1/SupplierContracts",
+      url: '/api/v1/SupplierContracts',
       params: {
         Page: current,
         PageSize: size,
@@ -45,7 +45,7 @@ export const SupplierContractApi = {
   getDeletedList(params: SupplierContractListParams) {
     const { current, size, filters, sorts, ...rest } = params;
     return request.get<PagedResult<SupplierContractDto>>({
-      url: "/api/v1/SupplierContracts/deleted",
+      url: '/api/v1/SupplierContracts/deleted',
       params: {
         Page: current,
         PageSize: size,
@@ -58,7 +58,7 @@ export const SupplierContractApi = {
 
   create(data: SupplierContractMutation) {
     return request.post<SupplierContractDto>({
-      url: "/api/v1/SupplierContracts",
+      url: '/api/v1/SupplierContracts',
       data,
     });
   },
@@ -79,7 +79,7 @@ export const SupplierContractApi = {
 
   uploadFile(id: string, file: File) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     return request.post<{ contractFilePath: string }>({
       url: `/api/v1/SupplierContracts/${id}/file`,
       data: formData,
@@ -100,13 +100,13 @@ export const SupplierContractApi = {
 
   getStatistics() {
     return request.get<SupplierContractStatisticsResponse>({
-      url: "/api/v1/SupplierContracts/statistics",
+      url: '/api/v1/SupplierContracts/statistics',
     });
   },
 
   getSuppliersForSelect() {
     return request.get<{ id: number; name: string }[]>({
-      url: "/api/v1/SupplierContracts/suppliers-for-select",
+      url: '/api/v1/SupplierContracts/suppliers-for-select',
     });
   },
 };

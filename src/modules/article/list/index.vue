@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="resp-page article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10"
-  >
-    <div
-      class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm"
-    >
+  <div class="resp-page article-list-page min-h-full bg-[#F8FAFC] font-inter text-[#0F172A] pb-10">
+    <div class="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-[50] shadow-sm">
       <div
         class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
       >
@@ -50,13 +46,13 @@
               class="px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg border border-white/20"
               :class="getStatusClasses(item.status || 'Published')"
             >
-              {{ item.statusLabel || "Đã xuất bản" }}
+              {{ item.statusLabel || 'Đã xuất bản' }}
             </span>
           </div>
 
           <div class="aspect-video overflow-hidden relative">
             <img
-              :src="item.coverImageUrl || '/assets/image/placeholder.png'"
+              :src="formatImageUrl(item.coverImageUrl) || '/assets/image/placeholder.png'"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div
@@ -81,12 +77,9 @@
 
           <div class="p-6">
             <div class="flex justify-between items-start mb-3">
-              <span
-                class="text-[9px] font-black text-blue-500 uppercase tracking-widest"
-                >{{
-                  item.categoryName || item.category?.name || "Chưa phân loại"
-                }}</span
-              >
+              <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest">{{
+                item.categoryName || item.category?.name || 'Chưa phân loại'
+              }}</span>
             </div>
             <h2
               class="m-0 text-base font-black text-slate-800 leading-tight line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors"
@@ -94,24 +87,17 @@
               {{ item.title }}
             </h2>
 
-            <div
-              class="mt-6 pt-4 border-t border-slate-50 flex justify-between items-center"
-            >
+            <div class="mt-6 pt-4 border-t border-slate-50 flex justify-between items-center">
               <div class="flex items-center gap-2 text-slate-400">
                 <ArtSvgIcon icon="ri:calendar-line" class="text-xs" />
                 <span class="text-[10px] font-bold">{{
-                  useDateFormat(
-                    item.publishedDate || item.createdAt,
-                    "DD/MM/YYYY",
-                  ).value
+                  useDateFormat(item.publishedDate || item.createdAt, 'DD/MM/YYYY').value
                 }}</span>
               </div>
             </div>
           </div>
 
-          <div
-            class="h-1 bg-slate-100 absolute bottom-0 left-0 right-0 overflow-hidden"
-          >
+          <div class="h-1 bg-slate-100 absolute bottom-0 left-0 right-0 overflow-hidden">
             <div
               class="h-full bg-blue-500 transition-all duration-1000 ease-out"
               :style="{
@@ -124,9 +110,7 @@
 
       <div v-if="showEmpty" class="py-40 flex-cc flex-col gap-4 opacity-30">
         <ArtSvgIcon icon="ri:article-line" class="text-6xl" />
-        <p class="text-sm font-black uppercase tracking-widest">
-          Chưa tìm thấy bài viết nào
-        </p>
+        <p class="text-sm font-black uppercase tracking-widest">Chưa tìm thấy bài viết nào</p>
       </div>
     </div>
 
@@ -145,18 +129,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onActivated } from "vue";
-import { useDateFormat } from "@vueuse/core";
-import { router } from "@/router";
-import { NewsApi } from "@/api/marketing";
-import { useCommon } from "@/common/composables/useCommon";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ref, computed, onMounted, onActivated } from 'vue';
+import { useDateFormat } from '@vueuse/core';
+import { router } from '@/router';
+import { NewsApi } from '@/api/marketing';
+import { useCommon } from '@/common/composables/useCommon';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "ArticleListAnalytics" });
+defineOptions({ name: 'ArticleListAnalytics' });
 
 const PAGE_SIZE = 12;
 
-const searchVal = ref("");
+const searchVal = ref('');
 const currentPage = ref(1);
 const pageSize = ref(PAGE_SIZE);
 const total = ref(0);
@@ -164,20 +149,18 @@ const loading = ref(false);
 
 const articleList = ref<any[]>([]);
 
-const showEmpty = computed(
-  () => articleList.value.length === 0 && !loading.value,
-);
+const showEmpty = computed(() => articleList.value.length === 0 && !loading.value);
 
 const getStatusClasses = (status: string) => {
-  if (status === "Draft") return "bg-slate-500 text-white";
-  if (status === "Scheduled") return "bg-amber-500 text-white";
-  return "bg-emerald-500 text-white";
+  if (status === 'Draft') return 'bg-slate-500 text-white';
+  if (status === 'Scheduled') return 'bg-amber-500 text-white';
+  return 'bg-emerald-500 text-white';
 };
 
 const fetchList = async () => {
   try {
     loading.value = true;
-    let filters = "";
+    let filters = '';
     if (searchVal.value) {
       filters = `Title@=*${searchVal.value}`;
     }
@@ -187,15 +170,14 @@ const fetchList = async () => {
       Filters: filters,
     });
     articleList.value = res?.items || res || [];
-    // Simulate status since backend just uses IsPublished boolean
     articleList.value = articleList.value.map((item) => ({
       ...item,
-      status: item.isPublished ? "Published" : "Draft",
-      statusLabel: item.isPublished ? "Đã xuất bản" : "Bản nháp",
+      status: item.isPublished ? 'Published' : 'Draft',
+      statusLabel: item.isPublished ? 'Đã xuất bản' : 'Bản nháp',
     }));
     total.value = res?.totalCount || articleList.value.length;
   } catch {
-    ElMessage.error("Không thể lấy danh sách bài viết");
+    ElMessage.error('Không thể lấy danh sách bài viết');
   } finally {
     loading.value = false;
   }
@@ -212,26 +194,25 @@ const handleCurrentChange = (val: number) => {
 };
 
 const toEdit = (item: any) =>
-  router.push({ name: "ArticlePublish", query: { id: item.id, slug: item.slug } });
-const toAddArticle = () => router.push({ name: "ArticlePublish" });
+  router.push({
+    name: 'ArticlePublish',
+    query: { id: item.id, slug: item.slug },
+  });
+const toAddArticle = () => router.push({ name: 'ArticlePublish' });
 
 const toDelete = (item: any) => {
-  ElMessageBox.confirm(
-    "Bạn có chắc chắn muốn xóa bài viết này không?",
-    "Xác nhận xóa",
-    {
-      confirmButtonText: "Xóa",
-      cancelButtonText: "Hủy",
-      type: "warning",
-    },
-  )
+  ElMessageBox.confirm('Bạn có chắc chắn muốn xóa bài viết này không?', 'Xác nhận xóa', {
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+    type: 'warning',
+  })
     .then(async () => {
       try {
         await NewsApi.delete(item.id);
-        ElMessage.success("Xóa bài viết thành công");
+        ElMessage.success('Xóa bài viết thành công');
         fetchList();
       } catch {
-        ElMessage.error("Không thể xóa bài viết");
+        ElMessage.error('Không thể xóa bài viết');
       }
     })
     .catch(() => {});
@@ -279,7 +260,6 @@ onActivated(() => {
   }
 }
 
-// Dark Mode overrides
 :global(html.dark .article-list-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;

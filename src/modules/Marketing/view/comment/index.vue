@@ -17,12 +17,12 @@
               <h1
                 class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none"
               >
-                {{ $t("marketing.comment.title") }}
+                {{ $t('marketing.comment.title') }}
               </h1>
               <p
                 class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
               >
-                {{ $t("marketing.comment.subtitle") }}
+                {{ $t('marketing.comment.subtitle') }}
               </p>
             </div>
           </div>
@@ -37,42 +37,38 @@
             class="mt-10 grid grid-cols-5 gap-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 mb-5"
           >
             <li
-              class="comment-item relative p-4 c-p aspect-16/12 duration-300 hover:-translate-y-1.5 cursor-pointer rounded-2xl border border-transparent"
-              :style="{ '--comment-bg': item.color }"
+              class="comment-item flex flex-col p-4 duration-300 hover:-translate-y-1.5 cursor-pointer rounded-2xl border border-transparent"
+              :style="{ '--comment-bg': item.color, minHeight: '170px' }"
               v-for="item in commentsWithColors"
               :key="item.id"
               @click="openDrawer(item)"
             >
-              <p class="text-g-600 dark:text-slate-400 text-sm">
-                {{ item.date }}
-              </p>
-              <p
-                class="mt-4 text-sm text-gray-800 dark:text-slate-200 line-clamp-3"
-              >
+              <div class="flex justify-between items-start mb-2">
+                <p class="text-slate-500 dark:text-slate-400 text-xs">
+                  {{ item.date }}
+                </p>
+                <span
+                  class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[100px] text-right"
+                >
+                  {{ item.userName }}
+                </span>
+              </div>
+              <p class="text-sm text-slate-800 dark:text-slate-200 line-clamp-3 mb-4 flex-1">
                 {{ item.content }}
               </p>
-              <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
-                <div class="flex-c">
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon icon="ri:heart-line" class="mr-1 text-base" />
-                    <span>{{ item.collection }}</span>
-                  </div>
-                  <div
-                    class="flex-c mr-5 text-xs text-g-600 dark:text-slate-400"
-                  >
-                    <ArtSvgIcon
-                      icon="ri:message-3-line"
-                      class="mr-1 text-base"
-                    />
-                    <span>{{ item.comment }}</span>
-                  </div>
+              <div
+                class="flex items-center justify-between w-full mt-auto pt-2 border-t border-slate-200/50 dark:border-slate-700/50"
+              >
+                <div
+                  class="flex items-center text-xs text-slate-500 dark:text-slate-400 truncate pr-3"
+                  :title="item.collection"
+                >
+                  <ArtSvgIcon icon="ri:article-line" class="mr-1.5 text-sm shrink-0" />
+                  <span class="truncate">{{ item.collection }}</span>
                 </div>
-                <div>
-                  <span class="text-sm text-gray-700 dark:text-slate-300">{{
-                    item.userName
-                  }}</span>
+                <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 shrink-0">
+                  <ArtSvgIcon icon="ri:chat-3-line" class="mr-1.5 text-sm shrink-0" />
+                  <span>{{ item.comment }}</span>
                 </div>
               </div>
             </li>
@@ -97,14 +93,12 @@
               <img
                 v-if="clickItem.articleImage"
                 :src="clickItem.articleImage"
+                @error="(e: any) => (e.target.style.display = 'none')"
                 alt="Article Cover"
                 class="w-full h-48 object-cover rounded-lg mb-3 shadow-sm border border-gray-100 dark:border-slate-700"
               />
               <div class="flex items-center gap-2 mb-2">
-                <ArtSvgIcon
-                  icon="ri:article-line"
-                  class="text-xl text-blue-500 shrink-0"
-                />
+                <ArtSvgIcon icon="ri:article-line" class="text-xl text-blue-500 shrink-0" />
                 <h3
                   class="text-base font-bold text-slate-800 dark:text-white line-clamp-2"
                   :title="clickItem.collection"
@@ -114,9 +108,7 @@
               </div>
               <p class="text-sm text-slate-500 dark:text-slate-400">
                 Bài viết này đang có
-                <span class="font-bold text-red-500">{{
-                  articleComments.length
-                }}</span>
+                <span class="font-bold text-red-500">{{ articleComments.length }}</span>
                 bình luận.
               </p>
             </div>
@@ -132,98 +124,75 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { commentApi } from "@/api/operations/comment.api";
-import CommentWidget from "@/components/business/comment-widget/index.vue";
+import { ref, computed, onMounted } from 'vue';
+import { commentApi } from '@/api/operations/comment.api';
+import CommentWidget from '@/components/business/comment-widget/index.vue';
 
-defineOptions({ name: "MarketingComment" });
+defineOptions({ name: 'MarketingComment' });
 
 const loadingComments = ref(false);
 const comments = ref<CommentItem[]>([]);
 
-const getArticleInfo = (
-  type: string,
-  slug: string,
-  title: string,
-  image: string,
-) => {
-  if (type === "promotion") {
+const getArticleInfo = (type: string, slug: string, title: string, image: string) => {
+  if (type === 'promotion') {
     const pTitles: Record<string, string> = {
-      "sieu-uu-dai-chao-he-rinh-xe-cuc-da":
-        "SIÊU ƯU ĐÃI CHÀO HÈ - RINH XE CỰC ĐÃ",
-      "tra-gop-0-phan-tram-so-huu-xe-sang":
-        "TRẢ GÓP 0% - DỄ DÀNG SỞ HỮU XE SANG",
-      "doi-cu-lay-moi-gia-tri-toi-da": "ĐỔI CŨ LẤY MỚI - GIÁ TRỊ TỐI ĐA",
-      "bao-duong-mien-phi-an-tam-moi-neo-duong":
-        "BẢO DƯỠNG MIỄN PHÍ - AN TÂM TRÊN MỌI NẺO ĐƯỜNG",
-      "combo-phu-kien-an-toan-len-do-chuan-chat":
-        "COMBO PHỤ KIỆN AN TOÀN - LÊN ĐỒ CHUẨN CHẤT",
-      "dat-coc-xe-moi-nhan-qua-giao-xe": "ĐẶT CỌC XE MỚI - NHẬN QUÀ GIAO XE",
-      "kiem-tra-xe-mien-phi-truoc-mua-mua":
-        "KIỂM TRA XE MIỄN PHÍ TRƯỚC MÙA MƯA",
-      "duyet-tra-gop-online-nhan-xe-trong-ngay":
-        "DUYỆT TRẢ GÓP ONLINE - NHẬN XE TRONG NGÀY",
-      "thu-cu-xe-tay-ga-tro-gia-len-doi": "THU CŨ XE TAY GA - TRỢ GIÁ LÊN ĐỜI",
+      'sieu-uu-dai-chao-he-rinh-xe-cuc-da': 'SIÊU ƯU ĐÃI CHÀO HÈ - RINH XE CỰC ĐÃ',
+      'tra-gop-0-phan-tram-so-huu-xe-sang': 'TRẢ GÓP 0% - DỄ DÀNG SỞ HỮU XE SANG',
+      'doi-cu-lay-moi-gia-tri-toi-da': 'ĐỔI CŨ LẤY MỚI - GIÁ TRỊ TỐI ĐA',
+      'bao-duong-mien-phi-an-tam-moi-neo-duong': 'BẢO DƯỠNG MIỄN PHÍ - AN TÂM TRÊN MỌI NẺO ĐƯỜNG',
+      'combo-phu-kien-an-toan-len-do-chuan-chat': 'COMBO PHỤ KIỆN AN TOÀN - LÊN ĐỒ CHUẨN CHẤT',
+      'dat-coc-xe-moi-nhan-qua-giao-xe': 'ĐẶT CỌC XE MỚI - NHẬN QUÀ GIAO XE',
+      'kiem-tra-xe-mien-phi-truoc-mua-mua': 'KIỂM TRA XE MIỄN PHÍ TRƯỚC MÙA MƯA',
+      'duyet-tra-gop-online-nhan-xe-trong-ngay': 'DUYỆT TRẢ GÓP ONLINE - NHẬN XE TRONG NGÀY',
+      'thu-cu-xe-tay-ga-tro-gia-len-doi': 'THU CŨ XE TAY GA - TRỢ GIÁ LÊN ĐỜI',
     };
     const pImages: Record<string, string> = {
-      "sieu-uu-dai-chao-he-rinh-xe-cuc-da":
-        "/featured_vario_160_promotion_marketing_1778828577524.webp",
-      "tra-gop-0-phan-tram-so-huu-xe-sang":
-        "/card_yamaha_exciter_lifestyle_1778828605125.webp",
-      "doi-cu-lay-moi-gia-tri-toi-da":
-        "/premium_motorcycle_showroom_visit_1778827603878.webp",
-      "bao-duong-mien-phi-an-tam-moi-neo-duong":
-        "/promotion_process_process_background_1778827621728.webp",
-      "combo-phu-kien-an-toan-len-do-chuan-chat": "/service-4.webp",
-      "dat-coc-xe-moi-nhan-qua-giao-xe":
-        "/hero_honda_sh_2025_spotlight_1778828554894.webp",
-      "kiem-tra-xe-mien-phi-truoc-mua-mua": "/service-hero-cinematic.webp",
-      "duyet-tra-gop-online-nhan-xe-trong-ngay":
-        "/promotion_step_3_procedure_3d_premium_1778927862992.webp",
-      "thu-cu-xe-tay-ga-tro-gia-len-doi":
-        "/premium_motorcycle_showroom_visit_1778827603878.webp",
+      'sieu-uu-dai-chao-he-rinh-xe-cuc-da':
+        '/featured_vario_160_promotion_marketing_1778828577524.webp',
+      'tra-gop-0-phan-tram-so-huu-xe-sang': '/card_yamaha_exciter_lifestyle_1778828605125.webp',
+      'doi-cu-lay-moi-gia-tri-toi-da': '/premium_motorcycle_showroom_visit_1778827603878.webp',
+      'bao-duong-mien-phi-an-tam-moi-neo-duong':
+        '/promotion_process_process_background_1778827621728.webp',
+      'combo-phu-kien-an-toan-len-do-chuan-chat': '/service-4.webp',
+      'dat-coc-xe-moi-nhan-qua-giao-xe': '/hero_honda_sh_2025_spotlight_1778828554894.webp',
+      'kiem-tra-xe-mien-phi-truoc-mua-mua': '/service-hero-cinematic.webp',
+      'duyet-tra-gop-online-nhan-xe-trong-ngay':
+        '/promotion_step_3_procedure_3d_premium_1778927862992.webp',
+      'thu-cu-xe-tay-ga-tro-gia-len-doi': '/premium_motorcycle_showroom_visit_1778827603878.webp',
     };
-    const img = pImages[slug] ? `http://localhost:3000${pImages[slug]}` : "";
+    const img = pImages[slug] ? `http://localhost:3000${pImages[slug]}` : '';
     return { title: pTitles[slug] || `Khuyến mãi: ${slug}`, image: img };
   }
-  if (type === "technology") {
+  if (type === 'technology') {
     const tTitles: Record<string, string> = {
-      "phan-phoi-xe-may": "Phân phối xe máy chính hãng",
-      "phu-tung-do-choi-xe": "Phụ tùng & Đồ chơi xe",
-      "bao-duong-sua-chua": "Bảo dưỡng & Sửa chữa",
-      "tra-gop-tai-chinh": "Trả góp & Tài chính",
+      'phan-phoi-xe-may': 'Phân phối xe máy chính hãng',
+      'phu-tung-do-choi-xe': 'Phụ tùng & Đồ chơi xe',
+      'bao-duong-sua-chua': 'Bảo dưỡng & Sửa chữa',
+      'tra-gop-tai-chinh': 'Trả góp & Tài chính',
     };
     const tImages: Record<string, string> = {
-      "phan-phoi-xe-may":
-        "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=600",
-      "phu-tung-do-choi-xe":
-        "http://localhost:3000/images/technology/engine_xray.webp",
-      "bao-duong-sua-chua":
-        "http://localhost:3000/images/technology/safety_blueprint.webp",
-      "tra-gop-tai-chinh":
-        "https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?q=80&w=600",
+      'phan-phoi-xe-may': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=600',
+      'phu-tung-do-choi-xe': 'http://localhost:3000/images/technology/engine_xray.webp',
+      'bao-duong-sua-chua': 'http://localhost:3000/images/technology/safety_blueprint.webp',
+      'tra-gop-tai-chinh':
+        'https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?q=80&w=600',
     };
     return {
       title: tTitles[slug] || `Công nghệ: ${slug}`,
-      image: tImages[slug] || "",
+      image: tImages[slug] || '',
     };
   }
-  let finalImage = image || "";
-  if (
-    finalImage &&
-    !finalImage.startsWith("http") &&
-    !finalImage.startsWith("//")
-  ) {
+  let finalImage = image || '';
+  if (finalImage === 'null') finalImage = '';
+
+  if (finalImage && !finalImage.startsWith('http') && !finalImage.startsWith('//')) {
     const baseUrl =
-      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-      "http://localhost:5000";
-    const cleanUrl = finalImage.startsWith("/")
-      ? finalImage.substring(1)
-      : finalImage;
+      import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
+    const cleanUrl = finalImage.startsWith('/') ? finalImage.substring(1) : finalImage;
     finalImage = `${baseUrl}/${cleanUrl}`;
   }
   return {
-    title: title || (type ? `${type}: ${slug}` : "Bài viết khác"),
+    title: title || (type ? `${type}: ${slug}` : 'Bài viết khác'),
     image: finalImage,
   };
 };
@@ -234,12 +203,7 @@ const loadComments = async () => {
     const res = await commentApi.getAll();
     const dataList = (res as any).data || res || [];
     comments.value = dataList.map((c: any) => {
-      const info = getArticleInfo(
-        c.articleType,
-        c.articleSlug,
-        c.newsTitle,
-        c.newsImage,
-      );
+      const info = getArticleInfo(c.articleType, c.articleSlug, c.newsTitle, c.newsImage);
       return {
         id: c.id,
         date: c.createdAt,
@@ -251,7 +215,7 @@ const loadComments = async () => {
       };
     });
   } catch (error) {
-    console.error("Failed to load comments:", error);
+    console.error('Failed to load comments:', error);
   } finally {
     loadingComments.value = false;
   }
@@ -268,25 +232,17 @@ interface CommentItem {
   color?: string;
 }
 
-const COLOR_LIST = [
-  "#D8F8FF",
-  "#FDDFD9",
-  "#FCE6F0",
-  "#D3F8F0",
-  "#FFEABC",
-  "#F5E1FF",
-  "#E1E6FE",
-];
+const COLOR_LIST = ['#D8F8FF', '#FDDFD9', '#FCE6F0', '#D3F8F0', '#FFEABC', '#F5E1FF', '#E1E6FE'];
 
 const showDrawer = ref(false);
 const clickItem = ref<CommentItem>({
   id: 0,
-  date: "",
-  content: "",
-  collection: "",
+  date: '',
+  content: '',
+  collection: '',
   comment: 0,
-  userName: "",
-  color: "",
+  userName: '',
+  color: '',
 });
 
 const commentsWithColors = computed(() => {
@@ -297,9 +253,7 @@ const commentsWithColors = computed(() => {
 });
 
 const articleComments = computed(() => {
-  return commentsWithColors.value.filter(
-    (c) => c.collection === clickItem.value.collection,
-  );
+  return commentsWithColors.value.filter((c) => c.collection === clickItem.value.collection);
 });
 
 const formattedArticleComments = computed(() => {
@@ -344,7 +298,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-// Dark Mode overrides
 :global(html.dark .comment-page) {
   background-color: #05070b !important;
   color: #f8fafc !important;

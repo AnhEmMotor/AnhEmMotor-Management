@@ -32,16 +32,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import type { RouteLocationMatched, RouteRecordRaw } from "vue-router";
-import { formatMenuTitle } from "@/common/utils/router";
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import type { RouteLocationMatched, RouteRecordRaw } from 'vue-router';
+import { formatMenuTitle } from '@/common/utils/router';
 
-defineOptions({ name: "ArtBreadcrumb" });
+defineOptions({ name: 'ArtBreadcrumb' });
 
 export interface BreadcrumbItem {
   path: string;
-  meta: RouteRecordRaw["meta"];
+  meta: RouteRecordRaw['meta'];
 }
 
 const route = useRoute();
@@ -69,10 +69,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     items = items.slice(1);
   }
 
-  if (
-    currentRouteMeta?.isIframe &&
-    (items.length === 1 || items.every(isWrapperContainer))
-  ) {
+  if (currentRouteMeta?.isIframe && (items.length === 1 || items.every(isWrapperContainer))) {
     return [createBreadcrumbItem(currentRoute)];
   }
 
@@ -80,15 +77,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 });
 
 const isWrapperContainer = (item: BreadcrumbItem): boolean =>
-  item.path === "/outside" && !!item.meta?.isIframe;
+  item.path === '/outside' && !!item.meta?.isIframe;
 
 const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
   path: route.path,
   meta: route.meta,
 });
 
-const isHomeRoute = (route: RouteLocationMatched): boolean =>
-  route.name === "/";
+const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/';
 
 const isLastItem = (index: number): boolean => {
   const itemsLength = breadcrumbItems.value.length;
@@ -96,19 +92,15 @@ const isLastItem = (index: number): boolean => {
 };
 
 const isClickable = (item: BreadcrumbItem, index: number): boolean =>
-  item.path !== "/outside" && !isLastItem(index);
+  item.path !== '/outside' && !isLastItem(index);
 
 const findFirstValidChild = (route: RouteRecordRaw) =>
   route.children?.find((child) => !child.redirect && !child.meta?.isHide);
 
-const buildFullPath = (childPath: string): string =>
-  `/${childPath}`.replace("//", "/");
+const buildFullPath = (childPath: string): string => `/${childPath}`.replace('//', '/');
 
-async function handleBreadcrumbClick(
-  item: BreadcrumbItem,
-  index: number,
-): Promise<void> {
-  if (isLastItem(index) || item.path === "/outside") {
+async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promise<void> {
+  if (isLastItem(index) || item.path === '/outside') {
     return;
   }
 
@@ -128,7 +120,7 @@ async function handleBreadcrumbClick(
       await router.push(item.path);
     }
   } catch (error) {
-    console.error("Điều hướngThatBai:", error);
+    console.error('Điều hướngThatBai:', error);
   }
 }
 </script>

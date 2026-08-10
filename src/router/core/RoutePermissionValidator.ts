@@ -1,12 +1,9 @@
-import type { AppRouteRecord } from "@/types/router";
+import type { AppRouteRecord } from '@/types/router';
 
 export class RoutePermissionValidator {
-  static hasPermission(
-    targetPath: string,
-    menuList: AppRouteRecord[],
-  ): boolean {
+  static hasPermission(targetPath: string, menuList: AppRouteRecord[]): boolean {
     const normalizedTarget = this.normalizePath(targetPath);
-    if (normalizedTarget === "/" || normalizedTarget === "") {
+    if (normalizedTarget === '/' || normalizedTarget === '') {
       return true;
     }
 
@@ -15,7 +12,7 @@ export class RoutePermissionValidator {
 
   static buildMenuPathSet(
     menuList: AppRouteRecord[],
-    pathSet: Set<string> = new Set(),
+    pathSet: Set<string> = new Set()
   ): Set<string> {
     if (!Array.isArray(menuList) || menuList.length === 0) {
       return pathSet;
@@ -68,10 +65,7 @@ export class RoutePermissionValidator {
         return true;
       }
 
-      if (
-        route.children?.length &&
-        this.matchRoute(normalizedTarget, route.children)
-      ) {
+      if (route.children?.length && this.matchRoute(normalizedTarget, route.children)) {
         return true;
       }
     }
@@ -83,14 +77,14 @@ export class RoutePermissionValidator {
     const normalizedTarget = this.normalizePath(targetPath);
     const normalizedRoute = this.normalizePath(routePath);
 
-    if (!normalizedRoute.includes(":")) {
+    if (!normalizedRoute.includes(':')) {
       return false;
     }
 
     const pattern = normalizedRoute
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-      .replace(/:([^/]+)/g, "[^/]+")
-      .replace(/\\\*/g, ".*");
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .replace(/:([^/]+)/g, '[^/]+')
+      .replace(/\\\*/g, '.*');
 
     return new RegExp(`^${pattern}$`).test(normalizedTarget);
   }
@@ -98,7 +92,7 @@ export class RoutePermissionValidator {
   static validatePath(
     targetPath: string,
     menuList: AppRouteRecord[],
-    homePath: string = "/",
+    homePath: string = '/'
   ): { path: string; hasPermission: boolean } {
     const hasPermission = this.hasPermission(targetPath, menuList);
 
@@ -110,12 +104,12 @@ export class RoutePermissionValidator {
   }
 
   private static normalizePath(path: string): string {
-    if (!path) return "";
+    if (!path) return '';
     let normalized = path.trim().toLowerCase();
-    if (!normalized.startsWith("/")) {
-      normalized = "/" + normalized;
+    if (!normalized.startsWith('/')) {
+      normalized = '/' + normalized;
     }
-    if (normalized.endsWith("/") && normalized.length > 1) {
+    if (normalized.endsWith('/') && normalized.length > 1) {
       normalized = normalized.slice(0, -1);
     }
     return normalized;

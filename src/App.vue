@@ -14,22 +14,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
-import { useUserStore } from "./application/store/user";
-import vi from "element-plus/es/locale/lang/vi";
-import en from "element-plus/es/locale/lang/en";
-import { systemUpgrade } from "@/common/utils/sys";
-import { toggleTransition } from "@/common/utils/ui/animation";
-import { checkStorageCompatibility } from "@/common/utils/storage";
-import { initializeTheme } from "@/common/composables/useTheme";
-import ChatFloatingButton from "@/components/business/chat/ChatFloatingButton.vue";
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
+import { useUserStore } from './application/store/user';
+import vi from 'element-plus/es/locale/lang/vi';
+import en from 'element-plus/es/locale/lang/en';
+import { systemUpgrade } from '@/common/utils/sys';
+import { toggleTransition } from '@/common/utils/ui/animation';
+import { checkStorageCompatibility } from '@/common/utils/storage';
+import { initializeTheme } from '@/common/composables/useTheme';
+import ChatFloatingButton from '@/components/business/chat/ChatFloatingButton.vue';
 
 const userStore = useUserStore();
 const { language } = storeToRefs(userStore);
 const route = useRoute();
-const isAuthPage = computed(() => route.path.startsWith("/auth"));
+const isAuthPage = computed(() => route.path.startsWith('/auth'));
 
 const locales: Record<string, any> = {
   vi: vi,
@@ -49,11 +49,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-/* 
- * FORCE GLOBAL DARK MODE VARIABLES 
- * This ensures dark mode works perfectly across ALL pages in the app,
- * bypassing any Tailwind CSS caching or Element Plus theme variable issues.
- */
 html.dark {
   --art-color: #fff !important;
   --default-bg-color: #070707 !important;

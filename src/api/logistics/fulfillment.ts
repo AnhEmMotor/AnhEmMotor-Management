@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface FulfillmentItemDto {
   id: number;
@@ -67,7 +67,7 @@ export interface FulfillmentOrdersParams {
 
 export function getFulfillmentOrders(params?: FulfillmentOrdersParams) {
   return request.get<FulfillmentDetailResponse[]>({
-    url: "/api/v1/logistics/fulfillment",
+    url: '/api/v1/logistics/fulfillment',
     params,
   });
 }
@@ -80,6 +80,6 @@ export interface DeliveryStatusDto {
 
 export function getDeliveryStatuses() {
   return request.get<DeliveryStatusDto[]>({
-    url: "/api/v1/logistics/delivery-statuses",
+    url: '/api/v1/logistics/delivery-statuses',
   });
 }

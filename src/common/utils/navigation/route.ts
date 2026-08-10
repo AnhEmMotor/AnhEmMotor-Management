@@ -1,7 +1,7 @@
-import { AppRouteRecord } from "@/types";
+import { AppRouteRecord } from '@/types';
 
 export function isIframe(url: string): boolean {
-  return url.startsWith("/outside/iframe/");
+  return url.startsWith('/outside/iframe/');
 }
 
 export const isNavigableMenuItem = (menuItem: AppRouteRecord): boolean => {
@@ -17,12 +17,12 @@ export const isNavigableMenuItem = (menuItem: AppRouteRecord): boolean => {
 };
 
 const normalizePath = (path: string): string => {
-  return path.startsWith("/") ? path : `/${path}`;
+  return path.startsWith('/') ? path : `/${path}`;
 };
 
 export const getFirstMenuPath = (menuList: AppRouteRecord[]): string => {
   if (!Array.isArray(menuList) || menuList.length === 0) {
-    return "";
+    return '';
   }
 
   for (const menuItem of menuList) {
@@ -40,5 +40,5 @@ export const getFirstMenuPath = (menuList: AppRouteRecord[]): string => {
     return normalizePath(menuItem.path!);
   }
 
-  return "";
+  return '';
 };

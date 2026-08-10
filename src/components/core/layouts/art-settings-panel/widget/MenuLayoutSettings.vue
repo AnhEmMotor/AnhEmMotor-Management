@@ -8,10 +8,7 @@
         :key="item.value"
         @click="switchMenuLayouts(item.value)"
       >
-        <div
-          class="box"
-          :class="{ 'is-active': item.value === menuType, 'mt-16': index > 2 }"
-        >
+        <div class="box" :class="{ 'is-active': item.value === menuType, 'mt-16': index > 2 }">
           <img :src="item.img" />
         </div>
         <p class="name">{{ $t(`setting.menuType.list[${index}]`) }}</p>
@@ -21,10 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import SectionTitle from "./SectionTitle.vue";
-import { useSettingStore } from "@/application/store/setting";
-import { useSettingsConfig } from "../composables/useSettingsConfig";
-import { useSettingsState } from "../composables/useSettingsState";
+import SectionTitle from './SectionTitle.vue';
+import { useSettingStore } from '@/application/store/setting';
+import { useSettingsConfig } from '../composables/useSettingsConfig';
+import { useSettingsState } from '../composables/useSettingsState';
 
 const { width } = useWindowSize();
 const settingStore = useSettingStore();
