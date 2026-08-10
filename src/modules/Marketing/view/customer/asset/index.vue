@@ -497,12 +497,12 @@ const handleAddSubmit = async () => {
   submitLoading.value = true;
   try {
     await VehicleApi.create({
-      leadId: form.value.leadId,
-      productId: form.value.productId,
-      vinNumber: form.value.vinNumber,
-      engineNumber: form.value.engineNumber,
-      licensePlate: form.value.licensePlate,
-      purchaseDate: form.value.purchaseDate,
+      lead_id: form.value.leadId,
+      product_id: form.value.productId,
+      vin_number: form.value.vinNumber,
+      engine_number: form.value.engineNumber,
+      license_plate: form.value.licensePlate,
+      purchase_date: form.value.purchaseDate,
     });
 
     ElMessage.success('Đã thêm phương tiện mới thành công!');
