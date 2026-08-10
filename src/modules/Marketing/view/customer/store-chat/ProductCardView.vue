@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatImageUrl } from '@/common/utils/image';
+
 const props = defineProps<{
   productId: number;
   name: string;
@@ -29,7 +31,7 @@ const priceLabel = computed(() => {
     class="flex items-center gap-3 w-full p-2.5 bg-white border border-gray-100 rounded-2xl shadow-sm"
   >
     <el-image
-      :src="imageUrl ?? undefined"
+      :src="formatImageUrl(imageUrl) || undefined"
       fit="cover"
       class="w-12 h-12 rounded-xl shrink-0 bg-gray-50"
     >

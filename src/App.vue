@@ -9,7 +9,7 @@
   >
     <RouterView></RouterView>
     <VueQueryDevtools buttonPosition="bottom-left" />
-    <ChatFloatingButton v-if="!isAuthPage" />
+    <ChatFloatingButton v-if="!hideChatFloatingButton" />
   </ElConfigProvider>
 </template>
 
@@ -29,7 +29,9 @@ import ChatFloatingButton from '@/components/business/chat/ChatFloatingButton.vu
 const userStore = useUserStore();
 const { language } = storeToRefs(userStore);
 const route = useRoute();
-const isAuthPage = computed(() => route.path.startsWith('/auth'));
+const hideChatFloatingButton = computed(
+  () => route.path.startsWith('/auth') || route.path.startsWith('/Marketing/customer/store-chat')
+);
 
 const locales: Record<string, any> = {
   vi: vi,

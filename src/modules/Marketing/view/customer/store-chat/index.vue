@@ -20,6 +20,7 @@ import {
 } from '@/api/storeChat/storeChat.api';
 import { useUserStore } from '@/application/store/user';
 import { Permissions } from '@/domain/constants/permissions';
+import { formatImageUrl } from '@/common/utils/image';
 import ProductCardView from './ProductCardView.vue';
 import VariantCardView from './VariantCardView.vue';
 
@@ -584,7 +585,7 @@ const sendMessage = async () => {
           >
             <div class="flex items-center gap-2 min-w-0">
               <el-image
-                :src="product.imageUrl || ''"
+                :src="formatImageUrl(product.imageUrl)"
                 class="w-10 h-10 rounded object-cover border border-gray-100 dark:border-gray-600 shrink-0"
                 fit="cover"
               />
