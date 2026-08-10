@@ -8,7 +8,7 @@
             {{ item.value }}
           </h2>
           <div class="flex-c mt-1">
-            <span class="text-xs text-g-600">Period nay</span>
+            <span class="text-xs text-g-600">Kỳ này</span>
           </div>
           <div
             class="absolute top-0 bottom-0 right-5 m-auto size-12.5 rounded-xl flex-cc bg-theme/10"

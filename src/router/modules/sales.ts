@@ -12,6 +12,17 @@ export const salesRoutes: AppRouteRecord = {
   },
   children: [
     {
+      path: 'returns',
+      name: 'SalesReturns',
+      component: '/sales/returns/index',
+      meta: {
+        title: 'Quản lý Hủy đơn / Trả hàng',
+        icon: 'ri:arrow-go-back-line',
+        keepAlive: true,
+        isHide: true,
+      },
+    },
+    {
       path: 'invoices',
       name: 'SalesInvoices',
       component: '/Admin/view/sales/invoices/index',
