@@ -48,24 +48,12 @@
         </div>
 
         <div class="period-panel__actions">
-          <ElButton :type="mockMode ? 'warning' : ''" plain @click="toggleMockMode">
-            {{ mockMode ? 'Tắt dữ liệu mẫu' : 'Xem dữ liệu mẫu' }}
-          </ElButton>
           <ElButton :icon="Refresh" type="primary" :loading="loading" @click="refresh">
             Làm mới dữ liệu
           </ElButton>
         </div>
       </div>
     </header>
-
-    <ElAlert
-      v-if="mockMode"
-      class="dashboard-error"
-      type="warning"
-      :closable="false"
-      show-icon
-      title="Chế độ xem thử đang bật — toàn bộ số liệu bên dưới là dữ liệu mẫu."
-    />
 
     <ElAlert
       v-if="loadError"
@@ -506,11 +494,9 @@ interface TechnicianRow {
 }
 
 const router = useRouter();
-const route = useRoute();
 const loading = ref(false);
 const loadError = ref('');
 const lastUpdated = ref('');
-const mockMode = ref(route.query.mock === 'workshop');
 
 const cycle = ref<Cycle>('this_month');
 const fromDate = ref<Date | null>(null);
@@ -694,105 +680,6 @@ function resetDashboard(): void {
   warrantyAndComplaints.value = { warrantyRequestsCount: 0, complaintsCount: 0 };
 }
 
-function applyMockData(): void {
-  kpi.value = {
-    inProgress: 8,
-    avgFinishHours: 5.4,
-    serviceRevenue: 18_750_000,
-  };
-  analytics.value = {
-    revenueSources: [
-      { source: 'BankTransfer', amount: 9_500_000 },
-      { source: 'Cash', amount: 7_250_000 },
-      { source: 'VNPay', amount: 2_000_000 },
-    ],
-    repairOrderStatusCounts: [
-      { status: 'Cho sua chua', count: 3 },
-      { status: 'Dang sua chua', count: 8 },
-      { status: 'Cho nghiem thu', count: 2 },
-      { status: 'Da hoan thanh', count: 14 },
-      { status: 'Da huy phieu', count: 1 },
-    ],
-    revenueTrend: {
-      labels: ['03/2026', '04/2026', '05/2026', '06/2026', '07/2026', '08/2026'],
-      serviceRevenue: [8_420_000, 10_850_000, 9_760_000, 13_240_000, 15_680_000, 18_750_000],
-    },
-  };
-  alerts.value = {
-    overdue: [
-      {
-        repairOrderId: 1024,
-        ticketId: 'PX-1024',
-        customerName: 'Nguyễn Minh Tuấn',
-        status: 'InProgress',
-        overdueHours: 7,
-      },
-      {
-        repairOrderId: 1028,
-        ticketId: 'PX-1028',
-        customerName: 'Trần Hoàng Nam',
-        status: 'QcPending',
-        overdueHours: 3,
-      },
-    ],
-    partsShortage: [
-      {
-        affectedRepairOrderId: 1031,
-        ticketId: 'PX-1031',
-        partName: 'Bố thắng trước Honda SH',
-        requiredQuantity: 2,
-        availableQuantity: 0,
-      },
-      {
-        affectedRepairOrderId: 1034,
-        ticketId: 'PX-1034',
-        partName: 'Lọc gió Yamaha Exciter',
-        requiredQuantity: 3,
-        availableQuantity: 1,
-      },
-    ],
-  };
-  technicianRows.value = [
-    {
-      technician: 'Lê Quốc Bảo',
-      completed: 6,
-      revenue: 7_850_000,
-      customerSatisfaction: 98,
-    },
-    {
-      technician: 'Phạm Minh Khang',
-      completed: 4,
-      revenue: 5_420_000,
-      customerSatisfaction: 96,
-    },
-    {
-      technician: 'Võ Thành Đạt',
-      completed: 3,
-      revenue: 3_180_000,
-      customerSatisfaction: 100,
-    },
-    {
-      technician: 'Nguyễn Văn Hải',
-      completed: 1,
-      revenue: 2_300_000,
-      customerSatisfaction: 94,
-    },
-  ];
-  warrantyAndComplaints.value = {
-    warrantyRequestsCount: 3,
-    complaintsCount: 1,
-  };
-}
-
-async function toggleMockMode(): Promise<void> {
-  mockMode.value = !mockMode.value;
-  const query = { ...route.query };
-  if (mockMode.value) query.mock = 'workshop';
-  else delete query.mock;
-  await router.replace({ query });
-  await refresh();
-}
-
 function hydrateDashboard(response: unknown): void {
   const payload = response as WorkshopDashboardPayload;
   const rawKpi = payload.KpiCards ?? payload.kpiCards;
@@ -874,15 +761,6 @@ function hydrateDashboard(response: unknown): void {
 
 async function refresh(): Promise<void> {
   if (!fromDate.value || !toDate.value) return;
-  if (mockMode.value) {
-    loadError.value = '';
-    applyMockData();
-    lastUpdated.value = new Date().toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    return;
-  }
   loading.value = true;
   loadError.value = '';
   try {
