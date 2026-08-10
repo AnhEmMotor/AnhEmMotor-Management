@@ -28,12 +28,11 @@
                 :min="0"
                 :step="1000000"
                 :precision="0"
+                :formatter="formatThreshold"
+                :parser="parseThreshold"
                 controls-position="right"
                 class="w-full"
               />
-              <div class="field-hint">
-                {{ formatCurrency(item.orderThreshold) }}
-              </div>
             </ElFormItem>
 
             <ElFormItem label="Tỷ lệ đặt cọc">
@@ -48,7 +47,6 @@
                 controls-position="right"
                 class="w-full"
               />
-              <div class="field-hint">Backend cho phép từ 1% đến 99%.</div>
             </ElFormItem>
           </ElForm>
 
@@ -163,6 +161,16 @@ const calculateDeposit = (total: number, threshold: number, ratio: number) => {
 
 const formatCurrency = (value: number) => `${Math.round(value || 0).toLocaleString('vi-VN')} đ`;
 
+const formatThreshold = (value: any) => {
+  if (value === null || value === undefined || value === '') return '';
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+const parseThreshold = (value: any) => {
+  if (!value) return '';
+  return `${value}`.replace(/\./g, '');
+};
+
 const formatDate = (date: string) => {
   if (!date) return '';
   return dayjs(date).format('DD-MM-YYYY HH:mm');
@@ -193,7 +201,10 @@ const loadHistory = async () => {
 const handleSave = async () => {
   saving.value = true;
   try {
-    await DepositSettingApi.updateSettings(settings.value);
+    const currentTabSetting = settings.value.find((s) => s.orderType === activeTab.value);
+    if (currentTabSetting) {
+      await DepositSettingApi.updateSettings([currentTabSetting]);
+    }
     ElMessage.success('Đã lưu cài đặt đặt cọc');
     await Promise.all([loadSettings(), loadHistory()]);
   } finally {
