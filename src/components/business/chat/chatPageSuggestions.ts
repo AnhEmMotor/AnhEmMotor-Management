@@ -125,9 +125,8 @@ export interface SuggestedPage {
 
 /**
  * `menuList` truyền vào phải là cây route đã lọc theo quyền hiện tại của user
- * (useMenuStore().menuList — xem src/router/core/MenuProcessor.ts). Trả về MỌI tool đã map được route,
- * kể cả khi route đó không còn trong menuList (page sẽ là undefined) — để UI hiển thị "Không còn quyền"
- * thay vì âm thầm ẩn đi, tránh làm mất chip khi mở lại lịch sử chat cũ.
+ * (useMenuStore().menuList — xem src/router/core/MenuProcessor.ts).
+ * Chỉ trả về các tool map được với route mà user có quyền truy cập.
  */
 export const getSuggestedPages = (
   tools: { name: string; label: string }[],
@@ -139,11 +138,15 @@ export const getSuggestedPages = (
     const routeName = TOOL_TO_ROUTE_NAME[tool.name];
     if (!routeName || seen.has(routeName)) continue;
     seen.add(routeName);
-    pages.push({
-      routeName,
-      label: tool.label,
-      page: findRouteByName(menuList, routeName),
-    });
+
+    const page = findRouteByName(menuList, routeName);
+    if (page) {
+      pages.push({
+        routeName,
+        label: tool.label,
+        page,
+      });
+    }
   }
   return pages;
 };

@@ -1488,14 +1488,9 @@ const formatTime = (isoString: string) => {
                       :key="item.routeName"
                       type="button"
                       class="page-suggestion-chip"
-                      :class="{ 'page-suggestion-chip--disabled': !item.page }"
-                      :disabled="!item.page"
                       @click="goToSuggestedPage(item)"
                     >
-                      → {{ item.label
-                      }}<template v-if="!item.page">
-                        · Không còn quyền</template
-                      >
+                      → {{ item.label }}
                     </button>
                   </div>
                   <div
