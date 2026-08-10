@@ -263,7 +263,18 @@
         <ElTableColumn prop="fullName" label="Khách hàng" min-width="140" />
         <ElTableColumn prop="phoneNumber" label="Số điện thoại" width="130" />
         <ElTableColumn prop="email" label="Email" min-width="160" />
-        <ElTableColumn prop="interestedVehicle" label="Dòng xe quan tâm" min-width="150" />
+        <ElTableColumn label="Dòng xe quan tâm" min-width="150">
+          <template #default="scope">
+            <span v-if="scope.row.productVariant">
+              {{ scope.row.productVariant.product?.name }} -
+              {{ scope.row.productVariant.variantName }}
+            </span>
+            <span v-else-if="scope.row.variantName">
+              {{ scope.row.variantName }}
+            </span>
+            <span v-else class="text-gray-400">Chưa xác định</span>
+          </template>
+        </ElTableColumn>
         <ElTableColumn prop="preferredDate" label="Ngày hẹn" width="160">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.preferredDate) }}</span>
