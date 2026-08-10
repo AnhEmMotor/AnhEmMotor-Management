@@ -112,17 +112,6 @@ export const warehouseMenu: AppRouteRecord[] = [
         },
       },
       {
-        path: 'contract',
-        name: 'WarehouseContract',
-        component: '/Warehouse/view/warehouse/contract/index',
-        meta: {
-          title: 'Hợp đồng nhà cung cấp',
-          icon: 'ri:file-contract-line',
-          keepAlive: true,
-          permissions: [Permissions.Warehouse.SupplierContractManagement.View],
-        },
-      },
-      {
         path: 'inventory-settings',
         name: 'WarehouseInventorySettings',
         component: '/sales-settings/inventory/index',

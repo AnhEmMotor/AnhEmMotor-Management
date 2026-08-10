@@ -1,5 +1,5 @@
 <template>
-  <div class="resp-page art-card flex flex-col p-5 mb-5 max-sm:mb-4">
+  <div class="resp-page art-card h-128 flex flex-col p-5 mb-5 max-sm:mb-4">
     <div class="title">
       <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">Khách hàng</h4>
     </div>
@@ -7,21 +7,24 @@
       <div
         v-for="item in list"
         :key="item.name"
-        class="hover-card relative flex cursor-pointer items-center rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors select-none"
+        class="hover-card relative flex flex-col items-start cursor-pointer rounded-2xl p-4 pt-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors select-none"
       >
-        <div class="mr-3 size-9.5 rounded-full flex-cc" :class="item.bgClass">
-          <ArtSvgIcon :icon="item.icon" class="text-lg" :class="item.colorClass" />
-        </div>
-        <div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">
-            {{ item.name }}
-          </div>
-          <div class="text-right text-lg font-semibold text-g-800 dark:text-gray-100">
-            {{ item.num }}
-          </div>
-        </div>
         <div class="absolute top-2 right-3">
           <el-tag type="info" size="small" effect="plain" round>Có thể click</el-tag>
+        </div>
+        <div
+          class="mb-2 w-10 h-10 rounded-full flex items-center justify-center"
+          :class="item.bgClass"
+        >
+          <ArtSvgIcon :icon="item.icon" class="text-lg" :class="item.colorClass" />
+        </div>
+        <div class="flex-1 w-full">
+          <div class="text-sm text-gray-500 dark:text-gray-400 truncate" :title="item.name">
+            {{ item.name }}
+          </div>
+          <div class="text-left text-xl mt-1 font-bold text-gray-800 dark:text-gray-100">
+            {{ item.num }}
+          </div>
         </div>
       </div>
     </div>
@@ -108,8 +111,7 @@ async function load() {
         list[i].bgClass = DEFAULT_COLOR.bgClass;
       }
     }
-  } catch {
-  }
+  } catch {}
 }
 
 onMounted(() => {
