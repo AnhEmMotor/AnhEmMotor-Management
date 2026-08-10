@@ -1,10 +1,10 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export const NewsApi = {
   getList(params: any) {
     const { current, size, Filters, Sorts, ...rest } = params;
     return request.get<any>({
-      url: "/api/v1/news",
+      url: '/api/v1/news',
       params: {
         Page: current,
         PageSize: size,
@@ -23,14 +23,14 @@ export const NewsApi = {
 
   getCategories(params?: any) {
     return request.get<any>({
-      url: "/api/v1/news/categories",
+      url: '/api/v1/news/categories',
       params,
     });
   },
 
   create(data: any) {
     return request.post<any>({
-      url: "/api/v1/news",
+      url: '/api/v1/news',
       data,
     });
   },
@@ -58,7 +58,7 @@ export const NewsApi = {
   getProductsForSelection(params: any) {
     const { current, size, ...rest } = params;
     return request.get<any>({
-      url: "/api/v1/news/products-for-selection",
+      url: '/api/v1/news/products-for-selection',
       params: {
         Page: current,
         PageSize: size,
@@ -69,10 +69,10 @@ export const NewsApi = {
 
   uploadCoverImage(data: FormData) {
     return request.post<any>({
-      url: "/api/v1/news/images/cover",
+      url: '/api/v1/news/images/cover',
       data,
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
   },

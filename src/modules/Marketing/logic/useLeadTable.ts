@@ -1,13 +1,8 @@
-import { ref, onMounted, reactive } from "vue";
-import {
-  fetchGetLeadList,
-  fetchAssignLead,
-  type Lead,
-  type LeadListParams,
-} from "@/api/customer";
-import { fetchGetUserList } from "@/api/auth/system-manage.api";
-import { ElMessage } from "element-plus";
-import { isHighIntentLeadStatus } from "@/modules/Marketing/constants/customerCrm";
+import { ref, onMounted, reactive } from 'vue';
+import { fetchGetLeadList, fetchAssignLead, type Lead, type LeadListParams } from '@/api/customer';
+import { fetchGetUserList } from '@/api/auth/system-manage.api';
+import { ElMessage } from 'element-plus';
+import { isHighIntentLeadStatus } from '@/modules/Marketing/constants/customerCrm';
 
 export function useLeadTable() {
   const data = ref<Lead[]>([]);
@@ -20,17 +15,17 @@ export function useLeadTable() {
   });
 
   const columns = [
-    { title: "Họ tên", dataIndex: "fullName", slot: "fullName" },
-    { title: "Số điện thoại", dataIndex: "phoneNumber" },
-    { title: "Email", dataIndex: "email" },
-    { title: "Xe quan tâm", dataIndex: "interestedVehicle" },
-    { title: "Điểm số", dataIndex: "score", slot: "score" },
-    { title: "Trạng thái", dataIndex: "status", slot: "status" },
-    { title: "Ngày tạo", dataIndex: "createdAt", slot: "createdAt" },
+    { title: 'Họ tên', dataIndex: 'fullName', slot: 'fullName' },
+    { title: 'Số điện thoại', dataIndex: 'phoneNumber' },
+    { title: 'Email', dataIndex: 'email' },
+    { title: 'Xe quan tâm', dataIndex: 'interestedVehicle' },
+    { title: 'Điểm số', dataIndex: 'score', slot: 'score' },
+    { title: 'Trạng thái', dataIndex: 'status', slot: 'status' },
+    { title: 'Ngày tạo', dataIndex: 'createdAt', slot: 'createdAt' },
     {
-      title: "Thao tác",
-      dataIndex: "operation",
-      slot: "operation",
+      title: 'Thao tác',
+      dataIndex: 'operation',
+      slot: 'operation',
       width: 120,
     },
   ];
@@ -71,16 +66,12 @@ export function useLeadTable() {
 
   const handleAssignBulk = async (saleId: string) => {
     try {
-      await Promise.all(
-        selectedIds.value.map((id) => fetchAssignLead(id, saleId)),
-      );
-      ElMessage.success(
-        `Đã giao ${selectedIds.value.length} khách hàng cho nhân viên mới`,
-      );
+      await Promise.all(selectedIds.value.map((id) => fetchAssignLead(id, saleId)));
+      ElMessage.success(`Đã giao ${selectedIds.value.length} khách hàng cho nhân viên mới`);
       selectedIds.value = [];
       refreshData();
     } catch {
-      ElMessage.error("Lỗi khi giao khách hàng. Vui lòng thử lại.");
+      ElMessage.error('Lỗi khi giao khách hàng. Vui lòng thử lại.');
     }
   };
 
@@ -88,26 +79,26 @@ export function useLeadTable() {
     if (isHighIntentLeadStatus(lead.status)) {
       return {
         level: 3,
-        label: "CẤP BÁCH",
-        icon: "ri:fire-fill",
-        color: "#ef4444",
+        label: 'CẤP BÁCH',
+        icon: 'ri:fire-fill',
+        color: '#ef4444',
       };
     }
 
     if (lead.interestedVehicle) {
       return {
         level: 2,
-        label: "TIỀM NÁNG",
-        icon: "ri:star-fill",
-        color: "#f97316",
+        label: 'TIỀM NÁNG',
+        icon: 'ri:star-fill',
+        color: '#f97316',
       };
     }
 
     return {
       level: 1,
-      label: "THEO DÕI",
-      icon: "ri:folder-user-fill",
-      color: "#64748b",
+      label: 'THEO DÕI',
+      icon: 'ri:folder-user-fill',
+      color: '#64748b',
     };
   };
 
@@ -116,54 +107,50 @@ export function useLeadTable() {
   const applyLocalFilterAndPagination = () => {
     let filtered = [...rawLeads.value];
 
-    // Filter by quick search: fullName or phoneNumber
     const fullNameFilter = currentFilters.value.fullName;
     if (fullNameFilter && String(fullNameFilter).trim()) {
       const query = String(fullNameFilter).trim().toLowerCase();
       filtered = filtered.filter(
         (lead) =>
           (lead.fullName && lead.fullName.toLowerCase().includes(query)) ||
-          (lead.phoneNumber && lead.phoneNumber.includes(query)),
+          (lead.phoneNumber && lead.phoneNumber.includes(query))
       );
     }
 
-    // Filter by Source
     const sourceFilter = currentFilters.value.source;
     if (sourceFilter) {
       filtered = filtered.filter((lead) => lead.source === sourceFilter);
     }
 
-    // Filter by Status (mapped to Lead category types)
     const statusFilter = currentFilters.value.status;
     if (statusFilter) {
-      if (statusFilter === "Official" || statusFilter === "Won") {
+      if (statusFilter === 'Official' || statusFilter === 'Won') {
         filtered = filtered.filter(
           (lead) =>
-            lead.status === "Delivered" ||
-            lead.status === "Closed" ||
-            lead.status === "Won" ||
-            lead.status === "Official",
+            lead.status === 'Delivered' ||
+            lead.status === 'Closed' ||
+            lead.status === 'Won' ||
+            lead.status === 'Official'
         );
-      } else if (statusFilter === "Purchasing") {
+      } else if (statusFilter === 'Purchasing') {
         filtered = filtered.filter(
-          (lead) => lead.status === "Deposited" || lead.status === "Paperwork",
+          (lead) => lead.status === 'Deposited' || lead.status === 'Paperwork'
         );
-      } else if (statusFilter === "Potential") {
+      } else if (statusFilter === 'Potential') {
         filtered = filtered.filter(
           (lead) =>
-            lead.status === "New" ||
-            lead.status === "Consulting" ||
-            lead.status === "Contacted" ||
-            lead.status === "Potential" ||
-            lead.status === "TestDriving" ||
-            lead.status === "TestDrive",
+            lead.status === 'New' ||
+            lead.status === 'Consulting' ||
+            lead.status === 'Contacted' ||
+            lead.status === 'Potential' ||
+            lead.status === 'TestDriving' ||
+            lead.status === 'TestDrive'
         );
       } else {
         filtered = filtered.filter((lead) => lead.status === statusFilter);
       }
     }
 
-    // Sort by priority and then by createdAt descending
     filtered.sort((a, b) => {
       const pA = getPriority(a).level;
       const pB = getPriority(b).level;
@@ -176,7 +163,6 @@ export function useLeadTable() {
 
     pagination.total = filtered.length;
 
-    // Local pagination slice
     const startIndex = (pagination.current - 1) * pagination.size;
     const endIndex = startIndex + pagination.size;
     data.value = filtered.slice(startIndex, endIndex);
@@ -190,7 +176,7 @@ export function useLeadTable() {
       rawLeads.value = leads;
       applyLocalFilterAndPagination();
     } catch (_err: any) {
-      ElMessage.error("Lỗi khi lấy dữ liệu");
+      ElMessage.error('Lỗi khi lấy dữ liệu');
     } finally {
       loading.value = false;
     }
@@ -216,10 +202,10 @@ export function useLeadTable() {
   const handleAssignSingle = async (leadId: number, saleId: string | null) => {
     try {
       await fetchAssignLead(leadId, saleId);
-      ElMessage.success("Đã cập nhật nhân viên phụ trách");
+      ElMessage.success('Đã cập nhật nhân viên phụ trách');
       await refreshData();
     } catch {
-      ElMessage.error("Lỗi khi giao khách hàng. Vui lòng thử lại.");
+      ElMessage.error('Lỗi khi giao khách hàng. Vui lòng thử lại.');
     }
   };
 

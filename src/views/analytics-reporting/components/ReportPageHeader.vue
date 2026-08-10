@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import "../styles/reporting.scss";
+import '../styles/reporting.scss';
 
-defineOptions({ name: "ReportPageHeader" });
+defineOptions({ name: 'ReportPageHeader' });
 
 defineProps<{
   title: string;

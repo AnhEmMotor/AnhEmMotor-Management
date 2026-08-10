@@ -1,31 +1,30 @@
-import { defineStore } from "pinia";
-import { ref, computed, watch } from "vue";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { LanguageEnum } from "@/common/enums/appEnum";
-import { router } from "@/router";
-import { useSettingStore } from "./setting";
-import { useWorktabStore } from "./worktab";
-import { AppRouteRecord } from "@/types/router";
-import { setPageTitle } from "@/common/utils/router";
-import { resetRouterState } from "@/router/guards/beforeEach";
-import { useMenuStore } from "./menu";
-import { StorageConfig } from "@/common/utils/storage/storage-config";
-import i18n, { setLocale } from "@/i18n";
-import api from "@/common/utils/http";
+import { defineStore } from 'pinia';
+import { ref, computed, watch } from 'vue';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { LanguageEnum } from '@/common/enums/appEnum';
+import { router } from '@/router';
+import { useSettingStore } from './setting';
+import { useWorktabStore } from './worktab';
+import { AppRouteRecord } from '@/types/router';
+import { setPageTitle } from '@/common/utils/router';
+import { resetRouterState } from '@/router/guards/beforeEach';
+import { useMenuStore } from './menu';
+import { StorageConfig } from '@/common/utils/storage/storage-config';
+import i18n, { setLocale } from '@/i18n';
+import api from '@/common/utils/http';
 
-const LANG_STORAGE_KEY = "app-lang";
+const LANG_STORAGE_KEY = 'app-lang';
 
 const readInitialLanguage = (): LanguageEnum => {
   try {
-    return (localStorage.getItem(LANG_STORAGE_KEY) ||
-      LanguageEnum.VI) as LanguageEnum;
+    return (localStorage.getItem(LANG_STORAGE_KEY) || LanguageEnum.VI) as LanguageEnum;
   } catch {
     return LanguageEnum.VI;
   }
 };
 
 export const useUserStore = defineStore(
-  "userStore",
+  'userStore',
   () => {
     const language = ref<LanguageEnum>(readInitialLanguage());
 
@@ -33,15 +32,15 @@ export const useUserStore = defineStore(
 
     const isLock = ref(false);
 
-    const lockPassword = ref("");
+    const lockPassword = ref('');
 
     const info = ref<Partial<Api.Auth.UserInfo>>({});
 
     const searchHistory = ref<AppRouteRecord[]>([]);
 
-    const accessToken = ref("");
+    const accessToken = ref('');
 
-    const refreshToken = ref("");
+    const refreshToken = ref('');
 
     const getUserInfo = computed(() => info.value);
 
@@ -85,10 +84,7 @@ export const useUserStore = defineStore(
     const logOut = () => {
       const currentUserId = info.value.userId;
       if (currentUserId) {
-        localStorage.setItem(
-          StorageConfig.LAST_USER_ID_KEY,
-          String(currentUserId),
-        );
+        localStorage.setItem(StorageConfig.LAST_USER_ID_KEY, String(currentUserId));
       }
 
       info.value = {};
@@ -97,24 +93,22 @@ export const useUserStore = defineStore(
 
       isLock.value = false;
 
-      lockPassword.value = "";
+      lockPassword.value = '';
 
-      accessToken.value = "";
+      accessToken.value = '';
 
-      refreshToken.value = "";
+      refreshToken.value = '';
 
-      sessionStorage.removeItem("iframeRoutes");
+      sessionStorage.removeItem('iframeRoutes');
 
-      useMenuStore().setHomePath("");
+      useMenuStore().setHomePath('');
 
       resetRouterState(500);
 
       const currentRoute = router.currentRoute.value;
-      const redirect = !currentRoute.path.includes("/login")
-        ? currentRoute.fullPath
-        : undefined;
+      const redirect = !currentRoute.path.includes('/login') ? currentRoute.fullPath : undefined;
       router.push({
-        name: "Login",
+        name: 'Login',
         query: redirect ? { redirect } : undefined,
       });
     };
@@ -138,20 +132,12 @@ export const useUserStore = defineStore(
       localStorage.removeItem(StorageConfig.LAST_USER_ID_KEY);
     };
 
-    const mapUserInfo = (
-      data: any,
-      isFullUpdate = false,
-    ): Api.Auth.UserInfo => {
+    const mapUserInfo = (data: any, isFullUpdate = false): Api.Auth.UserInfo => {
       return {
-        userId: data.id || info.value.userId || "",
-        userName:
-          data.fullName ||
-          data.nickName ||
-          data.userName ||
-          info.value.userName ||
-          "",
-        email: data.email || info.value.email || "",
-        avatar: data.avatarUrl || info.value.avatar || "",
+        userId: data.id || info.value.userId || '',
+        userName: data.fullName || data.nickName || data.userName || info.value.userName || '',
+        email: data.email || info.value.email || '',
+        avatar: data.avatarUrl || info.value.avatar || '',
         roles:
           data.roles !== undefined && data.roles !== null
             ? data.roles
@@ -170,9 +156,7 @@ export const useUserStore = defineStore(
     let abortController: AbortController | null = null;
     let retryTimeout: any = null;
     let retryDelay = 1000;
-    const sseStatus = ref<
-      "disconnected" | "connecting" | "connected" | "error"
-    >("disconnected");
+    const sseStatus = ref<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
 
     const connectSSE = async (retryCount = 0) => {
       if (abortController || !isLogin.value) return;
@@ -182,50 +166,43 @@ export const useUserStore = defineStore(
 
       abortController = new AbortController();
       const baseUrl =
-        import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-        "http://localhost:5000";
+        import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
       const sseUrl = `${baseUrl}/api/v1/user/me`;
 
-      sseStatus.value = "connecting";
+      sseStatus.value = 'connecting';
 
       try {
         await fetchEventSource(sseUrl, {
-          method: "GET",
+          method: 'GET',
           signal: abortController.signal,
           openWhenHidden: true,
           headers: {
             Authorization: `Bearer ${token}`,
-            Accept: "text/event-stream",
-            "Accept-Language": localStorage.getItem("app-lang") || "vi",
+            Accept: 'text/event-stream',
+            'Accept-Language': localStorage.getItem('app-lang') || 'vi',
           },
           async onopen(response) {
             if (
               response.ok &&
-              response.headers
-                .get("content-type")
-                ?.includes("text/event-stream")
+              response.headers.get('content-type')?.includes('text/event-stream')
             ) {
-              sseStatus.value = "connected";
+              sseStatus.value = 'connected';
               retryDelay = 1000;
               return;
             }
 
             if (response.status === 401) {
-              throw new Error("SSE_AUTH_ERROR");
+              throw new Error('SSE_AUTH_ERROR');
             }
 
-            if (
-              response.status >= 400 &&
-              response.status < 500 &&
-              response.status !== 429
-            ) {
-              sseStatus.value = "error";
+            if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+              sseStatus.value = 'error';
               throw new Error(`Fatal SSE error: ${response.status}`);
             }
             throw new Error(`SSE Connection failed: ${response.status}`);
           },
           onmessage(msg) {
-            if (!msg.data || msg.data === "heartbeat") return;
+            if (!msg.data || msg.data === 'heartbeat') return;
             try {
               const data = JSON.parse(msg.data);
               if (data && (data.userName || data.id)) {
@@ -234,7 +211,7 @@ export const useUserStore = defineStore(
             } catch (e) {}
           },
           onclose() {
-            sseStatus.value = "disconnected";
+            sseStatus.value = 'disconnected';
             abortController = null;
             if (isLogin.value) {
               const delay = Math.min(retryDelay, 30000);
@@ -243,15 +220,15 @@ export const useUserStore = defineStore(
             }
           },
           onerror(err) {
-            sseStatus.value = "error";
-            if (err.message === "SSE_AUTH_ERROR") {
+            sseStatus.value = 'error';
+            if (err.message === 'SSE_AUTH_ERROR') {
               if (abortController) {
                 abortController.abort();
                 abortController = null;
               }
               if (retryCount < 3) {
                 api
-                  .get({ url: "/api/v1/user/me" })
+                  .get({ url: '/api/v1/user/me' })
                   .then(() => {
                     setTimeout(() => connectSSE(retryCount + 1), 1000);
                   })
@@ -264,7 +241,7 @@ export const useUserStore = defineStore(
               throw err;
             }
 
-            if (err.message.includes("Fatal")) {
+            if (err.message.includes('Fatal')) {
               if (abortController) {
                 abortController.abort();
                 abortController = null;
@@ -274,10 +251,10 @@ export const useUserStore = defineStore(
           },
         });
       } catch (err: any) {
-        if (err.message !== "SSE_AUTH_ERROR") {
-          sseStatus.value = "error";
+        if (err.message !== 'SSE_AUTH_ERROR') {
+          sseStatus.value = 'error';
           abortController = null;
-          if (isLogin.value && !err.message?.includes("Fatal")) {
+          if (isLogin.value && !err.message?.includes('Fatal')) {
             const delay = Math.min(retryDelay, 30000);
             retryDelay = Math.min(delay * 2, 30000);
             retryTimeout = setTimeout(() => connectSSE(), delay);
@@ -294,7 +271,7 @@ export const useUserStore = defineStore(
       if (abortController) {
         abortController.abort();
         abortController = null;
-        sseStatus.value = "disconnected";
+        sseStatus.value = 'disconnected';
       }
       retryDelay = 1000;
     };
@@ -313,7 +290,7 @@ export const useUserStore = defineStore(
           closeSSE();
         }
       },
-      { immediate: true },
+      { immediate: true }
     );
 
     watch(
@@ -323,9 +300,9 @@ export const useUserStore = defineStore(
 
         if (oldVal && JSON.stringify(newVal) === JSON.stringify(oldVal)) return;
 
-        window.dispatchEvent(new CustomEvent("auth:permissions-changed"));
+        window.dispatchEvent(new CustomEvent('auth:permissions-changed'));
       },
-      { deep: true },
+      { deep: true }
     );
 
     return {
@@ -357,8 +334,8 @@ export const useUserStore = defineStore(
   },
   {
     persist: {
-      key: "user",
+      key: 'user',
       storage: localStorage,
     },
-  },
+  }
 );

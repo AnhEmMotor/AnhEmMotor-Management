@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface ServiceResponse {
   id: number;
@@ -19,7 +19,7 @@ export const ServiceApi = {
   getList(params?: any) {
     const { current, size, ...rest } = params || {};
     return request.get<ServiceList>({
-      url: "/api/Services",
+      url: '/api/Services',
       showErrorMessage: false,
       params: {
         Page: current,
@@ -28,9 +28,9 @@ export const ServiceApi = {
       },
     });
   },
-  create(data: Omit<ServiceResponse, "id" | "isActive">) {
+  create(data: Omit<ServiceResponse, 'id' | 'isActive'>) {
     return request.post<ServiceResponse>({
-      url: "/api/Services",
+      url: '/api/Services',
       data,
     });
   },

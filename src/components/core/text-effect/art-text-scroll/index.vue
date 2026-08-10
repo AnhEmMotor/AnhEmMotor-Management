@@ -5,10 +5,7 @@
     :class="themeClasses"
     :style="containerStyle"
   >
-    <div
-      class="flex-cc absolute left-0 h-full w-9 z-10"
-      :style="{ backgroundColor: bgColor }"
-    >
+    <div class="flex-cc absolute left-0 h-full w-9 z-10" :style="{ backgroundColor: bgColor }">
       <ArtSvgIcon icon="ri:volume-down-line" class="text-lg" />
     </div>
 
@@ -50,25 +47,18 @@ import {
   useElementHover,
   useDebounceFn,
   useTimeoutFn,
-} from "@vueuse/core";
-import { useSettingStore } from "@/application/store/setting";
+} from '@vueuse/core';
+import { useSettingStore } from '@/application/store/setting';
 
 type ThemeType =
-  | "theme"
-  | "primary"
-  | "secondary"
-  | "error"
-  | "info"
-  | "success"
-  | "warning"
-  | "danger";
+  'theme' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | 'danger';
 
 export interface TextScrollProps {
   text?: string;
 
   type?: ThemeType;
 
-  direction?: "left" | "right" | "up" | "down";
+  direction?: 'left' | 'right' | 'up' | 'down';
 
   speed?: number;
 
@@ -84,13 +74,13 @@ export interface TextScrollProps {
 }
 
 const props = withDefaults(defineProps<TextScrollProps>(), {
-  text: "",
-  direction: "left",
+  text: '',
+  direction: 'left',
   speed: 80,
-  width: "100%",
-  height: "36px",
+  width: '100%',
+  height: '36px',
   pauseOnHover: true,
-  type: "theme",
+  type: 'theme',
   showClose: false,
   alwaysScroll: true,
 });
@@ -100,7 +90,7 @@ const emit = defineEmits<{
 }>();
 
 const handleClose = () => {
-  emit("close");
+  emit('close');
 };
 
 const settingStore = useSettingStore();
@@ -116,15 +106,10 @@ const textSize = ref(0);
 const containerSize = ref(0);
 const shouldClone = ref(false);
 
-const isHorizontal = computed(
-  () => props.direction === "left" || props.direction === "right",
-);
-const isReverse = computed(
-  () => props.direction === "right" || props.direction === "down",
-);
+const isHorizontal = computed(() => props.direction === 'left' || props.direction === 'right');
+const isReverse = computed(() => props.direction === 'right' || props.direction === 'down');
 
-const { width: containerWidth, height: containerHeight } =
-  useElementSize(containerRef);
+const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
 
 const isHovered = useElementHover(containerRef);
 
@@ -137,21 +122,21 @@ const isPaused = computed(() => {
 
 const themeClasses = computed(() => {
   const themeMap: Record<ThemeType, string> = {
-    theme: "text-theme/90 !border-theme/50",
-    primary: "text-primary/90 !border-primary/50",
-    secondary: "text-secondary/90 !border-secondary/50",
-    error: "text-error/90 !border-error/50",
-    info: "text-info/90 !border-info/50",
-    success: "text-success/90 !border-success/50",
-    warning: "text-warning/90 !border-warning/50",
-    danger: "text-danger/90 !border-danger/50",
+    theme: 'text-theme/90 !border-theme/50',
+    primary: 'text-primary/90 !border-primary/50',
+    secondary: 'text-secondary/90 !border-secondary/50',
+    error: 'text-error/90 !border-error/50',
+    info: 'text-info/90 !border-info/50',
+    success: 'text-success/90 !border-success/50',
+    warning: 'text-warning/90 !border-warning/50',
+    danger: 'text-danger/90 !border-danger/50',
   };
   return themeMap[props.type] || themeMap.theme;
 });
 
 const bgColor = computed(
   () =>
-    `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? "25" : "10"}%, var(--art-color))`,
+    `color-mix(in oklch, var(--color-${props.type}) ${isDark.value ? '25' : '10'}%, var(--art-color))`
 );
 
 const containerStyle = computed(() => ({
@@ -162,9 +147,9 @@ const containerStyle = computed(() => ({
 
 const contentClass = computed(() => {
   if (!isHorizontal.value) {
-    return "flex flex-col";
+    return 'flex flex-col';
   }
-  return "";
+  return '';
 });
 
 const contentStyle = computed(() => {
@@ -174,12 +159,12 @@ const contentStyle = computed(() => {
 
   return {
     transform,
-    willChange: "transform",
+    willChange: 'transform',
   };
 });
 
 const cloneSpacing = computed(() => {
-  const spacing = "2em";
+  const spacing = '2em';
   return isHorizontal.value ? { marginLeft: spacing } : { marginTop: spacing };
 });
 
@@ -234,12 +219,12 @@ const { pause, resume } = useRafFn(
 
     lastTimestamp = timestamp;
   },
-  { immediate: false },
+  { immediate: false }
 );
 
 const handleContentClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement;
-  if (target.tagName === "A") {
+  if (target.tagName === 'A') {
     e.stopPropagation();
   }
 };
@@ -253,7 +238,7 @@ watch(
   () => {
     measureSizes();
     lastTimestamp = 0;
-  },
+  }
 );
 
 const { start: startMeasure } = useTimeoutFn(() => {

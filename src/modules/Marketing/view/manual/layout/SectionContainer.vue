@@ -1,19 +1,10 @@
 <template>
   <div class="section-container">
-    <el-button
-      class="back-btn"
-      @click="$emit('back')"
-      icon="Back"
-      type="primary"
-      plain
-    >
+    <el-button class="back-btn" @click="$emit('back')" icon="Back" type="primary" plain>
       Quay lại Tổng quan
     </el-button>
     <div class="section-header">
-      <div
-        class="icon-wrapper"
-        :style="{ '--section-shadow-color': section.shadowColor }"
-      >
+      <div class="icon-wrapper" :style="{ '--section-shadow-color': section.shadowColor }">
         <el-icon class="section-icon" :style="{ color: section.color }">
           <component :is="section.icon" />
         </el-icon>
@@ -28,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GuideSection } from "../data/guideData";
-import PageCard from "./PageCard.vue";
+import type { GuideSection } from '../data/guideData';
+import PageCard from './PageCard.vue';
 
 defineProps<{ section: GuideSection }>();
 defineEmits<{ back: [] }>();

@@ -1,16 +1,11 @@
 <template>
   <div class="flex-cc">
-    <img
-      :style="logoStyle"
-      src="@imgs/common/logo.webp"
-      alt="logo"
-      class="w-full h-full"
-    />
+    <img :style="logoStyle" src="@imgs/common/logo.webp" alt="logo" class="w-full h-full" />
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtLogo" });
+defineOptions({ name: 'ArtLogo' });
 
 interface Props {
   size?: number | string;

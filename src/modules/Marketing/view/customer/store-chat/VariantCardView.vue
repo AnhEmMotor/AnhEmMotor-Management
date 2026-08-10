@@ -16,17 +16,15 @@ const props = defineProps<{
   colors?: ColorOption[];
 }>();
 
-// Cùng khuôn với ChatDrawer.vue (VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT) — luôn có fallback, tránh
-// href thành "undefined/product/..." nếu biến môi trường chưa được cấu hình ở nơi đang chạy.
 const { VITE_PUBLIC_STORE_URL } = import.meta.env;
-const storeUrl = VITE_PUBLIC_STORE_URL || "http://localhost:3000";
+const storeUrl = VITE_PUBLIC_STORE_URL || 'http://localhost:3000';
 
 const showColors = ref(false);
 const selectedColor = ref<ColorOption | null>(null);
 
 const productUrl = (colorId?: number) => {
   if (!props.slug) return null;
-  const colorQuery = colorId != null ? `&color=${colorId}` : "";
+  const colorQuery = colorId != null ? `&color=${colorId}` : '';
   return `${storeUrl}/product/${props.slug}?variant=${props.variantId}${colorQuery}`;
 };
 
@@ -36,14 +34,14 @@ const onCardClick = () => {
     showColors.value = !showColors.value;
     return;
   }
-  window.open(productUrl() ?? undefined, "_blank", "noopener");
+  window.open(productUrl() ?? undefined, '_blank', 'noopener');
 };
 
 const priceLabel = computed(() => {
-  if (props.price === undefined || props.price === null) return "Liên hệ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (props.price === undefined || props.price === null) return 'Liên hệ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(props.price);
 });
 </script>
@@ -52,11 +50,7 @@ const priceLabel = computed(() => {
   <div class="w-full">
     <button
       class="flex items-center justify-between gap-3 w-full p-2.5 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all text-left"
-      :class="
-        slug
-          ? 'hover:border-blue-300 hover:shadow-md'
-          : 'opacity-50 cursor-not-allowed'
-      "
+      :class="slug ? 'hover:border-blue-300 hover:shadow-md' : 'opacity-50 cursor-not-allowed'"
       :disabled="!slug"
       @click="onCardClick"
     >
@@ -70,15 +64,10 @@ const priceLabel = computed(() => {
         <p class="text-xs font-bold text-gray-900 truncate">
           {{ variantName }}
         </p>
-        <p
-          class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5"
-        >
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5">
           {{ sku }}
         </p>
-        <p
-          v-if="selectedColor"
-          class="text-[10px] font-semibold text-blue-600 mt-0.5"
-        >
+        <p v-if="selectedColor" class="text-[10px] font-semibold text-blue-600 mt-0.5">
           Màu: {{ selectedColor.colorName }}
         </p>
       </div>
@@ -103,10 +92,9 @@ const priceLabel = computed(() => {
           class="w-3.5 h-3.5 rounded-full border border-gray-200 shrink-0"
           :style="{ backgroundColor: color.colorCode || '#ccc' }"
         />
-        <span
-          class="text-[10px] font-semibold text-gray-700 whitespace-nowrap"
-          >{{ color.colorName }}</span
-        >
+        <span class="text-[10px] font-semibold text-gray-700 whitespace-nowrap">{{
+          color.colorName
+        }}</span>
       </a>
     </div>
   </div>

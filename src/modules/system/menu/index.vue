@@ -16,11 +16,9 @@
         @refresh="handleRefresh"
       >
         <template #left>
-          <ElButton v-auth="'add'" @click="handleAddMenu" v-ripple>{{
-            $t("admin.t124")
-          }}</ElButton>
+          <ElButton v-auth="'add'" @click="handleAddMenu" v-ripple>{{ $t('admin.t124') }}</ElButton>
           <ElButton @click="toggleExpand" v-ripple>
-            {{ isExpanded ? "Thu gọn" : "Mở rộng" }}
+            {{ isExpanded ? 'Thu gọn' : 'Mở rộng' }}
           </ElButton>
         </template>
       </ArtTableHeader>
@@ -48,28 +46,28 @@
 </template>
 
 <script setup lang="ts">
-import { formatMenuTitle } from "@/common/utils/router";
-import ArtButtonTable from "@/components/core/forms/art-button-table/index.vue";
-import { useTableColumns } from "@/common/composables/useTableColumns";
-import type { AppRouteRecord } from "@/types/router";
-import MenuDialog from "./modules/menu-dialog.vue";
-import { fetchGetMenuList } from "@/api/auth";
-import { ElTag, ElMessageBox } from "element-plus";
+import { formatMenuTitle } from '@/common/utils/router';
+import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue';
+import { useTableColumns } from '@/common/composables/useTableColumns';
+import type { AppRouteRecord } from '@/types/router';
+import MenuDialog from './modules/menu-dialog.vue';
+import { fetchGetMenuList } from '@/api/auth';
+import { ElTag, ElMessageBox } from 'element-plus';
 
-defineOptions({ name: "Menus" });
+defineOptions({ name: 'Menus' });
 
 const loading = ref(false);
 const isExpanded = ref(false);
 const tableRef = ref();
 
 const dialogVisible = ref(false);
-const dialogType = ref<"menu" | "button">("menu");
+const dialogType = ref<'menu' | 'button'>('menu');
 const editData = ref<AppRouteRecord | any>(null);
 const lockMenuType = ref(false);
 
 const initialSearchState = {
-  name: "",
-  route: "",
+  name: '',
+  route: '',
 };
 
 const formFilters = reactive({ ...initialSearchState });
@@ -77,15 +75,15 @@ const appliedFilters = reactive({ ...initialSearchState });
 
 const formItems = computed(() => [
   {
-    label: "Menudanhtên",
-    key: "name",
-    type: "input",
+    label: 'Menudanhtên',
+    key: 'name',
+    type: 'input',
     props: { clearable: true },
   },
   {
-    label: "RoutingDiaChi",
-    key: "route",
-    type: "input",
+    label: 'RoutingDiaChi',
+    key: 'route',
+    type: 'input',
     props: { clearable: true },
   },
 ]);
@@ -101,110 +99,108 @@ const getMenuList = async (): Promise<void> => {
     const list = await fetchGetMenuList();
     tableData.value = list;
   } catch (error) {
-    throw error instanceof Error ? error : new Error("LấyMenuThatBai");
+    throw error instanceof Error ? error : new Error('LấyMenuThatBai');
   } finally {
     loading.value = false;
   }
 };
 
 const getMenuTypeTag = (
-  row: AppRouteRecord,
-): "primary" | "success" | "warning" | "info" | "danger" => {
-  if (row.meta?.isAuthButton) return "danger";
-  if (row.children?.length) return "info";
-  if (row.meta?.link && row.meta?.isIframe) return "success";
-  if (row.path) return "primary";
-  if (row.meta?.link) return "warning";
-  return "info";
+  row: AppRouteRecord
+): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  if (row.meta?.isAuthButton) return 'danger';
+  if (row.children?.length) return 'info';
+  if (row.meta?.link && row.meta?.isIframe) return 'success';
+  if (row.path) return 'primary';
+  if (row.meta?.link) return 'warning';
+  return 'info';
 };
 
 const getMenuTypeText = (row: AppRouteRecord): string => {
-  if (row.meta?.isAuthButton) return "Nút";
-  if (row.children?.length) return "mụclục";
-  if (row.meta?.link && row.meta?.isIframe) return "trongnhúng";
-  if (row.path) return "Menu";
-  if (row.meta?.link) return "ngoàiliên";
-  return "Chưabáo";
+  if (row.meta?.isAuthButton) return 'Nút';
+  if (row.children?.length) return 'mụclục';
+  if (row.meta?.link && row.meta?.isIframe) return 'trongnhúng';
+  if (row.path) return 'Menu';
+  if (row.meta?.link) return 'ngoàiliên';
+  return 'Chưabáo';
 };
 
 const { columnChecks, columns } = useTableColumns(() => [
   {
-    prop: "meta.title",
-    label: "Menudanhtên",
+    prop: 'meta.title',
+    label: 'Menudanhtên',
     minWidth: 120,
     formatter: (row: AppRouteRecord) => formatMenuTitle(row.meta?.title),
   },
   {
-    prop: "type",
-    label: "Menuloạikiểu",
+    prop: 'type',
+    label: 'Menuloạikiểu',
     formatter: (row: AppRouteRecord) => {
-      return h(ElTag, { type: getMenuTypeTag(row) }, () =>
-        getMenuTypeText(row),
-      );
+      return h(ElTag, { type: getMenuTypeTag(row) }, () => getMenuTypeText(row));
     },
   },
   {
-    prop: "path",
-    label: "Routing",
+    prop: 'path',
+    label: 'Routing',
     formatter: (row: AppRouteRecord) => {
-      if (row.meta?.isAuthButton) return "";
-      return row.meta?.link || row.path || "";
+      if (row.meta?.isAuthButton) return '';
+      return row.meta?.link || row.path || '';
     },
   },
   {
-    prop: "meta.authList",
-    label: "QuyenHantiêu",
+    prop: 'meta.authList',
+    label: 'QuyenHantiêu',
     formatter: (row: AppRouteRecord) => {
       if (row.meta?.isAuthButton) {
-        return row.meta?.authMark || "";
+        return row.meta?.authMark || '';
       }
-      if (!row.meta?.authList?.length) return "";
+      if (!row.meta?.authList?.length) return '';
       return `${row.meta.authList.length} chiếcQuyenHantiêu`;
     },
   },
   {
-    prop: "date",
-    label: "Chỉnh sửaThoiGian",
-    formatter: () => "2022-3-12 12:00:00",
+    prop: 'date',
+    label: 'Chỉnh sửaThoiGian',
+    formatter: () => '2022-3-12 12:00:00',
   },
   {
-    prop: "status",
-    label: "Trạng thái",
-    formatter: () => h(ElTag, { type: "success" }, () => "Bật"),
+    prop: 'status',
+    label: 'Trạng thái',
+    formatter: () => h(ElTag, { type: 'success' }, () => 'Bật'),
   },
   {
-    prop: "operation",
-    label: "HanhDong",
+    prop: 'operation',
+    label: 'HanhDong',
     width: 180,
-    align: "right",
+    align: 'right',
     formatter: (row: AppRouteRecord) => {
-      const buttonStyle = { style: "text-align: right" };
+      const buttonStyle = { style: 'text-align: right' };
 
       if (row.meta?.isAuthButton) {
-        return h("div", buttonStyle, [
+        return h('div', buttonStyle, [
           h(ArtButtonTable, {
-            type: "edit",
+            type: 'edit',
             onClick: () => handleEditAuth(row),
           }),
           h(ArtButtonTable, {
-            type: "delete",
+            type: 'delete',
             onClick: () => handleDeleteAuth(),
           }),
         ]);
       }
 
-      return h("div", buttonStyle, [
+      return h('div', buttonStyle, [
         h(ArtButtonTable, {
-          type: "add",
+          type: 'add',
           onClick: () => handleAddAuth(),
-          title: "Thêm mớiQuyenHan",
+          title: 'Thêm mớiQuyenHan',
         }),
         h(ArtButtonTable, {
-          type: "edit",
+          type: 'edit',
           onClick: () => handleEditMenu(row),
         }),
         h(ArtButtonTable, {
-          type: "delete",
+          type: 'delete',
           onClick: () => handleDeleteMenu(),
         }),
       ]);
@@ -230,7 +226,7 @@ const handleRefresh = (): void => {
 };
 
 const deepClone = <T,>(obj: T): T => {
-  if (obj === null || typeof obj !== "object") return obj;
+  if (obj === null || typeof obj !== 'object') return obj;
   if (obj instanceof Date) return new Date(obj) as T;
   if (Array.isArray(obj)) return obj.map((item) => deepClone(item)) as T;
 
@@ -243,9 +239,7 @@ const deepClone = <T,>(obj: T): T => {
   return cloned;
 };
 
-const convertAuthListToChildren = (
-  items: AppRouteRecord[],
-): AppRouteRecord[] => {
+const convertAuthListToChildren = (items: AppRouteRecord[]): AppRouteRecord[] => {
   return items.map((item) => {
     const clonedItem = deepClone(item);
 
@@ -264,7 +258,7 @@ const convertAuthListToChildren = (
             isAuthButton: true,
             parentPath: item.path,
           },
-        }),
+        })
       );
 
       clonedItem.children = clonedItem.children?.length
@@ -280,10 +274,10 @@ const searchMenu = (items: AppRouteRecord[]): AppRouteRecord[] => {
   const results: AppRouteRecord[] = [];
 
   for (const item of items) {
-    const searchName = appliedFilters.name?.toLowerCase().trim() || "";
-    const searchRoute = appliedFilters.route?.toLowerCase().trim() || "";
-    const menuTitle = formatMenuTitle(item.meta?.title || "").toLowerCase();
-    const menuPath = (item.path || "").toLowerCase();
+    const searchName = appliedFilters.name?.toLowerCase().trim() || '';
+    const searchRoute = appliedFilters.route?.toLowerCase().trim() || '';
+    const menuTitle = formatMenuTitle(item.meta?.title || '').toLowerCase();
+    const menuPath = (item.path || '').toLowerCase();
     const nameMatch = !searchName || menuTitle.includes(searchName);
     const routeMatch = !searchRoute || menuPath.includes(searchRoute);
 
@@ -311,28 +305,28 @@ const filteredTableData = computed(() => {
 });
 
 const handleAddMenu = (): void => {
-  dialogType.value = "menu";
+  dialogType.value = 'menu';
   editData.value = null;
   lockMenuType.value = true;
   dialogVisible.value = true;
 };
 
 const handleAddAuth = (): void => {
-  dialogType.value = "menu";
+  dialogType.value = 'menu';
   editData.value = null;
   lockMenuType.value = false;
   dialogVisible.value = true;
 };
 
 const handleEditMenu = (row: AppRouteRecord): void => {
-  dialogType.value = "menu";
+  dialogType.value = 'menu';
   editData.value = row;
   lockMenuType.value = true;
   dialogVisible.value = true;
 };
 
 const handleEditAuth = (row: AppRouteRecord): void => {
-  dialogType.value = "button";
+  dialogType.value = 'button';
   editData.value = {
     title: row.meta?.title,
     authMark: row.meta?.authMark,
@@ -352,47 +346,39 @@ interface MenuFormData {
 }
 
 const handleSubmit = (formData: MenuFormData): void => {
-  console.log("GửiDữ liệu:", formData);
+  console.log('GửiDữ liệu:', formData);
 
   getMenuList();
 };
 
 const handleDeleteMenu = async (): Promise<void> => {
   try {
-    await ElMessageBox.confirm(
-      "Xác địnhcầnXóanênMenukhông？Xóasauvôphápkhôiphục",
-      "Gợi ý",
-      {
-        confirmButtonText: "Xác định",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
-    ElMessage.success("XóaThanhCong");
+    await ElMessageBox.confirm('Xác địnhcầnXóanênMenukhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    });
+    ElMessage.success('XóaThanhCong');
     getMenuList();
   } catch (error) {
-    if (error !== "cancel") {
-      ElMessage.error("XóaThatBai");
+    if (error !== 'cancel') {
+      ElMessage.error('XóaThatBai');
     }
   }
 };
 
 const handleDeleteAuth = async (): Promise<void> => {
   try {
-    await ElMessageBox.confirm(
-      "Xác địnhcầnXóanênQuyenHankhông？Xóasauvôphápkhôiphục",
-      "Gợi ý",
-      {
-        confirmButtonText: "Xác định",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
-    ElMessage.success("XóaThanhCong");
+    await ElMessageBox.confirm('Xác địnhcầnXóanênQuyenHankhông？Xóasauvôphápkhôiphục', 'Gợi ý', {
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    });
+    ElMessage.success('XóaThanhCong');
     getMenuList();
   } catch (error) {
-    if (error !== "cancel") {
-      ElMessage.error("XóaThatBai");
+    if (error !== 'cancel') {
+      ElMessage.error('XóaThatBai');
     }
   }
 };

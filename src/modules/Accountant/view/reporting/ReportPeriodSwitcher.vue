@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type Period = "today" | "month" | "year" | "custom";
+type Period = 'today' | 'month' | 'year' | 'custom';
 
 defineProps<{
   modelValue: Period;
@@ -8,13 +8,13 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "update:modelValue": [value: Period];
-  "update:startDate": [value: string];
-  "update:endDate": [value: string];
+  'update:modelValue': [value: Period];
+  'update:startDate': [value: string];
+  'update:endDate': [value: string];
 }>();
 
 function select(value: string | number | boolean | undefined) {
-  emit("update:modelValue", value as Period);
+  emit('update:modelValue', value as Period);
 }
 </script>
 
@@ -63,7 +63,7 @@ function select(value: string | number | boolean | undefined) {
 <style scoped lang="scss">
 .report-period-switcher {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
@@ -73,7 +73,7 @@ function select(value: string | number | boolean | undefined) {
 
 .report-period-switcher__custom {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
 }
@@ -115,7 +115,6 @@ function select(value: string | number | boolean | undefined) {
 }
 
 :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  /* color, background, and border handled by reporting.scss */
 }
 
 :deep(.el-input__wrapper) {

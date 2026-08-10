@@ -1,20 +1,19 @@
-import { ref, computed, watch } from "vue";
-import { useSettingStore } from "@/application/store/setting";
-import { storeToRefs } from "pinia";
-import { useBreakpoints } from "@vueuse/core";
-import AppConfig from "@/config";
-import { SystemThemeEnum, MenuTypeEnum } from "@/common/enums/appEnum";
-import { mittBus } from "@/common/utils/sys";
-import { StorageConfig } from "@/common/utils";
-import { useTheme } from "@/common/composables/useTheme";
-import { useCeremony } from "@/common/composables/useCeremony";
-import { useSettingsState } from "./useSettingsState";
-import { useSettingsHandlers } from "./useSettingsHandlers";
+import { ref, computed, watch } from 'vue';
+import { useSettingStore } from '@/application/store/setting';
+import { storeToRefs } from 'pinia';
+import { useBreakpoints } from '@vueuse/core';
+import AppConfig from '@/config';
+import { SystemThemeEnum, MenuTypeEnum } from '@/common/enums/appEnum';
+import { mittBus } from '@/common/utils/sys';
+import { StorageConfig } from '@/common/utils';
+import { useTheme } from '@/common/composables/useTheme';
+import { useCeremony } from '@/common/composables/useCeremony';
+import { useSettingsState } from './useSettingsState';
+import { useSettingsHandlers } from './useSettingsHandlers';
 
 export function useSettingsPanel() {
   const settingStore = useSettingStore();
-  const { systemThemeType, systemThemeMode, menuType } =
-    storeToRefs(settingStore);
+  const { systemThemeType, systemThemeMode, menuType } = storeToRefs(settingStore);
 
   const { openFestival, cleanup } = useCeremony();
   const { setSystemTheme, setSystemAutoTheme } = useTheme();
@@ -24,12 +23,10 @@ export function useSettingsPanel() {
   const showDrawer = ref(false);
 
   const breakpoints = useBreakpoints({ tablet: 1000 });
-  const isMobile = breakpoints.smaller("tablet");
+  const isMobile = breakpoints.smaller('tablet');
 
   const getStoredDesktopMenuType = (): MenuTypeEnum | undefined => {
-    const storedMenuType = localStorage.getItem(
-      StorageConfig.RESPONSIVE_MENU_TYPE_KEY,
-    );
+    const storedMenuType = localStorage.getItem(StorageConfig.RESPONSIVE_MENU_TYPE_KEY);
     return Object.values(MenuTypeEnum).includes(storedMenuType as MenuTypeEnum)
       ? (storedMenuType as MenuTypeEnum)
       : undefined;
@@ -47,9 +44,7 @@ export function useSettingsPanel() {
   const beforeMenuType = ref<MenuTypeEnum | undefined>(storedDesktopMenuType);
   const hasChangedMenu = ref(Boolean(storedDesktopMenuType));
 
-  const systemThemeColor = computed(
-    () => settingStore.systemThemeColor as string,
-  );
+  const systemThemeColor = computed(() => settingStore.systemThemeColor as string);
 
   const useThemeHandlers = () => {
     const initSystemColor = () => {
@@ -68,10 +63,10 @@ export function useSettingsPanel() {
     };
 
     const listenerSystemTheme = () => {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      mediaQuery.addEventListener("change", initSystemTheme);
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', initSystemTheme);
       return () => {
-        mediaQuery.removeEventListener("change", initSystemTheme);
+        mediaQuery.removeEventListener('change', initSystemTheme);
       };
     };
 
@@ -110,7 +105,7 @@ export function useSettingsPanel() {
           settingStore.setMenuOpen(true);
         }
       },
-      { immediate: true },
+      { immediate: true }
     );
 
     return { stopWatch };
@@ -124,7 +119,7 @@ export function useSettingsPanel() {
         clearTimeout(themeChangeTimer);
       }
       themeChangeTimer = setTimeout(() => {
-        domOperations.setBodyClass("theme-change", true);
+        domOperations.setBodyClass('theme-change', true);
         themeChangeTimer = null;
       }, 500);
     };
@@ -134,7 +129,7 @@ export function useSettingsPanel() {
         clearTimeout(themeChangeTimer);
         themeChangeTimer = null;
       }
-      domOperations.setBodyClass("theme-change", false);
+      domOperations.setBodyClass('theme-change', false);
     };
 
     const openSetting = () => {
@@ -160,7 +155,7 @@ export function useSettingsPanel() {
         if (val !== undefined) {
           showDrawer.value = val;
         }
-      },
+      }
     );
   };
 
@@ -171,15 +166,13 @@ export function useSettingsPanel() {
     let themeCleanup: (() => void) | null = null;
 
     const initializeSettings = () => {
-      mittBus.on("openSetting", openSetting);
+      mittBus.on('openSetting', openSetting);
       themeHandlers.initSystemColor();
       themeCleanup = themeHandlers.listenerSystemTheme();
       initColorWeak();
 
-      const boxMode = settingStore.boxBorderMode
-        ? "border-mode"
-        : "shadow-mode";
-      domOperations.setRootAttribute("data-box-mode", boxMode);
+      const boxMode = settingStore.boxBorderMode ? 'border-mode' : 'shadow-mode';
+      domOperations.setRootAttribute('data-box-mode', boxMode);
 
       themeHandlers.initSystemTheme();
       openFestival();

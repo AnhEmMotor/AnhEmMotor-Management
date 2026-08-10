@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page online-orders-page flex flex-col gap-4 pb-5">
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <ArtStatsCard
         v-for="tab in tabs"
@@ -14,7 +13,6 @@
       />
     </div>
 
-    <!-- Search Bar -->
     <ArtSearchBar
       v-model="searchForm"
       :items="searchItems"
@@ -24,47 +22,24 @@
       @reset="handleReset"
     />
 
-    <!-- Bulk Actions Bar -->
     <div
       v-if="selectedRowIds.length > 0"
       class="bulk-actions-bar bg-blue-50 p-3 rounded flex items-center gap-2"
     >
-      <span class="text-sm text-gray-700 font-medium"
-        >Đã chọn {{ selectedRowIds.length }} đơn</span
-      >
-      <ElButton
-        size="small"
-        type="primary"
-        @click="handleBulkApprove"
-        :loading="bulkActionLoading"
-      >
+      <span class="text-sm text-gray-700 font-medium">Đã chọn {{ selectedRowIds.length }} đơn</span>
+      <ElButton size="small" type="primary" @click="handleBulkApprove" :loading="bulkActionLoading">
         Duyệt hàng loạt
       </ElButton>
-      <ElButton
-        size="small"
-        type="success"
-        @click="handleBulkPrint"
-        :loading="bulkActionLoading"
-      >
+      <ElButton size="small" type="success" @click="handleBulkPrint" :loading="bulkActionLoading">
         In tem hàng loạt
       </ElButton>
-      <ElButton
-        size="small"
-        type="danger"
-        @click="handleBulkCancel"
-        :loading="bulkActionLoading"
-      >
+      <ElButton size="small" type="danger" @click="handleBulkCancel" :loading="bulkActionLoading">
         Hủy
       </ElButton>
     </div>
 
-    <!-- Table -->
     <ElCard class="art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="fetchData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="fetchData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleRefresh">
             <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
@@ -85,10 +60,10 @@
         <template #customer="{ row }">
           <div class="flex flex-col">
             <span class="font-medium text-[var(--el-text-color-primary)]">{{
-              row.customerName || row.buyerName || "---"
+              row.customerName || row.buyerName || '---'
             }}</span>
             <span class="text-xs text-[var(--el-text-color-secondary)]">{{
-              row.customerPhone || row.buyerEmail || "---"
+              row.customerPhone || row.buyerEmail || '---'
             }}</span>
           </div>
         </template>
@@ -96,20 +71,12 @@
           {{ getPaymentMethodLabel(row.paymentMethod) }}
         </template>
         <template #paymentStatus="{ row }">
-          <ElTag
-            :type="getPaymentStatusTagType(row.paymentStatus)"
-            size="small"
-          >
+          <ElTag :type="getPaymentStatusTagType(row.paymentStatus)" size="small">
             {{ getPaymentStatusLabel(row.paymentStatus) }}
           </ElTag>
         </template>
         <template #inventoryLock="{ row }">
-          <ElTag
-            v-if="row.isInventoryLocked"
-            type="warning"
-            size="small"
-            effect="plain"
-          >
+          <ElTag v-if="row.isInventoryLocked" type="warning" size="small" effect="plain">
             🔒 Đã giữ chỗ
           </ElTag>
           <span v-else class="text-gray-400 text-xs">---</span>
@@ -127,7 +94,6 @@
         <template #id="{ row }"> ORD-{{ row.id }} </template>
       </ArtTable>
 
-      <!-- Pagination -->
       <div class="flex justify-end mt-4">
         <ElPagination
           v-model:current-page="pagination.current"
@@ -140,7 +106,6 @@
       </div>
     </ElCard>
 
-    <!-- Modal for Order Details -->
     <ElDialog
       v-model="drawer.visible"
       :title="drawer.order ? `Chi tiết đơn #${drawer.order.id}` : ''"
@@ -149,7 +114,6 @@
       :loading="rowClickLoading"
     >
       <div v-if="drawer.order" class="order-detail">
-        <!-- Order Summary -->
         <div class="summary grid grid-cols-2 gap-4 mb-4">
           <div><strong>Mã đơn:</strong> ORD-{{ drawer.order.id }}</div>
           <div>
@@ -158,11 +122,7 @@
           </div>
           <div>
             <strong>Trạng thái:</strong>
-            <ElTag
-              :type="getStatusTagType(drawer.order.statusId)"
-              size="small"
-              class="ml-2"
-            >
+            <ElTag :type="getStatusTagType(drawer.order.statusId)" size="small" class="ml-2">
               {{ getStatusLabel(drawer.order.statusId) }}
             </ElTag>
           </div>
@@ -178,19 +138,18 @@
           </div>
           <div class="col-span-2">
             <strong>Khách hàng:</strong>
-            {{ drawer.order.customerName || drawer.order.buyerName || "---" }}
+            {{ drawer.order.customerName || drawer.order.buyerName || '---' }}
           </div>
           <div>
             <strong>SĐT:</strong>
-            {{ drawer.order.customerPhone || drawer.order.buyerPhone || "---" }}
+            {{ drawer.order.customerPhone || drawer.order.buyerPhone || '---' }}
           </div>
           <div class="col-span-2">
             <strong>Địa chỉ giao hàng:</strong>
-            {{ drawer.order.customerAddress || "---" }}
+            {{ drawer.order.customerAddress || '---' }}
           </div>
         </div>
 
-        <!-- Invoice Info if requested -->
         <ElAlert
           v-if="drawer.order.isCompanyInvoice"
           title="Yêu cầu xuất hóa đơn công ty (VAT)"
@@ -199,15 +158,9 @@
           show-icon
           class="mb-4"
         >
-          <div
-            class="mt-2 text-xs space-y-1.5 font-medium text-[var(--el-text-color-regular)]"
-          >
-            <div>
-              <strong>Tên công ty:</strong> {{ drawer.order.companyName }}
-            </div>
-            <div>
-              <strong>Mã số thuế:</strong> {{ drawer.order.companyTaxCode }}
-            </div>
+          <div class="mt-2 text-xs space-y-1.5 font-medium text-[var(--el-text-color-regular)]">
+            <div><strong>Tên công ty:</strong> {{ drawer.order.companyName }}</div>
+            <div><strong>Mã số thuế:</strong> {{ drawer.order.companyTaxCode }}</div>
             <div>
               <strong>Địa chỉ công ty:</strong>
               {{ drawer.order.companyAddress }}
@@ -222,50 +175,28 @@
           </div>
         </ElAlert>
 
-        <!-- Order Total Breakdown -->
-        <div
-          class="total-breakdown mb-4 p-3 bg-[var(--el-fill-color-light)] rounded"
-        >
-          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">
-            Tổng doanh thu
-          </h4>
+        <div class="total-breakdown mb-4 p-3 bg-[var(--el-fill-color-light)] rounded">
+          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">Tổng doanh thu</h4>
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
               <span>Tổng tiền hàng:</span>
-              <span class="font-medium">{{
-                formatCurrency(drawer.order.subtotal || 0)
-              }}</span>
+              <span class="font-medium">{{ formatCurrency(drawer.order.subtotal || 0) }}</span>
             </div>
-            <div
-              v-if="(drawer.order.shippingFee || 0) > 0"
-              class="flex justify-between"
-            >
+            <div v-if="(drawer.order.shippingFee || 0) > 0" class="flex justify-between">
               <span>Phí vận chuyển:</span>
-              <span class="font-medium">{{
-                formatCurrency(drawer.order.shippingFee)
-              }}</span>
+              <span class="font-medium">{{ formatCurrency(drawer.order.shippingFee) }}</span>
             </div>
 
-            <div
-              class="flex justify-between text-base font-bold text-primary border-t pt-1 mt-1"
-            >
+            <div class="flex justify-between text-base font-bold text-primary border-t pt-1 mt-1">
               <span>Tổng cộng:</span>
               <span>{{ formatCurrency(drawer.order.total) }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Products Table -->
         <div class="products-section">
-          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">
-            Chi tiết giỏ hàng
-          </h4>
-          <ElTable
-            :data="drawer.order.products || []"
-            border
-            size="small"
-            max-height="400"
-          >
+          <h4 class="font-bold mb-2 text-[var(--el-text-color-primary)]">Chi tiết giỏ hàng</h4>
+          <ElTable :data="drawer.order.products || []" border size="small" max-height="400">
             <ElTableColumn label="Ảnh" width="80" align="center">
               <template #default="{ row }">
                 <img
@@ -304,7 +235,6 @@
           </ElTable>
         </div>
 
-        <!-- Total -->
         <div class="mt-4 text-right border-t pt-2">
           <div class="text-lg font-bold text-primary">
             Tổng cộng: {{ formatCurrency(drawer.order.total) }}
@@ -330,20 +260,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { Refresh } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { SalesOrderApi } from "@/api/sales";
-import type { SalesOrder, OrderProduct } from "@/domain/order/order.types";
-import type { ColumnOption } from "@/types/component";
-import { formatImageUrl } from "@/common/utils/image";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { Refresh } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { SalesOrderApi } from '@/api/sales';
+import type { SalesOrder, OrderProduct } from '@/domain/order/order.types';
+import type { ColumnOption } from '@/types/component';
+import { formatImageUrl } from '@/common/utils/image';
 
-// ============================================
-// ORIGINAL CODE
-// ============================================
 
-// Status group definitions
-type StatusGroupId = "all" | "pending" | "packaged" | "shipping" | "failed";
+type StatusGroupId = 'all' | 'pending' | 'packaged' | 'shipping' | 'failed';
 
 interface TabItem {
   id: StatusGroupId;
@@ -354,34 +280,34 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   {
-    id: "all",
-    label: "Tất cả",
-    icon: "ri:file-list-3-line",
-    iconStyle: "bg-primary",
+    id: 'all',
+    label: 'Tất cả',
+    icon: 'ri:file-list-3-line',
+    iconStyle: 'bg-primary',
   },
   {
-    id: "pending",
-    label: "Chờ duyệt",
-    icon: "ri:time-line",
-    iconStyle: "bg-warning",
+    id: 'pending',
+    label: 'Chờ duyệt',
+    icon: 'ri:time-line',
+    iconStyle: 'bg-warning',
   },
   {
-    id: "packaged",
-    label: "Đã đóng gói",
-    icon: "ri:archive-line",
-    iconStyle: "bg-info",
+    id: 'packaged',
+    label: 'Đã đóng gói',
+    icon: 'ri:archive-line',
+    iconStyle: 'bg-info',
   },
   {
-    id: "shipping",
-    label: "Đang giao",
-    icon: "ri:delivery-line",
-    iconStyle: "bg-success",
+    id: 'shipping',
+    label: 'Đang giao',
+    icon: 'ri:delivery-line',
+    iconStyle: 'bg-success',
   },
   {
-    id: "failed",
-    label: "Thất bại",
-    icon: "ri:close-circle-line",
-    iconStyle: "bg-danger",
+    id: 'failed',
+    label: 'Thất bại',
+    icon: 'ri:close-circle-line',
+    iconStyle: 'bg-danger',
   },
 ];
 
@@ -398,7 +324,7 @@ const drawer = reactive({
 const rowClickLoading = ref(false);
 
 const searchForm = reactive({
-  search: "",
+  search: '',
 });
 
 const pagination = reactive({
@@ -406,227 +332,185 @@ const pagination = reactive({
   size: 20,
 });
 
-const activeTab = ref<StatusGroupId>("all");
+const activeTab = ref<StatusGroupId>('all');
 
-// Search items
 const searchItems = computed(() => [
   {
-    label: "Từ khóa",
-    key: "search",
-    type: "input",
-    props: { clearable: true, placeholder: "Mã đơn, tên, SĐT, địa chỉ" },
+    label: 'Từ khóa',
+    key: 'search',
+    type: 'input',
+    props: { clearable: true, placeholder: 'Mã đơn, tên, SĐT, địa chỉ' },
   },
 ]);
 
-// Table columns
 const columnChecks = ref<ColumnOption[]>([
   {
-    prop: "createdAt",
-    label: "Thời gian",
+    prop: 'createdAt',
+    label: 'Thời gian',
     width: 170,
     checked: true,
     useSlot: true,
   },
-  { prop: "id", label: "Mã đơn", width: 120, checked: true, useSlot: true },
+  { prop: 'id', label: 'Mã đơn', width: 120, checked: true, useSlot: true },
   {
-    prop: "inventoryLock",
-    label: "Tồn kho",
+    prop: 'inventoryLock',
+    label: 'Tồn kho',
     width: 100,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "customer",
-    label: "Khách hàng",
+    prop: 'customer',
+    label: 'Khách hàng',
     minWidth: 200,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "paymentMethod",
-    label: "Thanh toán",
+    prop: 'paymentMethod',
+    label: 'Thanh toán',
     width: 140,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "paymentStatus",
-    label: "TT thanh toán",
+    prop: 'paymentStatus',
+    label: 'TT thanh toán',
     width: 130,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "total",
-    label: "Tổng tiền",
+    prop: 'total',
+    label: 'Tổng tiền',
     width: 140,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "statusId",
-    label: "Trạng thái",
+    prop: 'statusId',
+    label: 'Trạng thái',
     width: 150,
     checked: true,
     useSlot: true,
   },
 ]);
 
-const columns = computed(() =>
-  columnChecks.value.filter((item) => item.checked),
-);
+const columns = computed(() => columnChecks.value.filter((item) => item.checked));
 
-// Derived: filtered orders based on activeTab and search
 const filteredOrders = computed(() => {
   let result = orders.value;
 
-  // Filter by tab status group
-  if (activeTab.value !== "all") {
-    result = result.filter((order) =>
-      belongsToStatusGroup(order.statusId, activeTab.value),
-    );
+  if (activeTab.value !== 'all') {
+    result = result.filter((order) => belongsToStatusGroup(order.statusId, activeTab.value));
   }
 
-  // Filter by search
   if (searchForm.search.trim()) {
     const keyword = searchForm.search.toLowerCase();
     result = result.filter(
       (order) =>
-        (order.id?.toString() || "").includes(keyword) ||
-        (order.customerName?.toLowerCase() || "").includes(keyword) ||
-        (order.customerPhone?.toLowerCase() || "").includes(keyword) ||
-        (order.customerAddress?.toLowerCase() || "").includes(keyword),
+        (order.id?.toString() || '').includes(keyword) ||
+        (order.customerName?.toLowerCase() || '').includes(keyword) ||
+        (order.customerPhone?.toLowerCase() || '').includes(keyword) ||
+        (order.customerAddress?.toLowerCase() || '').includes(keyword)
     );
   }
 
   return result;
 });
 
-// Paginated orders (client-side pagination)
 const paginatedOrders = computed(() => {
   const start = (pagination.current - 1) * pagination.size;
   const end = start + pagination.size;
   return filteredOrders.value.slice(start, end);
 });
 
-// Count per tab (based on all orders, not just current page)
 const getCountForTab = (tabId: StatusGroupId) => {
-  if (tabId === "all") return orders.value.length;
-  return orders.value.filter((order) =>
-    belongsToStatusGroup(order.statusId, tabId),
-  ).length;
+  if (tabId === 'all') return orders.value.length;
+  return orders.value.filter((order) => belongsToStatusGroup(order.statusId, tabId)).length;
 };
 
-// Helper: check if order belongs to status group
-function belongsToStatusGroup(
-  statusId: string | undefined,
-  group: StatusGroupId,
-): boolean {
+function belongsToStatusGroup(statusId: string | undefined, group: StatusGroupId): boolean {
   if (!statusId) return false;
   switch (group) {
-    case "pending":
-      // Unconfirmed orders: pending, waiting_deposit, waiting_installment
-      return ["pending", "waiting_deposit", "waiting_installment"].includes(
-        statusId,
-      );
-    case "packaged":
-      // Packaged/processed: paid_processing, deposit_paid, installment_approved
-      return [
-        "paid_processing",
-        "deposit_paid",
-        "installment_approved",
-      ].includes(statusId);
-    case "shipping":
-      // Shipping: delivering, waiting_pickup
-      return ["delivering", "waiting_pickup"].includes(statusId);
-    case "failed":
-      // Failed: cancelled, refunded, refunding
-      return ["cancelled", "refunded", "refunding"].includes(statusId);
-    case "all":
+    case 'pending':
+      return ['pending', 'waiting_deposit', 'waiting_installment'].includes(statusId);
+    case 'packaged':
+      return ['paid_processing', 'deposit_paid', 'installment_approved'].includes(statusId);
+    case 'shipping':
+      return ['delivering', 'waiting_pickup'].includes(statusId);
+    case 'failed':
+      return ['cancelled', 'refunded', 'refunding'].includes(statusId);
+    case 'all':
       return true;
     default:
       return false;
   }
 }
 
-// Helper: get payment status label
 function getPaymentStatusLabel(status?: string): string {
   switch (status) {
-    case "pending":
-      return "Chờ chuyển khoản";
-    case "paid":
-      return "Đã trả trước";
-    case "cod":
-      return "Thu COD";
-    case "failed":
-      return "Thanh toán thất bại";
+    case 'pending':
+      return 'Chờ chuyển khoản';
+    case 'paid':
+      return 'Đã trả trước';
+    case 'cod':
+      return 'Thu COD';
+    case 'failed':
+      return 'Thanh toán thất bại';
     default:
-      return "---";
+      return '---';
   }
 }
 
-// Helper: get payment status tag type
-function getPaymentStatusTagType(
-  status?: string,
-): "success" | "warning" | "danger" | "info" {
+function getPaymentStatusTagType(status?: string): 'success' | 'warning' | 'danger' | 'info' {
   switch (status) {
-    case "paid":
-      return "success";
-    case "pending":
-      return "warning";
-    case "cod":
-      return "info";
-    case "failed":
-      return "danger";
+    case 'paid':
+      return 'success';
+    case 'pending':
+      return 'warning';
+    case 'cod':
+      return 'info';
+    case 'failed':
+      return 'danger';
     default:
-      return "info";
+      return 'info';
   }
 }
 
-// Fetch data
 async function fetchData() {
   loading.value = true;
   try {
-    // Fetch confirmed and unconfirmed orders in parallel, with large page size to reduce calls
     const [confirmedRes, unconfirmedRes] = await Promise.all([
       SalesOrderApi.getConfirmedList({ current: 1, size: 1000 }),
       SalesOrderApi.getUnconfirmedList({ current: 1, size: 1000 }),
     ]);
 
-    orders.value = [
-      ...(confirmedRes.items || []),
-      ...(unconfirmedRes.items || []),
-    ].sort(
-      (a, b) =>
-        new Date(b.createdAt || 0).getTime() -
-        new Date(a.createdAt || 0).getTime(),
+    orders.value = [...(confirmedRes.items || []), ...(unconfirmedRes.items || [])].sort(
+      (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     );
 
-    // Also fetch status map for display names if not already loaded
     if (statusMap.value.length === 0) {
       const statusMapRes = await SalesOrderApi.getStatusMap();
       statusMap.value = statusMapRes;
     }
   } catch (error) {
-    console.error("Failed to fetch orders:", error);
-    ElMessage.error("Không thể tải danh sách đơn hàng");
+    console.error('Failed to fetch orders:', error);
+    ElMessage.error('Không thể tải danh sách đơn hàng');
   } finally {
     loading.value = false;
   }
 }
 
-// Search & Reset
 function handleSearch() {
   pagination.current = 1;
-  // Already client-side filter, so just reset page
 }
 
 function handleReset() {
-  searchForm.search = "";
+  searchForm.search = '';
   pagination.current = 1;
 }
 
-// Pagination
 function handleSizeChange(size: number) {
   pagination.size = size;
   pagination.current = 1;
@@ -636,17 +520,14 @@ function handleCurrentChange(page: number) {
   pagination.current = page;
 }
 
-// Refresh
 function handleRefresh() {
   fetchData();
 }
 
-// Selection
 function handleSelectionChange(selection: SalesOrder[]) {
   selectedRowIds.value = selection.map((o) => o.id);
 }
 
-// Row click -> open drawer
 async function handleRowClick(row: SalesOrder) {
   rowClickLoading.value = true;
   try {
@@ -660,27 +541,26 @@ async function handleRowClick(row: SalesOrder) {
   drawer.visible = true;
 }
 
-// Bulk actions
 async function handleBulkApprove() {
   if (selectedRowIds.value.length === 0) return;
   try {
     await ElMessageBox.confirm(
       `Duyệt ${selectedRowIds.value.length} đơn hàng thành "Đã xác nhận (COD)"?`,
-      "Xác nhận",
-      { type: "warning" },
+      'Xác nhận',
+      { type: 'warning' }
     );
     bulkActionLoading.value = true;
     await SalesOrderApi.updateManyOutputStatus({
       ids: selectedRowIds.value,
-      statusId: "confirmed_cod",
+      statusId: 'confirmed_cod',
     });
-    ElMessage.success("Đã duyệt hàng loạt");
+    ElMessage.success('Đã duyệt hàng loạt');
     selectedRowIds.value = [];
     fetchData();
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Duyệt thất bại");
+      ElMessage.error('Duyệt thất bại');
     }
   } finally {
     bulkActionLoading.value = false;
@@ -688,64 +568,54 @@ async function handleBulkApprove() {
 }
 
 async function handleBulkPrint() {
-  // Placeholder: For now, just log order IDs
-  console.log("Print labels for orders:", selectedRowIds.value);
+  console.log('Print labels for orders:', selectedRowIds.value);
   ElMessage.info(
-    `Tính năng in tem hàng loạt cho ${selectedRowIds.value.length} đơn đang được phát triển`,
+    `Tính năng in tem hàng loạt cho ${selectedRowIds.value.length} đơn đang được phát triển`
   );
-  // In a real implementation, you'd call an API to generate a PDF or send to printer
 }
 
 async function handleBulkCancel() {
   if (selectedRowIds.value.length === 0) return;
   try {
-    await ElMessageBox.confirm(
-      `Hủy ${selectedRowIds.value.length} đơn hàng?`,
-      "Xác nhận",
-      { type: "warning" },
-    );
+    await ElMessageBox.confirm(`Hủy ${selectedRowIds.value.length} đơn hàng?`, 'Xác nhận', {
+      type: 'warning',
+    });
     bulkActionLoading.value = true;
     await SalesOrderApi.updateManyOutputStatus({
       ids: selectedRowIds.value,
-      statusId: "cancelled",
+      statusId: 'cancelled',
     });
-    ElMessage.success("Đã hủy hàng loạt");
+    ElMessage.success('Đã hủy hàng loạt');
     selectedRowIds.value = [];
     fetchData();
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Hủy thất bại");
+      ElMessage.error('Hủy thất bại');
     }
   } finally {
     bulkActionLoading.value = false;
   }
 }
 
-// Push to warehouse (single order from drawer)
 async function handlePushToWarehouse() {
   if (!drawer.order) return;
   try {
     pushing.value = true;
-    // 1. Print label: For now, just log; could open a print window
-    // In a real system, you might call an API to generate a label PDF
-    console.log("Printing label for order:", drawer.order.id);
-    // Optionally trigger browser print with label content
-    // window.print();
+    console.log('Printing label for order:', drawer.order.id);
 
-    // 2. Update status to next appropriate (delivering)
     const nextStatus = determineNextWarehouseStatus(drawer.order.statusId);
     if (!nextStatus) {
-      ElMessage.warning("Đơn hàng không thể chuyển sang trạng thái kho");
+      ElMessage.warning('Đơn hàng không thể chuyển sang trạng thái kho');
       return;
     }
     await SalesOrderApi.updateStatus(drawer.order.id, nextStatus, []);
-    ElMessage.success("Đã in tem và chuyển đơn sang kho");
+    ElMessage.success('Đã in tem và chuyển đơn sang kho');
     drawer.visible = false;
     fetchData();
   } catch (error) {
     console.error(error);
-    ElMessage.error("Thao tác thất bại");
+    ElMessage.error('Thao tác thất bại');
   } finally {
     pushing.value = false;
   }
@@ -753,110 +623,94 @@ async function handlePushToWarehouse() {
 
 function canPushToWarehouse(order: SalesOrder): boolean {
   const allowedStatuses = [
-    "confirmed_cod",
-    "paid_processing",
-    "deposit_paid",
-    "installment_approved",
+    'confirmed_cod',
+    'paid_processing',
+    'deposit_paid',
+    'installment_approved',
   ];
-  return allowedStatuses.includes(order.statusId || "");
+  return allowedStatuses.includes(order.statusId || '');
 }
 
-function determineNextWarehouseStatus(
-  currentStatus: string | undefined,
-): string | null {
-  // Based on OrderStatusTransitions, we can move to delivering or waiting_pickup
-  // For simplicity, choose "delivering"
+function determineNextWarehouseStatus(currentStatus: string | undefined): string | null {
   if (!currentStatus) return null;
   const allowedTransitions = {
-    confirmed_cod: ["delivering", "waiting_pickup", "completed", "refunding"],
-    paid_processing: ["delivering", "waiting_pickup", "completed", "refunding"],
-    deposit_paid: ["delivering", "waiting_pickup", "completed", "refunding"],
-    installment_approved: [
-      "delivering",
-      "waiting_pickup",
-      "completed",
-      "refunding",
-    ],
+    confirmed_cod: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
+    paid_processing: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
+    deposit_paid: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
+    installment_approved: ['delivering', 'waiting_pickup', 'completed', 'refunding'],
   };
-  return allowedTransitions[
-    currentStatus as keyof typeof allowedTransitions
-  ]?.includes("delivering")
-    ? "delivering"
+  return allowedTransitions[currentStatus as keyof typeof allowedTransitions]?.includes(
+    'delivering'
+  )
+    ? 'delivering'
     : null;
 }
 
-// Helper: format currency
 function formatCurrency(val?: number): string {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(Number(val || 0));
 }
 
-// Helper: format date time
 function formatDateTime(value?: string): string {
-  if (!value) return "---";
+  if (!value) return '---';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "---";
-  const pad = (num: number) => String(num).padStart(2, "0");
+  if (Number.isNaN(date.getTime())) return '---';
+  const pad = (num: number) => String(num).padStart(2, '0');
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-// Helper: get status label from map or statuses
 function getStatusLabel(statusId?: string): string {
-  if (!statusId) return "---";
+  if (!statusId) return '---';
   const found = statusMap.value.find((s) => s.id === statusId);
   if (found) return found.name;
-  // Fallback to hardcoded map (if statusMap not loaded yet)
   const hardcoded: Record<string, string> = {
-    pending: "Chờ xác nhận",
-    confirmed_cod: "Đã xác nhận (COD)",
-    paid_processing: "Đang xử lý",
-    waiting_deposit: "Chờ đặt cọc",
-    deposit_paid: "Đã đặt cọc",
-    waiting_installment: "Chờ duyệt trả góp",
-    installment_approved: "Đã duyệt trả góp",
-    delivering: "Đang giao hàng",
-    waiting_pickup: "Chờ lấy hàng",
-    completed: "Đã hoàn thành",
-    cancelled: "Đã hủy",
-    refunding: "Đang hoàn tiền",
-    refunded: "Đã hoàn tiền",
+    pending: 'Chờ xác nhận',
+    confirmed_cod: 'Đã xác nhận (COD)',
+    paid_processing: 'Đang xử lý',
+    waiting_deposit: 'Chờ đặt cọc',
+    deposit_paid: 'Đã đặt cọc',
+    waiting_installment: 'Chờ duyệt trả góp',
+    installment_approved: 'Đã duyệt trả góp',
+    delivering: 'Đang giao hàng',
+    waiting_pickup: 'Chờ lấy hàng',
+    completed: 'Đã hoàn thành',
+    cancelled: 'Đã hủy',
+    refunding: 'Đang hoàn tiền',
+    refunded: 'Đã hoàn tiền',
   };
   return hardcoded[statusId] || statusId;
 }
 
 function getStatusTagType(
-  statusId?: string,
-): "success" | "warning" | "info" | "danger" | "primary" {
-  const map: Record<
-    string,
-    "success" | "warning" | "info" | "danger" | "primary"
-  > = {
-    pending: "info",
-    waiting_deposit: "warning",
-    waiting_installment: "warning",
-    confirmed_cod: "primary",
-    paid_processing: "primary",
-    deposit_paid: "primary",
-    installment_approved: "primary",
-    delivering: "primary",
-    waiting_pickup: "success",
-    completed: "success",
-    cancelled: "danger",
-    refunding: "warning",
-    refunded: "info",
+  statusId?: string
+): 'success' | 'warning' | 'info' | 'danger' | 'primary' {
+  const map: Record<string, 'success' | 'warning' | 'info' | 'danger' | 'primary'> = {
+    pending: 'info',
+    waiting_deposit: 'warning',
+    waiting_installment: 'warning',
+    confirmed_cod: 'primary',
+    paid_processing: 'primary',
+    deposit_paid: 'primary',
+    installment_approved: 'primary',
+    delivering: 'primary',
+    waiting_pickup: 'success',
+    completed: 'success',
+    cancelled: 'danger',
+    refunding: 'warning',
+    refunded: 'info',
   };
-  return map[statusId || ""] || "info";
+  return map[statusId || ''] || 'info';
 }
 
 function getPaymentMethodLabel(method?: string): string {
-  if (!method) return "---";
+  if (!method) return '---';
   const map: Record<string, string> = {
-    COD: "Tiền mặt",
-    VNPay: "VNPay",
-    PayOS: "PayOS",
+    COD: 'Tiền mặt',
+    VNPay: 'VNPay',
+    PayOS: 'PayOS',
   };
   return map[method] || method;
 }

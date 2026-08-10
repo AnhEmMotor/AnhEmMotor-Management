@@ -1,4 +1,3 @@
-// --- Dashboard overview ---
 export interface AdminDashboardOverviewResponse {
   summary: DashboardStatsResponse;
   orderStatusDistribution: OrderStatusCountResponse[];
@@ -87,7 +86,6 @@ export interface BrandRevenueResponse {
   quantitySold: number;
 }
 
-// --- Revenue analysis ---
 export interface AdminRevenueAnalysisResponse {
   summary: DashboardStatsResponse;
   revenueTrend: DailyRevenueResponse[];
@@ -122,7 +120,6 @@ export interface DailyRevenueDetailResponse {
   revenue: number;
 }
 
-// --- Product report ---
 export interface AdminProductReportResponse {
   highlights: ProductReportHighlightsResponse;
   topRevenueProducts: TopProductRevenueResponse[];
@@ -155,7 +152,6 @@ export interface ProductPerformanceTableResponse {
   trend: number[];
 }
 
-// --- Warehouse report ---
 export interface AdminWarehouseReportResponse {
   summary: WarehouseSummaryResponse;
   stockByBrand: BrandStockResponse[];
@@ -185,7 +181,6 @@ export interface WarehouseTableDataResponse {
   value: number;
 }
 
-// --- Product stock/price detail ---
 export interface ProductStockPriceResponse {
   variantId: number;
   productName?: string;
@@ -195,7 +190,6 @@ export interface ProductStockPriceResponse {
   lastRestocked?: string;
 }
 
-// --- Customer analytics ---
 export interface CustomerAnalyticsResponse {
   kpi: CustomerKpi;
   leads: CustomerLeadDto[];
@@ -216,7 +210,6 @@ export interface CustomerLeadDto {
   lastContact: string;
 }
 
-// --- Customer service analytics ---
 export interface CustomerServiceAnalyticsResponse {
   kpi: CustomerServiceKpi;
   complaints: CustomerComplaintDto[];

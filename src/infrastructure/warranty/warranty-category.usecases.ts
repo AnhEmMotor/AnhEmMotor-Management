@@ -6,17 +6,12 @@ import {
   type GetWarrantyTermStatisticsUseCase,
   type GetWarrantyTermsUseCase,
   type UpdateWarrantyTermUseCase,
-} from "@/application/warranty/warranty-category.usecases";
-import { WarrantyTermApi } from "@/api/warranty";
-import type { WarrantyTerm } from "@/domain/warranty/warranty-category.types";
+} from '@/application/warranty/warranty-category.usecases';
+import { WarrantyTermApi } from '@/api/warranty';
+import type { WarrantyTerm } from '@/domain/warranty/warranty-category.types';
 
 class RealGetWarrantyTermsUseCase implements GetWarrantyTermsUseCase {
-  async execute(params: {
-    current: number;
-    size: number;
-    Filters?: string;
-    Sorts?: string;
-  }) {
+  async execute(params: { current: number; size: number; Filters?: string; Sorts?: string }) {
     const res = await WarrantyTermApi.getList(params);
     return {
       items: res.items ?? [],
@@ -57,8 +52,6 @@ class RealDeleteWarrantyTermUseCase implements DeleteWarrantyTermUseCase {
 
 class RealGetBrandsForSelectUseCase implements GetBrandsForSelectUseCase {
   async execute() {
-    // Will be connected when backend Brand API has the endpoint
-    // For now, return empty
     return [];
   }
 }

@@ -20,17 +20,13 @@
       </ElFormItem>
       <ElFormItem>
         <div class="flex justify-end w-full">
-          <ElButton type="primary" @click="addComment">{{
-            $t("admin.t1")
-          }}</ElButton>
+          <ElButton type="primary" @click="addComment">{{ $t('admin.t1') }}</ElButton>
         </div>
       </ElFormItem>
     </ElForm>
 
     <ul>
-      <div class="pb-5 text-lg font-medium">
-        Bình luận ({{ localComments.length }})
-      </div>
+      <div class="pb-5 text-lg font-medium">Bình luận ({{ localComments.length }})</div>
       <CommentItem
         v-for="comment in localComments.slice().reverse()"
         :key="comment.id"
@@ -45,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import CommentItem from "./widget/CommentItem.vue";
+import { ref, watch } from 'vue';
+import CommentItem from './widget/CommentItem.vue';
 
 interface Comment {
   id: number;
@@ -67,19 +63,19 @@ watch(
   (newVal) => {
     localComments.value = [...(newVal || [])];
   },
-  { deep: true },
+  { deep: true }
 );
 
 const newComment = ref<Partial<Comment>>({
-  author: "",
-  content: "",
+  author: '',
+  content: '',
 });
 
 const showReplyForm = ref<number | null>(null);
 
 const addComment = () => {
   if (!newComment.value.author?.trim() || !newComment.value.content?.trim()) {
-    ElMessage.warning("Vui lòng nhập đầy đủ thông tin bình luận");
+    ElMessage.warning('Vui lòng nhập đầy đủ thông tin bình luận');
     return;
   }
 
@@ -91,18 +87,14 @@ const addComment = () => {
     replies: [],
   });
 
-  newComment.value.author = "";
-  newComment.value.content = "";
-  ElMessage.success("Đăng tải bình luận thành công (Local)");
+  newComment.value.author = '';
+  newComment.value.content = '';
+  ElMessage.success('Đăng tải bình luận thành công (Local)');
 };
 
-const addReply = (
-  commentId: number,
-  replyAuthor: string,
-  replyContent: string,
-) => {
+const addReply = (commentId: number, replyAuthor: string, replyContent: string) => {
   if (!replyAuthor?.trim() || !replyContent?.trim()) {
-    ElMessage.warning("Vui lòng nhập đầy đủ thông tin trả lời");
+    ElMessage.warning('Vui lòng nhập đầy đủ thông tin trả lời');
     return;
   }
 
@@ -116,7 +108,7 @@ const addReply = (
       replies: [],
     });
     showReplyForm.value = null;
-    ElMessage.success("Đăng tải câu trả lời thành công (Local)");
+    ElMessage.success('Đăng tải câu trả lời thành công (Local)');
   }
 };
 
@@ -124,10 +116,7 @@ const toggleReply = (commentId: number) => {
   showReplyForm.value = showReplyForm.value === commentId ? null : commentId;
 };
 
-const findComment = (
-  comments: Comment[],
-  commentId: number,
-): Comment | undefined => {
+const findComment = (comments: Comment[], commentId: number): Comment | undefined => {
   for (const comment of comments) {
     if (comment.id === commentId) {
       return comment;

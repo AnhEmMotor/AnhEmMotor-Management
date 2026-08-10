@@ -46,13 +46,9 @@
       <ArtTableHeader :showColumns="false" @refresh="load">
         <template #left>
           <div class="flex items-center gap-2">
-            <h4 class="m-0 font-bold text-gray-800 text-lg">
-              Chi tiết theo sản phẩm
-            </h4>
+            <h4 class="m-0 font-bold text-gray-800 text-lg">Chi tiết theo sản phẩm</h4>
             <ElButton
-              v-if="
-                data.warehouseTableData && data.warehouseTableData.length > 0
-              "
+              v-if="data.warehouseTableData && data.warehouseTableData.length > 0"
               type="primary"
               :loading="exporting"
               @click="handleExport"
@@ -63,12 +59,8 @@
           </div>
         </template>
         <template #right>
-          <ElButton type="primary" link @click="expandAll"
-            >Mở rộng tất cả</ElButton
-          >
-          <ElButton type="info" link @click="collapseAll"
-            >Thu gọn tất cả</ElButton
-          >
+          <ElButton type="primary" link @click="expandAll">Mở rộng tất cả</ElButton>
+          <ElButton type="info" link @click="collapseAll">Thu gọn tất cả</ElButton>
         </template>
       </ArtTableHeader>
 
@@ -92,10 +84,7 @@
           <span v-if="row.inStock === 0" class="text-red-500 font-bold">
             {{ row.inStock }}
           </span>
-          <span
-            v-else-if="row.inStock <= inventoryThreshold"
-            class="text-yellow-500 font-bold"
-          >
+          <span v-else-if="row.inStock <= inventoryThreshold" class="text-yellow-500 font-bold">
             {{ row.inStock }}
           </span>
           <span v-else>
@@ -126,12 +115,8 @@
       destroy-on-close
     >
       <div v-if="selectedRow" class="flex flex-col gap-4">
-        <div
-          class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600"
-        >
-          <div>
-            <strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe
-          </div>
+        <div class="p-3 bg-gray-50 border border-gray-100 rounded flex gap-4 text-sm text-gray-600">
+          <div><strong>Tồn kho hiện tại:</strong> {{ selectedRow.inStock }} xe</div>
           <div><strong>Đã nhập:</strong> {{ selectedRow.imported }} xe</div>
           <div><strong>Đã xuất:</strong> {{ selectedRow.exported }} xe</div>
         </div>
@@ -144,55 +129,20 @@
               </span>
             </template>
             <ElTable :data="mockReceipts" border stripe style="width: 100%">
-              <ElTableColumn
-                prop="supplier"
-                label="Nhà cung cấp"
-                min-width="180"
-              />
-              <ElTableColumn
-                prop="quantity"
-                label="SL nhập"
-                width="100"
-                align="right"
-              />
-              <ElTableColumn
-                prop="price"
-                label="Đơn giá nhập"
-                width="150"
-                align="right"
-              >
-                <template #default="{ row }">
-                  {{ row.price.toLocaleString() }} VNĐ
-                </template>
+              <ElTableColumn prop="supplier" label="Nhà cung cấp" min-width="180" />
+              <ElTableColumn prop="quantity" label="SL nhập" width="100" align="right" />
+              <ElTableColumn prop="price" label="Đơn giá nhập" width="150" align="right">
+                <template #default="{ row }"> {{ row.price.toLocaleString() }} VNĐ </template>
               </ElTableColumn>
-              <ElTableColumn
-                prop="date"
-                label="Ngày nhập"
-                width="140"
-                align="center"
-              />
-              <ElTableColumn
-                prop="status"
-                label="Trạng thái"
-                width="120"
-                align="center"
-              >
+              <ElTableColumn prop="date" label="Ngày nhập" width="140" align="center" />
+              <ElTableColumn prop="status" label="Trạng thái" width="120" align="center">
                 <template #default>
                   <ElTag type="success" size="small">Đã nhập kho</ElTag>
                 </template>
               </ElTableColumn>
-              <ElTableColumn
-                label="Thao tác"
-                width="100"
-                align="center"
-                fixed="right"
-              >
+              <ElTableColumn label="Thao tác" width="100" align="center" fixed="right">
                 <template #default="{ row }">
-                  <ElButton
-                    link
-                    type="primary"
-                    size="small"
-                    @click="viewReceiptDetail(row.id)"
+                  <ElButton link type="primary" size="small" @click="viewReceiptDetail(row.id)"
                     >Xem phiếu</ElButton
                   >
                 </template>
@@ -207,39 +157,13 @@
               </span>
             </template>
             <ElTable :data="mockInvoices" border stripe style="width: 100%">
-              <ElTableColumn
-                prop="customer"
-                label="Khách hàng"
-                min-width="180"
-              />
-              <ElTableColumn
-                prop="quantity"
-                label="SL bán"
-                width="100"
-                align="right"
-              />
-              <ElTableColumn
-                prop="price"
-                label="Đơn giá bán"
-                width="150"
-                align="right"
-              >
-                <template #default="{ row }">
-                  {{ row.price.toLocaleString() }} VNĐ
-                </template>
+              <ElTableColumn prop="customer" label="Khách hàng" min-width="180" />
+              <ElTableColumn prop="quantity" label="SL bán" width="100" align="right" />
+              <ElTableColumn prop="price" label="Đơn giá bán" width="150" align="right">
+                <template #default="{ row }"> {{ row.price.toLocaleString() }} VNĐ </template>
               </ElTableColumn>
-              <ElTableColumn
-                prop="date"
-                label="Ngày xuất"
-                width="140"
-                align="center"
-              />
-              <ElTableColumn
-                prop="status"
-                label="Trạng thái"
-                width="120"
-                align="center"
-              >
+              <ElTableColumn prop="date" label="Ngày xuất" width="140" align="center" />
+              <ElTableColumn prop="status" label="Trạng thái" width="120" align="center">
                 <template #default>
                   <ElTag type="success" size="small">Đã bàn giao</ElTag>
                 </template>
@@ -275,15 +199,13 @@
             <strong>Ngày tạo:</strong>
             {{
               receiptDetailData.createdAt
-                ? new Date(receiptDetailData.createdAt).toLocaleDateString(
-                    "vi-VN",
-                  )
-                : "--"
+                ? new Date(receiptDetailData.createdAt).toLocaleDateString('vi-VN')
+                : '--'
             }}
           </div>
           <div>
             <strong>Ghi chú:</strong>
-            {{ receiptDetailData.notes || "Không có ghi chú" }}
+            {{ receiptDetailData.notes || 'Không có ghi chú' }}
           </div>
         </div>
 
@@ -303,12 +225,7 @@
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
                   <span class="font-medium text-gray-800">{{ row.name }}</span>
-                  <ElTag
-                    v-if="row.productVariantColorName"
-                    size="small"
-                    type="info"
-                    class="w-fit"
-                  >
+                  <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
                     Màu: {{ row.productVariantColorName }}
                   </ElTag>
                 </div>
@@ -316,25 +233,15 @@
             </ElTableColumn>
             <ElTableColumn label="Nhà cung cấp" width="160">
               <template #default="{ row }">
-                <span>{{ row.supplierName || "N/A" }}</span>
+                <span>{{ row.supplierName || 'N/A' }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Đơn giá" width="130" align="right">
               <template #default="{ row }">
-                <span
-                  >{{
-                    row.unitPrice ? row.unitPrice.toLocaleString() : "0"
-                  }}
-                  VNĐ</span
-                >
+                <span>{{ row.unitPrice ? row.unitPrice.toLocaleString() : '0' }} VNĐ</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn
-              prop="quantity"
-              label="Số lượng"
-              width="90"
-              align="center"
-            />
+            <ElTableColumn prop="quantity" label="Số lượng" width="90" align="center" />
           </ElTable>
         </div>
       </div>
@@ -348,15 +255,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, nextTick, watch } from "vue";
-import * as echarts from "echarts";
-import { Download, Memo } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import { statisticsApi } from "@/api/operations";
-import { InventoryReportApi, InventoryReceiptApi } from "@/api/inventory";
-import { SettingApi } from "@/api/setting.api";
-import type * as Statistical from "@/types/api/statistical";
+import { computed, onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
+import * as echarts from 'echarts';
+import { Download, Memo } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import { statisticsApi } from '@/api/operations';
+import { InventoryReportApi, InventoryReceiptApi } from '@/api/inventory';
+import { SettingApi } from '@/api/setting.api';
+import type * as Statistical from '@/types/api/statistical';
 
 interface StockItem {
   id: string;
@@ -391,15 +298,8 @@ const brandChartRef = ref<HTMLElement | null>(null);
 const statusChartRef = ref<HTMLElement | null>(null);
 let brandChart: echarts.ECharts | null = null;
 let statusChart: echarts.ECharts | null = null;
-const chartTextColor = "#4b5563";
-const chartPalette = [
-  "#e84a4a",
-  "#ff6b6b",
-  "#f97316",
-  "#22c55e",
-  "#3b82f6",
-  "#a855f7",
-];
+const chartTextColor = '#4b5563';
+const chartPalette = ['#e84a4a', '#ff6b6b', '#f97316', '#22c55e', '#3b82f6', '#a855f7'];
 
 const data = ref<Statistical.AdminWarehouseReportResponse>({
   summary: {
@@ -419,9 +319,9 @@ const loadingData = ref(false);
 
 const inventoryThreshold = ref(5);
 const dialogVisible = ref(false);
-const activeTab = ref("receipts");
+const activeTab = ref('receipts');
 const selectedRow = ref<StockItem | null>(null);
-const selectedRowName = ref("");
+const selectedRowName = ref('');
 const mockReceipts = ref<MockReceipt[]>([]);
 const mockInvoices = ref<MockInvoice[]>([]);
 const receiptDetailVisible = ref(false);
@@ -430,26 +330,26 @@ const newTableData = ref<StockItem[]>([]);
 
 const columns = [
   {
-    label: "Tên Sản phẩm / Biến thể / Màu sắc",
-    prop: "name",
+    label: 'Tên Sản phẩm / Biến thể / Màu sắc',
+    prop: 'name',
     minWidth: 320,
     useSlot: true,
   },
-  { label: "Tồn kho đầu kỳ", prop: "beginning", width: 160, align: "right" },
-  { label: "Số lượng đã nhập", prop: "imported", width: 160, align: "right" },
-  { label: "Số lượng đã xuất", prop: "exported", width: 160, align: "right" },
+  { label: 'Tồn kho đầu kỳ', prop: 'beginning', width: 160, align: 'right' },
+  { label: 'Số lượng đã nhập', prop: 'imported', width: 160, align: 'right' },
+  { label: 'Số lượng đã xuất', prop: 'exported', width: 160, align: 'right' },
   {
-    label: "Số lượng tồn kho",
-    prop: "inStock",
+    label: 'Số lượng tồn kho',
+    prop: 'inStock',
     width: 160,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Thao tác",
-    prop: "operation",
+    label: 'Thao tác',
+    prop: 'operation',
     width: 150,
-    align: "center",
+    align: 'center',
     useSlot: true,
   },
 ];
@@ -465,16 +365,13 @@ const paginatedTableData = computed(() => {
 });
 
 const isLeafNode = (row: StockItem): boolean => {
-  return (
-    row.level === 2 ||
-    (row.level === 1 && (!row.children || row.children.length === 0))
-  );
+  return row.level === 2 || (row.level === 1 && (!row.children || row.children.length === 0));
 };
 
 const getNameClass = (row: StockItem) => {
-  if (row.level === 0) return "text-gray-900 font-bold text-sm md:text-base";
-  if (row.level === 1) return "text-gray-700 font-medium text-sm";
-  return "text-gray-500 text-sm italic";
+  if (row.level === 0) return 'text-gray-900 font-bold text-sm md:text-base';
+  if (row.level === 1) return 'text-gray-700 font-medium text-sm';
+  return 'text-gray-500 text-sm italic';
 };
 
 const mapToStockItems = (apiItems: any[]): StockItem[] => {
@@ -578,7 +475,7 @@ const viewReceiptDetail = async (id?: number) => {
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải chi tiết phiếu nhập!");
+    ElMessage.error('Không thể tải chi tiết phiếu nhập!');
   }
 };
 
@@ -586,52 +483,45 @@ const handleViewHistory = async (row: StockItem) => {
   if (row.variantId === undefined) return;
   selectedRow.value = row;
   selectedRowName.value = row.name;
-  activeTab.value = "receipts";
+  activeTab.value = 'receipts';
   mockReceipts.value = [];
   mockInvoices.value = [];
 
   try {
-    const details = await InventoryReportApi.getDetail(
-      row.variantId,
-      row.colorId,
-    );
+    const details = await InventoryReportApi.getDetail(row.variantId, row.colorId);
     if (details) {
-      mockReceipts.value = (details.imports || []).map(
-        (imp: any, idx: number) => ({
-          id: imp.id,
-          code: imp.code || `PN-${idx + 1}`,
-          supplier: imp.partnerName || "Nhà cung cấp",
-          quantity: imp.qty || 0,
-          price: imp.price || 0,
-          date: imp.date ? new Date(imp.date).toLocaleDateString("vi-VN") : "-",
-        }),
-      );
+      mockReceipts.value = (details.imports || []).map((imp: any, idx: number) => ({
+        id: imp.id,
+        code: imp.code || `PN-${idx + 1}`,
+        supplier: imp.partnerName || 'Nhà cung cấp',
+        quantity: imp.qty || 0,
+        price: imp.price || 0,
+        date: imp.date ? new Date(imp.date).toLocaleDateString('vi-VN') : '-',
+      }));
 
-      mockInvoices.value = (details.exports || []).map(
-        (exp: any, idx: number) => ({
-          id: exp.id,
-          code: exp.code || `PX-${idx + 1}`,
-          customer: exp.partnerName || "Khách hàng",
-          quantity: exp.qty || 0,
-          price: exp.price || 0,
-          date: exp.date ? new Date(exp.date).toLocaleDateString("vi-VN") : "-",
-        }),
-      );
+      mockInvoices.value = (details.exports || []).map((exp: any, idx: number) => ({
+        id: exp.id,
+        code: exp.code || `PX-${idx + 1}`,
+        customer: exp.partnerName || 'Khách hàng',
+        quantity: exp.qty || 0,
+        price: exp.price || 0,
+        date: exp.date ? new Date(exp.date).toLocaleDateString('vi-VN') : '-',
+      }));
     }
     dialogVisible.value = true;
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải lịch sử giao dịch!");
+    ElMessage.error('Không thể tải lịch sử giao dịch!');
   }
 };
 
 const stockRatio = computed(() => {
   const s = data.value.summary;
   const total = s.totalStock;
-  if (!total || total <= 0) return "0%";
+  if (!total || total <= 0) return '0%';
   const safe = total - s.lowStockCount - s.outOfStockCount;
   const ratio = Math.max(0, Math.min(100, (safe / total) * 100));
-  return ratio.toFixed(1) + "%";
+  return ratio.toFixed(1) + '%';
 });
 
 const props = defineProps<{
@@ -643,7 +533,7 @@ watch(
   () => [props.startDate, props.endDate],
   () => {
     load();
-  },
+  }
 );
 
 const fetchTableData = async () => {
@@ -651,7 +541,6 @@ const fetchTableData = async () => {
   try {
     let month: number | undefined = undefined;
     let year: number | undefined = undefined;
-    // Extract month and year from startDate or default to current
     if (props.startDate) {
       const d = new Date(props.startDate);
       month = d.getMonth() + 1;
@@ -670,7 +559,7 @@ const fetchTableData = async () => {
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải báo cáo xuất nhập tồn!");
+    ElMessage.error('Không thể tải báo cáo xuất nhập tồn!');
   } finally {
     loadingData.value = false;
   }
@@ -692,17 +581,17 @@ const handleExport = async () => {
       year,
     });
     const url = window.URL.createObjectURL(new Blob([resBlob]));
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "Bao_cao_ton_kho.xlsx");
+    link.setAttribute('download', 'Bao_cao_ton_kho.xlsx');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-    ElMessage.success("Đã xuất báo cáo thành công!");
+    ElMessage.success('Đã xuất báo cáo thành công!');
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể xuất báo cáo!");
+    ElMessage.error('Không thể xuất báo cáo!');
   } finally {
     exporting.value = false;
   }
@@ -710,14 +599,11 @@ const handleExport = async () => {
 
 async function load() {
   try {
-    const summaryData = await statisticsApi.getWarehouseReport(
-      props.startDate,
-      props.endDate,
-    );
+    const summaryData = await statisticsApi.getWarehouseReport(props.startDate, props.endDate);
     data.value = summaryData;
     renderCharts();
   } catch (e) {
-    console.error("Failed to load summary stats:", e);
+    console.error('Failed to load summary stats:', e);
   }
   fetchTableData();
 }
@@ -727,28 +613,27 @@ function renderCharts() {
     if (!brandChart) brandChart = echarts.init(brandChartRef.value);
     const top = data.value.stockByBrand.slice(0, 8);
     brandChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       color: chartPalette,
       textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
-      tooltip: { trigger: "item" },
+      tooltip: { trigger: 'item' },
       legend: {
-        type: "scroll",
-        orient: "horizontal",
+        type: 'scroll',
+        orient: 'horizontal',
         bottom: 0,
-        left: "center",
+        left: 'center',
         itemWidth: 10,
         itemHeight: 10,
         textStyle: { color: chartTextColor, fontWeight: 500, fontSize: 11 },
-        formatter: (name: string) =>
-          name.length > 14 ? name.slice(0, 14) + "…" : name,
+        formatter: (name: string) => (name.length > 14 ? name.slice(0, 14) + '…' : name),
       },
       series: [
         {
-          type: "pie",
-          radius: ["38%", "65%"],
-          center: ["50%", "42%"],
+          type: 'pie',
+          radius: ['38%', '65%'],
+          center: ['50%', '42%'],
           data: top.map((d) => ({
-            name: d.brandName || "Khác",
+            name: d.brandName || 'Khác',
             value: d.stockCount,
           })),
           label: { show: false },
@@ -759,28 +644,28 @@ function renderCharts() {
   if (statusChartRef.value) {
     if (!statusChart) statusChart = echarts.init(statusChartRef.value);
     statusChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       color: chartPalette,
       textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
-      tooltip: { trigger: "item" },
+      tooltip: { trigger: 'item' },
       legend: {
-        orient: "horizontal",
+        orient: 'horizontal',
         bottom: 0,
-        left: "center",
+        left: 'center',
         itemWidth: 10,
         itemHeight: 10,
         textStyle: { color: chartTextColor, fontWeight: 500, fontSize: 11 },
       },
       series: [
         {
-          type: "pie",
-          radius: ["38%", "65%"],
-          center: ["50%", "42%"],
+          type: 'pie',
+          radius: ['38%', '65%'],
+          center: ['50%', '42%'],
           data: data.value.stockStatusRatio.map((d) => ({
-            name: d.statusLabel || "Khác",
+            name: d.statusLabel || 'Khác',
             value: d.count,
           })),
-          label: { show: true, formatter: "{b}: {c}" },
+          label: { show: true, formatter: '{b}: {c}' },
         },
       ],
     });
@@ -788,16 +673,16 @@ function renderCharts() {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 function warehouseStatusType(status?: string) {
-  if (status === "Bình thường") return "success";
-  if (status === "Sắp hết") return "warning";
-  if (status === "Hết hàng") return "danger";
-  return "info";
+  if (status === 'Bình thường') return 'success';
+  if (status === 'Sắp hết') return 'warning';
+  if (status === 'Hết hàng') return 'danger';
+  return 'info';
 }
 function handleResize() {
   brandChart?.resize();
@@ -811,10 +696,10 @@ onMounted(async () => {
     }
   } catch (err) {}
   load();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   brandChart?.dispose();
   statusChart?.dispose();
 });

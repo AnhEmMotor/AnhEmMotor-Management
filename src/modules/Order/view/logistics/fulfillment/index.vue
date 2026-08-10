@@ -1,22 +1,18 @@
 <template>
   <div class="resp-page fulfillment-container p-4">
-    <!-- Header & Statistics -->
     <el-card shadow="never" class="mb-4">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
         <div>
           <h2 class="text-xl font-bold mb-1">
-            {{ t("logistics.fulfillment.title") }}
+            {{ t('logistics.fulfillment.title') }}
           </h2>
           <div class="text-gray-500 text-sm">
-            Quản lý quy trình nhặt hàng, đóng gói, liên kết đối tác 3PL và bàn
-            giao kiện hàng.
+            Quản lý quy trình nhặt hàng, đóng gói, liên kết đối tác 3PL và bàn giao kiện hàng.
           </div>
         </div>
       </div>
 
-      <!-- Filters Form -->
       <div class="flex items-center gap-4 flex-wrap">
-        <!-- Date range -->
         <div class="flex items-center">
           <span class="text-sm font-medium mr-2 text-gray-700">Thời gian:</span>
           <el-date-picker
@@ -32,7 +28,6 @@
           />
         </div>
 
-        <!-- Carrier -->
         <div class="flex items-center">
           <span class="text-sm font-medium mr-2 text-gray-700">Đối tác:</span>
           <el-select
@@ -49,7 +44,6 @@
           </el-select>
         </div>
 
-        <!-- Province/City -->
         <div class="flex items-center">
           <span class="text-sm font-medium mr-2 text-gray-700">Khu vực:</span>
           <el-input
@@ -60,11 +54,8 @@
           />
         </div>
 
-        <!-- Status -->
         <div class="flex items-center">
-          <span class="text-sm font-medium mr-2 text-gray-700"
-            >Trạng thái:</span
-          >
+          <span class="text-sm font-medium mr-2 text-gray-700">Trạng thái:</span>
           <el-select
             v-model="filterParams.status"
             clearable
@@ -88,7 +79,6 @@
       </div>
     </el-card>
 
-    <!-- Orders Table -->
     <el-card shadow="never" class="art-table-card">
       <ArtTable
         ref="tableRef"
@@ -99,64 +89,41 @@
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-        <!-- Original Order Slot -->
         <template #originalOrderCode="{ row }">
-          <span class="font-bold text-gray-800"
-            >#{{ row.originalOrderCode }}</span
-          >
+          <span class="font-bold text-gray-800">#{{ row.originalOrderCode }}</span>
         </template>
 
-        <!-- Status Slot -->
         <template #status="{ row }">
           <el-tag :type="getStatusTagType(row.status)" size="small">
             {{ getStatusLabel(row.status) }}
           </el-tag>
         </template>
 
-        <!-- Tracking Number Slot -->
         <template #trackingNumber="{ row }">
-          <el-tag
-            v-if="row.trackingNumber"
-            type="success"
-            effect="plain"
-            class="font-mono"
-          >
+          <el-tag v-if="row.trackingNumber" type="success" effect="plain" class="font-mono">
             {{ row.trackingNumber }}
           </el-tag>
-          <span v-else class="text-gray-400 font-mono italic"
-            >Chưa liên kết</span
-          >
+          <span v-else class="text-gray-400 font-mono italic">Chưa liên kết</span>
         </template>
 
-        <!-- Carrier Slot -->
         <template #carrier="{ row }">
           <el-tag :type="getCarrierTagType(row.carrier)" size="small">
             {{ getCarrierLabel(row.carrier) }}
           </el-tag>
         </template>
 
-        <!-- COD Amount Slot -->
         <template #codAmount="{ row }">
-          <span class="font-semibold text-red-500">{{
-            formatCurrency(row.codAmount)
-          }}</span>
+          <span class="font-semibold text-red-500">{{ formatCurrency(row.codAmount) }}</span>
         </template>
 
-        <!-- Shipping Cost Slot -->
         <template #shippingCost="{ row }">
-          <span class="text-gray-600">{{
-            formatCurrency(row.shippingCost)
-          }}</span>
+          <span class="text-gray-600">{{ formatCurrency(row.shippingCost) }}</span>
         </template>
 
-        <!-- Created At Slot -->
         <template #createdAt="{ row }">
-          <span class="text-xs text-gray-500">{{
-            formatDate(row.createdAt)
-          }}</span>
+          <span class="text-xs text-gray-500">{{ formatDate(row.createdAt) }}</span>
         </template>
 
-        <!-- Delivered At Slot -->
         <template #deliveredAt="{ row }">
           <span v-if="row.deliveredAt" class="text-xs text-gray-500">{{
             formatDate(row.deliveredAt)
@@ -164,16 +131,12 @@
           <span v-else class="text-gray-400 italic text-xs">-</span>
         </template>
 
-        <!-- Actions Slot -->
         <template #actions="{ row }">
-          <el-button type="primary" size="small" @click="openDetail(row)">
-            Chi tiết
-          </el-button>
+          <el-button type="primary" size="small" @click="openDetail(row)"> Chi tiết </el-button>
         </template>
       </ArtTable>
     </el-card>
 
-    <!-- Detail Sliding Drawer -->
     <el-drawer
       v-model="drawerVisible"
       title="Chi tiết quy trình Vận đơn"
@@ -182,22 +145,17 @@
     >
       <div v-loading="loadingDetail" class="p-2">
         <div v-if="detailData.id" class="flex flex-col gap-6">
-          <!-- Header and Steps inside Drawer -->
           <div
             class="flex items-center justify-between flex-wrap gap-4 border-b pb-4 border-gray-100"
           >
             <div>
               <div class="text-sm text-gray-500 mb-1">
-                {{ t("logistics.fulfillment.orderId") }}:
-                <strong class="text-black font-mono"
-                  >#{{ detailData.id }}</strong
-                >
+                {{ t('logistics.fulfillment.orderId') }}:
+                <strong class="text-black font-mono">#{{ detailData.id }}</strong>
               </div>
               <div class="text-sm">
-                {{ t("logistics.fulfillment.originalOrder") }}:
-                <strong class="text-primary font-mono">{{
-                  detailData.originalOrderCode
-                }}</strong>
+                {{ t('logistics.fulfillment.originalOrder') }}:
+                <strong class="text-primary font-mono">{{ detailData.originalOrderCode }}</strong>
               </div>
             </div>
             <div class="w-full">
@@ -211,7 +169,6 @@
             </div>
           </div>
 
-          <!-- Alerts inside Drawer -->
           <el-alert
             v-if="isReturned"
             title="Đơn hàng này đã bị hoàn trả / hủy giao hàng từ đối tác."
@@ -234,32 +191,19 @@
             :closable="false"
           />
 
-          <!-- Multi-column Layout inside Drawer -->
           <div class="flex flex-col gap-6">
-            <!-- Left side: Picking Checklist -->
             <div>
               <el-card shadow="never">
                 <template #header>
                   <div class="flex justify-between items-center">
                     <span class="font-bold">Danh sách sản phẩm</span>
-                    <el-tag type="info" size="small"
-                      >{{ detailData.items.length }} sản phẩm</el-tag
-                    >
+                    <el-tag type="info" size="small">{{ detailData.items.length }} sản phẩm</el-tag>
                   </div>
                 </template>
 
-                <el-table
-                  :data="detailData.items"
-                  stripe
-                  style="width: 100%"
-                  size="small"
-                >
-                  <!-- Removed Checkbox Column -->
+                <el-table :data="detailData.items" stripe style="width: 100%" size="small">
 
-                  <el-table-column
-                    :label="t('logistics.fulfillment.table.image')"
-                    width="65"
-                  >
+                  <el-table-column :label="t('logistics.fulfillment.table.image')" width="65">
                     <template #default="scope">
                       <el-image
                         v-if="scope.row.thumbnailUrl"
@@ -289,9 +233,7 @@
                     min-width="120"
                   >
                     <template #default="scope">
-                      <div
-                        class="font-medium text-xs text-gray-900 leading-tight"
-                      >
+                      <div class="font-medium text-xs text-gray-900 leading-tight">
                         {{ scope.row.productName }}
                       </div>
                       <div class="text-[10px] text-gray-400 font-mono mt-0.5">
@@ -300,7 +242,6 @@
                     </template>
                   </el-table-column>
 
-                  <!-- Removed Shelf Location Column -->
 
                   <el-table-column
                     :label="t('logistics.fulfillment.table.qty')"
@@ -310,77 +251,56 @@
                     <template #default="scope">
                       <span
                         class="font-bold text-xs"
-                        :class="
-                          scope.row.quantity > 1
-                            ? 'text-orange-600'
-                            : 'text-gray-700'
-                        "
+                        :class="scope.row.quantity > 1 ? 'text-orange-600' : 'text-gray-700'"
                       >
                         x{{ scope.row.quantity }}
                       </span>
                     </template>
                   </el-table-column>
 
-                  <!-- Removed Picked Status Column -->
                 </el-table>
               </el-card>
             </div>
 
-            <!-- Right side: Customer Info & Timeline -->
             <div>
               <div class="flex flex-col gap-4">
-                <!-- Dispatch Panel -->
                 <el-card shadow="never">
                   <template #header>
-                    <span class="font-bold">{{
-                      t("logistics.fulfillment.dispatchPanel")
-                    }}</span>
+                    <span class="font-bold">{{ t('logistics.fulfillment.dispatchPanel') }}</span>
                   </template>
 
-                  <!-- Customer Info -->
                   <div class="mb-4">
-                    <h4
-                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
-                    >
-                      {{ t("logistics.fulfillment.customer") }}
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      {{ t('logistics.fulfillment.customer') }}
                     </h4>
                     <div class="font-medium text-sm text-gray-900 mb-1">
-                      {{ detailData.customerName || "-" }}
+                      {{ detailData.customerName || '-' }}
                     </div>
-                    <div
-                      class="text-xs text-gray-600 mb-1 flex items-center gap-1.5"
-                    >
+                    <div class="text-xs text-gray-600 mb-1 flex items-center gap-1.5">
                       <el-icon><Phone /></el-icon>
-                      {{ detailData.customerPhone || "-" }}
+                      {{ detailData.customerPhone || '-' }}
                     </div>
-                    <div
-                      class="text-xs text-gray-600 flex items-start gap-1.5 leading-snug"
-                    >
+                    <div class="text-xs text-gray-600 flex items-start gap-1.5 leading-snug">
                       <el-icon class="mt-0.5"><Location /></el-icon>
-                      <span>{{ detailData.customerAddress || "-" }}</span>
+                      <span>{{ detailData.customerAddress || '-' }}</span>
                     </div>
                   </div>
 
                   <el-divider class="my-3" />
 
-                  <!-- Financial -->
                   <div class="mb-4">
-                    <h4
-                      class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
-                    >
-                      {{ t("logistics.fulfillment.financial") }}
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      {{ t('logistics.fulfillment.financial') }}
                     </h4>
                     <div class="flex justify-between text-xs mb-1.5">
-                      <span class="text-gray-600"
-                        >{{ t("logistics.fulfillment.codAmount") }}:</span
-                      >
+                      <span class="text-gray-600">{{ t('logistics.fulfillment.codAmount') }}:</span>
                       <span class="font-bold text-red-500">{{
                         formatCurrency(detailData.codAmount)
                       }}</span>
                     </div>
                     <div class="flex justify-between text-xs">
                       <span class="text-gray-600"
-                        >{{ t("logistics.fulfillment.shippingCost") }}:</span
+                        >{{ t('logistics.fulfillment.shippingCost') }}:</span
                       >
                       <span class="font-semibold text-gray-800">{{
                         formatCurrency(detailData.shippingCost)
@@ -390,9 +310,7 @@
 
                   <el-divider class="my-3" />
 
-                  <!-- Removed Carrier Partner config -->
 
-                  <!-- Action Buttons -->
                   <div class="mt-4 flex flex-col gap-2">
                     <el-button
                       v-if="detailData.status === 0"
@@ -406,16 +324,11 @@
                   </div>
                 </el-card>
 
-                <!-- Milestone Journey Timeline -->
-                <el-card
-                  v-if="detailData.trackingNumber"
-                  shadow="never"
-                  class="timeline-card"
-                >
+                <el-card v-if="detailData.trackingNumber" shadow="never" class="timeline-card">
                   <template #header>
                     <div class="flex items-center gap-1.5 font-bold">
                       <el-icon class="text-blue-500"><Calendar /></el-icon>
-                      <span>{{ t("logistics.tracking.timelineTitle") }}</span>
+                      <span>{{ t('logistics.tracking.timelineTitle') }}</span>
                     </div>
                   </template>
 
@@ -438,10 +351,7 @@
                         </el-timeline-item>
                       </el-timeline>
                     </div>
-                    <div
-                      v-else
-                      class="text-center py-6 text-xs text-gray-400 italic"
-                    >
+                    <div v-else class="text-center py-6 text-xs text-gray-400 italic">
                       Chưa phát sinh lịch trình vận chuyển từ đối tác 3PL
                     </div>
                   </div>
@@ -456,17 +366,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
-import {
-  Phone,
-  Location,
-  Picture,
-  Search,
-  Calendar,
-} from "@element-plus/icons-vue";
-import dayjs from "dayjs";
+import { ref, computed, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { ElMessage } from 'element-plus';
+import { Phone, Location, Picture, Search, Calendar } from '@element-plus/icons-vue';
+import dayjs from 'dayjs';
 
 import {
   getFulfillmentOrders,
@@ -475,14 +379,14 @@ import {
   updateTrackingNumber,
   toggleItemPick,
   getDeliveryStatuses,
-} from "@/api/logistics/fulfillment";
-import type { DeliveryStatusDto } from "@/api/logistics/fulfillment";
-import { getShipmentTracking } from "@/api/logistics/tracking";
+} from '@/api/logistics/fulfillment';
+import type { DeliveryStatusDto } from '@/api/logistics/fulfillment';
+import { getShipmentTracking } from '@/api/logistics/tracking';
 
-import type { FulfillmentDetailResponse } from "@/api/logistics/fulfillment";
-import type { TrackingResponse } from "@/api/logistics/tracking";
+import type { FulfillmentDetailResponse } from '@/api/logistics/fulfillment';
+import type { TrackingResponse } from '@/api/logistics/tracking';
 
-defineOptions({ name: "FulfillmentList" });
+defineOptions({ name: 'FulfillmentList' });
 
 const { t } = useI18n();
 
@@ -493,22 +397,20 @@ onMounted(async () => {
     const res = await getDeliveryStatuses();
     deliveryStatuses.value = (res as any).data || res || [];
   } catch (error) {
-    console.error("Failed to fetch delivery statuses", error);
+    console.error('Failed to fetch delivery statuses', error);
   }
 });
 
-// Filters & State
 const loading = ref(false);
 const filterParams = ref({
   dateRange: [] as any[],
-  carrier: "",
-  region: "",
+  carrier: '',
+  region: '',
   status: null as number | null,
 });
 
 const orderList = ref<FulfillmentDetailResponse[]>([]);
 
-// Filter Client-side for region (Province/City)
 const filteredOrderList = computed(() => {
   let list = orderList.value;
   if (filterParams.value.region) {
@@ -518,7 +420,6 @@ const filteredOrderList = computed(() => {
   return list;
 });
 
-// Pagination
 const pagination = ref({
   current: 1,
   size: 10,
@@ -544,58 +445,56 @@ const handleCurrentChange = (val: number) => {
   pagination.value.current = val;
 };
 
-// Table Columns Config
 const columns = computed(() => [
-  { label: "Mã vận đơn nội bộ", prop: "id", minWidth: 100 },
+  { label: 'Mã vận đơn nội bộ', prop: 'id', minWidth: 100 },
   {
-    label: "Đơn hàng gốc",
-    prop: "originalOrderCode",
+    label: 'Đơn hàng gốc',
+    prop: 'originalOrderCode',
     minWidth: 160,
     useSlot: true,
   },
   {
-    label: "Mã vận đơn 3PL",
-    prop: "trackingNumber",
+    label: 'Mã vận đơn 3PL',
+    prop: 'trackingNumber',
     minWidth: 150,
     useSlot: true,
   },
   {
-    label: "Trạng thái",
-    prop: "status",
+    label: 'Trạng thái',
+    prop: 'status',
     minWidth: 130,
     useSlot: true,
   },
-  { label: "Đối tác", prop: "carrier", minWidth: 120, useSlot: true },
-  { label: "Khách hàng", prop: "customerName", minWidth: 150 },
-  { label: "Số điện thoại", prop: "customerPhone", minWidth: 120 },
-  { label: "COD thu hộ", prop: "codAmount", minWidth: 130, useSlot: true },
-  { label: "Phí ship", prop: "shippingCost", minWidth: 110, useSlot: true },
-  { label: "Ngày tạo", prop: "createdAt", minWidth: 160, useSlot: true },
+  { label: 'Đối tác', prop: 'carrier', minWidth: 120, useSlot: true },
+  { label: 'Khách hàng', prop: 'customerName', minWidth: 150 },
+  { label: 'Số điện thoại', prop: 'customerPhone', minWidth: 120 },
+  { label: 'COD thu hộ', prop: 'codAmount', minWidth: 130, useSlot: true },
+  { label: 'Phí ship', prop: 'shippingCost', minWidth: 110, useSlot: true },
+  { label: 'Ngày tạo', prop: 'createdAt', minWidth: 160, useSlot: true },
   {
-    label: "Ngày hoàn thành",
-    prop: "deliveredAt",
+    label: 'Ngày hoàn thành',
+    prop: 'deliveredAt',
     minWidth: 160,
     useSlot: true,
   },
-  { label: "Thao tác", prop: "actions", minWidth: 100, useSlot: true },
+  { label: 'Thao tác', prop: 'actions', minWidth: 100, useSlot: true },
 ]);
 
-// Drawer Detail State
 const drawerVisible = ref(false);
 const selectedOrderId = ref<number | null>(null);
 const loadingDetail = ref(false);
 const detailData = ref<FulfillmentDetailResponse>({
   id: 0,
-  trackingNumber: "",
-  originalOrderCode: "",
-  customerName: "",
-  customerPhone: "",
-  customerAddress: "",
-  carrier: "",
+  trackingNumber: '',
+  originalOrderCode: '',
+  customerName: '',
+  customerPhone: '',
+  customerAddress: '',
+  carrier: '',
   status: 0,
   codAmount: 0,
   shippingCost: 0,
-  createdAt: "",
+  createdAt: '',
   items: [],
 });
 
@@ -605,29 +504,29 @@ const loadingTracking = ref(false);
 const isReturned = computed(() => {
   const st = detailData.value.status;
   console.log(st.toString().toUpperCase());
-  return st.toString().toUpperCase() === "RETURNED";
+  return st.toString().toUpperCase() === 'RETURNED';
 });
 
 const isCompleted = computed(() => {
   if (detailData.value.deliveredAt) return true;
   const st = detailData.value.status;
-  return st.toString().toUpperCase() === "COMPLETED";
+  return st.toString().toUpperCase() === 'COMPLETED';
 });
 
 const isInTransit = computed(() => {
   const st = detailData.value.status;
-  return st.toString().toUpperCase() === "INTRANSIT";
+  return st.toString().toUpperCase() === 'INTRANSIT';
 });
 
 const step0Status = computed(() => {
-  if (isReturned.value || isCompleted.value) return "success";
-  return "process";
+  if (isReturned.value || isCompleted.value) return 'success';
+  return 'process';
 });
 
 const step1Status = computed(() => {
-  if (isReturned.value) return "error";
-  if (isCompleted.value) return "success";
-  return "wait";
+  if (isReturned.value) return 'error';
+  if (isCompleted.value) return 'success';
+  return 'wait';
 });
 
 const hasRestrictedItems = computed(() => {
@@ -646,41 +545,30 @@ const isAllPicked = computed(() => {
 const sortedMilestones = computed(() => {
   if (!trackingData.value?.milestones) return [];
   return [...trackingData.value.milestones].sort(
-    (a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf(),
+    (a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf()
   );
 });
 
-// Methods
 const fetchOrders = async () => {
   loading.value = true;
   try {
     const params: any = {};
-    if (
-      filterParams.value.status !== null &&
-      filterParams.value.status !== undefined
-    ) {
+    if (filterParams.value.status !== null && filterParams.value.status !== undefined) {
       params.status = filterParams.value.status;
     }
     if (filterParams.value.carrier) {
       params.carrier = filterParams.value.carrier;
     }
-    if (
-      filterParams.value.dateRange &&
-      filterParams.value.dateRange.length === 2
-    ) {
-      params.fromDate = dayjs(filterParams.value.dateRange[0])
-        .startOf("day")
-        .toISOString();
-      params.toDate = dayjs(filterParams.value.dateRange[1])
-        .endOf("day")
-        .toISOString();
+    if (filterParams.value.dateRange && filterParams.value.dateRange.length === 2) {
+      params.fromDate = dayjs(filterParams.value.dateRange[0]).startOf('day').toISOString();
+      params.toDate = dayjs(filterParams.value.dateRange[1]).endOf('day').toISOString();
     }
 
     const res = await getFulfillmentOrders(params);
     orderList.value = (res as any).data || res || [];
   } catch (error) {
-    console.error("Failed to load fulfillment list", error);
-    ElMessage.error("Không thể tải danh sách đơn hàng.");
+    console.error('Failed to load fulfillment list', error);
+    ElMessage.error('Không thể tải danh sách đơn hàng.');
     orderList.value = [];
   } finally {
     loading.value = false;
@@ -690,8 +578,8 @@ const fetchOrders = async () => {
 const resetFilters = () => {
   filterParams.value = {
     dateRange: [],
-    carrier: "",
-    region: "",
+    carrier: '',
+    region: '',
     status: null,
   };
   pagination.value.current = 1;
@@ -713,23 +601,20 @@ const fetchDetail = async (id: number) => {
     const res = await getFulfillmentDetail(id);
     detailData.value = (res as any).data || res;
 
-    // Fetch Milestones from 3PL tracking if tracking number exists
     if (detailData.value.trackingNumber) {
       loadingTracking.value = true;
       try {
-        const trackRes = await getShipmentTracking(
-          detailData.value.trackingNumber,
-        );
+        const trackRes = await getShipmentTracking(detailData.value.trackingNumber);
         trackingData.value = (trackRes as any).data || trackRes;
       } catch (trackError) {
-        console.warn("Failed to fetch shipment tracking details", trackError);
+        console.warn('Failed to fetch shipment tracking details', trackError);
       } finally {
         loadingTracking.value = false;
       }
     }
   } catch (error) {
-    console.error("Failed to fetch detail", error);
-    ElMessage.error("Không tải được chi tiết đơn hàng.");
+    console.error('Failed to fetch detail', error);
+    ElMessage.error('Không tải được chi tiết đơn hàng.');
   } finally {
     loadingDetail.value = false;
   }
@@ -738,77 +623,73 @@ const fetchDetail = async (id: number) => {
 const handleTogglePick = async (itemId: number, isPicked: boolean) => {
   try {
     await toggleItemPick(itemId, isPicked);
-    ElMessage.success("Cập nhật nhặt hàng thành công");
+    ElMessage.success('Cập nhật nhặt hàng thành công');
   } catch (error) {
-    console.warn("API error, state is kept locally", error);
+    console.warn('API error, state is kept locally', error);
   }
 };
 
 const handleUpdateTracking = async () => {
   if (!detailData.value.trackingNumber) return;
   try {
-    await updateTrackingNumber(
-      detailData.value.id,
-      detailData.value.trackingNumber,
-    );
-    ElMessage.success("Cập nhật mã vận đơn thành công");
+    await updateTrackingNumber(detailData.value.id, detailData.value.trackingNumber);
+    ElMessage.success('Cập nhật mã vận đơn thành công');
     if (selectedOrderId.value) {
       await fetchDetail(selectedOrderId.value);
     }
     await fetchOrders();
   } catch (error) {
     console.error(error);
-    ElMessage.error("Không cập nhật được mã vận đơn.");
+    ElMessage.error('Không cập nhật được mã vận đơn.');
   }
 };
 
 const handleUpdateStatus = async (newStatus: number) => {
   if (newStatus === 1 && !isAllPicked.value) {
-    ElMessage.warning(t("logistics.fulfillment.alerts.pickingIncomplete"));
+    ElMessage.warning(t('logistics.fulfillment.alerts.pickingIncomplete'));
     return;
   }
 
   try {
     await updateParcelStatus(detailData.value.id, newStatus);
-    ElMessage.success("Cập nhật trạng thái thành công");
+    ElMessage.success('Cập nhật trạng thái thành công');
     if (selectedOrderId.value) {
       await fetchDetail(selectedOrderId.value);
     }
     await fetchOrders();
   } catch (error) {
     console.error(error);
-    ElMessage.error("Cập nhật trạng thái thất bại.");
+    ElMessage.error('Cập nhật trạng thái thất bại.');
   }
 };
 
-// Utilities
 const getCarrierLabel = (carrier: string) => {
   switch (carrier) {
-    case "GHTK":
-      return "Giaohangtietkiem";
-    case "GHN":
-      return "Giaohangnhanh";
-    case "ViettelPost":
-      return "Viettel Post";
-    case "Internal":
-      return "Đội xe nội bộ";
+    case 'GHTK':
+      return 'Giaohangtietkiem';
+    case 'GHN':
+      return 'Giaohangnhanh';
+    case 'ViettelPost':
+      return 'Viettel Post';
+    case 'Internal':
+      return 'Đội xe nội bộ';
     default:
-      return carrier || "Chưa chọn";
+      return carrier || 'Chưa chọn';
   }
 };
 
 const getCarrierTagType = (carrier: string) => {
   switch (carrier) {
-    case "GHTK":
-      return "success";
-    case "GHN":
-      return "warning";
-    case "ViettelPost":
-      return "danger";
-    case "Internal":
-      return "primary";
+    case 'GHTK':
+      return 'success';
+    case 'GHN':
+      return 'warning';
+    case 'ViettelPost':
+      return 'danger';
+    case 'Internal':
+      return 'primary';
     default:
-      return "info";
+      return 'info';
   }
 };
 
@@ -816,36 +697,29 @@ const getStatusLabel = (status: number | string) => {
   const st = deliveryStatuses.value.find(
     (x) =>
       x.id === status ||
-      (typeof status === "string" &&
-        x.nameEn.toUpperCase() === status.toUpperCase()),
+      (typeof status === 'string' && x.nameEn.toUpperCase() === status.toUpperCase())
   );
-  return st ? st.nameVi : "Không rõ";
+  return st ? st.nameVi : 'Không rõ';
 };
 
 const getStatusTagType = (status: number | string) => {
-  if (
-    status === 1 ||
-    (typeof status === "string" && status.toUpperCase() === "COMPLETED")
-  )
-    return "success";
-  if (
-    status === 2 ||
-    (typeof status === "string" && status.toUpperCase() === "RETURNED")
-  )
-    return "danger";
-  return "warning";
+  if (status === 1 || (typeof status === 'string' && status.toUpperCase() === 'COMPLETED'))
+    return 'success';
+  if (status === 2 || (typeof status === 'string' && status.toUpperCase() === 'RETURNED'))
+    return 'danger';
+  return 'warning';
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-  return dayjs(dateStr).format("DD/MM/YYYY HH:mm");
+  if (!dateStr) return '';
+  return dayjs(dateStr).format('DD/MM/YYYY HH:mm');
 };
 
 onMounted(() => {

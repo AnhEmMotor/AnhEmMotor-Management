@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from "vue-router";
+import { RouteRecordRaw } from 'vue-router';
 
 export interface RouteMeta extends Record<string | number | symbol, unknown> {
   title: string;
@@ -41,10 +41,7 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
   parentPath?: string;
 }
 
-export interface AppRouteRecord extends Omit<
-  RouteRecordRaw,
-  "meta" | "children" | "component"
-> {
+export interface AppRouteRecord extends Omit<RouteRecordRaw, 'meta' | 'children' | 'component'> {
   id?: number;
   meta: RouteMeta;
   children?: AppRouteRecord[];

@@ -10,33 +10,24 @@
     </div>
 
     <div class="text-wrap">
-      <h1>{{ $t("login.leftView.title") }}</h1>
-      <p>{{ $t("login.leftView.subTitle") }}</p>
+      <h1>{{ $t('login.leftView.title') }}</h1>
+      <p>{{ $t('login.leftView.subTitle') }}</p>
     </div>
 
     <div class="geometric-decorations">
-      <div
-        class="geo-element circle-outline animate-fade-in-up"
-        style="animation-delay: 0s"
-      ></div>
+      <div class="geo-element circle-outline animate-fade-in-up" style="animation-delay: 0s"></div>
       <div
         class="geo-element square-rotated animate-fade-in-left"
         style="animation-delay: 0s"
       ></div>
-      <div
-        class="geo-element circle-small animate-fade-in-up"
-        style="animation-delay: 0.3s"
-      ></div>
+      <div class="geo-element circle-small animate-fade-in-up" style="animation-delay: 0.3s"></div>
 
       <div
         class="geo-element square-bottom-right animate-fade-in-right"
         style="animation-delay: 0s"
       ></div>
 
-      <div
-        class="geo-element bg-bubble animate-scale-in"
-        style="animation-delay: 0.5"
-      ></div>
+      <div class="geo-element bg-bubble animate-scale-in" style="animation-delay: 0.5"></div>
 
       <div
         class="geo-element circle-top-right animate-fade-in-down"
@@ -44,10 +35,7 @@
         @click="themeAnimation"
       ></div>
 
-      <div
-        class="geo-element dot dot-top-left animate-bounce-in"
-        style="animation-delay: 0s"
-      ></div>
+      <div class="geo-element dot dot-top-left animate-bounce-in" style="animation-delay: 0s"></div>
       <div
         class="geo-element dot dot-top-right animate-bounce-in"
         style="animation-delay: 0s"
@@ -76,9 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import AppConfig from "@/config";
-import loginIcon from "@imgs/svg/login_icon.svg";
-import { themeAnimation } from "@/common/utils/ui/animation";
+import AppConfig from '@/config';
+import loginIcon from '@imgs/svg/login_icon.svg';
+import { themeAnimation } from '@/common/utils/ui/animation';
 
 defineProps<{
   hideContent?: boolean;
@@ -165,17 +153,17 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
         animation-fill-mode: forwards;
       }
 
-      @mixin fadeAnimation($direction: "", $rotation: 0deg) {
+      @mixin fadeAnimation($direction: '', $rotation: 0deg) {
         from {
           opacity: 0;
 
-          @if $direction == "up" {
+          @if $direction == 'up' {
             transform: translateY(30px) rotate($rotation);
-          } @else if $direction == "down" {
+          } @else if $direction == 'down' {
             transform: translateY(-30px) rotate($rotation);
-          } @else if $direction == "left" {
+          } @else if $direction == 'left' {
             transform: translateX(-30px) rotate($rotation);
-          } @else if $direction == "right" {
+          } @else if $direction == 'right' {
             transform: translateX(30px) rotate($rotation);
           }
         }
@@ -183,7 +171,7 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
         to {
           opacity: 1;
 
-          @if $direction == "up" or $direction == "down" {
+          @if $direction == 'up' or $direction == 'down' {
             transform: translateY(0) rotate($rotation);
           } @else {
             transform: translateX(0) rotate($rotation);
@@ -192,39 +180,39 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
       }
 
       @keyframes fadeInUp {
-        @include fadeAnimation("up");
+        @include fadeAnimation('up');
       }
 
       @keyframes fadeInDown {
-        @include fadeAnimation("down");
+        @include fadeAnimation('down');
       }
 
       @keyframes fadeInLeft {
-        @include fadeAnimation("left");
+        @include fadeAnimation('left');
       }
 
       @keyframes fadeInLeftRotated {
-        @include fadeAnimation("left", -25deg);
+        @include fadeAnimation('left', -25deg);
       }
 
       @keyframes fadeInRight {
-        @include fadeAnimation("right");
+        @include fadeAnimation('right');
       }
 
       @keyframes fadeInRightRotated {
-        @include fadeAnimation("right", 45deg);
+        @include fadeAnimation('right', 45deg);
       }
 
       @keyframes fadeInLeftRotatedBlue {
-        @include fadeAnimation("left", -10deg);
+        @include fadeAnimation('left', -10deg);
       }
 
       @keyframes fadeInLeftRotatedPink {
-        @include fadeAnimation("left", 10deg);
+        @include fadeAnimation('left', 10deg);
       }
 
       @keyframes fadeInLeftNoRotation {
-        @include fadeAnimation("left");
+        @include fadeAnimation('left');
       }
 
       @keyframes scaleIn {
@@ -367,7 +355,7 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
           left: 50%;
           width: 100%;
           height: 100%;
-          content: "";
+          content: '';
           background: linear-gradient(to right, #fcbb04, #fffc00);
           border-radius: 50%;
           opacity: 0;
@@ -476,12 +464,8 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
           left: 72px;
           width: 80px;
           height: 1px;
-          content: "";
-          background: linear-gradient(
-            90deg,
-            var(--el-color-primary-light-6),
-            transparent
-          );
+          content: '';
+          background: linear-gradient(90deg, var(--el-color-primary-light-6), transparent);
           opacity: 0;
           transform: rotate(50deg);
           animation: lineGrow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -554,17 +538,17 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
       animation-fill-mode: forwards;
     }
 
-    @mixin fadeAnimation($direction: "", $rotation: 0deg) {
+    @mixin fadeAnimation($direction: '', $rotation: 0deg) {
       from {
         opacity: 0;
 
-        @if $direction == "up" {
+        @if $direction == 'up' {
           transform: translateY(30px) rotate($rotation);
-        } @else if $direction == "down" {
+        } @else if $direction == 'down' {
           transform: translateY(-30px) rotate($rotation);
-        } @else if $direction == "left" {
+        } @else if $direction == 'left' {
           transform: translateX(-30px) rotate($rotation);
-        } @else if $direction == "right" {
+        } @else if $direction == 'right' {
           transform: translateX(30px) rotate($rotation);
         }
       }
@@ -572,7 +556,7 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
       to {
         opacity: 1;
 
-        @if $direction == "up" or $direction == "down" {
+        @if $direction == 'up' or $direction == 'down' {
           transform: translateY(0) rotate($rotation);
         } @else {
           transform: translateX(0) rotate($rotation);
@@ -581,39 +565,39 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
     }
 
     @keyframes fadeInUp {
-      @include fadeAnimation("up");
+      @include fadeAnimation('up');
     }
 
     @keyframes fadeInDown {
-      @include fadeAnimation("down");
+      @include fadeAnimation('down');
     }
 
     @keyframes fadeInLeft {
-      @include fadeAnimation("left");
+      @include fadeAnimation('left');
     }
 
     @keyframes fadeInLeftRotated {
-      @include fadeAnimation("left", -25deg);
+      @include fadeAnimation('left', -25deg);
     }
 
     @keyframes fadeInRight {
-      @include fadeAnimation("right");
+      @include fadeAnimation('right');
     }
 
     @keyframes fadeInRightRotated {
-      @include fadeAnimation("right", 45deg);
+      @include fadeAnimation('right', 45deg);
     }
 
     @keyframes fadeInLeftRotatedBlue {
-      @include fadeAnimation("left", -10deg);
+      @include fadeAnimation('left', -10deg);
     }
 
     @keyframes fadeInLeftRotatedPink {
-      @include fadeAnimation("left", 10deg);
+      @include fadeAnimation('left', 10deg);
     }
 
     @keyframes fadeInLeftNoRotation {
-      @include fadeAnimation("left");
+      @include fadeAnimation('left');
     }
 
     @keyframes scaleIn {
@@ -756,7 +740,7 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
         left: 50%;
         width: 100%;
         height: 100%;
-        content: "";
+        content: '';
         background: linear-gradient(to right, #fcbb04, #fffc00);
         border-radius: 50%;
         opacity: 0;
@@ -865,12 +849,8 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
         left: 72px;
         width: 80px;
         height: 1px;
-        content: "";
-        background: linear-gradient(
-          90deg,
-          var(--el-color-primary-light-6),
-          transparent
-        );
+        content: '';
+        background: linear-gradient(90deg, var(--el-color-primary-light-6), transparent);
         opacity: 0;
         transform: rotate(50deg);
         animation: lineGrow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -925,7 +905,7 @@ $bg-mix-light-7: color-mix(in srgb, $primary-light-7 80%, $main-bg);
         left: 15px;
         width: 50px;
         height: 50px;
-        content: "";
+        content: '';
         background-color: $bg-mix-light-9;
         border-radius: 50%;
         transition: all 0.3s ease-in-out;

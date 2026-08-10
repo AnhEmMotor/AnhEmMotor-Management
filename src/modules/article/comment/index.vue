@@ -1,7 +1,7 @@
 <template>
   <div class="resp-page">
-    <h1 class="text-4xl font-medium mt-5">{{ $t("admin.t21") }}</h1>
-    <p class="mt-3.5 text-g-600">{{ $t("admin.t22") }}</p>
+    <h1 class="text-4xl font-medium mt-5">{{ $t('admin.t21') }}</h1>
+    <p class="mt-3.5 text-g-600">{{ $t('admin.t22') }}</p>
 
     <ul
       class="mt-10 grid grid-cols-5 gap-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 mb-5"
@@ -33,21 +33,13 @@
       </li>
     </ul>
 
-    <ElDrawer
-      v-model="showDrawer"
-      :lock-scroll="false"
-      :size="360"
-      modal-class="comment-modal"
-    >
+    <ElDrawer v-model="showDrawer" :lock-scroll="false" :size="360" modal-class="comment-modal">
       <template #header>
-        <h4>{{ $t("admin.t23") }}</h4>
+        <h4>{{ $t('admin.t23') }}</h4>
       </template>
       <template #default>
         <div class="drawer-default">
-          <div
-            class="relative p-4 aspect-16/12"
-            :style="{ background: clickItem.color }"
-          >
+          <div class="relative p-4 aspect-16/12" :style="{ background: clickItem.color }">
             <p class="text-g-500 text-sm">{{ clickItem.date }}</p>
             <p class="mt-4 text-sm text-gray-800">{{ clickItem.content }}</p>
             <div class="absolute bottom-4 left-0 px-4 flex-cb w-full">
@@ -61,9 +53,7 @@
                   <span>{{ clickItem.comment }}</span>
                 </div>
               </div>
-              <span class="text-sm text-gray-700">{{
-                clickItem.userName
-              }}</span>
+              <span class="text-sm text-gray-700">{{ clickItem.userName }}</span>
             </div>
           </div>
         </div>
@@ -73,9 +63,9 @@
 </template>
 
 <script setup lang="ts">
-import { commentList } from "@/mock/temp/commentList";
+import { commentList } from '@/mock/temp/commentList';
 
-defineOptions({ name: "ArticleComment" });
+defineOptions({ name: 'ArticleComment' });
 
 interface CommentItem {
   id: number;
@@ -87,24 +77,16 @@ interface CommentItem {
   color?: string;
 }
 
-const COLOR_LIST = [
-  "#D8F8FF",
-  "#FDDFD9",
-  "#FCE6F0",
-  "#D3F8F0",
-  "#FFEABC",
-  "#F5E1FF",
-  "#E1E6FE",
-];
+const COLOR_LIST = ['#D8F8FF', '#FDDFD9', '#FCE6F0', '#D3F8F0', '#FFEABC', '#F5E1FF', '#E1E6FE'];
 
 const showDrawer = ref(false);
 const clickItem = ref<CommentItem>({
   id: 1,
-  date: "2024-9-3",
-  content: "thêmdầu！họchảoNode từmìnhviếtchiếctiểuDemo",
+  date: '2024-9-3',
+  content: 'thêmdầu！họchảoNode từmìnhviếtchiếctiểuDemo',
   collection: 5,
   comment: 8,
-  userName: "ẩndanh",
+  userName: 'ẩndanh',
   color: COLOR_LIST[0],
 });
 

@@ -1,9 +1,7 @@
 <template>
   <div class="resp-page art-card flex flex-col p-5 mb-5 max-sm:mb-4">
     <div class="title">
-      <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">
-        Khách hàng
-      </h4>
+      <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">Khách hàng</h4>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
       <div
@@ -12,26 +10,18 @@
         class="hover-card relative flex cursor-pointer items-center rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors select-none"
       >
         <div class="mr-3 size-9.5 rounded-full flex-cc" :class="item.bgClass">
-          <ArtSvgIcon
-            :icon="item.icon"
-            class="text-lg"
-            :class="item.colorClass"
-          />
+          <ArtSvgIcon :icon="item.icon" class="text-lg" :class="item.colorClass" />
         </div>
         <div>
           <div class="text-sm text-gray-500 dark:text-gray-400">
             {{ item.name }}
           </div>
-          <div
-            class="text-right text-lg font-semibold text-g-800 dark:text-gray-100"
-          >
+          <div class="text-right text-lg font-semibold text-g-800 dark:text-gray-100">
             {{ item.num }}
           </div>
         </div>
         <div class="absolute top-2 right-3">
-          <el-tag type="info" size="small" effect="plain" round
-            >Có thể click</el-tag
-          >
+          <el-tag type="info" size="small" effect="plain" round>Có thể click</el-tag>
         </div>
       </div>
     </div>
@@ -39,13 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from "vue";
-import { fetchDashboardKpis } from "@/api/dashboard.api";
-import { type DashboardKpisCard } from "@/api/dashboard.api";
+import { reactive, onMounted } from 'vue';
+import { fetchDashboardKpis } from '@/api/dashboard.api';
+import { type DashboardKpisCard } from '@/api/dashboard.api';
 
 const DEFAULT_COLOR = {
-  colorClass: "text-orange-500",
-  bgClass: "bg-orange-50 dark:bg-orange-900/30",
+  colorClass: 'text-orange-500',
+  bgClass: 'bg-orange-50 dark:bg-orange-900/30',
 };
 
 interface DisplayItem {
@@ -58,61 +48,51 @@ interface DisplayItem {
 
 const list = reactive<DisplayItem[]>([
   {
-    name: "KH Tiềm năng",
-    num: "---",
-    icon: "users",
-    colorClass: "text-amber-500",
-    bgClass: "bg-amber-50 dark:bg-amber-900/30",
+    name: 'KH Tiềm năng',
+    num: '---',
+    icon: 'users',
+    colorClass: 'text-amber-500',
+    bgClass: 'bg-amber-50 dark:bg-amber-900/30',
   },
   {
-    name: "Lịch hẹn hôm nay",
-    num: "---",
-    icon: "calendar",
-    colorClass: "text-blue-600",
-    bgClass: "bg-blue-50 dark:bg-blue-900/30",
+    name: 'Lịch hẹn hôm nay',
+    num: '---',
+    icon: 'calendar',
+    colorClass: 'text-blue-600',
+    bgClass: 'bg-blue-50 dark:bg-blue-900/30',
   },
   {
-    name: "KH Mới (tháng)",
-    num: "---",
-    icon: "user-add",
-    colorClass: "text-emerald-500",
-    bgClass: "bg-emerald-50 dark:bg-emerald-900/30",
+    name: 'KH Mới (tháng)',
+    num: '---',
+    icon: 'user-add',
+    colorClass: 'text-emerald-500',
+    bgClass: 'bg-emerald-50 dark:bg-emerald-900/30',
   },
-  { name: "Đơn hàng chưa xử lý", num: "---", icon: "orders", ...DEFAULT_COLOR },
+  { name: 'Đơn hàng chưa xử lý', num: '---', icon: 'orders', ...DEFAULT_COLOR },
 ]);
 
 function fmtCard(card: DashboardKpisCard): string {
   const n = Number(card.value);
   if (Number.isNaN(n)) return String(card.value);
-  if (card.unit === "đ" || card.label.toLowerCase().includes("doanh thu")) {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
+  if (card.unit === 'đ' || card.label.toLowerCase().includes('doanh thu')) {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
       maximumFractionDigits: 0,
     }).format(n);
   }
-  return n.toLocaleString("vi-VN");
+  return n.toLocaleString('vi-VN');
 }
 
 function itemMatches(card: DashboardKpisCard, key: string): boolean {
   const label = card.label.toLowerCase();
-  if (key.includes("Tiềm năng"))
-    return label.includes("tiềm năng") || label.includes("leads");
-  if (key.includes("hẹn"))
-    return (
-      label.includes("lịch") ||
-      label.includes("hẹn") ||
-      label.includes("appointment")
-    );
-  if (key.includes("Mới"))
-    return (
-      label.includes("mới") ||
-      label.includes("khách hàng") ||
-      label.includes("customer")
-    );
-  if (key.includes("Đơn hàng"))
-    return label.includes("đơn") || label.includes("order");
-  return label.includes(key.toLowerCase().split(" ")[0]);
+  if (key.includes('Tiềm năng')) return label.includes('tiềm năng') || label.includes('leads');
+  if (key.includes('hẹn'))
+    return label.includes('lịch') || label.includes('hẹn') || label.includes('appointment');
+  if (key.includes('Mới'))
+    return label.includes('mới') || label.includes('khách hàng') || label.includes('customer');
+  if (key.includes('Đơn hàng')) return label.includes('đơn') || label.includes('order');
+  return label.includes(key.toLowerCase().split(' ')[0]);
 }
 
 async function load() {
@@ -129,7 +109,6 @@ async function load() {
       }
     }
   } catch {
-    // silent fallback
   }
 }
 

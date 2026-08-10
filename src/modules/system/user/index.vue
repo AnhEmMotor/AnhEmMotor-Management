@@ -1,19 +1,9 @@
 <template>
-  <div
-    class="resp-page user-page art-full-height animate__animated animate__fadeIn"
-  >
-    <UserSearch
-      v-model="searchForm"
-      @search="handleSearch"
-      @reset="resetSearchParams"
-    ></UserSearch>
+  <div class="resp-page user-page art-full-height animate__animated animate__fadeIn">
+    <UserSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></UserSearch>
 
     <ElCard class="art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
             <ElButton
@@ -45,46 +35,42 @@
         @submit="refreshData"
       />
 
-      <UserPasswordDialog
-        v-model="passwordDialogVisible"
-        :user-data="currentUserData"
-      />
+      <UserPasswordDialog v-model="passwordDialogVisible" :user-data="currentUserData" />
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ButtonMoreItem } from "@/components/core/forms/art-button-more/index.vue";
-import { useTable } from "@/common/composables/useTable";
+import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue';
+import { useTable } from '@/common/composables/useTable';
 import {
   fetchGetUserList,
   fetchDeleteUser,
   fetchChangeUserStatus,
   fetchGetRoleList,
-} from "@/api/auth";
-import { useQuery } from "@tanstack/vue-query";
-import ArtButtonMore from "@/components/core/forms/art-button-more/index.vue";
-import UserSearch from "./modules/user-search.vue";
-import UserDialog from "./modules/user-dialog.vue";
-import UserPasswordDialog from "./modules/user-password-dialog.vue";
-import { ElTag, ElMessageBox, ElImage } from "element-plus";
-import { Permissions } from "@/domain/constants/permissions.ts";
-defineOptions({ name: "User" });
+} from '@/api/auth';
+import { useQuery } from '@tanstack/vue-query';
+import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue';
+import UserSearch from './modules/user-search.vue';
+import UserDialog from './modules/user-dialog.vue';
+import UserPasswordDialog from './modules/user-password-dialog.vue';
+import { ElTag, ElMessageBox, ElImage } from 'element-plus';
+import { Permissions } from '@/domain/constants/permissions.ts';
+defineOptions({ name: 'User' });
 
-const dialogType = ref<"add" | "edit">("add");
+const dialogType = ref<'add' | 'edit'>('add');
 const dialogVisible = ref(false);
 const passwordDialogVisible = ref(false);
 const currentUserData = ref<any>({});
 
 const { data: roleListRes } = useQuery({
-  queryKey: ["roles-list-all"],
+  queryKey: ['roles-list-all'],
   queryFn: () => fetchGetRoleList({ Page: 1, PageSize: 100 }),
 });
 
 const roleMap = computed(() => {
   const map = new Map<string, string>();
-  const records =
-    (roleListRes.value as any)?.items || roleListRes.value?.records || [];
+  const records = (roleListRes.value as any)?.items || roleListRes.value?.records || [];
   records.forEach((r: any) => {
     if (r.id && r.name) {
       map.set(r.id.toLowerCase(), r.name);
@@ -100,7 +86,7 @@ watch(
       resetColumns?.();
     }
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true }
 );
 
 const searchForm = ref({
@@ -113,15 +99,15 @@ const searchForm = ref({
 });
 
 const USER_STATUS_CONFIG = {
-  Active: { type: "success" as const, text: "Hoạt động" },
-  Banned: { type: "danger" as const, text: "Bị khóa" },
+  Active: { type: 'success' as const, text: 'Hoạt động' },
+  Banned: { type: 'danger' as const, text: 'Bị khóa' },
 } as const;
 
 const getUserStatusConfig = (status: string) => {
   return (
     USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
-      type: "info" as const,
-      text: status || "Không rõ",
+      type: 'info' as const,
+      text: status || 'Không rõ',
     }
   );
 };
@@ -143,8 +129,8 @@ const {
   core: {
     apiFn: fetchGetUserList,
     paginationKey: {
-      current: "Page",
-      size: "PageSize",
+      current: 'Page',
+      size: 'PageSize',
     },
     apiParams: {
       Page: 1,
@@ -152,151 +138,137 @@ const {
     },
     columnsFactory: () => [
       {
-        prop: "userInfo",
-        label: "Người dùng",
+        prop: 'userInfo',
+        label: 'Người dùng',
         minWidth: 280,
         formatter: (row) => {
           const avatarUrl =
-            row.avatarUrl ||
-            "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
-          return h("div", { class: "flex items-center gap-3 py-1" }, [
+            row.avatarUrl || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
+          return h('div', { class: 'flex items-center gap-3 py-1' }, [
             h(ElImage, {
-              class: "w-10 h-10 rounded-full border border-gray-200 shadow-sm",
+              class: 'w-10 h-10 rounded-full border border-gray-200 shadow-sm',
               src: avatarUrl,
               previewSrcList: [avatarUrl],
               previewTeleported: true,
-              fit: "cover",
-              referrerpolicy: "no-referrer",
+              fit: 'cover',
+              referrerpolicy: 'no-referrer',
             }),
-            h("div", { class: "flex flex-col gap-0.5" }, [
+            h('div', { class: 'flex flex-col gap-0.5' }, [
               h(
-                "span",
+                'span',
                 {
-                  class: "font-semibold text-sm",
-                  style: { color: "var(--el-text-color-primary)" },
+                  class: 'font-semibold text-sm',
+                  style: { color: 'var(--el-text-color-primary)' },
                 },
-                row.fullName || "Chưa đặt tên",
+                row.fullName || 'Chưa đặt tên'
               ),
               h(
-                "span",
+                'span',
                 {
-                  class: "text-xs",
-                  style: { color: "var(--el-text-color-secondary)" },
+                  class: 'text-xs',
+                  style: { color: 'var(--el-text-color-secondary)' },
                 },
-                row.email || row.userName,
+                row.email || row.userName
               ),
             ]),
           ]);
         },
       },
       {
-        prop: "userName",
-        label: "Tên đăng nhập",
+        prop: 'userName',
+        label: 'Tên đăng nhập',
         minWidth: 150,
       },
       {
-        prop: "gender",
-        label: "Giới tính",
+        prop: 'gender',
+        label: 'Giới tính',
         width: 100,
         formatter: (row) => {
           const genderMap = {
-            Male: "Nam",
-            Female: "Nữ",
-            Other: "Khác",
+            Male: 'Nam',
+            Female: 'Nữ',
+            Other: 'Khác',
           };
-          return (
-            genderMap[row.gender as keyof typeof genderMap] ||
-            row.gender ||
-            "Chưa rõ"
-          );
+          return genderMap[row.gender as keyof typeof genderMap] || row.gender || 'Chưa rõ';
         },
       },
       {
-        prop: "phoneNumber",
-        label: "Số điện thoại",
+        prop: 'phoneNumber',
+        label: 'Số điện thoại',
         minWidth: 120,
       },
       {
-        prop: "roles",
-        label: "Vai trò",
+        prop: 'roles',
+        label: 'Vai trò',
         minWidth: 150,
         formatter: (row) => {
           const roles = row.roles || [];
           if (roles.length === 0) {
-            return h(
-              "span",
-              { class: "text-gray-400 text-xs italic" },
-              "Không có",
-            );
+            return h('span', { class: 'text-gray-400 text-xs italic' }, 'Không có');
           }
           return h(
-            "div",
-            { class: "flex flex-wrap gap-1" },
+            'div',
+            { class: 'flex flex-wrap gap-1' },
             roles.map((roleId: string) => {
-              const roleName =
-                roleMap.value.get(roleId.toLowerCase()) || roleId;
+              const roleName = roleMap.value.get(roleId.toLowerCase()) || roleId;
               return h(
                 ElTag,
                 {
-                  size: "small",
-                  effect: "light",
-                  type: "info",
-                  class: "m-0.5",
+                  size: 'small',
+                  effect: 'light',
+                  type: 'info',
+                  class: 'm-0.5',
                 },
-                () => roleName,
+                () => roleName
               );
-            }),
+            })
           );
         },
       },
       {
-        prop: "status",
-        label: "Trạng thái",
+        prop: 'status',
+        label: 'Trạng thái',
         width: 120,
         formatter: (row) => {
           const statusConfig = getUserStatusConfig(row.status);
-          return h(
-            ElTag,
-            { type: statusConfig.type, effect: "dark" },
-            () => statusConfig.text,
-          );
+          return h(ElTag, { type: statusConfig.type, effect: 'dark' }, () => statusConfig.text);
         },
       },
       {
-        prop: "operation",
-        label: "Thao tác",
+        prop: 'operation',
+        label: 'Thao tác',
         width: 80,
-        fixed: "right",
+        fixed: 'right',
         formatter: (row) => {
-          const isBanned = row.status === "Banned";
-          return h("div", [
+          const isBanned = row.status === 'Banned';
+          return h('div', [
             h(ArtButtonMore, {
               list: [
                 {
-                  key: "edit",
-                  label: "Chỉnh sửa",
-                  icon: "ri:edit-2-line",
+                  key: 'edit',
+                  label: 'Chỉnh sửa',
+                  icon: 'ri:edit-2-line',
                   auth: Permissions.Admin.UserManagement.Edit,
                 },
                 {
-                  key: "change-password",
-                  label: "Đổi mật khẩu",
-                  icon: "ri:key-line",
-                  color: "#409eff",
+                  key: 'change-password',
+                  label: 'Đổi mật khẩu',
+                  icon: 'ri:key-line',
+                  color: '#409eff',
                   auth: Permissions.Admin.UserManagement.ChangePassword,
                 },
                 {
-                  key: "toggle-status",
-                  label: isBanned ? "Kích hoạt tài khoản" : "Khóa tài khoản",
-                  icon: isBanned ? "ri:lock-unlock-line" : "ri:lock-line",
-                  color: isBanned ? "#67c23a" : "#e6a23c",
+                  key: 'toggle-status',
+                  label: isBanned ? 'Kích hoạt tài khoản' : 'Khóa tài khoản',
+                  icon: isBanned ? 'ri:lock-unlock-line' : 'ri:lock-line',
+                  color: isBanned ? '#67c23a' : '#e6a23c',
                   auth: Permissions.Admin.UserManagement.Edit,
                 },
                 {
-                  key: "delete",
-                  label: "Xóa tài khoản",
-                  icon: "ri:delete-bin-4-line",
-                  color: "#f56c6c",
+                  key: 'delete',
+                  label: 'Xóa tài khoản',
+                  icon: 'ri:delete-bin-4-line',
+                  color: '#f56c6c',
                   auth: Permissions.Admin.UserManagement.Delete,
                 },
               ],
@@ -330,23 +302,23 @@ const handleSearch = (params: any) => {
     filters.push(`Gender==${params.userGender}`);
   }
   replaceSearchParams({
-    Filters: filters.join(",") || undefined,
+    Filters: filters.join(',') || undefined,
   });
   getData();
 };
 
 const buttonMoreClick = (item: ButtonMoreItem, row: any) => {
   switch (item.key) {
-    case "edit":
-      showDialog("edit", row);
+    case 'edit':
+      showDialog('edit', row);
       break;
-    case "change-password":
+    case 'change-password':
       showPasswordDialog(row);
       break;
-    case "toggle-status":
+    case 'toggle-status':
       toggleUserStatus(row);
       break;
-    case "delete":
+    case 'delete':
       deleteUser(row);
       break;
   }
@@ -359,7 +331,7 @@ const showPasswordDialog = (row: any): void => {
   });
 };
 
-const showDialog = (type: "add" | "edit", row?: any): void => {
+const showDialog = (type: 'add' | 'edit', row?: any): void => {
   dialogType.value = type;
   currentUserData.value = row || {};
   nextTick(() => {
@@ -368,18 +340,18 @@ const showDialog = (type: "add" | "edit", row?: any): void => {
 };
 
 const toggleUserStatus = (row: any) => {
-  const isBanned = row.status === "Banned";
-  const newStatus = isBanned ? "Active" : "Banned";
-  const actionText = isBanned ? "kích hoạt lại" : "khóa";
+  const isBanned = row.status === 'Banned';
+  const newStatus = isBanned ? 'Active' : 'Banned';
+  const actionText = isBanned ? 'kích hoạt lại' : 'khóa';
 
   ElMessageBox.confirm(
     `Bạn chắc chắn muốn ${actionText} tài khoản của người dùng "${row.fullName || row.userName}"?`,
-    "Xác nhận thay đổi trạng thái",
+    'Xác nhận thay đổi trạng thái',
     {
-      confirmButtonText: "Xác định",
-      cancelButtonText: "Hủy",
-      type: isBanned ? "success" : "warning",
-    },
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: isBanned ? 'success' : 'warning',
+    }
   )
     .then(async () => {
       try {
@@ -404,12 +376,12 @@ const toggleUserStatus = (row: any) => {
 const deleteUser = (row: any): void => {
   ElMessageBox.confirm(
     `Bạn chắc chắn muốn xóa người dùng "${row.fullName || row.userName}"? Hành động này không thể khôi phục!`,
-    "Xác nhận xóa tài khoản",
+    'Xác nhận xóa tài khoản',
     {
-      confirmButtonText: "Xác định",
-      cancelButtonText: "Hủy",
-      type: "error",
-    },
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: 'error',
+    }
   )
     .then(async () => {
       try {

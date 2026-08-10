@@ -17,10 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import AppConfig from "@/config";
-import { useSettingStore } from "@/application/store/setting";
+import AppConfig from '@/config';
+import { useSettingStore } from '@/application/store/setting';
 
-defineOptions({ name: "ArtWatermark" });
+defineOptions({ name: 'ArtWatermark' });
 
 const settingStore = useSettingStore();
 const { watermarkVisible } = storeToRefs(settingStore);
@@ -51,7 +51,7 @@ withDefaults(defineProps<WatermarkProps>(), {
   content: AppConfig.systemInfo.name,
   visible: false,
   fontSize: 16,
-  fontColor: "rgba(128, 128, 128, 0.2)",
+  fontColor: 'rgba(128, 128, 128, 0.2)',
   rotate: -22,
   gapX: 100,
   gapY: 100,

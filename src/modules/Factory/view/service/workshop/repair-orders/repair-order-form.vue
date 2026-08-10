@@ -2,13 +2,8 @@
   <div
     class="repair-order-form-page flex flex-col min-h-screen bg-[#F8FAFC] font-inter text-[#0F172A]"
   >
-    <!-- Header Bar -->
-    <div
-      class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20"
-    >
-      <div
-        class="flex justify-between items-center max-w-[1400px] mx-auto flex-wrap gap-3"
-      >
+    <div class="bg-white border-b border-slate-200 px-8 py-5 shrink-0 shadow-sm relative z-20">
+      <div class="flex justify-between items-center max-w-[1400px] mx-auto flex-wrap gap-3">
         <div class="flex items-center gap-4">
           <button
             @click="goBack"
@@ -19,14 +14,12 @@
 
           <div>
             <div class="flex items-center gap-3 flex-wrap">
-              <h1
-                class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none"
-              >
-                Phiếu sửa chữa RO-{{ String(orderId).padStart(5, "0") }}
+              <h1 class="m-0 text-lg font-black tracking-tight text-slate-900 leading-none">
+                Phiếu sửa chữa RO-{{ String(orderId).padStart(5, '0') }}
               </h1>
 
               <span :class="getStatusBadgeClass(order?.status || '')">
-                {{ getStatusText(order?.status || "") }}
+                {{ getStatusText(order?.status || '') }}
               </span>
             </div>
 
@@ -34,7 +27,7 @@
               class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2 flex items-center gap-1.5"
             >
               <ArtSvgIcon icon="ri:calendar-line" />
-              Ngày tạo: {{ formatDate(order?.createdAt || "") }}
+              Ngày tạo: {{ formatDate(order?.createdAt || '') }}
             </p>
           </div>
         </div>
@@ -62,16 +55,10 @@
       </div>
     </div>
 
-    <!-- Main -->
     <div class="flex-1 max-w-[1400px] mx-auto w-full p-6" v-loading="loading">
       <div v-if="order" class="space-y-6">
-        <!-- Pipeline State Machine -->
-        <div
-          class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm"
-        >
-          <h3
-            class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0"
-          >
+        <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm">
+          <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-wider m-0">
             Pipeline (Tiến độ phiếu)
           </h3>
 
@@ -81,20 +68,13 @@
                 class="absolute -left-[31px] top-0 size-4 rounded-full border-2 flex-cc transition-all"
                 :class="getStepDotClass(step.status)"
               >
-                <div
-                  class="size-1.5 rounded-full"
-                  :class="getStepInnerDotClass(step.status)"
-                ></div>
+                <div class="size-1.5 rounded-full" :class="getStepInnerDotClass(step.status)"></div>
               </div>
 
               <div class="pl-2">
                 <h4
                   class="m-0 text-xs font-black uppercase"
-                  :class="
-                    isStepActive(step.status)
-                      ? 'text-slate-800'
-                      : 'text-slate-400'
-                  "
+                  :class="isStepActive(step.status) ? 'text-slate-800' : 'text-slate-400'"
                 >
                   {{ step.title }}
                 </h4>
@@ -106,23 +86,15 @@
           </div>
         </div>
 
-        <!-- Phase blocks -->
-        <!-- Phase 1: Vehicle check-in -->
         <div v-if="order.status === 'Pending'" class="space-y-4">
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4"
-          >
+          <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4">
             <h3
               class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
             >
-              <span
-                class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                >1</span
-              >
+              <span class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs">1</span>
               Thông tin tiếp nhận xe
             </h3>
 
-            <!-- Search Customer + Vehicle info + Gallery -->
             <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="md:col-span-1">
                 <label
@@ -151,12 +123,8 @@
                   <div class="font-bold text-primary">
                     {{ form.licensePlate }}
                   </div>
-                  <div class="mt-0.5">
-                    {{ form.vehicleBrand }} / {{ form.vehicleColor }}
-                  </div>
-                  <div class="mt-0.5 text-slate-500">
-                    Năm: {{ form.vehicleYear || "-" }}
-                  </div>
+                  <div class="mt-0.5">{{ form.vehicleBrand }} / {{ form.vehicleColor }}</div>
+                  <div class="mt-0.5 text-slate-500">Năm: {{ form.vehicleYear || '-' }}</div>
                 </div>
                 <ElInput
                   v-else
@@ -198,12 +166,7 @@
                 >
                   Mileage (km)
                 </label>
-                <ElInputNumber
-                  v-model="form.mileage"
-                  :min="0"
-                  :controls="false"
-                  class="w-full"
-                />
+                <ElInputNumber v-model="form.mileage" :min="0" :controls="false" class="w-full" />
               </div>
 
               <div>
@@ -221,32 +184,19 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
-              <ElButton
-                type="primary"
-                @click="handleSubmitPending"
-                :loading="submitting"
-              >
+              <ElButton type="primary" @click="handleSubmitPending" :loading="submitting">
                 Lưu tiếp nhận & cập nhật phiếu
               </ElButton>
             </div>
           </div>
         </div>
 
-        <!-- Phase 2: Diagnosis panel -->
-        <div
-          v-if="order.status === 'InProgress' || order.status === 'QcPending'"
-          class="space-y-4"
-        >
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4"
-          >
+        <div v-if="order.status === 'InProgress' || order.status === 'QcPending'" class="space-y-4">
+          <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-4">
             <h3
               class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
             >
-              <span
-                class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                >2</span
-              >
+              <span class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs">2</span>
               Điều phối kỹ thuật & khảo sát
             </h3>
 
@@ -290,10 +240,7 @@
               </div>
 
               <div class="p-4 space-y-4">
-                <div
-                  class="text-xs text-slate-500"
-                  v-if="!order.details?.length"
-                >
+                <div class="text-xs text-slate-500" v-if="!order.details?.length">
                   Chưa có hạng mục công việc nào.
                 </div>
                 <div v-else class="space-y-2">
@@ -304,9 +251,7 @@
                   >
                     <div>
                       <span class="font-bold text-slate-700">
-                        {{
-                          d.type === "Service" ? d.serviceName : d.variantName
-                        }}
+                        {{ d.type === 'Service' ? d.serviceName : d.variantName }}
                       </span>
                       <span
                         :class="
@@ -315,18 +260,12 @@
                             : 'ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-black uppercase'
                         "
                       >
-                        {{ d.type === "Service" ? "Công việc" : "Phụ tùng" }}
+                        {{ d.type === 'Service' ? 'Công việc' : 'Phụ tùng' }}
                       </span>
                     </div>
                     <div class="text-right">
                       <span class="font-bold text-slate-800">
-                        {{
-                          formatCurrency(
-                            d.type === "Service"
-                              ? d.laborCost
-                              : d.price * d.count,
-                          )
-                        }}
+                        {{ formatCurrency(d.type === 'Service' ? d.laborCost : d.price * d.count) }}
                       </span>
                     </div>
                   </div>
@@ -336,21 +275,12 @@
           </div>
         </div>
 
-        <!-- Phase 3: Execution (parts consumption status) -->
-        <div
-          v-if="order.status === 'InProgress' || order.status === 'QcPending'"
-          class="space-y-4"
-        >
-          <div
-            class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5"
-          >
+        <div v-if="order.status === 'InProgress' || order.status === 'QcPending'" class="space-y-4">
+          <div class="bg-white border border-slate-200 p-6 rounded-[24px] shadow-sm space-y-5">
             <h3
               class="text-sm font-black uppercase text-slate-800 tracking-wider m-0 flex items-center gap-2"
             >
-              <span
-                class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs"
-                >3</span
-              >
+              <span class="size-5 rounded bg-blue-50 text-blue-600 flex-cc text-xs">3</span>
               Theo dõi tiến độ & xuất kho
             </h3>
 
@@ -361,9 +291,7 @@
             </div>
 
             <div class="space-y-3">
-              <div class="text-xs text-slate-500">
-                Trạng thái từng hạng mục:
-              </div>
+              <div class="text-xs text-slate-500">Trạng thái từng hạng mục:</div>
 
               <div class="border border-slate-100 rounded-2xl overflow-hidden">
                 <table class="w-full text-xs border-collapse">
@@ -374,27 +302,16 @@
                       <th class="py-3 px-4 text-left">Hạng mục</th>
                       <th class="py-3 px-4 text-center" width="90">Loại</th>
                       <th class="py-3 px-4 text-right" width="110">SL</th>
-                      <th class="py-3 px-4 text-right" width="160">
-                        Thành tiền
-                      </th>
+                      <th class="py-3 px-4 text-right" width="160">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-100">
-                    <tr
-                      v-for="d in order.details"
-                      :key="d.id"
-                      class="hover:bg-slate-50/50"
-                    >
+                    <tr v-for="d in order.details" :key="d.id" class="hover:bg-slate-50/50">
                       <td class="py-3 px-4">
                         <div class="font-bold text-slate-800">
-                          {{
-                            d.type === "Service" ? d.serviceName : d.variantName
-                          }}
+                          {{ d.type === 'Service' ? d.serviceName : d.variantName }}
                         </div>
-                        <div
-                          v-if="d.notes"
-                          class="text-[10px] text-slate-400 mt-0.5"
-                        >
+                        <div v-if="d.notes" class="text-[10px] text-slate-400 mt-0.5">
                           {{ d.notes }}
                         </div>
                       </td>
@@ -406,27 +323,18 @@
                               : 'px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-black uppercase'
                           "
                         >
-                          {{ d.type === "Service" ? "Công việc" : "Phụ tùng" }}
+                          {{ d.type === 'Service' ? 'Công việc' : 'Phụ tùng' }}
                         </span>
                       </td>
                       <td class="py-3 px-4 text-right text-slate-600">
-                        {{ d.type === "Service" ? 1 : d.count }}
+                        {{ d.type === 'Service' ? 1 : d.count }}
                       </td>
                       <td class="py-3 px-4 text-right font-bold text-slate-800">
-                        {{
-                          formatCurrency(
-                            d.type === "Service"
-                              ? d.laborCost
-                              : d.price * d.count,
-                          )
-                        }}
+                        {{ formatCurrency(d.type === 'Service' ? d.laborCost : d.price * d.count) }}
                       </td>
                     </tr>
                     <tr v-if="!order?.details?.length">
-                      <td
-                        colspan="4"
-                        class="py-8 text-center text-slate-400 italic"
-                      >
+                      <td colspan="4" class="py-8 text-center text-slate-400 italic">
                         Chưa có hạng mục nào
                       </td>
                     </tr>
@@ -455,11 +363,7 @@
         </div>
       </div>
 
-      <!-- Voucher Section -->
-      <div
-        v-if="order"
-        class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4"
-      >
+      <div v-if="order" class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4">
         <h4
           class="text-xs font-black uppercase text-slate-400 tracking-wider mb-3 flex items-center gap-2"
         >
@@ -474,9 +378,7 @@
           <div class="flex items-center gap-3">
             <Icon name="fa6-solid:circle-check" class="text-green-600" />
             <div>
-              <span class="text-sm font-bold text-green-800">{{
-                appliedVoucher.code
-              }}</span>
+              <span class="text-sm font-bold text-green-800">{{ appliedVoucher.code }}</span>
               <span class="text-xs text-green-600 ml-2"
                 >-{{ formatCurrency(voucherDiscount) }}</span
               >
@@ -500,11 +402,7 @@
             :disabled="submitting"
             @keyup.enter="handleApplyVoucher"
           />
-          <ElButton
-            type="primary"
-            :loading="voucherApplying"
-            @click="handleApplyVoucher"
-          >
+          <ElButton type="primary" :loading="voucherApplying" @click="handleApplyVoucher">
             Áp dụng
           </ElButton>
         </div>
@@ -526,37 +424,22 @@
         <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
           <div class="flex justify-between text-xs text-slate-500">
             <span>Tiền công sửa chữa:</span>
-            <span class="font-bold text-slate-700">{{
-              formatCurrency(order.laborCost || 0)
-            }}</span>
+            <span class="font-bold text-slate-700">{{ formatCurrency(order.laborCost || 0) }}</span>
           </div>
           <div class="flex justify-between text-xs text-slate-500">
             <span>Tiền phụ tùng vật tư:</span>
-            <span class="font-bold text-slate-700">{{
-              formatCurrency(order.partsCost || 0)
-            }}</span>
+            <span class="font-bold text-slate-700">{{ formatCurrency(order.partsCost || 0) }}</span>
           </div>
           <div class="flex justify-between text-xs text-slate-500">
             <span>Tổng trước giảm:</span>
-            <span class="font-bold text-slate-700">{{
-              formatCurrency(repairOrderTotal)
-            }}</span>
+            <span class="font-bold text-slate-700">{{ formatCurrency(repairOrderTotal) }}</span>
           </div>
-          <div
-            v-if="voucherDiscount > 0"
-            class="flex justify-between text-xs text-green-600"
-          >
+          <div v-if="voucherDiscount > 0" class="flex justify-between text-xs text-green-600">
             <span>Giảm giá voucher:</span>
-            <span class="font-bold"
-              >-{{ formatCurrency(voucherDiscount) }}</span
-            >
+            <span class="font-bold">-{{ formatCurrency(voucherDiscount) }}</span>
           </div>
-          <div
-            class="flex justify-between text-base border-t border-slate-100 pt-2 mt-2"
-          >
-            <span class="font-black uppercase text-slate-800"
-              >Phí sau voucher:</span
-            >
+          <div class="flex justify-between text-base border-t border-slate-100 pt-2 mt-2">
+            <span class="font-black uppercase text-slate-800">Phí sau voucher:</span>
             <span class="font-black text-primary text-lg">{{
               formatCurrency(voucherFinalTotal)
             }}</span>
@@ -564,8 +447,6 @@
         </div>
       </div>
 
-      <!-- Empty state when no order -->
-      <!-- Empty state when no order -->
       <div v-else class="text-center py-20 text-slate-400">
         <div class="text-4xl mb-4">🔧</div>
         <div>Đang tải thông tin phiếu sửa chữa...</div>
@@ -575,28 +456,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
-import {
-  RepairOrderApi,
-  type IssuePartsPayload,
-  type RepairOrder,
-} from "@/api/sales";
-import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
-import { VehicleApi } from "@/api/vehicle/vehicle.api";
-import { useVoucher } from "@/common/composables/useVoucher";
-import { formatImageUrl } from "@/common/utils/image";
+import { RepairOrderApi, type IssuePartsPayload, type RepairOrder } from '@/api/sales';
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations';
+import { VehicleApi } from '@/api/vehicle/vehicle.api';
+import { useVoucher } from '@/common/composables/useVoucher';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "ServiceWorkshopRepairOrderForm" });
+defineOptions({ name: 'ServiceWorkshopRepairOrderForm' });
 
 const route = useRoute();
 const router = useRouter();
 
-const routeId = Array.isArray(route.params.id)
-  ? route.params.id[0]
-  : route.params.id;
+const routeId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 const orderId = Number(routeId);
 
 const loading = ref(false);
@@ -608,50 +483,50 @@ const selectedVehicleId = ref<number | null>(null);
 const vehicleGallery = ref<string[]>([]);
 
 const form = reactive({
-  customerPhone: "",
-  licensePlate: "",
-  vehicleBrand: "",
-  vehicleColor: "",
-  vehicleYear: "",
+  customerPhone: '',
+  licensePlate: '',
+  vehicleBrand: '',
+  vehicleColor: '',
+  vehicleYear: '',
   mileage: 0,
-  description: "",
+  description: '',
 });
 
 const steps = [
   {
-    status: "Pending",
-    title: "Tiếp nhận xe",
-    description: "Ghi nhận thông tin xe và yêu cầu sửa chữa ban đầu.",
+    status: 'Pending',
+    title: 'Tiếp nhận xe',
+    description: 'Ghi nhận thông tin xe và yêu cầu sửa chữa ban đầu.',
   },
   {
-    status: "InProgress",
-    title: "Sửa chữa",
-    description: "Phân công kỹ thuật viên và thực hiện sửa chữa.",
+    status: 'InProgress',
+    title: 'Sửa chữa',
+    description: 'Phân công kỹ thuật viên và thực hiện sửa chữa.',
   },
   {
-    status: "QcPending",
-    title: "Kiểm định QC",
-    description: "Kiểm tra chất lượng sau sửa chữa.",
+    status: 'QcPending',
+    title: 'Kiểm định QC',
+    description: 'Kiểm tra chất lượng sau sửa chữa.',
   },
   {
-    status: "Completed",
-    title: "Hoàn tất",
-    description: "Thanh toán và bàn giao xe.",
+    status: 'Completed',
+    title: 'Hoàn tất',
+    description: 'Thanh toán và bàn giao xe.',
   },
 ];
 
-const statusOrder = ["Pending", "InProgress", "QcPending", "Completed"];
+const statusOrder = ['Pending', 'InProgress', 'QcPending', 'Completed'];
 
 const syncForm = (value: RepairOrder) => {
-  form.customerPhone = value.customerPhone || "";
+  form.customerPhone = value.customerPhone || '';
   form.mileage = value.mileage || 0;
-  form.description = value.description || "";
+  form.description = value.description || '';
   selectedTechId.value = value.technicianId || null;
   selectedVehicleId.value = value.vehicleId || null;
 };
 
 const repairOrderTotal = computed(() =>
-  Number(order.value?.totalAmount || order.value?.totalCost || 0),
+  Number(order.value?.totalAmount || order.value?.totalCost || 0)
 );
 const voucherOrderTotal = computed(() => repairOrderTotal.value);
 const voucherOrderId = computed(() => orderId || undefined);
@@ -667,12 +542,12 @@ const {
 } = useVoucher(
   () => voucherOrderTotal.value,
   () => voucherOrderId.value,
-  true,
+  true
 );
 
 const loadOrder = async () => {
   if (!Number.isFinite(orderId)) {
-    ElMessage.error("Mã phiếu sửa chữa không hợp lệ");
+    ElMessage.error('Mã phiếu sửa chữa không hợp lệ');
     return;
   }
 
@@ -682,7 +557,7 @@ const loadOrder = async () => {
     order.value = res;
     syncForm(res);
   } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể tải thông tin phiếu sửa chữa");
+    ElMessage.error(err?.message || 'Không thể tải thông tin phiếu sửa chữa');
   } finally {
     loading.value = false;
   }
@@ -692,19 +567,17 @@ const loadTechnicians = async () => {
   try {
     technicians.value = await EmployeeApi.getList();
   } catch (err) {
-    console.error("Failed to load technicians", err);
+    console.error('Failed to load technicians', err);
   }
 };
 
-const buildIssuePartsPayload = (
-  status: "InProgress" | "QcPending",
-): IssuePartsPayload => {
+const buildIssuePartsPayload = (status: 'InProgress' | 'QcPending'): IssuePartsPayload => {
   const details = order.value?.details || [];
 
   return {
     repairOrderId: orderId,
     parts: details
-      .filter((detail) => detail.type === "Part" && detail.productVariantId)
+      .filter((detail) => detail.type === 'Part' && detail.productVariantId)
       .map((detail) => ({
         productVariantId: detail.productVariantId as number,
         count: detail.count,
@@ -712,7 +585,7 @@ const buildIssuePartsPayload = (
         notes: detail.notes || undefined,
       })),
     services: details
-      .filter((detail) => detail.type === "Service" && detail.serviceId)
+      .filter((detail) => detail.type === 'Service' && detail.serviceId)
       .map((detail) => ({
         serviceId: detail.serviceId as number,
         laborCost: detail.laborCost,
@@ -724,7 +597,7 @@ const buildIssuePartsPayload = (
 
 const handleSubmitPending = async () => {
   if (!selectedVehicleId.value && !order.value?.vehicleId) {
-    ElMessage.warning("Vui lòng tra cứu biển số xe trước khi lưu tiếp nhận");
+    ElMessage.warning('Vui lòng tra cứu biển số xe trước khi lưu tiếp nhận');
     return;
   }
 
@@ -741,10 +614,10 @@ const handleSubmitPending = async () => {
       partsCost: order.value?.partsCost || 0,
       laborCost: order.value?.laborCost || 0,
     });
-    ElMessage.success("Cập nhật thông tin tiếp nhận thành công!");
+    ElMessage.success('Cập nhật thông tin tiếp nhận thành công!');
     await loadOrder();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể cập nhật thông tin");
+    ElMessage.error(err?.message || 'Không thể cập nhật thông tin');
   } finally {
     submitting.value = false;
   }
@@ -759,13 +632,13 @@ const handleStartRepair = async () => {
         technicianId: selectedTechId.value,
       });
     } else {
-      await RepairOrderApi.issueParts(buildIssuePartsPayload("InProgress"));
+      await RepairOrderApi.issueParts(buildIssuePartsPayload('InProgress'));
     }
 
-    ElMessage.success("Đã chuyển phiếu sang trạng thái đang sửa chữa");
+    ElMessage.success('Đã chuyển phiếu sang trạng thái đang sửa chữa');
     await loadOrder();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể bắt đầu sửa chữa");
+    ElMessage.error(err?.message || 'Không thể bắt đầu sửa chữa');
   } finally {
     submitting.value = false;
   }
@@ -773,7 +646,7 @@ const handleStartRepair = async () => {
 
 const assignTechnician = async () => {
   if (!selectedTechId.value) {
-    ElMessage.warning("Vui lòng chọn kỹ thuật viên");
+    ElMessage.warning('Vui lòng chọn kỹ thuật viên');
     return;
   }
 
@@ -783,10 +656,10 @@ const assignTechnician = async () => {
       repairOrderId: orderId,
       technicianId: selectedTechId.value,
     });
-    ElMessage.success("Đã phân công kỹ thuật viên");
+    ElMessage.success('Đã phân công kỹ thuật viên');
     await loadOrder();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Phân công kỹ thuật viên thất bại");
+    ElMessage.error(err?.message || 'Phân công kỹ thuật viên thất bại');
   } finally {
     submitting.value = false;
   }
@@ -795,26 +668,26 @@ const assignTechnician = async () => {
 const handleComplete = async () => {
   try {
     await ElMessageBox.confirm(
-      "Xác nhận đóng phiếu sửa chữa? Phiếu sẽ chuyển sang trạng thái Hoàn tất.",
-      "Xác nhận hoàn tất",
+      'Xác nhận đóng phiếu sửa chữa? Phiếu sẽ chuyển sang trạng thái Hoàn tất.',
+      'Xác nhận hoàn tất',
       {
-        confirmButtonText: "Xác nhận",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     );
 
     submitting.value = true;
     await RepairOrderApi.complete({
       repairOrderId: orderId,
-      paymentMethod: "Cash",
-      paymentStatus: "Paid",
+      paymentMethod: 'Cash',
+      paymentStatus: 'Paid',
     });
-    ElMessage.success("Đã hoàn tất phiếu sửa chữa!");
+    ElMessage.success('Đã hoàn tất phiếu sửa chữa!');
     await loadOrder();
   } catch (err: any) {
-    if (err !== "cancel") {
-      ElMessage.error(err?.message || "Không thể hoàn tất phiếu");
+    if (err !== 'cancel') {
+      ElMessage.error(err?.message || 'Không thể hoàn tất phiếu');
     }
   } finally {
     submitting.value = false;
@@ -822,9 +695,7 @@ const handleComplete = async () => {
 };
 
 const openIssuePartsDialog = () => {
-  ElMessage.info(
-    "Vui lòng mở trang chi tiết phiếu để quản lý hạng mục phụ tùng / dịch vụ",
-  );
+  ElMessage.info('Vui lòng mở trang chi tiết phiếu để quản lý hạng mục phụ tùng / dịch vụ');
 };
 
 const openPrintReceipt = () => {
@@ -832,37 +703,36 @@ const openPrintReceipt = () => {
 };
 
 const openImagePreview = (src: string) => {
-  window.open(src, "_blank");
+  window.open(src, '_blank');
 };
 
 const goBack = () => {
-  router.push("/factory/workshop/repair");
+  router.push('/factory/workshop/repair');
 };
 
 const formatCurrency = (value: number) => {
-  if (!value) return "0 đ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (!value) return '0 đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const voucherFinalTotal = computed(() =>
-  Math.max(0, repairOrderTotal.value - voucherDiscount.value),
+  Math.max(0, repairOrderTotal.value - voucherDiscount.value)
 );
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
-// Tra cứu xe theo SĐT
 let phoneTimeout: any = null;
 function handlePhoneInput() {
   if (phoneTimeout) clearTimeout(phoneTimeout);
@@ -873,7 +743,7 @@ function handlePhoneInput() {
       try {
         const res = await VehicleApi.getPortfolio({
           query: phone,
-          queryType: "phone",
+          queryType: 'phone',
           page: 1,
           pageSize: 5,
         });
@@ -881,13 +751,12 @@ function handlePhoneInput() {
           applyVehicleData(res.vehicle);
         }
       } catch (err) {
-        console.error("Lỗi tra cứu SĐT:", err);
+        console.error('Lỗi tra cứu SĐT:', err);
       }
     }, 400);
   }
 }
 
-// Tra cứu xe theo biển số
 let plateTimeout: any = null;
 function handlePlateInput() {
   if (plateTimeout) clearTimeout(plateTimeout);
@@ -898,7 +767,7 @@ function handlePlateInput() {
       try {
         const res = await VehicleApi.getPortfolio({
           query: plate,
-          queryType: "licensePlate",
+          queryType: 'licensePlate',
           page: 1,
           pageSize: 5,
         });
@@ -906,20 +775,18 @@ function handlePlateInput() {
           applyVehicleData(res.vehicle);
         }
       } catch (err) {
-        console.error("Lỗi tra cứu biển số:", err);
+        console.error('Lỗi tra cứu biển số:', err);
       }
     }, 400);
   }
 }
 
 function applyVehicleData(vehicle: any) {
-  form.licensePlate = vehicle.licensePlate || "";
-  form.vehicleBrand =
-    [vehicle.brandName, vehicle.variantName].filter(Boolean).join(" ") || "N/A";
-  form.vehicleColor = vehicle.colorName || "N/A";
-  form.vehicleYear = vehicle.productId ? String(vehicle.productId) : "";
+  form.licensePlate = vehicle.licensePlate || '';
+  form.vehicleBrand = [vehicle.brandName, vehicle.variantName].filter(Boolean).join(' ') || 'N/A';
+  form.vehicleColor = vehicle.colorName || 'N/A';
+  form.vehicleYear = vehicle.productId ? String(vehicle.productId) : '';
   selectedVehicleId.value = vehicle.id;
-  // Gallery: placeholder - backend chưa có endpoint gallery riêng
   vehicleGallery.value = [];
 }
 
@@ -929,43 +796,41 @@ const isStepActive = (status: string) => {
 };
 
 const getStepDotClass = (status: string) => {
-  if (!order.value) return "border-slate-200 bg-white text-slate-300";
+  if (!order.value) return 'border-slate-200 bg-white text-slate-300';
 
   const currentIndex = statusOrder.indexOf(order.value.status);
   const stepIndex = statusOrder.indexOf(status);
 
-  if (stepIndex < currentIndex)
-    return "border-emerald-500 bg-emerald-500 text-white";
-  if (stepIndex === currentIndex)
-    return "border-blue-600 bg-white text-blue-600";
-  return "border-slate-200 bg-white text-slate-300";
+  if (stepIndex < currentIndex) return 'border-emerald-500 bg-emerald-500 text-white';
+  if (stepIndex === currentIndex) return 'border-blue-600 bg-white text-blue-600';
+  return 'border-slate-200 bg-white text-slate-300';
 };
 
 const getStepInnerDotClass = (status: string) => {
-  if (!order.value) return "bg-slate-200";
+  if (!order.value) return 'bg-slate-200';
 
   const currentIndex = statusOrder.indexOf(order.value.status);
   const stepIndex = statusOrder.indexOf(status);
 
-  if (stepIndex < currentIndex) return "bg-white";
-  if (stepIndex === currentIndex) return "bg-blue-600";
-  return "bg-slate-200";
+  if (stepIndex < currentIndex) return 'bg-white';
+  if (stepIndex === currentIndex) return 'bg-blue-600';
+  return 'bg-slate-200';
 };
 
 const getStatusBadgeClass = (status: string) => {
   const base =
-    "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 ";
+    'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 ';
 
   switch (status) {
-    case "Pending":
+    case 'Pending':
       return `${base}bg-purple-50 text-purple-600 border border-purple-200`;
-    case "InProgress":
+    case 'InProgress':
       return `${base}bg-blue-50 text-blue-600 border border-blue-200`;
-    case "QcPending":
+    case 'QcPending':
       return `${base}bg-amber-50 text-amber-600 border border-amber-200`;
-    case "Completed":
+    case 'Completed':
       return `${base}bg-emerald-50 text-emerald-600 border border-emerald-200`;
-    case "Cancelled":
+    case 'Cancelled':
       return `${base}bg-red-50 text-red-600 border border-red-200`;
     default:
       return `${base}bg-slate-50 text-slate-600 border border-slate-200`;
@@ -974,18 +839,18 @@ const getStatusBadgeClass = (status: string) => {
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case "Pending":
-      return "Chờ tiếp nhận";
-    case "InProgress":
-      return "Đang sửa chữa";
-    case "QcPending":
-      return "Đang QC";
-    case "Completed":
-      return "Đã hoàn thành";
-    case "Cancelled":
-      return "Đã hủy";
+    case 'Pending':
+      return 'Chờ tiếp nhận';
+    case 'InProgress':
+      return 'Đang sửa chữa';
+    case 'QcPending':
+      return 'Đang QC';
+    case 'Completed':
+      return 'Đã hoàn thành';
+    case 'Cancelled':
+      return 'Đã hủy';
     default:
-      return status || "-";
+      return status || '-';
   }
 };
 

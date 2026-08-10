@@ -1,11 +1,11 @@
-import { reactive, ref, onMounted } from "vue";
-import { SupplierContractApi } from "@/api/supplier/supplier-contract.api";
+import { reactive, ref, onMounted } from 'vue';
+import { SupplierContractApi } from '@/api/supplier/supplier-contract.api';
 import type {
   SupplierContractDto,
   SupplierContractListParams,
   SupplierContractStatisticsResponse,
-} from "@/api/supplier/supplier-contract.api";
-import { ElMessage, ElMessageBox } from "element-plus";
+} from '@/api/supplier/supplier-contract.api';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export const useSupplierContractTable = () => {
   const data = ref<SupplierContractDto[]>([]);
@@ -27,45 +27,41 @@ export const useSupplierContractTable = () => {
   });
 
   const searchForm = reactive({
-    contractNumber: "",
+    contractNumber: '',
     status: [] as string[],
-    supplierId: "",
+    supplierId: '',
   });
 
   const columns: any[] = [
-    { type: "selection", width: 50, fixed: "left" },
-    { label: "Mã Hợp Đồng", prop: "contractNumber", width: 150, fixed: "left" },
-    { label: "Nhà cung cấp", prop: "supplierName", minWidth: 200 },
+    { type: 'selection', width: 50, fixed: 'left' },
+    { label: 'Mã Hợp Đồng', prop: 'contractNumber', width: 150, fixed: 'left' },
+    { label: 'Nhà cung cấp', prop: 'supplierName', minWidth: 200 },
     {
-      label: "Ngày hiệu lực",
-      prop: "effectiveDate",
+      label: 'Ngày hiệu lực',
+      prop: 'effectiveDate',
       width: 120,
       formatter: (row: any) =>
-        row.effectiveDate
-          ? new Date(row.effectiveDate).toLocaleDateString("vi-VN")
-          : "",
+        row.effectiveDate ? new Date(row.effectiveDate).toLocaleDateString('vi-VN') : '',
     },
     {
-      label: "Ngày hết hạn",
-      prop: "expirationDate",
+      label: 'Ngày hết hạn',
+      prop: 'expirationDate',
       width: 120,
       formatter: (row: any) =>
-        row.expirationDate
-          ? new Date(row.expirationDate).toLocaleDateString("vi-VN")
-          : "",
+        row.expirationDate ? new Date(row.expirationDate).toLocaleDateString('vi-VN') : '',
     },
     {
-      label: "Giá trị (VNĐ)",
-      prop: "contractValue",
+      label: 'Giá trị (VNĐ)',
+      prop: 'contractValue',
       width: 150,
-      align: "right",
+      align: 'right',
       formatter: (row: any) => row.contractValue?.toLocaleString(),
     },
     {
-      label: "Hạn mức (VNĐ)",
-      prop: "creditLimit",
+      label: 'Hạn mức (VNĐ)',
+      prop: 'creditLimit',
       width: 150,
-      align: "right",
+      align: 'right',
       formatter: (row: any) => row.creditLimit?.toLocaleString(),
     },
   ];
@@ -75,31 +71,31 @@ export const useSupplierContractTable = () => {
       ...col,
       checked: true,
       visible: true,
-    })),
+    }))
   );
 
   const searchItems = [
     {
-      key: "contractNumber",
-      label: "Mã hợp đồng",
-      prop: "contractNumber",
-      type: "input",
-      placeholder: "Nhập mã HĐ...",
+      key: 'contractNumber',
+      label: 'Mã hợp đồng',
+      prop: 'contractNumber',
+      type: 'input',
+      placeholder: 'Nhập mã HĐ...',
     },
     {
-      key: "status",
-      label: "Trạng thái",
-      prop: "status",
-      type: "select",
-      placeholder: "Chọn trạng thái...",
+      key: 'status',
+      label: 'Trạng thái',
+      prop: 'status',
+      type: 'select',
+      placeholder: 'Chọn trạng thái...',
       multiple: true,
       options: [
-        { label: "Bản nháp", value: "Draft" },
-        { label: "Chờ duyệt", value: "PendingApproval" },
-        { label: "Đang hiệu lực", value: "Active" },
-        { label: "Hết hạn", value: "Expired" },
-        { label: "Đã chấm dứt", value: "Terminated" },
-        { label: "Hoàn thành", value: "Completed" },
+        { label: 'Bản nháp', value: 'Draft' },
+        { label: 'Chờ duyệt', value: 'PendingApproval' },
+        { label: 'Đang hiệu lực', value: 'Active' },
+        { label: 'Hết hạn', value: 'Expired' },
+        { label: 'Đã chấm dứt', value: 'Terminated' },
+        { label: 'Hoàn thành', value: 'Completed' },
       ],
     },
   ];
@@ -135,7 +131,7 @@ export const useSupplierContractTable = () => {
         pagination.total = res.totalCount;
       }
     } catch (err) {
-      ElMessage.error("Không thể lấy danh sách hợp đồng");
+      ElMessage.error('Không thể lấy danh sách hợp đồng');
     } finally {
       loading.value = false;
     }
@@ -147,9 +143,9 @@ export const useSupplierContractTable = () => {
   };
 
   const handleReset = () => {
-    searchForm.contractNumber = "";
+    searchForm.contractNumber = '';
     searchForm.status = [];
-    searchForm.supplierId = "";
+    searchForm.supplierId = '';
     handleSearch();
   };
 
@@ -169,49 +165,48 @@ export const useSupplierContractTable = () => {
     getStats();
   };
 
-  // Form State
   const dialogVisible = ref(false);
-  const dialogTitle = ref("Thêm mới hợp đồng");
+  const dialogTitle = ref('Thêm mới hợp đồng');
   const submitting = ref(false);
   const formData = reactive<Partial<SupplierContractDto>>({
     id: undefined,
     supplierId: undefined,
-    contractNumber: "",
-    effectiveDate: undefined,
-    expirationDate: undefined,
+    contractNumber: '',
+    effectiveDate: '',
+    expirationDate: '',
     contractValue: 0,
-    status: "Draft",
+    status: 'Draft',
     creditLimit: 0,
     paymentWindowDays: 0,
-    note: "",
+    note: '',
   });
 
   const handleAdd = () => {
-    dialogTitle.value = "Thêm mới hợp đồng";
+    dialogTitle.value = 'Thêm mới hợp đồng';
     Object.assign(formData, {
       id: undefined,
       supplierId: undefined,
-      contractNumber: "",
-      effectiveDate: undefined,
-      expirationDate: undefined,
+      contractNumber: '',
+      effectiveDate: '',
+      expirationDate: '',
       contractValue: 0,
-      status: "Draft",
+      status: 'Draft',
       creditLimit: 0,
       paymentWindowDays: 0,
-      note: "",
+      note: '',
     });
     dialogVisible.value = true;
   };
 
   const handleEdit = async (row: SupplierContractDto) => {
-    dialogTitle.value = "Cập nhật hợp đồng";
+    dialogTitle.value = 'Cập nhật hợp đồng';
     loading.value = true;
     try {
       const res = await SupplierContractApi.getById(row.id);
       Object.assign(formData, res);
       dialogVisible.value = true;
     } catch (err) {
-      ElMessage.error("Không thể lấy thông tin hợp đồng");
+      ElMessage.error('Không thể lấy thông tin hợp đồng');
     } finally {
       loading.value = false;
     }
@@ -225,16 +220,16 @@ export const useSupplierContractTable = () => {
       if (!payload.effectiveDate) delete payload.effectiveDate;
 
       if (formData.id) {
-        await SupplierContractApi.update(formData.id, payload as any);
-        ElMessage.success("Cập nhật hợp đồng thành công");
+        await SupplierContractApi.update(formData.id, formData);
+        ElMessage.success('Cập nhật hợp đồng thành công');
       } else {
-        await SupplierContractApi.create(payload as any);
-        ElMessage.success("Thêm mới hợp đồng thành công");
+        await SupplierContractApi.create(formData);
+        ElMessage.success('Thêm mới hợp đồng thành công');
       }
       dialogVisible.value = false;
       refreshData();
     } catch (err) {
-      ElMessage.error("Lưu hợp đồng thất bại");
+      ElMessage.error('Lưu hợp đồng thất bại');
     } finally {
       submitting.value = false;
     }
@@ -244,15 +239,15 @@ export const useSupplierContractTable = () => {
     try {
       await ElMessageBox.confirm(
         `Bạn có chắc muốn xóa hợp đồng ${row.contractNumber}?`,
-        "Xác nhận xóa",
-        { type: "warning" },
+        'Xác nhận xóa',
+        { type: 'warning' }
       );
       await SupplierContractApi.delete(row.id);
-      ElMessage.success("Xóa hợp đồng thành công");
+      ElMessage.success('Xóa hợp đồng thành công');
       refreshData();
     } catch (err: any) {
-      if (err !== "cancel") {
-        ElMessage.error("Xóa hợp đồng thất bại");
+      if (err !== 'cancel') {
+        ElMessage.error('Xóa hợp đồng thất bại');
       }
     }
   };
@@ -260,10 +255,10 @@ export const useSupplierContractTable = () => {
   const updateStatus = async (row: SupplierContractDto, status: any) => {
     try {
       await SupplierContractApi.updateStatus(row.id, { status });
-      ElMessage.success("Đổi trạng thái thành công");
+      ElMessage.success('Đổi trạng thái thành công');
       refreshData();
     } catch (err) {
-      ElMessage.error("Đổi trạng thái thất bại");
+      ElMessage.error('Đổi trạng thái thất bại');
     }
   };
 

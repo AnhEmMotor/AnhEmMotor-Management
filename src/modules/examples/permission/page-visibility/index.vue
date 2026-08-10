@@ -2,14 +2,12 @@
   <div class="w-full py-2">
     <div class="mb-6">
       <h2 class="m-0 mb-2 text-xl font-medium">
-        {{ $t("menus.examples.permission.pageVisibility") }}
+        {{ $t('menus.examples.permission.pageVisibility') }}
       </h2>
       <p class="m-0 text-sm leading-[1.6] text-g-700">
-        {{ $t("admin.t85")
-        }}<strong class="font-semibold text-warning">{{
-          $t("admin.t86")
-        }}</strong
-        >{{ $t("admin.t87") }}
+        {{ $t('admin.t85')
+        }}<strong class="font-semibold text-warning">{{ $t('admin.t86') }}</strong
+        >{{ $t('admin.t87') }}
       </p>
     </div>
 
@@ -17,25 +15,19 @@
       <ElCard class="art-card-xs">
         <template #header>
           <div class="flex-c gap-2 font-semibold">
-            <span>{{ $t("admin.t88") }}</span>
+            <span>{{ $t('admin.t88') }}</span>
           </div>
         </template>
         <div>
           <div class="flex-c gap-5">
             <div>
-              <h3 class="m-0 mb-2 text-lg font-semibold">
-                bạnômcóTruy cậpnàytrangmặtcủaQuyenHan
-              </h3>
+              <h3 class="m-0 mb-2 text-lg font-semibold">bạnômcóTruy cậpnàytrangmặtcủaQuyenHan</h3>
               <p class="my-1 text-sm text-g-700">
-                khitrướcNguoiDung：<strong class="font-semibold">{{
-                  currentUser.userName
-                }}</strong>
+                khitrướcNguoiDung：<strong class="font-semibold">{{ currentUser.userName }}</strong>
               </p>
               <p class="my-1 text-sm text-g-700">
                 NguoiDungVaiTro：
-                <ElTag type="warning">{{
-                  getRoleDisplayName(currentUser.roles?.[0] || "")
-                }}</ElTag>
+                <ElTag type="warning">{{ getRoleDisplayName(currentUser.roles?.[0] || '') }}</ElTag>
               </p>
             </div>
           </div>
@@ -52,20 +44,13 @@
         </template>
         <div>
           <ElTimeline>
-            <ElTimelineItem
-              timestamp="trướcđầukhốngchếmôkiểu"
-              type="primary"
-              size="large"
-            >
+            <ElTimelineItem timestamp="trướcđầukhốngchếmôkiểu" type="primary" size="large">
               <ElCard>
-                <h4 class="m-0 mb-2 text-base font-semibold">
-                  ởVaiTrocủaQuyenHankhốngchế
-                </h4>
+                <h4 class="m-0 mb-2 text-base font-semibold">ởVaiTrocủaQuyenHankhốngchế</h4>
                 <p class="m-0 mb-2 leading-[1.6] text-g-700">
-                  tạitrướcđầukhốngchếmôkiểudưới，trangmặtTruy
-                  cậpQuyenHandoRoutingCauHinhvănphần tửtrongcủa
-                  <code
-                    class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
+                  tạitrướcđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandoRoutingCauHinhvănphần
+                  tửtrongcủa
+                  <code class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
                     >meta.roles</code
                   >
                   chữđoạnĐịnh nghĩa，trướcđầusẽliệuNguoiDungGiao diện
@@ -88,49 +73,41 @@
                 </p>
                 <ul class="pl-5 my-2">
                   <li class="my-1 leading-[1.5] text-g-700">
-                    NguoiDungĐăng nhậpsau，Giao diện (Interface)Quay
-                    lạiNguoiDungVaiTroThongTin（nếu R_SUPER、R_ADMIN、R_USER）
+                    NguoiDungĐăng nhậpsau，Giao diện (Interface)Quay lạiNguoiDungVaiTroThongTin（nếu
+                    R_SUPER、R_ADMIN、R_USER）
                   </li>
                   <li class="my-1 leading-[1.5] text-g-700">
                     tại
-                    <code
-                      class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
+                    <code class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
                       >beforeEach</code
                     >
                     RoutinggiữvệtrongTìmmụctiêuRoutingcủa
-                    <code
-                      class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
+                    <code class="px-1.5 py-0.5 font-mono text-xs text-theme bg-theme/12 rounded"
                       >roles</code
                     >
                     CauHinh
                   </li>
                   <li class="my-1 leading-[1.5] text-g-700">
-                    so sánhsoNguoiDungVaiTrolàphủBao gồmtạicho phéphứaTruy
-                    cậpcủaVaiTroDanh sáchtrong
+                    so sánhsoNguoiDungVaiTrolàphủBao gồmtạicho phéphứaTruy cậpcủaVaiTroDanh
+                    sáchtrong
                   </li>
                   <li class="my-1 leading-[1.5] text-g-700">
-                    QuyenHanKhôngđủgiờnhảychuyểnđến 403 Không đủ quyền Không đủ
-                    quyền Không đủ quyền Không đủ quyền Không đủ quyền trangmặt
+                    QuyenHanKhôngđủgiờnhảychuyểnđến 403 Không đủ quyền Không đủ quyền Không đủ quyền
+                    Không đủ quyền Không đủ quyền trangmặt
                   </li>
                 </ul>
               </ElCard>
             </ElTimelineItem>
 
-            <ElTimelineItem
-              timestamp="sauđầukhốngchếmôkiểu"
-              type="warning"
-              size="large"
-            >
+            <ElTimelineItem timestamp="sauđầukhốngchếmôkiểu" type="warning" size="large">
               <ElCard>
                 <h4 class="m-0 mb-2 text-base font-semibold">
                   ởMenuGiao diện (Interface)củaQuyenHankhốngchế
                 </h4>
                 <p class="m-0 mb-2 leading-[1.6] text-g-700">
-                  tạisauđầukhốngchếmôkiểudưới，trangmặtTruy
-                  cậpQuyenHandosauđầuthốngmộtQuản lý，trướcđầuthông
-                  quagiảiphânsauđầuGiao diện (Interface)Quay lạicủaMenuDanh
-                  sáchđếnsinhthànhCó thểTruy
-                  cậpcủaRouting，từmàthựchiệnQuyenHankhốngchế
+                  tạisauđầukhốngchếmôkiểudưới，trangmặtTruy cậpQuyenHandosauđầuthốngmộtQuản
+                  lý，trướcđầuthông quagiảiphânsauđầuGiao diện (Interface)Quay lạicủaMenuDanh
+                  sáchđếnsinhthànhCó thểTruy cậpcủaRouting，từmàthựchiệnQuyenHankhốngchế
                 </p>
                 <p class="m-0 mb-2 leading-[1.6] text-g-700">
                   Giao diện (Interface)DiaChi：src/api/menuApi.ts getMenuList
@@ -169,54 +146,43 @@
                 <ul>
                   <li>NguoiDungĐăng nhậpThanhCongsauLấy Token</li>
                   <li>
-                    trướcđầuđiềudùngMenuGiao diện (Interface)LấyNguoiDungCó
-                    thểTruy cậpcủaMenuDanh sách
+                    trướcđầuđiềudùngMenuGiao diện (Interface)LấyNguoiDungCó thểTruy cậpcủaMenuDanh
+                    sách
                   </li>
                   <li>trướcđầuliệuMenuDanh sáchHoạt độngDangKyRouting</li>
                   <li>
                     MenutrongtồntạicủatrangmặtNguoiDungCó thểlấyBình thườngTruy
-                    cập，Khôngtồntạicủatrangmặtsẽnhảychuyểnđến 404 Không tìm
-                    thấy Không tìm thấy Không tìm thấy Không tìm thấy Không tìm
-                    thấy
+                    cập，Khôngtồntạicủatrangmặtsẽnhảychuyểnđến 404 Không tìm thấy Không tìm thấy
+                    Không tìm thấy Không tìm thấy Không tìm thấy
                   </li>
                 </ul>
               </ElCard>
             </ElTimelineItem>
 
-            <ElTimelineItem
-              timestamp="MenuHiển thịkhốngchế"
-              type="success"
-              size="large"
-            >
+            <ElTimelineItem timestamp="MenuHiển thịkhốngchế" type="success" size="large">
               <ElCard>
                 <h4>Thanh bênMenuHiển thịtính</h4>
                 <p><strong>trướcđầukhốngchếmôkiểu：</strong></p>
                 <ul>
+                  <li>cóQuyenHancủaNguoiDung：MenumụcBình thườngHiển thị，Có thểlấyNhấnTruy cập</li>
                   <li>
-                    cóQuyenHancủaNguoiDung：MenumụcBình thườngHiển thị，Có
-                    thểlấyNhấnTruy cập
+                    vôQuyenHancủaNguoiDung：MenumụcKhôngHiển thị，vôphápthông quaMenuĐiều
+                    hướngđếntrangmặt
                   </li>
                   <li>
-                    vôQuyenHancủaNguoiDung：MenumụcKhôngHiển thị，vôphápthông
-                    quaMenuĐiều hướngđếntrangmặt
-                  </li>
-                  <li>
-                    làkhiếnthông quathẳngtiếpNhậpURLthửthửTruy
-                    cập，cũngsẽbịRoutinggiữvệchặncắt
+                    làkhiếnthông quathẳngtiếpNhậpURLthửthửTruy cập，cũngsẽbịRoutinggiữvệchặncắt
                   </li>
                 </ul>
                 <p><strong>sauđầukhốngchếmôkiểu：</strong></p>
                 <ul>
+                  <li>Thanh bênMenuliệusauđầuQuay lạicủaMenuDanh sáchvàodòngRender</li>
                   <li>
-                    Thanh bênMenuliệusauđầuQuay lạicủaMenuDanh sáchvàodòngRender
+                    sauđầuứngnênliệuNguoiDungQuyenHanqualọc，chỉQuay lạiNguoiDungcóQuyenHanTruy
+                    cậpcủaMenumục
                   </li>
                   <li>
-                    sauđầuứngnênliệuNguoiDungQuyenHanqualọc，chỉQuay
-                    lạiNguoiDungcóQuyenHanTruy cậpcủaMenumục
-                  </li>
-                  <li>
-                    trướcđầuchỉHiển thịsauđầuQuay lạicủaMenu，Đảm
-                    bảoNguoiDungchỉnăngxemđếnvàTruy cậpcóQuyenHancủatrangmặt
+                    trướcđầuchỉHiển thịsauđầuQuay lạicủaMenu，Đảm bảoNguoiDungchỉnăngxemđếnvàTruy
+                    cậpcóQuyenHancủatrangmặt
                   </li>
                 </ul>
               </ElCard>
@@ -258,8 +224,8 @@
                 <div>
                   <h4>ởVaiTrocủaTruy cậpkhốngchế</h4>
                   <p class="text-g-700 text-sm">
-                    thudùngRBACmôkiểu，thông
-                    quaVaiTrophầnPhânQuyenHan，rúthóaQuyenHanQuản lýphụctạpđộ。
+                    thudùngRBACmôkiểu，thông quaVaiTrophầnPhânQuyenHan，rúthóaQuyenHanQuản
+                    lýphụctạpđộ。
                   </p>
                 </div>
               </div>
@@ -272,8 +238,7 @@
                 <div>
                   <h4>chi tiếthạtđộQuyenHankhốngchế</h4>
                   <p class="text-g-700 text-sm">
-                    chiếctrìtrangmặtcấp、Nútcấp、Dữ
-                    liệucấpbằngđaloạihạtđộcủaQuyenHankhốngchế。
+                    chiếctrìtrangmặtcấp、Nútcấp、Dữ liệucấpbằngđaloạihạtđộcủaQuyenHankhốngchế。
                   </p>
                 </div>
               </div>
@@ -286,8 +251,8 @@
                 <div>
                   <h4>antoàntínhTốinguyên</h4>
                   <p class="text-g-700 text-sm">
-                    đầucuốituântuầnnhấttiểuQuyenHannguyên，Đảm
-                    bảoNguoiDungchỉnăngTruy cậptấtcầncủacôngnăngvàDữ liệu。
+                    đầucuốituântuầnnhấttiểuQuyenHannguyên，Đảm bảoNguoiDungchỉnăngTruy
+                    cậptấtcầncủacôngnăngvàDữ liệu。
                   </p>
                 </div>
               </div>
@@ -300,12 +265,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue';
 
-import { Lock, User, Key, View } from "@element-plus/icons-vue";
-import { useUserStore } from "@/application/store/user";
+import { Lock, User, Key, View } from '@element-plus/icons-vue';
+import { useUserStore } from '@/application/store/user';
 
-defineOptions({ name: "PermissionPageVisibility" });
+defineOptions({ name: 'PermissionPageVisibility' });
 
 const userStore = useUserStore();
 
@@ -313,10 +278,10 @@ const currentUser = computed(() => userStore.info);
 
 const getRoleDisplayName = (role: string) => {
   const roleMap: Record<string, string> = {
-    R_SUPER: "siêucấpQuản lýviên",
-    R_ADMIN: "Quản lýviên",
-    R_USER: "phổthôngNguoiDung",
+    R_SUPER: 'siêucấpQuản lýviên',
+    R_ADMIN: 'Quản lýviên',
+    R_USER: 'phổthôngNguoiDung',
   };
-  return roleMap[role] || "ChưabáoVaiTro";
+  return roleMap[role] || 'ChưabáoVaiTro';
 };
 </script>

@@ -1,8 +1,8 @@
-import type { App } from "vue";
+import type { App } from 'vue';
 
 const IGNORABLE_SCRIPT_ERRORS = [
-  "ResizeObserver loop completed with undelivered notifications.",
-  "ResizeObserver loop limit exceeded",
+  'ResizeObserver loop completed with undelivered notifications.',
+  'ResizeObserver loop limit exceeded',
 ];
 
 const CHROME_EXTENSION_ERROR_PATTERNS = [
@@ -15,42 +15,33 @@ const CHROME_EXTENSION_ERROR_PATTERNS = [
 ];
 
 function normalizeErrorMessage(message: Event | string): string {
-  if (typeof message === "string") {
+  if (typeof message === 'string') {
     return message;
   }
 
-  if ("message" in message && typeof message.message === "string") {
+  if ('message' in message && typeof message.message === 'string') {
     return message.message;
   }
 
-  return "";
+  return '';
 }
 
-function isIgnorableScriptError(
-  message: Event | string,
-  source?: string,
-): boolean {
+function isIgnorableScriptError(message: Event | string, source?: string): boolean {
   const normalizedMessage = normalizeErrorMessage(message);
 
   if (!normalizedMessage) {
     return false;
   }
 
-  if (
-    IGNORABLE_SCRIPT_ERRORS.some((item) => normalizedMessage.includes(item))
-  ) {
+  if (IGNORABLE_SCRIPT_ERRORS.some((item) => normalizedMessage.includes(item))) {
     return true;
   }
 
-  if (normalizedMessage === "Script error." && source === "") {
+  if (normalizedMessage === 'Script error.' && source === '') {
     return true;
   }
 
-  if (
-    CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) =>
-      pattern.test(normalizedMessage),
-    )
-  ) {
+  if (CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) => pattern.test(normalizedMessage))) {
     return true;
   }
 
@@ -58,7 +49,7 @@ function isIgnorableScriptError(
 }
 
 export function vueErrorHandler(err: unknown, instance: any, info: string) {
-  console.error("[VueError]", err, info, instance);
+  console.error('[VueError]', err, info, instance);
 }
 
 export function scriptErrorHandler(
@@ -66,42 +57,38 @@ export function scriptErrorHandler(
   source?: string,
   lineno?: number,
   colno?: number,
-  error?: Error,
+  error?: Error
 ): boolean {
   if (isIgnorableScriptError(message, source)) {
     return true;
   }
 
-  console.error("[ScriptError]", { message, source, lineno, colno, error });
+  console.error('[ScriptError]', { message, source, lineno, colno, error });
 
   return true;
 }
 
 export function registerPromiseErrorHandler() {
-  window.addEventListener("unhandledrejection", (event) => {
+  window.addEventListener('unhandledrejection', (event) => {
     const reason = event.reason;
-    const message = typeof reason === "string" ? reason : reason?.message || "";
-    if (
-      CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) => pattern.test(message))
-    ) {
+    const message = typeof reason === 'string' ? reason : reason?.message || '';
+    if (CHROME_EXTENSION_ERROR_PATTERNS.some((pattern) => pattern.test(message))) {
       return;
     }
-    console.error("[PromiseError]", event.reason);
+    console.error('[PromiseError]', event.reason);
   });
 }
 
 export function registerResourceErrorHandler() {
   window.addEventListener(
-    "error",
+    'error',
     (event: Event) => {
       const target = event.target as HTMLElement;
       if (
         target &&
-        (target.tagName === "IMG" ||
-          target.tagName === "SCRIPT" ||
-          target.tagName === "LINK")
+        (target.tagName === 'IMG' || target.tagName === 'SCRIPT' || target.tagName === 'LINK')
       ) {
-        console.error("[ResourceError]", {
+        console.error('[ResourceError]', {
           tagName: target.tagName,
           src:
             (target as HTMLImageElement).src ||
@@ -110,7 +97,7 @@ export function registerResourceErrorHandler() {
         });
       }
     },
-    true,
+    true
   );
 }
 

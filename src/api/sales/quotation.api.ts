@@ -1,17 +1,17 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   QuotationDetailResponse,
   QuotationListResponse,
   CreateQuotationCommand,
   UpdateQuotationCommand,
-} from "@/domain/inventory/quotation.types";
-import type { PurchaseRequestQuotedPriceResponse } from "@/domain/purchase-request/request.types";
+} from '@/domain/inventory/quotation.types';
+import type { PurchaseRequestQuotedPriceResponse } from '@/domain/purchase-request/request.types';
 
 export const QuotationApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<QuotationListResponse>({
-      url: "/api/v1/Quotations",
+      url: '/api/v1/Quotations',
       params: {
         Page: current,
         PageSize: size,
@@ -28,7 +28,7 @@ export const QuotationApi = {
 
   create(data: CreateQuotationCommand) {
     return request.post<QuotationDetailResponse>({
-      url: "/api/v1/Quotations",
+      url: '/api/v1/Quotations',
       data,
     });
   },
@@ -61,7 +61,7 @@ export const QuotationApi = {
 
   getStatuses() {
     return request.get<Record<string, string>>({
-      url: "/api/v1/Quotations/status",
+      url: '/api/v1/Quotations/status',
     });
   },
 
@@ -82,18 +82,14 @@ export const QuotationApi = {
     note?: string;
   }) {
     return request.post<boolean>({
-      url: "/api/v1/Quotations/approved-prices",
+      url: '/api/v1/Quotations/approved-prices',
       data,
     });
   },
 
-  deleteApprovedPrice(params: {
-    variantId: number;
-    colorId?: number;
-    supplierId: number;
-  }) {
+  deleteApprovedPrice(params: { variantId: number; colorId?: number; supplierId: number }) {
     return request.del<boolean>({
-      url: "/api/v1/Quotations/approved-prices",
+      url: '/api/v1/Quotations/approved-prices',
       params,
     });
   },

@@ -11,8 +11,7 @@
         class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center justify-center gap-2"
         @click="handleAdd"
       >
-        <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm khách
-        hàng mới
+        <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> Thêm khách hàng mới
       </button>
     </div>
 
@@ -52,14 +51,10 @@
                   class="priority-label flex flex-col items-center justify-center p-2 rounded-xl text-white w-20 h-14"
                   :style="{ backgroundColor: getPriority(customer).color }"
                 >
-                  <ArtSvgIcon
-                    :icon="getPriority(customer).icon"
-                    class="text-xl"
-                  />
-                  <span
-                    class="text-[9px] font-bold tracking-tighter uppercase"
-                    >{{ getPriority(customer).label }}</span
-                  >
+                  <ArtSvgIcon :icon="getPriority(customer).icon" class="text-xl" />
+                  <span class="text-[9px] font-bold tracking-tighter uppercase">{{
+                    getPriority(customer).label
+                  }}</span>
                 </div>
               </div>
 
@@ -79,10 +74,7 @@
                           class="size-5 rounded-md flex-cc"
                           :class="getSourceClass(customer.source)"
                         >
-                          <ArtSvgIcon
-                            :icon="getSourceIcon(customer.source)"
-                            class="text-[10px]"
-                          />
+                          <ArtSvgIcon :icon="getSourceIcon(customer.source)" class="text-[10px]" />
                         </div>
                       </ElTooltip>
                       <span
@@ -106,33 +98,24 @@
                 >
                   {{ getPipelineLabel(customer.status) }}
                 </ElTag>
-                <span class="text-[10px] text-gray-400 mt-1 font-bold"
-                  >ID: {{ customer.id }}</span
-                >
+                <span class="text-[10px] text-gray-400 mt-1 font-bold">ID: {{ customer.id }}</span>
               </div>
 
-              <div
-                class="note-column flex-1 px-4 border-l border-gray-50 dark:border-slate-800"
-              >
+              <div class="note-column flex-1 px-4 border-l border-gray-50 dark:border-slate-800">
                 <div class="flex flex-col gap-1">
                   <span
                     class="text-[10px] font-bold text-gray-300 dark:text-slate-500 uppercase tracking-widest"
                     >Ghi chú gần nhất</span
                   >
-                  <p
-                    class="m-0 text-xs text-gray-600 dark:text-slate-400 line-clamp-1"
-                  >
+                  <p class="m-0 text-xs text-gray-600 dark:text-slate-400 line-clamp-1">
                     "{{ getLastNote(customer) }}"
                   </p>
                 </div>
               </div>
 
-              <div
-                class="assignee-column w-48 px-4 border-l border-gray-50 dark:border-slate-800"
-              >
+              <div class="assignee-column w-48 px-4 border-l border-gray-50 dark:border-slate-800">
                 <div class="flex flex-col gap-1.5" @click.stop>
-                  <span
-                    class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter"
+                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter"
                     >Người phụ trách</span
                   >
                   <ElSelect
@@ -140,9 +123,7 @@
                     @change="(val) => handleAssignSale(customer.id, val)"
                     size="small"
                     class="sale-select-premium"
-                    :placeholder="
-                      !customer.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
-                    "
+                    :placeholder="!customer.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'"
                   >
                     <ElOption
                       v-for="sale in salesList"
@@ -177,11 +158,7 @@
                 </div>
                 <div class="h-6 w-px bg-gray-100 dark:bg-slate-800 mx-2"></div>
                 <ArtSvgIcon
-                  :icon="
-                    expandedId === customer.id
-                      ? 'ri:arrow-up-s-line'
-                      : 'ri:arrow-down-s-line'
-                  "
+                  :icon="expandedId === customer.id ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
                   class="text-xl text-gray-300"
                 />
               </div>
@@ -220,20 +197,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
-import CustomerDetailExpansion from "./CustomerDetailExpansion.vue";
-import CustomerFormDialog from "./CustomerFormDialog.vue";
-import { ElMessageBox, ElMessage } from "element-plus";
-import { fetchDeleteLead } from "@/api/customer";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/vi";
+import { ref } from 'vue';
+import { useLeadTable } from '@/modules/Marketing/logic/useLeadTable';
+import CustomerDetailExpansion from './CustomerDetailExpansion.vue';
+import CustomerFormDialog from './CustomerFormDialog.vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { fetchDeleteLead } from '@/api/customer';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/vi';
 
 dayjs.extend(relativeTime);
-dayjs.locale("vi");
+dayjs.locale('vi');
 
-defineOptions({ name: "CustomerProfileManagement" });
+defineOptions({ name: 'CustomerProfileManagement' });
 
 const {
   data,
@@ -268,85 +245,85 @@ const handleEdit = (customer: any) => {
 const handleDelete = (customer: any) => {
   ElMessageBox.confirm(
     `Bạn có chắc chắn muốn xóa hồ sơ khách hàng ${customer.fullName}? Dữ liệu này không thể khôi phục.`,
-    "Cảnh báo xóa dữ liệu",
+    'Cảnh báo xóa dữ liệu',
     {
-      confirmButtonText: "XÓA NGAY",
-      cancelButtonText: "HỦY",
-      type: "warning",
-      confirmButtonClass: "el-button--danger",
-    },
+      confirmButtonText: 'XÓA NGAY',
+      cancelButtonText: 'HỦY',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger',
+    }
   ).then(async () => {
     try {
       await fetchDeleteLead(customer.id);
-      ElMessage.success("Đã xóa hồ sơ khách hàng thành công");
+      ElMessage.success('Đã xóa hồ sơ khách hàng thành công');
       refreshData();
     } catch {
-      ElMessage.error("Lỗi khi xóa hồ sơ khách hàng. Vui lòng thử lại.");
+      ElMessage.error('Lỗi khi xóa hồ sơ khách hàng. Vui lòng thử lại.');
     }
   });
 };
 
 const searchItems = [
   {
-    key: "fullName",
-    label: "Tên khách hàng",
-    type: "input",
-    props: { placeholder: "Nhập tên hoặc SĐT...", clearable: true },
+    key: 'fullName',
+    label: 'Tên khách hàng',
+    type: 'input',
+    props: { placeholder: 'Nhập tên hoặc SĐT...', clearable: true },
   },
   {
-    key: "status",
-    label: "Loại khách",
-    type: "select",
+    key: 'status',
+    label: 'Loại khách',
+    type: 'select',
     props: {
-      placeholder: "Tất cả trạng thái",
+      placeholder: 'Tất cả trạng thái',
       clearable: true,
       options: [
-        { label: "Chính thức", value: "Official" },
-        { label: "Đang mua", value: "Purchasing" },
-        { label: "Tiềm năng", value: "Potential" },
+        { label: 'Chính thức', value: 'Official' },
+        { label: 'Đang mua', value: 'Purchasing' },
+        { label: 'Tiềm năng', value: 'Potential' },
       ],
     },
   },
 ];
 
 const getSourceIcon = (source: string) => {
-  if (source === "Facebook") return "ri:facebook-fill";
-  if (source === "Website") return "ri:global-line";
-  return "ri:store-2-line";
+  if (source === 'Facebook') return 'ri:facebook-fill';
+  if (source === 'Website') return 'ri:global-line';
+  return 'ri:store-2-line';
 };
 
 const getSourceClass = (source: string) => {
-  if (source === "Facebook") return "bg-blue-600 text-white";
-  if (source === "Website") return "bg-emerald-500 text-white";
-  return "bg-orange-500 text-white";
+  if (source === 'Facebook') return 'bg-blue-600 text-white';
+  if (source === 'Website') return 'bg-emerald-500 text-white';
+  return 'bg-orange-500 text-white';
 };
 
 const getPipelineLabel = (status: string) => {
   const map: any = {
-    New: "Mới đăng ký",
-    TestDrive: "Đã lái thử",
-    Negotiating: "Thương lượng",
-    Consulting: "Đang tư vấn",
-    Won: "Đã chốt đơn",
-    Official: "Khách chính thức",
+    New: 'Mới đăng ký',
+    TestDrive: 'Đã lái thử',
+    Negotiating: 'Thương lượng',
+    Consulting: 'Đang tư vấn',
+    Won: 'Đã chốt đơn',
+    Official: 'Khách chính thức',
   };
-  return map[status] || "Đang tư vấn";
+  return map[status] || 'Đang tư vấn';
 };
 
 const getPipelineType = (status: string) => {
-  if (status === "New") return "info";
-  if (status === "TestDrive" || status === "Negotiating") return "warning";
-  if (status === "Won" || status === "Official") return "success";
-  return "primary";
+  if (status === 'New') return 'info';
+  if (status === 'TestDrive' || status === 'Negotiating') return 'warning';
+  if (status === 'Won' || status === 'Official') return 'success';
+  return 'primary';
 };
 
 const getLastNote = (customer: any) => {
   const notes = [
-    "Khách thích màu đỏ đen nhám",
-    "Đang chờ duyệt hồ sơ trả góp",
-    "Đã gửi báo giá lăn bánh chi tiết",
-    "Hẹn xem xe vào sáng Thứ 7",
-    "Quan tâm đến chính sách bảo hành 3 năm",
+    'Khách thích màu đỏ đen nhám',
+    'Đang chờ duyệt hồ sơ trả góp',
+    'Đã gửi báo giá lăn bánh chi tiết',
+    'Hẹn xem xe vào sáng Thứ 7',
+    'Quan tâm đến chính sách bảo hành 3 năm',
   ];
   return notes[customer.id % notes.length];
 };

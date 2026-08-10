@@ -1,9 +1,7 @@
 <template>
   <div class="forgot-password-page">
     <div class="login-bg-overlay"></div>
-    <div
-      class="login-container relative z-10 flex items-center justify-center min-h-screen"
-    >
+    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
@@ -14,18 +12,11 @@
               <el-icon :size="32" color="white"><Key /></el-icon>
             </div>
           </div>
-          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">
-            Đặt lại mật khẩu
-          </h2>
+          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">Đặt lại mật khẩu</h2>
           <p class="mt-3 text-sm subtitle px-4">Nhập mật khẩu mới của bạn.</p>
         </div>
 
-        <el-form
-          @submit.prevent="handleReset"
-          class="space-y-5"
-          label-position="top"
-          size="large"
-        >
+        <el-form @submit.prevent="handleReset" class="space-y-5" label-position="top" size="large">
           <el-form-item>
             <el-input
               v-model="newPassword"
@@ -38,21 +29,11 @@
           </el-form-item>
 
           <div v-if="errorMessage" class="text-center">
-            <el-alert
-              :title="errorMessage"
-              type="error"
-              show-icon
-              :closable="false"
-            />
+            <el-alert :title="errorMessage" type="error" show-icon :closable="false" />
           </div>
 
           <div v-if="successMessage" class="text-center">
-            <el-alert
-              :title="successMessage"
-              type="success"
-              show-icon
-              :closable="false"
-            />
+            <el-alert :title="successMessage" type="success" show-icon :closable="false" />
           </div>
 
           <el-form-item class="mt-6">
@@ -83,41 +64,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { Key, Lock, Back } from "@element-plus/icons-vue";
-import { $t } from "@/i18n";
-import { fetchResetPassword } from "@/api/auth";
-import { ElMessage } from "element-plus";
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { Key, Lock, Back } from '@element-plus/icons-vue';
+import { $t } from '@/i18n';
+import { fetchResetPassword } from '@/api/auth';
+import { ElMessage } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
 
-const newPassword = ref("");
+const newPassword = ref('');
 const isLoading = ref(false);
-const errorMessage = ref("");
-const successMessage = ref("");
+const errorMessage = ref('');
+const successMessage = ref('');
 
-const email = ref("");
-const token = ref("");
+const email = ref('');
+const token = ref('');
 
 onMounted(() => {
-  email.value = (route.query.email as string) ?? "";
-  token.value = (route.query.token as string) ?? "";
+  email.value = (route.query.email as string) ?? '';
+  token.value = (route.query.token as string) ?? '';
   if (!email.value || !token.value) {
-    errorMessage.value = "Liên kết đặt lại mật khẩu không hợp lệ.";
+    errorMessage.value = 'Liên kết đặt lại mật khẩu không hợp lệ.';
   }
 });
 
 const handleReset = async () => {
   if (!newPassword.value || newPassword.value.length < 8) {
-    errorMessage.value = "Mật khẩu phải có ít nhất 8 ký tự.";
+    errorMessage.value = 'Mật khẩu phải có ít nhất 8 ký tự.';
     return;
   }
 
   isLoading.value = true;
-  errorMessage.value = "";
-  successMessage.value = "";
+  errorMessage.value = '';
+  successMessage.value = '';
 
   try {
     await fetchResetPassword({
@@ -125,11 +106,10 @@ const handleReset = async () => {
       token: token.value,
       newPassword: newPassword.value,
     });
-    successMessage.value =
-      "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay.";
-    newPassword.value = "";
+    successMessage.value = 'Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay.';
+    newPassword.value = '';
   } catch (error: any) {
-    errorMessage.value = error.message || "Đặt lại mật khẩu thất bại";
+    errorMessage.value = error.message || 'Đặt lại mật khẩu thất bại';
   } finally {
     isLoading.value = false;
   }
@@ -142,7 +122,7 @@ const handleReset = async () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920");
+  background-image: url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920');
   background-attachment: fixed;
   background-position: center;
   background-size: cover;

@@ -1,10 +1,6 @@
 <template>
   <div class="menu-right">
-    <Transition
-      name="context-menu"
-      @before-enter="onBeforeEnter"
-      @after-leave="onAfterLeave"
-    >
+    <Transition name="context-menu" @before-enter="onBeforeEnter" @after-leave="onAfterLeave">
       <div
         v-show="visible"
         :style="menuStyle"
@@ -88,9 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import type { CSSProperties } from "vue";
+import type { CSSProperties } from 'vue';
 
-defineOptions({ name: "ArtMenuRight" });
+defineOptions({ name: 'ArtMenuRight' });
 
 export interface MenuItemType {
   key: string;
@@ -139,9 +135,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: "select", item: MenuItemType): void;
-  (e: "show"): void;
-  (e: "hide"): void;
+  (e: 'select', item: MenuItemType): void;
+  (e: 'show'): void;
+  (e: 'hide'): void;
 }>();
 
 const visible = ref(false);
@@ -150,37 +146,29 @@ const position = ref({ x: 0, y: 0 });
 let showTimer: number | null = null;
 let eventListenersAdded = false;
 
-const menuStyle = computed(
-  (): CSSProperties => ({
-    position: "fixed" as const,
-    left: `${position.value.x}px`,
-    top: `${position.value.y}px`,
-    zIndex: 2000,
-    width: `${props.menuWidth}px`,
-  }),
-);
+const menuStyle = computed((): CSSProperties => ({
+  position: 'fixed' as const,
+  left: `${position.value.x}px`,
+  top: `${position.value.y}px`,
+  zIndex: 2000,
+  width: `${props.menuWidth}px`,
+}));
 
-const menuListStyle = computed(
-  (): CSSProperties => ({
-    padding: `${props.menuPadding}px`,
-  }),
-);
+const menuListStyle = computed((): CSSProperties => ({
+  padding: `${props.menuPadding}px`,
+}));
 
-const menuItemStyle = computed(
-  (): CSSProperties => ({
-    height: `${props.itemHeight}px`,
-    padding: `0 ${props.itemPaddingX}px`,
-    borderRadius: "4px",
-  }),
-);
+const menuItemStyle = computed((): CSSProperties => ({
+  height: `${props.itemHeight}px`,
+  padding: `0 ${props.itemPaddingX}px`,
+  borderRadius: '4px',
+}));
 
-const submenuListStyle = computed(
-  (): CSSProperties => ({
-    minWidth: `${props.submenuWidth}px`,
-    padding: `${props.menuPadding}px 0`,
-    borderRadius: `${props.borderRadius}px`,
-  }),
-);
+const submenuListStyle = computed((): CSSProperties => ({
+  minWidth: `${props.submenuWidth}px`,
+  padding: `${props.menuPadding}px 0`,
+  borderRadius: `${props.borderRadius}px`,
+}));
 
 const calculateMenuHeight = (): number => {
   let totalHeight = props.menuPadding * 2;
@@ -208,19 +196,16 @@ const calculatePosition = (e: MouseEvent) => {
   }
 
   if (y + menuHeight > screenHeight - props.boundaryDistance) {
-    y = Math.max(
-      props.boundaryDistance,
-      screenHeight - menuHeight - props.boundaryDistance,
-    );
+    y = Math.max(props.boundaryDistance, screenHeight - menuHeight - props.boundaryDistance);
   }
 
   x = Math.max(
     props.boundaryDistance,
-    Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance),
+    Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance)
   );
   y = Math.max(
     props.boundaryDistance,
-    Math.min(y, screenHeight - menuHeight - props.boundaryDistance),
+    Math.min(y, screenHeight - menuHeight - props.boundaryDistance)
   );
 
   return { x, y };
@@ -229,24 +214,24 @@ const calculatePosition = (e: MouseEvent) => {
 const addEventListeners = () => {
   if (eventListenersAdded) return;
 
-  document.addEventListener("click", handleDocumentClick);
-  document.addEventListener("contextmenu", handleDocumentContextmenu);
-  document.addEventListener("keydown", handleKeydown);
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('contextmenu', handleDocumentContextmenu);
+  document.addEventListener('keydown', handleKeydown);
   eventListenersAdded = true;
 };
 
 const removeEventListeners = () => {
   if (!eventListenersAdded) return;
 
-  document.removeEventListener("click", handleDocumentClick);
-  document.removeEventListener("contextmenu", handleDocumentContextmenu);
-  document.removeEventListener("keydown", handleKeydown);
+  document.removeEventListener('click', handleDocumentClick);
+  document.removeEventListener('contextmenu', handleDocumentContextmenu);
+  document.removeEventListener('keydown', handleKeydown);
   eventListenersAdded = false;
 };
 
 const handleDocumentClick = (e: Event) => {
   const target = e.target as Element;
-  const menuElement = document.querySelector(".context-menu");
+  const menuElement = document.querySelector('.context-menu');
   if (menuElement && menuElement.contains(target)) {
     return;
   }
@@ -258,7 +243,7 @@ const handleDocumentContextmenu = () => {
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === "Escape") {
+  if (e.key === 'Escape') {
     hide();
   }
 };
@@ -275,7 +260,7 @@ const show = (e: MouseEvent) => {
   position.value = calculatePosition(e);
   visible.value = true;
 
-  emit("show");
+  emit('show');
 
   showTimer = window.setTimeout(() => {
     if (visible.value) {
@@ -289,7 +274,7 @@ const hide = () => {
   if (!visible.value) return;
 
   visible.value = false;
-  emit("hide");
+  emit('hide');
 
   if (showTimer) {
     window.clearTimeout(showTimer);
@@ -301,13 +286,13 @@ const hide = () => {
 
 const handleMenuClick = (item: MenuItemType) => {
   if (item.disabled) return;
-  emit("select", item);
+  emit('select', item);
   hide();
 };
 
 const onBeforeEnter = (el: Element) => {
   const element = el as HTMLElement;
-  element.style.transformOrigin = "top left";
+  element.style.transformOrigin = 'top left';
 };
 
 const onAfterLeave = () => {
@@ -349,7 +334,7 @@ defineExpose({
   bottom: -5px;
   left: 0;
   height: 1px;
-  content: "";
+  content: '';
   background-color: var(--art-gray-300);
 }
 

@@ -1,10 +1,7 @@
 <template>
   <div>
     <ElDropdown v-if="hasAnyAuthItem">
-      <ArtIconButton
-        icon="ri:more-2-fill"
-        class="!size-8 bg-g-200 dark:bg-g-300/45 text-sm"
-      />
+      <ArtIconButton icon="ri:more-2-fill" class="!size-8 bg-g-200 dark:bg-g-300/45 text-sm" />
       <template #dropdown>
         <ElDropdownMenu>
           <template v-for="item in list" :key="item.key">
@@ -26,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from "@/common/composables/useAuth";
+import { useAuth } from '@/common/composables/useAuth';
 
-defineOptions({ name: "ArtButtonMore" });
+defineOptions({ name: 'ArtButtonMore' });
 
 const { hasAuth } = useAuth();
 
@@ -54,10 +51,10 @@ const hasAnyAuthItem = computed(() => {
 });
 
 const emit = defineEmits<{
-  (e: "click", item: ButtonMoreItem): void;
+  (e: 'click', item: ButtonMoreItem): void;
 }>();
 
 const handleClick = (item: ButtonMoreItem) => {
-  emit("click", item);
+  emit('click', item);
 };
 </script>

@@ -1,8 +1,8 @@
-import { RouteLocationNormalized, RouteRecordRaw } from "vue-router";
-import AppConfig from "@/config";
-import NProgress from "nprogress";
-import "nprogress/nprogress.css";
-import { $t } from "@/i18n";
+import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
+import AppConfig from '@/config';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import { $t } from '@/i18n';
 
 export type AppRouteRecordRaw = RouteRecordRaw & {
   hidden?: boolean;
@@ -10,10 +10,10 @@ export type AppRouteRecordRaw = RouteRecordRaw & {
 
 export const configureNProgress = () => {
   NProgress.configure({
-    easing: "ease",
+    easing: 'ease',
     speed: 150,
     showSpinner: false,
-    parent: "body",
+    parent: 'body',
   });
 };
 
@@ -26,15 +26,15 @@ export const setPageTitle = (to: RouteLocationNormalized): void => {
 
 export const formatMenuTitle = (title: string): string => {
   if (title) {
-    if (title.startsWith("menus.")) {
+    if (title.startsWith('menus.')) {
       const translated = $t(title);
       if (translated !== title) {
         return translated;
       } else {
-        return title.split(".").pop() || title;
+        return title.split('.').pop() || title;
       }
     }
     return title;
   }
-  return "";
+  return '';
 };

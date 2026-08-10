@@ -1,5 +1,5 @@
-import request from "@/common/utils/http";
-import type * as Statistical from "@/types/api/statistical";
+import request from '@/common/utils/http';
+import type * as Statistical from '@/types/api/statistical';
 
 export interface WorkshopDashboardOverviewResponse {
   kpiCards?: {
@@ -129,7 +129,7 @@ export const statisticsApi = {
     if (start) params.start = start;
     if (end) params.end = end;
     return request.get<WorkshopOverviewResponse>({
-      url: "/api/v1/Statistics/workshop-overview",
+      url: '/api/v1/Statistics/workshop-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -138,7 +138,7 @@ export const statisticsApi = {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     return request.get<InvoiceOverviewResponse>({
-      url: "/api/v1/Statistics/invoice-overview",
+      url: '/api/v1/Statistics/invoice-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -147,7 +147,7 @@ export const statisticsApi = {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     return request.get<ContractOverviewResponse>({
-      url: "/api/v1/Statistics/contract-overview",
+      url: '/api/v1/Statistics/contract-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -156,7 +156,7 @@ export const statisticsApi = {
     if (from) params.from = from;
     if (to) params.to = to;
     return request.get<WorkshopDashboardOverviewResponse>({
-      url: "/api/v1/Statistics/workshop-dashboard-overview",
+      url: '/api/v1/Statistics/workshop-dashboard-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -166,7 +166,7 @@ export const statisticsApi = {
     if (start) params.start = start;
     if (end) params.end = end;
     return request.get<any>({
-      url: "/api/v1/Statistics/financing-overview",
+      url: '/api/v1/Statistics/financing-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -175,25 +175,25 @@ export const statisticsApi = {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminDashboardOverviewResponse>({
-      url: "/api/v1/Statistics/dashboard-overview",
+      url: '/api/v1/Statistics/dashboard-overview',
       params: Object.keys(params).length ? params : undefined,
     });
   },
   getDailyRevenue(days: number = 7) {
     return request.get<Statistical.DailyRevenueResponse[]>({
-      url: "/api/v1/Statistics/daily-revenue",
+      url: '/api/v1/Statistics/daily-revenue',
       params: { days },
     });
   },
   getMonthlyRevenueProfit(months: number = 12) {
     return request.get<Statistical.MonthlyRevenueProfitResponse[]>({
-      url: "/api/v1/Statistics/monthly-revenue-profit",
+      url: '/api/v1/Statistics/monthly-revenue-profit',
       params: { months },
     });
   },
   getOrderStatusCounts() {
     return request.get<Statistical.OrderStatusCountResponse[]>({
-      url: "/api/v1/Statistics/order-status-counts",
+      url: '/api/v1/Statistics/order-status-counts',
     });
   },
   getRevenueAnalysis(startDate?: string, endDate?: string) {
@@ -201,13 +201,13 @@ export const statisticsApi = {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminRevenueAnalysisResponse>({
-      url: "/api/v1/Statistics/revenue-analysis",
+      url: '/api/v1/Statistics/revenue-analysis',
       params: Object.keys(params).length ? params : undefined,
     });
   },
   getProductReport() {
     return request.get<Statistical.AdminProductReportResponse>({
-      url: "/api/v1/Statistics/product-report",
+      url: '/api/v1/Statistics/product-report',
     });
   },
   getWarehouseReport(startDate?: string, endDate?: string) {
@@ -215,7 +215,7 @@ export const statisticsApi = {
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     return request.get<Statistical.AdminWarehouseReportResponse>({
-      url: "/api/v1/Statistics/warehouse-report",
+      url: '/api/v1/Statistics/warehouse-report',
       params: Object.keys(params).length ? params : undefined,
     });
   },
@@ -226,18 +226,18 @@ export const statisticsApi = {
   },
   getDailyRevenueDetail(reportDay: string, days: number = 7) {
     return request.get<Statistical.DailyRevenueDetailResponse[]>({
-      url: "/api/v1/Statistics/daily-revenue/detail",
+      url: '/api/v1/Statistics/daily-revenue/detail',
       params: { reportDay, days },
     });
   },
   getCustomerAnalytics() {
     return request.get<Statistical.CustomerAnalyticsResponse>({
-      url: "/api/v1/Statistics/customer-analytics",
+      url: '/api/v1/Statistics/customer-analytics',
     });
   },
   getCustomerServiceAnalytics() {
     return request.get<Statistical.CustomerServiceAnalyticsResponse>({
-      url: "/api/v1/Statistics/customer-service-analytics",
+      url: '/api/v1/Statistics/customer-service-analytics',
     });
   },
 };
@@ -275,34 +275,34 @@ export interface MonthlyRevenueProfit {
 
 export const fetchDashboardKpis = () => {
   return request.get<DashboardKpi>({
-    url: "/api/v1/admin/analytics/dashboard-kpis",
+    url: '/api/v1/admin/analytics/dashboard-kpis',
   });
 };
 
 export const fetchDashboardSummary = (start: Date, end: Date) => {
   return request.get<any>({
-    url: "/api/analytics/dashboard/summary",
+    url: '/api/analytics/dashboard/summary',
     params: { start, end },
   });
 };
 
 export const fetchMonthlyRevenueProfit = (months?: number) => {
   return request.get<MonthlyRevenueProfit[]>({
-    url: "/api/v1/Statistics/monthly-revenue-profit",
+    url: '/api/v1/Statistics/monthly-revenue-profit',
     params: { months },
   });
 };
 
 export const fetchStaffPerformance = (start: Date, end: Date) => {
   return request.get<any>({
-    url: "/api/analytics/staff-performance",
+    url: '/api/analytics/staff-performance',
     params: { start, end },
   });
 };
 
 export const fetchRecentTransactions = (limit?: number) => {
   return request.get<any>({
-    url: "/api/analytics/transactions/recent",
+    url: '/api/analytics/transactions/recent',
     params: { limit },
   });
 };
@@ -312,7 +312,7 @@ export const fetchCustomerAnalytics = () => {
     kpi: { totalLeads: number; newCustomers: number; hotLeads: number };
     leads: any[];
   }>({
-    url: "/api/v1/Statistics/customer-analytics",
+    url: '/api/v1/Statistics/customer-analytics',
   });
 };
 
@@ -323,6 +323,6 @@ export const fetchDashboardStats = () => {
     currentInventoryCount: number;
     pendingOrdersCount: number;
   }>({
-    url: "/api/v1/Statistics/dashboard-stats",
+    url: '/api/v1/Statistics/dashboard-stats',
   });
 };

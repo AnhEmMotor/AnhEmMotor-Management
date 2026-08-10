@@ -1,12 +1,12 @@
-export * from "./response";
+export * from './response';
 
 export type Status = 0 | 1;
 
-export type Gender = "male" | "female" | "unknown";
+export type Gender = 'male' | 'female' | 'unknown';
 
-export type SortOrder = "ascending" | "descending";
+export type SortOrder = 'ascending' | 'descending';
 
-export type ActionType = "create" | "update" | "delete" | "view";
+export type ActionType = 'create' | 'update' | 'delete' | 'view';
 
 export type Recordable<T = any> = Record<string, T>;
 
@@ -39,12 +39,12 @@ export interface Size {
   height: number;
 }
 
-export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl";
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-export type ThemeMode = "light" | "dark" | "auto";
+export type ThemeMode = 'light' | 'dark' | 'auto';
 
-export type Language = "zh-CN" | "en-US";
+export type Language = 'zh-CN' | 'en-US';
 
-export type Environment = "development" | "production" | "test";
+export type Environment = 'development' | 'production' | 'test';
 
-export type DialogType = "add" | "edit";
+export type DialogType = 'add' | 'edit';

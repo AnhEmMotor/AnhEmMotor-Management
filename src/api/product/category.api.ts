@@ -1,15 +1,15 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   ProductCategory,
   ProductCategoryList,
   ProductManagementType,
-} from "@/domain/product/category.types";
+} from '@/domain/product/category.types';
 
 export const CategoryApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<ProductCategoryList>({
-      url: "/api/v1/ProductCategory",
+      url: '/api/v1/ProductCategory',
       params: {
         Page: current,
         PageSize: size,
@@ -26,7 +26,7 @@ export const CategoryApi = {
 
   create(data: Partial<ProductCategory>) {
     return request.post<ProductCategory>({
-      url: "/api/v1/ProductCategory",
+      url: '/api/v1/ProductCategory',
       data,
     });
   },
@@ -46,21 +46,21 @@ export const CategoryApi = {
 
   getStats() {
     return request.get<any>({
-      url: "/api/v1/ProductCategory/stats",
+      url: '/api/v1/ProductCategory/stats',
     });
   },
 
   getManagementTypes() {
     return request.get<ProductManagementType[]>({
-      url: "/api/v1/ProductCategory/management-types",
+      url: '/api/v1/ProductCategory/management-types',
     });
   },
 
   export(params: any) {
     return request.get<Blob>({
-      url: "/api/v1/ProductCategory/export",
+      url: '/api/v1/ProductCategory/export',
       params,
-      responseType: "blob",
+      responseType: 'blob',
     });
   },
 };

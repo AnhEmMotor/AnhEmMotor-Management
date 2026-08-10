@@ -5,14 +5,9 @@
         <div class="card-header">
           <div>
             <h3>Cài đặt cảnh báo tồn kho</h3>
-            <p>
-              Cấu hình ngưỡng để backend tính trạng thái còn hàng, sắp hết hàng
-              hoặc hết hàng.
-            </p>
+            <p>Cấu hình ngưỡng để backend tính trạng thái còn hàng, sắp hết hàng hoặc hết hàng.</p>
           </div>
-          <ElButton type="primary" :loading="saving" @click="handleSave"
-            >Lưu cài đặt</ElButton
-          >
+          <ElButton type="primary" :loading="saving" @click="handleSave">Lưu cài đặt</ElButton>
         </div>
       </template>
 
@@ -74,12 +69,7 @@
           </template>
         </ElTableColumn>
 
-        <ElTableColumn
-          prop="productCount"
-          label="Số sản phẩm"
-          width="130"
-          align="center"
-        />
+        <ElTableColumn prop="productCount" label="Số sản phẩm" width="130" align="center" />
 
         <ElTableColumn label="Số lượng tồn kho" width="160" align="right">
           <template #default="{ row }">
@@ -100,13 +90,8 @@
 
         <ElTableColumn label="Trạng thái" width="120" align="center">
           <template #default="{ row }">
-            <ElTag
-              :type="row.isActive ? 'success' : 'info'"
-              size="small"
-              effect="light"
-              round
-            >
-              {{ row.isActive ? "Hoạt động" : "Tạm dừng" }}
+            <ElTag :type="row.isActive ? 'success' : 'info'" size="small" effect="light" round>
+              {{ row.isActive ? 'Hoạt động' : 'Tạm dừng' }}
             </ElTag>
           </template>
         </ElTableColumn>
@@ -116,13 +101,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-import { SettingApi } from "@/api/setting.api";
-import { CategoryApi } from "@/api/product";
-import { buildTree } from "@/common/utils";
+import { onMounted, reactive, ref } from 'vue';
+import { ElMessage } from 'element-plus';
+import { SettingApi } from '@/api/setting.api';
+import { CategoryApi } from '@/api/product';
+import { buildTree } from '@/common/utils';
 
-defineOptions({ name: "SalesInventorySettings" });
+defineOptions({ name: 'SalesInventorySettings' });
 
 const DEFAULT_INVENTORY_ALERT_LEVEL = 5;
 
@@ -147,7 +132,7 @@ const loadSettings = async () => {
     const data = await SettingApi.getAll();
     settings.inventoryAlertLevel = toNumber(
       data.Inventory_alert_level,
-      DEFAULT_INVENTORY_ALERT_LEVEL,
+      DEFAULT_INVENTORY_ALERT_LEVEL
     );
   } finally {
     loadingSettings.value = false;
@@ -177,15 +162,15 @@ const loadCategories = async () => {
       categoryList.value = tree;
     }
   } catch (err) {
-    console.error("Failed to load categories", err);
+    console.error('Failed to load categories', err);
   } finally {
     loadingCategories.value = false;
   }
 };
 
 const getManagementTypeLabel = (val?: string) => {
-  if (val === "vin") return "Quản lý theo số VIN";
-  return "Quản lý theo SKU";
+  if (val === 'vin') return 'Quản lý theo số VIN';
+  return 'Quản lý theo SKU';
 };
 
 const handleSave = async () => {
@@ -194,7 +179,7 @@ const handleSave = async () => {
     await SettingApi.update({
       Inventory_alert_level: String(Math.round(settings.inventoryAlertLevel)),
     });
-    ElMessage.success("Đã lưu cài đặt tồn kho");
+    ElMessage.success('Đã lưu cài đặt tồn kho');
     await loadSettings();
     await loadCategories();
   } finally {

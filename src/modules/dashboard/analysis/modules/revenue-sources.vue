@@ -27,22 +27,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
 defineProps({
   period: {
     type: String,
-    default: "today",
+    default: 'today',
   },
 });
 
 const total = 85500000;
 
 const sources = ref([
-  { name: "Xe máy", amount: 68000000, color: "#409eff" },
-  { name: "Phụ tùng", amount: 12000000, color: "#67c23a" },
-  { name: "Phụ kiện", amount: 3500000, color: "#e6a23c" },
-  { name: "Dịch vụ GTGT", amount: 2000000, color: "#f56c6c" },
+  { name: 'Xe máy', amount: 68000000, color: '#409eff' },
+  { name: 'Phụ tùng', amount: 12000000, color: '#67c23a' },
+  { name: 'Phụ kiện', amount: 3500000, color: '#e6a23c' },
+  { name: 'Dịch vụ GTGT', amount: 2000000, color: '#f56c6c' },
 ]);
 
 const calculatePercentage = (amount: number) => {
@@ -50,9 +50,9 @@ const calculatePercentage = (amount: number) => {
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 </script>

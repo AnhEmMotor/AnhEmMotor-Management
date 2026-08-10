@@ -1,14 +1,7 @@
 <template>
   <div class="art-card h-32 flex flex-col justify-center px-5">
-    <div
-      class="mb-3.5 flex-c"
-      :style="{ justifyContent: icon ? 'space-between' : 'flex-start' }"
-    >
-      <div
-        v-if="icon"
-        class="size-11 flex-cc bg-g-300 text-xl rounded-lg"
-        :class="iconStyle"
-      >
+    <div class="mb-3.5 flex-c" :style="{ justifyContent: icon ? 'space-between' : 'flex-start' }">
+      <div v-if="icon" class="size-11 flex-cc bg-g-300 text-xl rounded-lg" :class="iconStyle">
         <ArtSvgIcon :icon="icon" class="text-2xl"></ArtSvgIcon>
       </div>
       <div>
@@ -33,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtProgressCard" });
+defineOptions({ name: 'ArtProgressCard' });
 
 interface Props {
   percentage: number;
@@ -51,7 +44,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   strokeWidth: 5,
-  color: "#67C23A",
+  color: '#67C23A',
 });
 
 const animationDuration = 500;
@@ -85,6 +78,6 @@ watch(
   () => props.percentage,
   () => {
     animateProgress();
-  },
+  }
 );
 </script>

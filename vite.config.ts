@@ -1,15 +1,15 @@
-import { defineConfig, loadEnv } from "vite";
-import vue from "@vitejs/plugin-vue";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import vueDevTools from "vite-plugin-vue-devtools";
-import viteCompression from "vite-plugin-compression";
-import Components from "unplugin-vue-components/vite";
-import AutoImport from "unplugin-auto-import/vite";
-import ElementPlus from "unplugin-element-plus/vite";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig, loadEnv } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import viteCompression from 'vite-plugin-compression';
+import Components from 'unplugin-vue-components/vite';
+import AutoImport from 'unplugin-auto-import/vite';
+import ElementPlus from 'unplugin-element-plus/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd();
@@ -17,17 +17,15 @@ export default ({ mode }: { mode: string }) => {
   const { VITE_VERSION, VITE_PORT, VITE_BASE_URL } = env;
 
   const optimizeElementPlus = [];
-  const epPath = path.resolve(root, "node_modules/element-plus/es/components");
+  const epPath = path.resolve(root, 'node_modules/element-plus/es/components');
   if (fs.existsSync(epPath)) {
     const dirs = fs.readdirSync(epPath);
     for (const dir of dirs) {
-      if (fs.existsSync(path.join(epPath, dir, "style/css.mjs"))) {
+      if (fs.existsSync(path.join(epPath, dir, 'style/css.mjs'))) {
         optimizeElementPlus.push(`element-plus/es/components/${dir}/style/css`);
       }
-      if (fs.existsSync(path.join(epPath, dir, "style/index.mjs"))) {
-        optimizeElementPlus.push(
-          `element-plus/es/components/${dir}/style/index`,
-        );
+      if (fs.existsSync(path.join(epPath, dir, 'style/index.mjs'))) {
+        optimizeElementPlus.push(`element-plus/es/components/${dir}/style/index`);
       }
     }
   }
@@ -42,49 +40,48 @@ export default ({ mode }: { mode: string }) => {
       strictPort: true,
       host: false,
       proxy: {
-        "/api": {
-          target: "http://localhost:5000",
+        '/api': {
+          target: 'http://localhost:5000',
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, "/api"), // Đảm bảo giữ nguyên /api cho Backend
+          rewrite: (path) => path.replace(/^\/api/, '/api'), // Đảm bảo giữ nguyên /api cho Backend
         },
       },
     },
     resolve: {
       alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url)),
-        "@view": resolvePath("src/view"),
-        "@views": resolvePath("src/modules"),
-        "@imgs": resolvePath("src/assets/images"),
-        "@icons": resolvePath("src/assets/icons"),
-        "@utils": resolvePath("src/utils"),
-        "@stores": resolvePath("src/store"),
-        "@styles": resolvePath("src/assets/styles"),
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@view': resolvePath('src/view'),
+        '@views': resolvePath('src/modules'),
+        '@imgs': resolvePath('src/assets/images'),
+        '@icons': resolvePath('src/assets/icons'),
+        '@utils': resolvePath('src/utils'),
+        '@stores': resolvePath('src/store'),
+        '@styles': resolvePath('src/assets/styles'),
       },
     },
     build: {
-      target: "es2015",
-      outDir: "dist",
+      target: 'es2015',
+      outDir: 'dist',
       chunkSizeWarningLimit: 1500,
-      minify: "terser",
+      minify: 'terser',
       terserOptions: {
         compress: {
-          pure_funcs: ["console.log", "console.debug"],
+          pure_funcs: ['console.log', 'console.debug'],
           drop_debugger: true,
         },
       },
       dynamicImportVarsOptions: {
         warnOnError: true,
         exclude: [],
-        include: ["src/modules/**/*.vue"],
+        include: ['src/modules/**/*.vue'],
       },
       rollupOptions: {
         onwarn(warning, defaultWarn) {
           if (
-            warning.code === "INVALID_ANNOTATION" ||
-            warning.code === "EMPTY_BUNDLE" ||
-            (warning.message &&
-              warning.message.includes("Generated an empty chunk"))
+            warning.code === 'INVALID_ANNOTATION' ||
+            warning.code === 'EMPTY_BUNDLE' ||
+            (warning.message && warning.message.includes('Generated an empty chunk'))
           ) {
             return;
           }
@@ -92,40 +89,40 @@ export default ({ mode }: { mode: string }) => {
         },
         output: {
           manualChunks(id) {
-            if (id.includes("node_modules")) {
-              if (id.includes("echarts")) {
-                return "echarts";
+            if (id.includes('node_modules')) {
+              if (id.includes('echarts')) {
+                return 'echarts';
               }
-              if (id.includes("@wangeditor")) {
-                return "wangeditor";
+              if (id.includes('@wangeditor')) {
+                return 'wangeditor';
               }
-              if (id.includes("element-plus")) {
-                return "element-plus";
+              if (id.includes('element-plus')) {
+                return 'element-plus';
               }
-              if (id.includes("xlsx")) {
-                return "xlsx";
+              if (id.includes('xlsx')) {
+                return 'xlsx';
               }
-              if (id.includes("xgplayer")) {
-                return "xgplayer";
+              if (id.includes('xgplayer')) {
+                return 'xgplayer';
               }
               if (id.match(/node_modules\/(vue|vue-router|pinia)\//)) {
-                return "vue-core";
+                return 'vue-core';
               }
-              if (id.includes("@vueuse")) {
-                return "vueuse";
+              if (id.includes('@vueuse')) {
+                return 'vueuse';
               }
-              const parts = id.split("node_modules/");
+              const parts = id.split('node_modules/');
               const packagePath = parts[parts.length - 1];
               if (packagePath) {
-                const pathParts = packagePath.split("/");
+                const pathParts = packagePath.split('/');
                 let packageName = pathParts[0];
-                if (packageName.startsWith("@")) {
-                  packageName = packageName + "-" + pathParts[1];
+                if (packageName.startsWith('@')) {
+                  packageName = packageName + '-' + pathParts[1];
                 }
                 // Loại bỏ ký tự đặc biệt có thể gây lỗi file hệ thống
-                return packageName.replace(/[^a-zA-Z0-9-]/g, "");
+                return packageName.replace(/[^a-zA-Z0-9-]/g, '');
               }
-              return "vendors";
+              return 'vendors';
             }
           },
         },
@@ -135,17 +132,17 @@ export default ({ mode }: { mode: string }) => {
       vue(),
       tailwindcss(),
       AutoImport({
-        imports: ["vue", "vue-router", "pinia", "@vueuse/core"],
-        dts: "src/types/import/auto-imports.d.ts",
+        imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
+        dts: 'src/types/import/auto-imports.d.ts',
         resolvers: [ElementPlusResolver()],
         eslintrc: {
           enabled: true,
-          filepath: "./.auto-import.json",
+          filepath: './.auto-import.json',
           globalsPropValue: true,
         },
       }),
       Components({
-        dts: "src/types/import/components.d.ts",
+        dts: 'src/types/import/components.d.ts',
         resolvers: [ElementPlusResolver()],
       }),
       ElementPlus({
@@ -154,27 +151,27 @@ export default ({ mode }: { mode: string }) => {
       viteCompression({
         verbose: false,
         disable: false,
-        algorithm: "gzip",
-        ext: ".gz",
+        algorithm: 'gzip',
+        ext: '.gz',
         threshold: 10240,
         deleteOriginFile: false,
       }),
       vueDevTools(),
     ],
     optimizeDeps: {
-      exclude: ["mammoth"],
+      exclude: ['mammoth'],
       include: [
-        "echarts",
-        "echarts/core",
-        "echarts/charts",
-        "echarts/components",
-        "echarts/renderers",
-        "xlsx",
-        "xgplayer",
-        "crypto-js",
-        "file-saver",
-        "vue-img-cutter",
-        "element-plus/es",
+        'echarts',
+        'echarts/core',
+        'echarts/charts',
+        'echarts/components',
+        'echarts/renderers',
+        'xlsx',
+        'xgplayer',
+        'crypto-js',
+        'file-saver',
+        'vue-img-cutter',
+        'element-plus/es',
         ...optimizeElementPlus,
       ],
     },
@@ -190,10 +187,10 @@ export default ({ mode }: { mode: string }) => {
       postcss: {
         plugins: [
           {
-            postcssPlugin: "internal:charset-removal",
+            postcssPlugin: 'internal:charset-removal',
             AtRule: {
               charset: (atRule) => {
-                if (atRule.name === "charset") {
+                if (atRule.name === 'charset') {
                   atRule.remove();
                 }
               },

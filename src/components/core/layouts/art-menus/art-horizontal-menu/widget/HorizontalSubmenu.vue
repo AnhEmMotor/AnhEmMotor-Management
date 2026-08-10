@@ -1,15 +1,7 @@
 <template>
-  <ElSubMenu
-    v-if="hasChildren"
-    :index="item.path || item.meta.title"
-    class="!p-0"
-  >
+  <ElSubMenu v-if="hasChildren" :index="item.path || item.meta.title" class="!p-0">
     <template #title>
-      <ArtSvgIcon
-        :icon="item.meta.icon"
-        :color="theme?.iconColor"
-        class="mr-1 text-lg"
-      />
+      <ArtSvgIcon :icon="item.meta.icon" :color="theme?.iconColor" class="mr-1 text-lg" />
       <span class="text-md">{{ formatMenuTitle(item.meta.title) }}</span>
       <div v-if="item.meta.showBadge" class="art-badge art-badge-horizontal" />
       <div v-if="item.meta.showTextBadge" class="art-text-badge">
@@ -52,10 +44,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from "vue";
-import { AppRouteRecord } from "@/types/router";
-import { handleMenuJump } from "@/common/utils/navigation";
-import { formatMenuTitle } from "@/common/utils/router";
+import { computed, type PropType } from 'vue';
+import { AppRouteRecord } from '@/types/router';
+import { handleMenuJump } from '@/common/utils/navigation';
+import { formatMenuTitle } from '@/common/utils/router';
 
 const props = defineProps({
   item: {
@@ -73,7 +65,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(['close']);
 
 const filteredChildren = computed(() => {
   return props.item.children?.filter((child) => !child.meta.isHide) || [];
@@ -85,9 +77,7 @@ const isNavigableRoute = computed(() => {
     ((props.item.path && props.item.path.trim()) ||
       props.item.meta.link ||
       props.item.meta.isIframe === true) &&
-    (props.item.component ||
-      props.item.meta.link ||
-      props.item.meta.isIframe === true)
+    (props.item.component || props.item.meta.link || props.item.meta.isIframe === true)
   );
 });
 
@@ -101,7 +91,7 @@ const goPage = (item: AppRouteRecord) => {
 };
 
 const closeMenu = () => {
-  emit("close");
+  emit('close');
 };
 </script>
 

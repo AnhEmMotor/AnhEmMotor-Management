@@ -1,4 +1,4 @@
-﻿import request from "@/common/utils/http";
+﻿import request from '@/common/utils/http';
 
 export interface PurchaseInvoiceItem {
   id: number;
@@ -78,30 +78,30 @@ export interface CreatePurchaseInvoicePayload {
 }
 
 export const INVOICE_STATUSES = [
-  { label: "Bản nháp", value: "draft" },
-  { label: "Đã gửi", value: "sent" },
-  { label: "Đã duyệt", value: "approved" },
-  { label: "Đã từ chối", value: "rejected" },
-  { label: "Đã hủy", value: "cancelled" },
+  { label: 'Bản nháp', value: 'draft' },
+  { label: 'Đã gửi', value: 'sent' },
+  { label: 'Đã duyệt', value: 'approved' },
+  { label: 'Đã từ chối', value: 'rejected' },
+  { label: 'Đã hủy', value: 'cancelled' },
 ] as const;
 
 export const PAYMENT_METHODS = [
-  { label: "Tiền mặt", value: "cash" },
-  { label: "Chuyển khoản", value: "transfer" },
-  { label: "Thẻ", value: "card" },
+  { label: 'Tiền mặt', value: 'cash' },
+  { label: 'Chuyển khoản', value: 'transfer' },
+  { label: 'Thẻ', value: 'card' },
 ] as const;
 
 export const PAYMENT_STATUSES = [
-  { label: "Chưa thanh toán", value: "unpaid" },
-  { label: "Đã thanh toán", value: "paid" },
-  { label: "Thanh toán một phần", value: "partial" },
+  { label: 'Chưa thanh toán', value: 'unpaid' },
+  { label: 'Đã thanh toán', value: 'paid' },
+  { label: 'Thanh toán một phần', value: 'partial' },
 ] as const;
 
 export const purchaseInvoiceApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<PurchaseInvoiceListResult>({
-      url: "/api/v1/purchaseinvoices",
+      url: '/api/v1/purchaseinvoices',
       params: { Page: current, PageSize: size, ...rest },
     });
   },
@@ -114,7 +114,7 @@ export const purchaseInvoiceApi = {
 
   create(data: CreatePurchaseInvoicePayload) {
     return request.post<number>({
-      url: "/api/v1/purchaseinvoices",
+      url: '/api/v1/purchaseinvoices',
       data,
     });
   },

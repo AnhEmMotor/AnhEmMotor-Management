@@ -1,8 +1,8 @@
-import type { Router, RouteRecordRaw } from "vue-router";
-import type { AppRouteRecord } from "@/types/router";
-import { ComponentLoader } from "./ComponentLoader";
-import { RouteValidator } from "./RouteValidator";
-import { RouteTransformer } from "./RouteTransformer";
+import type { Router, RouteRecordRaw } from 'vue-router';
+import type { AppRouteRecord } from '@/types/router';
+import { ComponentLoader } from './ComponentLoader';
+import { RouteValidator } from './RouteValidator';
+import { RouteTransformer } from './RouteTransformer';
 
 export class RouteRegistry {
   private router: Router;
@@ -21,15 +21,13 @@ export class RouteRegistry {
 
   register(menuList: AppRouteRecord[]): void {
     if (this.registered) {
-      console.warn("[RouteRegistry] RoutingĐãDangKy，nhảyquatrùngphụcDangKy");
+      console.warn('[RouteRegistry] RoutingĐãDangKy，nhảyquatrùngphụcDangKy');
       return;
     }
 
     const validationResult = this.validator.validate(menuList);
     if (!validationResult.valid) {
-      throw new Error(
-        `RoutingCauHinhnghiệmtínhThatBai: ${validationResult.errors.join(", ")}`,
-      );
+      throw new Error(`RoutingCauHinhnghiệmtínhThatBai: ${validationResult.errors.join(', ')}`);
     }
 
     const removeRouteFns: (() => void)[] = [];
@@ -37,19 +35,16 @@ export class RouteRegistry {
     menuList.forEach((route) => {
       if (route.name && !this.router.hasRoute(route.name)) {
         const routeConfig = this.transformer.transform(route);
-        const removeRouteFn = this.router.addRoute(
-          routeConfig as RouteRecordRaw,
-        );
+        const removeRouteFn = this.router.addRoute(routeConfig as RouteRecordRaw);
         removeRouteFns.push(removeRouteFn);
       }
     });
 
-    // Đăng ký wildcard route 404 sau cùng để tránh đè lên các routing động khi F5/reload trang
     const remove404Fn = this.router.addRoute({
-      path: "/:pathMatch(.*)*",
-      name: "Exception404",
-      component: () => import("@view/error/404.vue"),
-      meta: { title: "404", isHideTab: true },
+      path: '/:pathMatch(.*)*',
+      name: 'Exception404',
+      component: () => import('@view/error/404.vue'),
+      meta: { title: '404', isHideTab: true },
     });
     removeRouteFns.push(remove404Fn);
 

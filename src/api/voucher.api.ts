@@ -1,15 +1,15 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   VoucherItem,
   VoucherValidateResponse,
   OrderVoucherApplyResult,
   OrderVoucherRemoveResult,
-} from "@/domain/voucher/voucher.types";
+} from '@/domain/voucher/voucher.types';
 
 export const VoucherApi = {
   getList(params?: any) {
     return request.get<{ items: VoucherItem[]; totalCount: number }>({
-      url: "/api/v1/voucher",
+      url: '/api/v1/voucher',
       params,
     });
   },
@@ -21,13 +21,13 @@ export const VoucherApi = {
   },
   validate(voucherId: number, outputId: number) {
     return request.post<VoucherValidateResponse>({
-      url: "/api/v1/voucher/validate",
+      url: '/api/v1/voucher/validate',
       data: { voucherId, outputId },
     });
   },
   apply(voucherId: number, outputId: number) {
     return request.post<OrderVoucherApplyResult>({
-      url: "/api/v1/voucher/apply",
+      url: '/api/v1/voucher/apply',
       data: { voucherId, outputId },
     });
   },

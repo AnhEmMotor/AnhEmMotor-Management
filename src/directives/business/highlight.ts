@@ -1,5 +1,5 @@
-import { App, Directive } from "vue";
-import hljs from "highlight.js";
+import { App, Directive } from 'vue';
+import hljs from 'highlight.js';
 
 export type HighlightDirective = Directive<HTMLElement>;
 
@@ -8,24 +8,24 @@ function highlightCode(block: HTMLElement) {
 }
 
 function insertLineNumbers(block: HTMLElement) {
-  const lines = block.innerHTML.split("\n");
+  const lines = block.innerHTML.split('\n');
   const numberedLines = lines
     .map((line, index) => {
       return `<span class="line-number">${index + 1}</span> ${line}`;
     })
-    .join("\n");
+    .join('\n');
   block.innerHTML = numberedLines;
 }
 
 function addCopyButton(block: HTMLElement) {
-  const copyButton = document.createElement("i");
-  copyButton.className = "copy-button";
+  const copyButton = document.createElement('i');
+  copyButton.className = 'copy-button';
   copyButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 6V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1 1 0 0 1 3 21l.003-14c0-.552.45-1 1.006-1zM5.002 8L5 20h10V8zM9 6h8v10h2V4H9z"/></svg>';
   copyButton.onclick = () => {
-    const codeContent = block.innerText.replace(/^\d+\s+/gm, "");
+    const codeContent = block.innerText.replace(/^\d+\s+/gm, '');
     navigator.clipboard.writeText(codeContent).then(() => {
-      ElMessage.success("phụcchếThanhCong");
+      ElMessage.success('phụcchếThanhCong');
     });
   };
 
@@ -33,9 +33,9 @@ function addCopyButton(block: HTMLElement) {
   if (preElement) {
     let codeWrapper: HTMLElement;
 
-    if (!block.parentElement.classList.contains("code-wrapper")) {
-      codeWrapper = document.createElement("div");
-      codeWrapper.className = "code-wrapper";
+    if (!block.parentElement.classList.contains('code-wrapper')) {
+      codeWrapper = document.createElement('div');
+      codeWrapper.className = 'code-wrapper';
       preElement.replaceChild(codeWrapper, block);
       codeWrapper.appendChild(block);
     } else {
@@ -48,14 +48,14 @@ function addCopyButton(block: HTMLElement) {
 
 function isBlockProcessed(block: HTMLElement): boolean {
   return (
-    block.hasAttribute("data-highlighted") ||
-    !!block.querySelector(".line-number") ||
-    !!block.parentElement?.querySelector(".copy-button")
+    block.hasAttribute('data-highlighted') ||
+    !!block.querySelector('.line-number') ||
+    !!block.parentElement?.querySelector('.copy-button')
   );
 }
 
 function markBlockAsProcessed(block: HTMLElement) {
-  block.setAttribute("data-highlighted", "true");
+  block.setAttribute('data-highlighted', 'true');
 }
 
 function processBlock(block: HTMLElement) {
@@ -69,12 +69,12 @@ function processBlock(block: HTMLElement) {
     addCopyButton(block);
     markBlockAsProcessed(block);
   } catch (error) {
-    console.warn("XuLyđạimãkhốigiờraLỗi:", error);
+    console.warn('XuLyđạimãkhốigiờraLỗi:', error);
   }
 }
 
 function processAllCodeBlocks(el: HTMLElement) {
-  const blocks = Array.from(el.querySelectorAll<HTMLElement>("pre code"));
+  const blocks = Array.from(el.querySelectorAll<HTMLElement>('pre code'));
   const unprocessedBlocks = blocks.filter((block) => !isBlockProcessed(block));
 
   if (unprocessedBlocks.length === 0) {
@@ -88,10 +88,7 @@ function processAllCodeBlocks(el: HTMLElement) {
     let currentIndex = 0;
 
     const processBatch = () => {
-      const batch = unprocessedBlocks.slice(
-        currentIndex,
-        currentIndex + batchSize,
-      );
+      const batch = unprocessedBlocks.slice(currentIndex, currentIndex + batchSize);
 
       batch.forEach((block) => {
         processBlock(block);
@@ -107,19 +104,15 @@ function processAllCodeBlocks(el: HTMLElement) {
   }
 }
 
-function retryProcessing(
-  el: HTMLElement,
-  maxRetries: number = 3,
-  delay: number = 200,
-) {
+function retryProcessing(el: HTMLElement, maxRetries: number = 3, delay: number = 200) {
   let retryCount = 0;
 
   const tryProcess = () => {
     processAllCodeBlocks(el);
 
-    const remainingBlocks = Array.from(
-      el.querySelectorAll<HTMLElement>("pre code"),
-    ).filter((block) => !isBlockProcessed(block));
+    const remainingBlocks = Array.from(el.querySelectorAll<HTMLElement>('pre code')).filter(
+      (block) => !isBlockProcessed(block)
+    );
 
     if (remainingBlocks.length > 0 && retryCount < maxRetries) {
       retryCount++;
@@ -142,15 +135,12 @@ const highlightDirective: HighlightDirective = {
       let hasNewCodeBlocks = false;
 
       mutations.forEach((mutation) => {
-        if (mutation.type === "childList") {
+        if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as HTMLElement;
 
-              if (
-                element.tagName === "PRE" ||
-                element.querySelector("pre code")
-              ) {
+              if (element.tagName === 'PRE' || element.querySelector('pre code')) {
                 hasNewCodeBlocks = true;
               }
             }
@@ -188,5 +178,5 @@ const highlightDirective: HighlightDirective = {
 };
 
 export function setupHighlightDirective(app: App) {
-  app.directive("highlight", highlightDirective);
+  app.directive('highlight', highlightDirective);
 }

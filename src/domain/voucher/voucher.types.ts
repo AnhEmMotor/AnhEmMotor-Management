@@ -1,4 +1,4 @@
-export type VoucherDiscountType = "PERCENT" | "AMOUNT";
+export type VoucherDiscountType = 'PERCENT' | 'AMOUNT';
 
 export interface VoucherItem {
   id: number;

@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export function fetchGetUserList(params: {
   Page?: number;
@@ -7,7 +7,7 @@ export function fetchGetUserList(params: {
   Sorts?: string;
 }): Promise<Api.Common.PaginatedResponse<any>> {
   return request.get<Api.Common.PaginatedResponse<any>>({
-    url: "/api/v1/UserManager",
+    url: '/api/v1/UserManager',
     params,
   });
 }
@@ -23,7 +23,7 @@ export function fetchCreateUser(data: {
   status?: string;
 }) {
   return request.post<any>({
-    url: "/api/v1/UserManager",
+    url: '/api/v1/UserManager',
     data,
   });
 }
@@ -35,7 +35,7 @@ export function fetchUpdateUser(
     gender?: string;
     phoneNumber?: string;
     dateOfBirth?: string;
-  },
+  }
 ) {
   return request.put<any>({
     url: `/api/v1/UserManager/${userId}`,
@@ -53,7 +53,7 @@ export function fetchAssignUserRoles(userId: string, roleIds: string[]) {
 export function fetchChangeUserStatus(userId: string, status: string) {
   return request.request<any>({
     url: `/api/v1/UserManager/${userId}/status`,
-    method: "PATCH",
+    method: 'PATCH',
     data: { status },
   });
 }
@@ -78,14 +78,14 @@ export function fetchGetRoleList(params: {
   Sorts?: string;
 }): Promise<Api.Common.PaginatedResponse<any>> {
   return request.get<Api.Common.PaginatedResponse<any>>({
-    url: "/api/v1/Permission/roles",
+    url: '/api/v1/Permission/roles',
     params,
   });
 }
 
 export function fetchGetAllPermissions() {
   return request.get<any[]>({
-    url: "/api/v1/Permission/permissions",
+    url: '/api/v1/Permission/permissions',
   });
 }
 
@@ -96,7 +96,7 @@ export function fetchGetPermissionStructure() {
     dependencies: Record<string, string[]>;
     metadata: Array<{ id: string; name: string; description: string }>;
   }>({
-    url: "/api/v1/Permission/structure",
+    url: '/api/v1/Permission/structure',
   });
 }
 
@@ -112,7 +112,7 @@ export function fetchCreateRole(data: {
   permissions: string[];
 }) {
   return request.post<any>({
-    url: "/api/v1/Permission/roles",
+    url: '/api/v1/Permission/roles',
     data,
   });
 }
@@ -123,7 +123,7 @@ export function fetchUpdateRole(
     roleName: string;
     description: string;
     permissions: string[];
-  },
+  }
 ) {
   return request.put<any>({
     url: `/api/v1/Permission/roles/${roleId}`,
@@ -139,6 +139,6 @@ export function fetchDeleteRole(roleId: string) {
 
 export function fetchGetMenuList() {
   return request.get<any[]>({
-    url: "/api/v3/system/menus",
+    url: '/api/v3/system/menus',
   });
 }

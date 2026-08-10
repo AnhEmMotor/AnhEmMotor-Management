@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface BookingAppointmentApiParams {
   Page?: number;
@@ -29,7 +29,7 @@ export interface BookingAppointment {
 export const BookingAppointmentApi = {
   getList(params?: BookingAppointmentApiParams) {
     return request.get<{ items: BookingAppointment[]; totalCount: number }>({
-      url: "/api/v1/BookingAppointments",
+      url: '/api/v1/BookingAppointments',
       params,
     });
   },
@@ -52,7 +52,7 @@ export const BookingAppointmentApi = {
     notes?: string;
   }) {
     return request.post<number>({
-      url: "/api/v1/BookingAppointments",
+      url: '/api/v1/BookingAppointments',
       data,
     });
   },
@@ -69,7 +69,7 @@ export const BookingAppointmentApi = {
       appointmentAt?: string;
       showroom?: string;
       notes?: string;
-    },
+    }
   ) {
     return request.put<boolean>({
       url: `/api/v1/BookingAppointments/${id}`,

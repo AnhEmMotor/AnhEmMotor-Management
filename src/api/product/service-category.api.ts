@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface ServiceCategoryResponse {
   id: number;
@@ -19,7 +19,7 @@ export const ServiceCategoryApi = {
   getList(params?: any) {
     const { current, size, ...rest } = params || {};
     return request.get<ServiceCategoryList>({
-      url: "/api/v1/ProductCategory/for-manager",
+      url: '/api/v1/ProductCategory/for-manager',
       params: {
         Page: current,
         PageSize: size,

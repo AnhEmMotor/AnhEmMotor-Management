@@ -1,13 +1,13 @@
-import { hash } from "ohash";
+import { hash } from 'ohash';
 
 export enum CacheInvalidationStrategy {
-  CLEAR_ALL = "clear_all",
+  CLEAR_ALL = 'clear_all',
 
-  CLEAR_CURRENT = "clear_current",
+  CLEAR_CURRENT = 'clear_current',
 
-  CLEAR_PAGINATION = "clear_pagination",
+  CLEAR_PAGINATION = 'clear_pagination',
 
-  KEEP_ALL = "keep_all",
+  KEEP_ALL = 'keep_all',
 }
 
 export interface ApiResponse<T = unknown> {
@@ -59,24 +59,22 @@ export class TableCache<T> {
 
     const searchKeys = Object.keys(params).filter(
       (key) =>
-        !["current", "size", "total"].includes(key) &&
+        !['current', 'size', 'total'].includes(key) &&
         params[key] !== undefined &&
-        params[key] !== "" &&
-        params[key] !== null,
+        params[key] !== '' &&
+        params[key] !== null
     );
 
     if (searchKeys.length > 0) {
-      const searchTag = searchKeys
-        .map((key) => `${key}:${String(params[key])}`)
-        .join("|");
+      const searchTag = searchKeys.map((key) => `${key}:${String(params[key])}`).join('|');
       tags.add(`search:${searchTag}`);
     } else {
-      tags.add("search:default");
+      tags.add('search:default');
     }
 
     tags.add(`pagination:${params.size || 10}`);
 
-    tags.add("pagination");
+    tags.add('pagination');
 
     return tags;
   }
@@ -84,15 +82,14 @@ export class TableCache<T> {
   private evictLRU(): void {
     if (this.cache.size <= this.maxSize) return;
 
-    let lruKey = "";
+    let lruKey = '';
     let minAccessCount = Infinity;
     let oldestTime = Infinity;
 
     for (const [key, item] of this.cache.entries()) {
       if (
         item.accessCount < minAccessCount ||
-        (item.accessCount === minAccessCount &&
-          item.lastAccessTime < oldestTime)
+        (item.accessCount === minAccessCount && item.lastAccessTime < oldestTime)
       ) {
         lruKey = key;
         minAccessCount = item.accessCount;
@@ -146,7 +143,7 @@ export class TableCache<T> {
 
     for (const [key, item] of this.cache.entries()) {
       const hasMatchingTag = tags.some((tag) =>
-        Array.from(item.tags).some((itemTag) => itemTag.includes(tag)),
+        Array.from(item.tags).some((itemTag) => itemTag.includes(tag))
       );
 
       if (hasMatchingTag) {
@@ -165,7 +162,7 @@ export class TableCache<T> {
   }
 
   clearPagination(): number {
-    return this.clearByTags(["pagination"]);
+    return this.clearByTags(['pagination']);
   }
 
   clear(): void {
@@ -183,7 +180,7 @@ export class TableCache<T> {
     }
 
     const sizeInKB = (totalSize / 1024).toFixed(2);
-    const avgHits = total > 0 ? (totalAccess / total).toFixed(1) : "0";
+    const avgHits = total > 0 ? (totalAccess / total).toFixed(1) : '0';
 
     return {
       total,

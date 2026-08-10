@@ -46,17 +46,12 @@
             <el-tag :type="item.priority" size="small" effect="light">{{
               item.categoryBadge
             }}</el-tag>
-            <span class="text-g-800 font-medium truncate">{{
-              item.title
-            }}</span>
-            <span class="text-g-500 text-xs whitespace-nowrap">{{
-              item.timeAgo
-            }}</span>
+            <span class="text-g-800 font-medium truncate">{{ item.title }}</span>
+            <span class="text-g-500 text-xs whitespace-nowrap">{{ item.timeAgo }}</span>
           </div>
-          <span
-            class="text-theme cursor-pointer font-medium whitespace-nowrap"
-            >{{ item.actionLabel }}</span
-          >
+          <span class="text-theme cursor-pointer font-medium whitespace-nowrap">{{
+            item.actionLabel
+          }}</span>
         </div>
       </ElScrollbar>
     </div>
@@ -64,15 +59,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
-import { fetchDashboardKpis } from "@/api/dashboard.api";
+import { ref, reactive, onMounted } from 'vue';
+import { fetchDashboardKpis } from '@/api/dashboard.api';
 
 interface TodoItem {
   category: string;
   categoryBadge: string;
   title: string;
   desc: string;
-  priority: "success" | "info" | "warning" | "danger";
+  priority: 'success' | 'info' | 'warning' | 'danger';
   actionLabel: string;
   actionUrl: string;
   updatedAt: string;
@@ -82,41 +77,36 @@ interface TodoItem {
 const list = reactive<TodoItem[]>([]);
 const isLoading = ref(false);
 const totalAlerts = ref(0);
-const filter = ref<"day" | "week" | "month">("day");
+const filter = ref<'day' | 'week' | 'month'>('day');
 
-const CATEGORY_COLORS: Record<string, TodoItem["priority"]> = {
-  financial: "danger",
-  inventory: "warning",
-  customer: "danger",
-  operations: "info",
+const CATEGORY_COLORS: Record<string, TodoItem['priority']> = {
+  financial: 'danger',
+  inventory: 'warning',
+  customer: 'danger',
+  operations: 'info',
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  financial: "⚠️",
-  inventory: "📦",
-  customer: "👤",
-  operations: "📋",
+  financial: '⚠️',
+  inventory: '📦',
+  customer: '👤',
+  operations: '📋',
 };
 
-function buildTodoItem(
-  category: string,
-  count: number,
-  title: string,
-  url: string,
-): TodoItem {
-  const priority = CATEGORY_COLORS[category] ?? "info";
-  const categoryBadge = `${CATEGORY_ICONS[category] ?? "📌"} ${category}`;
+function buildTodoItem(category: string, count: number, title: string, url: string): TodoItem {
+  const priority = CATEGORY_COLORS[category] ?? 'info';
+  const categoryBadge = `${CATEGORY_ICONS[category] ?? '📌'} ${category}`;
   const now = new Date();
   return {
     category,
     categoryBadge,
     title: `${title} (${count})`,
-    desc: count === 1 ? "Cần xử lý ngay" : `${count} yêu cầu cần xử lý ngay`,
+    desc: count === 1 ? 'Cần xử lý ngay' : `${count} yêu cầu cần xử lý ngay`,
     priority,
-    actionLabel: "Xử lý",
+    actionLabel: 'Xử lý',
     actionUrl: url,
     updatedAt: now.toISOString(),
-    timeAgo: "Vừa xong",
+    timeAgo: 'Vừa xong',
   };
 }
 
@@ -125,61 +115,61 @@ function buildAlerts(alerts: any) {
   if (alerts.financial.delayedLoans > 0) {
     list.push(
       buildTodoItem(
-        "financial",
+        'financial',
         alerts.financial.delayedLoans,
-        "Trả góp trễ hạn",
-        "/admin/finance/delayed",
-      ),
+        'Trả góp trễ hạn',
+        '/admin/finance/delayed'
+      )
     );
   }
   if (alerts.inventory.lowStockVehicles > 0) {
     list.push(
       buildTodoItem(
-        "inventory",
+        'inventory',
         alerts.inventory.lowStockVehicles,
-        "Tồn kho xe thấp",
-        "/admin/inventory/vehicles",
-      ),
+        'Tồn kho xe thấp',
+        '/admin/inventory/vehicles'
+      )
     );
   }
   if (alerts.inventory.lowStockParts > 0) {
     list.push(
       buildTodoItem(
-        "inventory",
+        'inventory',
         alerts.inventory.lowStockParts,
-        "Tồn kho phụ tùng thấp",
-        "/admin/inventory/parts",
-      ),
+        'Tồn kho phụ tùng thấp',
+        '/admin/inventory/parts'
+      )
     );
   }
   if (alerts.customer.newComplaints > 0) {
     list.push(
       buildTodoItem(
-        "customer",
+        'customer',
         alerts.customer.newComplaints,
-        "Khiếu nại mới",
-        "/admin/customer/complaints",
-      ),
+        'Khiếu nại mới',
+        '/admin/customer/complaints'
+      )
     );
   }
   if (alerts.customer.missedAppointments > 0) {
     list.push(
       buildTodoItem(
-        "customer",
+        'customer',
         alerts.customer.missedAppointments,
-        "Lịch hẹn bị bỏ lỡ",
-        "/admin/appointments",
-      ),
+        'Lịch hẹn bị bỏ lỡ',
+        '/admin/appointments'
+      )
     );
   }
   if (alerts.operations.pendingOrders > 0) {
     list.push(
       buildTodoItem(
-        "operations",
+        'operations',
         alerts.operations.pendingOrders,
-        "Đơn hàng chưa xử lý",
-        "/admin/orders",
-      ),
+        'Đơn hàng chưa xử lý',
+        '/admin/orders'
+      )
     );
   }
   if (list.length === 0) {
@@ -187,7 +177,7 @@ function buildAlerts(alerts: any) {
   }
 }
 
-async function setFilter(f: "day" | "week" | "month") {
+async function setFilter(f: 'day' | 'week' | 'month') {
   filter.value = f;
   await fetchData();
 }
@@ -206,7 +196,7 @@ async function fetchData() {
     totalAlerts.value = total;
     buildAlerts(data.alerts);
   } catch (error) {
-    console.error("Failed to fetch todo alerts:", error);
+    console.error('Failed to fetch todo alerts:', error);
   } finally {
     isLoading.value = false;
   }

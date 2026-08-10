@@ -1,9 +1,9 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { TableSizeEnum } from "@/common/enums/formEnum";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { TableSizeEnum } from '@/common/enums/formEnum';
 
 export const useTableStore = defineStore(
-  "tableStore",
+  'tableStore',
   () => {
     const tableSize = ref(TableSizeEnum.DEFAULT);
 
@@ -21,8 +21,7 @@ export const useTableStore = defineStore(
 
     const setIsBorder = (value: boolean) => (isBorder.value = value);
 
-    const setIsHeaderBackground = (value: boolean) =>
-      (isHeaderBackground.value = value);
+    const setIsHeaderBackground = (value: boolean) => (isHeaderBackground.value = value);
 
     const setIsFullScreen = (value: boolean) => (isFullScreen.value = value);
 
@@ -41,8 +40,8 @@ export const useTableStore = defineStore(
   },
   {
     persist: {
-      key: "table",
+      key: 'table',
       storage: localStorage,
     },
-  },
+  }
 );

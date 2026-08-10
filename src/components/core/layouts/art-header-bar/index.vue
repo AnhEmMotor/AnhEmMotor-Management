@@ -2,9 +2,7 @@
   <div
     class="w-full bg-[var(--default-bg-color)]"
     :class="[
-      tabStyle === 'tab-card' || tabStyle === 'tab-google'
-        ? 'mb-5 max-sm:mb-3 !bg-box'
-        : '',
+      tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : '',
     ]"
   >
     <div
@@ -66,13 +64,9 @@
         >
           <div class="flex-c">
             <ArtSvgIcon icon="ri:search-line" class="text-sm text-g-500" />
-            <span class="ml-1 text-xs font-normal text-g-500">{{
-              $t("topBar.search.title")
-            }}</span>
+            <span class="ml-1 text-xs font-normal text-g-500">{{ $t('topBar.search.title') }}</span>
           </div>
-          <div
-            class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded"
-          >
+          <div class="flex-c h-5 px-1.5 text-g-500/80 border border-g-400 rounded">
             <ArtSvgIcon v-if="isWindows" icon="vaadin:ctrl-a" class="text-sm" />
             <ArtSvgIcon v-else icon="ri:command-fill" class="text-xs" />
             <span class="ml-0.5 text-xs">k</span>
@@ -81,13 +75,8 @@
 
         <ArtIconButton
           v-if="shouldShowFullscreen"
-          :icon="
-            isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'
-          "
-          :class="[
-            !isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn',
-            'ml-3',
-          ]"
+          :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
+          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn', 'ml-3']"
           class="max-md:!hidden"
           @click="toggleFullScreen"
         />
@@ -97,26 +86,16 @@
           popper-class="langDropDownStyle"
           v-if="shouldShowLanguage"
         >
-          <ArtIconButton
-            icon="ri:translate-2"
-            class="language-btn text-[19px]"
-          />
+          <ArtIconButton icon="ri:translate-2" class="language-btn text-[19px]" />
           <template #dropdown>
             <ElDropdownMenu>
-              <div
-                v-for="item in languageOptions"
-                :key="item.category"
-                class="lang-btn-item"
-              >
+              <div v-for="item in languageOptions" :key="item.category" class="lang-btn-item">
                 <ElDropdownItem
                   :command="item.category"
                   :class="{ 'is-selected': locale === item.category }"
                 >
                   <span class="menu-txt">{{ item.lang }}</span>
-                  <ArtSvgIcon
-                    icon="ri:check-fill"
-                    v-if="locale === item.category"
-                  />
+                  <ArtSvgIcon icon="ri:check-fill" v-if="locale === item.category" />
                 </ElDropdownItem>
               </div>
             </ElDropdownMenu>
@@ -129,9 +108,7 @@
           class="notice-button relative"
           @click="visibleNotice"
         >
-          <div
-            class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"
-          ></div>
+          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
         </ArtIconButton>
 
         <ArtIconButton
@@ -140,18 +117,12 @@
           class="chat-button relative"
           @click="openChat"
         >
-          <div
-            class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"
-          ></div>
+          <div class="breathing-dot absolute top-2 right-2 size-1.5 !bg-success rounded-full"></div>
         </ArtIconButton>
 
         <div v-if="shouldShowSettings">
           <div class="flex-cc">
-            <ArtIconButton
-              icon="ri:settings-line"
-              class="setting-btn"
-              @click="openSetting"
-            />
+            <ArtIconButton icon="ri:settings-line" class="setting-btn" @click="openSetting" />
           </div>
         </div>
 
@@ -178,24 +149,24 @@ defineProps({
     default: false,
   },
 });
-import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
-import { useFullscreen, useWindowSize } from "@vueuse/core";
-import { LanguageEnum, MenuTypeEnum } from "@/common/enums/appEnum";
-import { useSettingStore } from "@/application/store/setting";
-import { useUserStore } from "@/application/store/user";
-import { useMenuStore } from "@/application/store/menu";
-import AppConfig from "@/config";
-import { langList as languageOptions } from "@/common/utils/langList";
-import { mittBus } from "@/common/utils/sys";
-import { themeAnimation } from "@/common/utils/ui/animation";
-import { useCommon } from "@/common/composables/useCommon";
-import { useHeaderBar } from "@/common/composables/useHeaderBar";
-import ArtUserMenu from "./widget/ArtUserMenu.vue";
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { useFullscreen, useWindowSize } from '@vueuse/core';
+import { LanguageEnum, MenuTypeEnum } from '@/common/enums/appEnum';
+import { useSettingStore } from '@/application/store/setting';
+import { useUserStore } from '@/application/store/user';
+import { useMenuStore } from '@/application/store/menu';
+import AppConfig from '@/config';
+import { langList as languageOptions } from '@/common/utils/langList';
+import { mittBus } from '@/common/utils/sys';
+import { themeAnimation } from '@/common/utils/ui/animation';
+import { useCommon } from '@/common/composables/useCommon';
+import { useHeaderBar } from '@/common/composables/useHeaderBar';
+import ArtUserMenu from './widget/ArtUserMenu.vue';
 
-defineOptions({ name: "ArtHeaderBar" });
+defineOptions({ name: 'ArtHeaderBar' });
 
-const isWindows = navigator.userAgent.includes("Windows");
+const isWindows = navigator.userAgent.includes('Windows');
 
 const router = useRouter();
 const { locale } = useI18n();
@@ -220,8 +191,7 @@ const {
   fastEnterMinWidth: headerBarFastEnterMinWidth,
 } = useHeaderBar();
 
-const { menuOpen, showSettingGuide, menuType, isDark, tabStyle } =
-  storeToRefs(settingStore);
+const { menuOpen, showSettingGuide, menuType, isDark, tabStyle } = storeToRefs(settingStore);
 
 const { language } = storeToRefs(userStore);
 const { menuList } = storeToRefs(menuStore);
@@ -237,11 +207,11 @@ const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
 onMounted(() => {
   initLanguage();
-  document.addEventListener("click", bodyCloseNotice);
+  document.addEventListener('click', bodyCloseNotice);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", bodyCloseNotice);
+  document.removeEventListener('click', bodyCloseNotice);
 });
 
 const toggleFullScreen = (): void => {
@@ -255,7 +225,7 @@ const visibleMenu = (): void => {
 const { refresh } = useCommon();
 
 const toHome = (): void => {
-  router.push("/workspace");
+  router.push('/workspace');
 };
 
 const reload = (time: number = 0): void => {
@@ -276,7 +246,7 @@ const changeLanguage = (lang: LanguageEnum): void => {
 };
 
 const openSetting = (): void => {
-  mittBus.emit("openSetting");
+  mittBus.emit('openSetting');
 
   if (showSettingGuide.value) {
     settingStore.hideSettingGuide();
@@ -284,7 +254,7 @@ const openSetting = (): void => {
 };
 
 const openSearchDialog = (): void => {
-  mittBus.emit("openSearchDialog");
+  mittBus.emit('openSearchDialog');
 };
 
 const bodyCloseNotice = (e: any): void => {
@@ -292,8 +262,8 @@ const bodyCloseNotice = (e: any): void => {
 
   const target = e.target as HTMLElement;
 
-  const isNoticeButton = target.closest(".notice-button");
-  const isNoticePanel = target.closest(".art-notification-panel");
+  const isNoticeButton = target.closest('.notice-button');
+  const isNoticePanel = target.closest('.art-notification-panel');
 
   if (!isNoticeButton && !isNoticePanel) {
     showNotice.value = false;
@@ -305,7 +275,7 @@ const visibleNotice = (): void => {
 };
 
 const openChat = (): void => {
-  mittBus.emit("openChat");
+  mittBus.emit('openChat');
 };
 </script>
 

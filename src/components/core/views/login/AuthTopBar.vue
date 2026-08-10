@@ -20,11 +20,7 @@
             :style="{ background: color, '--index': index }"
             @click="changeThemeColor(color)"
           >
-            <ArtSvgIcon
-              v-if="color === systemThemeColor"
-              icon="ri:check-fill"
-              class="text-white"
-            />
+            <ArtSvgIcon v-if="color === systemThemeColor" icon="ri:check-fill" class="text-white" />
           </div>
         </div>
         <div class="btn palette-btn relative z-[2] h-8 w-8 c-p flex-cc tad-300">
@@ -47,21 +43,13 @@
         </div>
         <template #dropdown>
           <ElDropdownMenu>
-            <div
-              v-for="lang in languageOptions"
-              :key="lang.value"
-              class="lang-btn-item"
-            >
+            <div v-for="lang in languageOptions" :key="lang.value" class="lang-btn-item">
               <ElDropdownItem
                 :command="lang.value"
                 :class="{ 'is-selected': locale === lang.value }"
               >
                 <span class="menu-txt">{{ lang.label }}</span>
-                <ArtSvgIcon
-                  icon="ri:check-fill"
-                  class="text-base"
-                  v-if="locale === lang.value"
-                />
+                <ArtSvgIcon icon="ri:check-fill" class="text-base" v-if="locale === lang.value" />
               </ElDropdownItem>
             </div>
           </ElDropdownMenu>
@@ -82,16 +70,16 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { useSettingStore } from "@/application/store/setting";
-import { useUserStore } from "@/application/store/user";
-import { useHeaderBar } from "@/common/composables/useHeaderBar";
-import { themeAnimation } from "@/common/utils/ui/animation";
-import { languageOptions } from "@/i18n";
-import { LanguageEnum } from "@/common/enums/appEnum";
-import AppConfig from "@/config";
+import { useI18n } from 'vue-i18n';
+import { useSettingStore } from '@/application/store/setting';
+import { useUserStore } from '@/application/store/user';
+import { useHeaderBar } from '@/common/composables/useHeaderBar';
+import { themeAnimation } from '@/common/utils/ui/animation';
+import { languageOptions } from '@/i18n';
+import { LanguageEnum } from '@/common/enums/appEnum';
+import AppConfig from '@/config';
 
-defineOptions({ name: "AuthTopBar" });
+defineOptions({ name: 'AuthTopBar' });
 
 const settingStore = useSettingStore();
 const userStore = useUserStore();

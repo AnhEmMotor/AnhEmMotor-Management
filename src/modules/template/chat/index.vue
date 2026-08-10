@@ -34,16 +34,16 @@
         </div>
         <ElDropdown trigger="click" placement="bottom-start">
           <span class="mt-5 c-p"
-            >{{ $t("admin.t215")
+            >{{ $t('admin.t215')
             }}<ElIcon class="el-icon--right">
               <arrow-down />
             </ElIcon>
           </span>
           <template #dropdown>
             <ElDropdownMenu>
-              <ElDropdownItem>{{ $t("admin.t216") }}</ElDropdownItem>
-              <ElDropdownItem>{{ $t("admin.t217") }}</ElDropdownItem>
-              <ElDropdownItem>{{ $t("admin.t218") }}</ElDropdownItem>
+              <ElDropdownItem>{{ $t('admin.t216') }}</ElDropdownItem>
+              <ElDropdownItem>{{ $t('admin.t217') }}</ElDropdownItem>
+              <ElDropdownItem>{{ $t('admin.t218') }}</ElDropdownItem>
             </ElDropdownMenu>
           </template>
         </ElDropdown>
@@ -71,10 +71,9 @@
               <span class="text-xs text-g-600">{{ item.lastTime }}</span>
             </div>
             <div class="flex-cb">
-              <span
-                class="overflow-hidden text-xs text-g-600 text-ellipsis whitespace-nowrap"
-                >{{ item.email }}</span
-              >
+              <span class="overflow-hidden text-xs text-g-600 text-ellipsis whitespace-nowrap">{{
+                item.email
+              }}</span>
             </div>
           </div>
         </div>
@@ -89,27 +88,13 @@
               class="w-2 h-2 rounded-full"
               :class="isOnline ? 'bg-success/100' : 'bg-danger/100'"
             ></div>
-            <span class="text-xs text-g-600">{{
-              isOnline ? "tạiđường" : "Ngoạiđường"
-            }}</span>
+            <span class="text-xs text-g-600">{{ isOnline ? 'tạiđường' : 'Ngoạiđường' }}</span>
           </div>
         </div>
         <div class="flex-c gap-2">
-          <ArtIconButton
-            icon="ri:phone-line"
-            circle
-            class="size-11 text-g-600"
-          />
-          <ArtIconButton
-            icon="ri:video-on-line"
-            circle
-            class="size-11 text-g-600"
-          />
-          <ArtIconButton
-            icon="ri:more-2-fill"
-            circle
-            class="size-11 text-g-600"
-          />
+          <ArtIconButton icon="ri:phone-line" circle class="size-11 text-g-600" />
+          <ArtIconButton icon="ri:video-on-line" circle class="size-11 text-g-600" />
+          <ArtIconButton icon="ri:more-2-fill" circle class="size-11 text-g-600" />
         </div>
       </div>
       <div class="flex flex-col h-[calc(100%-85px)]">
@@ -124,11 +109,7 @@
                 message.isMe ? 'flex-row-reverse' : 'flex-row justify-start',
               ]"
             >
-              <ElAvatar
-                :size="32"
-                :src="message.avatar"
-                class="flex-shrink-0"
-              />
+              <ElAvatar :size="32" :src="message.avatar" class="flex-shrink-0" />
               <div
                 class="flex flex-col max-w-[70%]"
                 :class="message.isMe ? 'items-end' : 'items-start'"
@@ -164,28 +145,16 @@
               <div class="flex gap-2 py-2">
                 <ElButton :icon="Paperclip" circle plain />
                 <ElButton :icon="Picture" circle plain />
-                <ElButton type="primary" @click="sendMessage" v-ripple
-                  >phátgửi</ElButton
-                >
+                <ElButton type="primary" @click="sendMessage" v-ripple>phátgửi</ElButton>
               </div>
             </template>
           </ElInput>
           <div class="flex-cb mt-3">
             <div class="flex-c">
-              <ArtSvgIcon
-                icon="ri:image-line"
-                class="mr-5 c-p text-g-600 text-lg"
-              />
-              <ArtSvgIcon
-                icon="ri:emotion-happy-line"
-                class="mr-5 c-p text-g-600 text-lg"
-              />
+              <ArtSvgIcon icon="ri:image-line" class="mr-5 c-p text-g-600 text-lg" />
+              <ArtSvgIcon icon="ri:emotion-happy-line" class="mr-5 c-p text-g-600 text-lg" />
             </div>
-            <ElButton
-              type="primary"
-              @click="sendMessage"
-              v-ripple
-              class="min-w-20"
+            <ElButton type="primary" @click="sendMessage" v-ripple class="min-w-20"
               >phátgửi</ElButton
             >
           </div>
@@ -196,22 +165,22 @@
 </template>
 
 <script setup lang="ts">
-import { Picture, Paperclip, ArrowDown } from "@element-plus/icons-vue";
-import { mittBus } from "@/common/utils/sys";
-import meAvatar from "@/assets/images/avatar/avatar5.webp";
-import aiAvatar from "@/assets/images/avatar/avatar10.webp";
-import avatar2 from "@/assets/images/avatar/avatar2.webp";
-import avatar3 from "@/assets/images/avatar/avatar3.webp";
-import avatar4 from "@/assets/images/avatar/avatar4.webp";
-import avatar5 from "@/assets/images/avatar/avatar5.webp";
-import avatar6 from "@/assets/images/avatar/avatar6.webp";
-import avatar7 from "@/assets/images/avatar/avatar7.webp";
-import avatar8 from "@/assets/images/avatar/avatar8.webp";
-import avatar9 from "@/assets/images/avatar/avatar9.webp";
-import avatar10 from "@/assets/images/avatar/avatar10.webp";
-import { useAutoLayoutHeight } from "@/common/composables/useLayoutHeight";
+import { Picture, Paperclip, ArrowDown } from '@element-plus/icons-vue';
+import { mittBus } from '@/common/utils/sys';
+import meAvatar from '@/assets/images/avatar/avatar5.webp';
+import aiAvatar from '@/assets/images/avatar/avatar10.webp';
+import avatar2 from '@/assets/images/avatar/avatar2.webp';
+import avatar3 from '@/assets/images/avatar/avatar3.webp';
+import avatar4 from '@/assets/images/avatar/avatar4.webp';
+import avatar5 from '@/assets/images/avatar/avatar5.webp';
+import avatar6 from '@/assets/images/avatar/avatar6.webp';
+import avatar7 from '@/assets/images/avatar/avatar7.webp';
+import avatar8 from '@/assets/images/avatar/avatar8.webp';
+import avatar9 from '@/assets/images/avatar/avatar9.webp';
+import avatar10 from '@/assets/images/avatar/avatar10.webp';
+import { useAutoLayoutHeight } from '@/common/composables/useLayoutHeight';
 
-defineOptions({ name: "TemplateChat" });
+defineOptions({ name: 'TemplateChat' });
 
 const { containerMinHeight } = useAutoLayoutHeight();
 
@@ -225,11 +194,11 @@ interface Person {
   unread?: number;
 }
 
-const searchQuery = ref("");
+const searchQuery = ref('');
 const isDrawerVisible = ref(false);
 const isOnline = ref(true);
 const selectedPerson = ref<Person | null>(null);
-const messageText = ref("");
+const messageText = ref('');
 const messageId = ref(10);
 const userAvatar = ref(meAvatar);
 const messageContainer = ref<HTMLElement | null>(null);
@@ -237,119 +206,119 @@ const messageContainer = ref<HTMLElement | null>(null);
 const personList = ref<Person[]>([
   {
     id: 1,
-    name: "mailạcđịch·maitây",
-    email: "melody@altbox.com",
+    name: 'mailạcđịch·maitây',
+    email: 'melody@altbox.com',
     avatar: meAvatar,
     online: true,
-    lastTime: "20tiểugiờtrước",
+    lastTime: '20tiểugiờtrước',
     unread: 0,
   },
   {
     id: 2,
-    name: "ngựakhắc·sửmậttư",
-    email: "max@kt.com",
+    name: 'ngựakhắc·sửmậttư',
+    email: 'max@kt.com',
     avatar: avatar2,
     online: true,
-    lastTime: "2tuầntrước",
+    lastTime: '2tuầntrước',
     unread: 6,
   },
   {
     id: 3,
-    name: "ân·khách",
-    email: "sean@dellito.com",
+    name: 'ân·khách',
+    email: 'sean@dellito.com',
     avatar: avatar3,
     online: false,
-    lastTime: "5tiểugiờtrước",
+    lastTime: '5tiểugiờtrước',
     unread: 5,
   },
   {
     id: 4,
-    name: "áilệsợi·hẹnhàntốn",
-    email: "alice@domain.com",
+    name: 'áilệsợi·hẹnhàntốn',
+    email: 'alice@domain.com',
     avatar: avatar4,
     online: true,
-    lastTime: "1tiểugiờtrước",
+    lastTime: '1tiểugiờtrước',
     unread: 2,
   },
   {
     id: 5,
-    name: "bàobột·đilãng",
-    email: "bob@domain.com",
+    name: 'bàobột·đilãng',
+    email: 'bob@domain.com',
     avatar: avatar5,
     online: false,
-    lastTime: "3ngàytrước",
+    lastTime: '3ngàytrước',
     unread: 1,
   },
   {
     id: 6,
-    name: "Tìmlý·đeoduytư",
-    email: "charlie@domain.com",
+    name: 'Tìmlý·đeoduytư',
+    email: 'charlie@domain.com',
     avatar: avatar6,
     online: true,
-    lastTime: "10phầnchuôngtrước",
+    lastTime: '10phầnchuôngtrước',
     unread: 0,
   },
   {
     id: 7,
-    name: "đeoanna·phổrừngtư",
-    email: "diana@domain.com",
+    name: 'đeoanna·phổrừngtư',
+    email: 'diana@domain.com',
     avatar: avatar7,
     online: true,
-    lastTime: "15phầnchuôngtrước",
+    lastTime: '15phầnchuôngtrước',
     unread: 3,
   },
   {
     id: 8,
-    name: "ytang·hanhđặc",
-    email: "ethan@domain.com",
+    name: 'ytang·hanhđặc',
+    email: 'ethan@domain.com',
     avatar: avatar8,
     online: true,
-    lastTime: "5phầnchuôngtrước",
+    lastTime: '5phầnchuôngtrước',
     unread: 0,
   },
   {
     id: 9,
-    name: "kiệttâythẻ·quỳnhtư",
-    email: "jessica@domain.com",
+    name: 'kiệttâythẻ·quỳnhtư',
+    email: 'jessica@domain.com',
     avatar: avatar9,
     online: false,
-    lastTime: "1ngàytrước",
+    lastTime: '1ngàytrước',
     unread: 4,
   },
   {
     id: 10,
-    name: "kiađược·mạtkhắc",
-    email: "peter@domain.com",
+    name: 'kiađược·mạtkhắc',
+    email: 'peter@domain.com',
     avatar: avatar10,
     online: true,
-    lastTime: "2tiểugiờtrước",
+    lastTime: '2tiểugiờtrước',
     unread: 1,
   },
   {
     id: 11,
-    name: "khắckéokhắc·khẳngđặc",
-    email: "clark@domain.com",
+    name: 'khắckéokhắc·khẳngđặc',
+    email: 'clark@domain.com',
     avatar: avatar3,
     online: true,
-    lastTime: "30phầnchuôngtrước",
+    lastTime: '30phầnchuôngtrước',
     unread: 2,
   },
   {
     id: 12,
-    name: "đilỗtư·viân",
-    email: "bruce@domain.com",
+    name: 'đilỗtư·viân',
+    email: 'bruce@domain.com',
     avatar: avatar5,
     online: false,
-    lastTime: "3ngàytrước",
+    lastTime: '3ngàytrước',
     unread: 0,
   },
   {
     id: 13,
-    name: "viđức·uytốn",
-    email: "wade@domain.com",
+    name: 'viđức·uytốn',
+    email: 'wade@domain.com',
     avatar: avatar6,
     online: true,
-    lastTime: "10phầnchuôngtrước",
+    lastTime: '10phầnchuôngtrước',
     unread: 5,
   },
 ]);
@@ -361,78 +330,76 @@ const selectPerson = (person: Person) => {
 const messages = ref([
   {
     id: 1,
-    sender: "Art Bot",
-    content:
-      "bạnhảo！tôilàbạncủaAIgiúptay，cógìgìtôiCó thểlấygiúpbạncủakhông？",
-    time: "10:00",
+    sender: 'Art Bot',
+    content: 'bạnhảo！tôilàbạncủaAIgiúptay，cógìgìtôiCó thểlấygiúpbạncủakhông？',
+    time: '10:00',
     isMe: false,
     avatar: aiAvatar,
   },
   {
     id: 2,
-    sender: "Ricky",
-    content: "tôimuốnrồigiảimộtdướiHeThongcủakhiếndùngPhuongThuc。",
-    time: "10:01",
+    sender: 'Ricky',
+    content: 'tôimuốnrồigiảimộtdướiHeThongcủakhiếndùngPhuongThuc。',
+    time: '10:01',
     isMe: true,
     avatar: meAvatar,
   },
   {
     id: 3,
-    sender: "Art Bot",
+    sender: 'Art Bot',
     content:
-      "hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...",
-    time: "10:02",
+      'hảocủa，tôiđếnvìbạngiớithiệuHeThongcủachủcầncôngnăng。đầu，bạnCó thểlấythông quaBên tráiMenuTruy cậpKhôngcùngcủacôngnăngmôkhối...',
+    time: '10:02',
     isMe: false,
     avatar: aiAvatar,
   },
   {
     id: 4,
-    sender: "Ricky",
-    content:
-      "nghekhởiđếnrấtKhôngLỗi，năngdụng cụthểnóinóiDữ liệuphầnphânbộphầnkhông？",
-    time: "10:05",
+    sender: 'Ricky',
+    content: 'nghekhởiđếnrấtKhôngLỗi，năngdụng cụthểnóinóiDữ liệuphầnphânbộphầnkhông？',
+    time: '10:05',
     isMe: true,
     avatar: meAvatar,
   },
   {
     id: 5,
-    sender: "Art Bot",
+    sender: 'Art Bot',
     content:
-      "khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...",
-    time: "10:06",
+      'khinhiênCó thểlấy。Dữ liệuphầnphânmôkhốiCó thểlấygiúpgiúpbạnthựcgiờGiámkhốngđóngphímtiêu，đồng thờisinhthànhChiTietcủabáobảng...',
+    time: '10:06',
     isMe: false,
     avatar: aiAvatar,
   },
   {
     id: 6,
-    sender: "Ricky",
-    content: "quáhảorồi，kiatôinếunàoBắt đầukhiếndùngnhỉ？",
-    time: "10:08",
+    sender: 'Ricky',
+    content: 'quáhảorồi，kiatôinếunàoBắt đầukhiếndùngnhỉ？',
+    time: '10:08',
     isMe: true,
     avatar: meAvatar,
   },
   {
     id: 7,
-    sender: "Art Bot",
+    sender: 'Art Bot',
     content:
-      "bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。",
-    time: "10:09",
+      'bạnCó thểlấyxâymộtchiếcmụcmục，nhiênsautạimụcmụctrongThêm mớiđóngcủaDữ liệunguồn，HeThongsẽtừđộngvàodòngphầnphân。',
+    time: '10:09',
     isMe: false,
     avatar: aiAvatar,
   },
   {
     id: 8,
-    sender: "Ricky",
-    content: "minhtrắngrồi，tạtạbạncủagiúpgiúp！",
-    time: "10:10",
+    sender: 'Ricky',
+    content: 'minhtrắngrồi，tạtạbạncủagiúpgiúp！',
+    time: '10:10',
     isMe: true,
     avatar: meAvatar,
   },
   {
     id: 9,
-    sender: "Art Bot",
-    content: "Khôngkháchkhí，cónhiệmnàohỏiđềgiờliênhệtôi。",
-    time: "10:11",
+    sender: 'Art Bot',
+    content: 'Khôngkháchkhí，cónhiệmnàohỏiđềgiờliênhệtôi。',
+    time: '10:11',
     isMe: false,
     avatar: aiAvatar,
   },
@@ -444,17 +411,17 @@ const sendMessage = () => {
 
   messages.value.push({
     id: messageId.value++,
-    sender: "Ricky",
+    sender: 'Ricky',
     content: text,
     time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
     }),
     isMe: true,
     avatar: userAvatar.value,
   });
 
-  messageText.value = "";
+  messageText.value = '';
   scrollToBottom();
 };
 
@@ -472,7 +439,7 @@ const openChat = () => {
 
 onMounted(() => {
   scrollToBottom();
-  mittBus.on("openChat", openChat);
+  mittBus.on('openChat', openChat);
   selectedPerson.value = personList.value[0];
 });
 </script>

@@ -5,7 +5,7 @@ import type {
   SupplierContractMutation,
   SupplierContractStatisticsResponse,
   SupplierContractStatus,
-} from "@/domain/supplier/contract.types";
+} from '@/domain/supplier/contract.types';
 
 export interface GetSupplierContractsUseCase {
   execute(params: SupplierContractListParams): Promise<{
@@ -27,10 +27,7 @@ export interface CreateSupplierContractUseCase {
 }
 
 export interface UpdateSupplierContractUseCase {
-  execute(
-    id: string,
-    data: SupplierContractMutation,
-  ): Promise<SupplierContractDto>;
+  execute(id: string, data: SupplierContractMutation): Promise<SupplierContractDto>;
 }
 
 export interface UploadSupplierContractFileUseCase {
@@ -38,10 +35,7 @@ export interface UploadSupplierContractFileUseCase {
 }
 
 export interface UpdateSupplierContractStatusUseCase {
-  execute(
-    id: string,
-    status: SupplierContractStatus,
-  ): Promise<SupplierContractDto>;
+  execute(id: string, status: SupplierContractStatus): Promise<SupplierContractDto>;
 }
 
 export interface DeleteSupplierContractUseCase {

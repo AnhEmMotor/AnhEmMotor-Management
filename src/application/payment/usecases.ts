@@ -3,8 +3,8 @@ import type {
   PaymentItem,
   PaymentListResult,
   CreatePaymentPayload,
-} from "@/domain/payment/types";
-import type { WorkshopPaymentApiType } from "@/api/service/workshop-payment.api";
+} from '@/domain/payment/types';
+import type { WorkshopPaymentApiType } from '@/api/service/workshop-payment.api';
 
 export type GetPaymentsInput = {
   current: number;
@@ -31,8 +31,7 @@ export class RealGetPaymentsUseCase implements GetPaymentsUseCase {
   constructor(private api: WorkshopPaymentApiType) {}
 
   async call(input: GetPaymentsInput): Promise<PaymentListResult | null> {
-    const { current, size, sourceType, paymentStatus, paymentMethod, search } =
-      input;
+    const { current, size, sourceType, paymentStatus, paymentMethod, search } = input;
 
     const filters: string[] = [];
     if (sourceType) filters.push(`SourceType==${sourceType}`);
@@ -43,8 +42,8 @@ export class RealGetPaymentsUseCase implements GetPaymentsUseCase {
     const params: Record<string, unknown> = {
       current,
       size,
-      Filters: filters.join(","),
-      Sorts: "-CreatedAt",
+      Filters: filters.join(','),
+      Sorts: '-CreatedAt',
     };
 
     const res = await this.api.getList(params);
@@ -65,7 +64,7 @@ export class RealGetPaymentDetailUseCase implements GetPaymentDetailUseCase {
     return {
       ...item,
       sourceLabel: getSourceLabel(item.sourceType),
-      canPrintInvoice: item.paymentStatus === "Paid",
+      canPrintInvoice: item.paymentStatus === 'Paid',
     } as PaymentDetail;
   }
 }
@@ -92,9 +91,9 @@ export class RealGetPaymentStatsUseCase implements GetPaymentStatsUseCase {
 
 function getSourceLabel(sourceType: string): string {
   const map: Record<string, string> = {
-    RepairOrder: "Phiếu sửa chữa",
-    Warranty: "Phiếu bảo hành",
-    ServiceBooking: "Đặt dịch vụ",
+    RepairOrder: 'Phiếu sửa chữa',
+    Warranty: 'Phiếu bảo hành',
+    ServiceBooking: 'Đặt dịch vụ',
   };
   return map[sourceType] || sourceType;
 }

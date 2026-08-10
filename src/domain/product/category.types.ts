@@ -24,6 +24,6 @@ export interface ProductManagementType {
 }
 
 export enum CategoryTab {
-  PRODUCT = "product",
-  VEHICLE = "vehicle",
+  PRODUCT = 'product',
+  VEHICLE = 'vehicle',
 }

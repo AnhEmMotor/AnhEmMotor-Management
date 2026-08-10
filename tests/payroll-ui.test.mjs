@@ -1,13 +1,13 @@
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
 
-const payrollPagePath = "../src/modules/Admin/view/employee/payroll/index.vue";
+const payrollPagePath = '../src/modules/Admin/view/employee/payroll/index.vue';
 
 const readPayrollPage = () =>
-  readFile(new URL(payrollPagePath, import.meta.url), { encoding: "utf8" });
+  readFile(new URL(payrollPagePath, import.meta.url), { encoding: 'utf8' });
 
-test("payroll page exposes a clear period header and formatted KPI hierarchy", async () => {
+test('payroll page exposes a clear period header and formatted KPI hierarchy', async () => {
   const source = await readPayrollPage();
 
   assert.match(source, /class="payroll-hero"/);
@@ -20,7 +20,7 @@ test("payroll page exposes a clear period header and formatted KPI hierarchy", a
   assert.match(source, /Chi tiết bảng lương/);
 });
 
-test("payroll page keeps responsive and theme-safe presentation rules", async () => {
+test('payroll page keeps responsive and theme-safe presentation rules', async () => {
   const source = await readPayrollPage();
 
   assert.match(source, /@media \((?:max-width: 767px|width <= 767px)\)/);
@@ -30,6 +30,6 @@ test("payroll page keeps responsive and theme-safe presentation rules", async ()
   assert.equal(
     (source.match(/<style\b/g) || []).length,
     1,
-    "payroll SFC must keep exactly one style block",
+    'payroll SFC must keep exactly one style block'
   );
 });

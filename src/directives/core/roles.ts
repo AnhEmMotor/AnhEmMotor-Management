@@ -1,12 +1,9 @@
-import { useUserStore } from "@/application/store/user";
-import { App, Directive, DirectiveBinding } from "vue";
+import { useUserStore } from '@/application/store/user';
+import { App, Directive, DirectiveBinding } from 'vue';
 
 export type RolesDirective = Directive<HTMLElement, string | string[]>;
 
-function checkRolePermission(
-  el: HTMLElement,
-  binding: DirectiveBinding<string | string[]>,
-): void {
+function checkRolePermission(el: HTMLElement, binding: DirectiveBinding<string | string[]>): void {
   const userStore = useUserStore();
   const userRoles = userStore.getUserInfo.roles;
 
@@ -15,13 +12,9 @@ function checkRolePermission(
     return;
   }
 
-  const requiredRoles = Array.isArray(binding.value)
-    ? binding.value
-    : [binding.value];
+  const requiredRoles = Array.isArray(binding.value) ? binding.value : [binding.value];
 
-  const hasPermission = requiredRoles.some((role: string) =>
-    userRoles.includes(role),
-  );
+  const hasPermission = requiredRoles.some((role: string) => userRoles.includes(role));
 
   if (!hasPermission) {
     removeElement(el);
@@ -40,5 +33,5 @@ const rolesDirective: RolesDirective = {
 };
 
 export function setupRolesDirective(app: App): void {
-  app.directive("roles", rolesDirective);
+  app.directive('roles', rolesDirective);
 }

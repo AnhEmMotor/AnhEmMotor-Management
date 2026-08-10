@@ -1,12 +1,6 @@
 <template>
   <div class="section-container">
-    <el-button
-      class="back-btn"
-      @click="$emit('back')"
-      :icon="Back"
-      type="primary"
-      plain
-    >
+    <el-button class="back-btn" @click="$emit('back')" :icon="Back" type="primary" plain>
       Quay lại
     </el-button>
     <div class="section-header">
@@ -17,22 +11,13 @@
     </div>
     <p class="section-desc">{{ section.description }}</p>
     <div v-if="section.imageUrl" class="section-image-wrapper">
-      <img
-        :src="section.imageUrl"
-        alt="Section Illustration"
-        class="section-image"
-      />
+      <img :src="section.imageUrl" alt="Section Illustration" class="section-image" />
     </div>
     <div class="pages-list">
       <div v-for="page in section.pages" :key="page.id" class="page-card">
         <div class="page-header">
           <h3 class="page-title">{{ page.title }}</h3>
-          <el-tag
-            v-if="page.permission"
-            type="info"
-            size="small"
-            effect="plain"
-          >
+          <el-tag v-if="page.permission" type="info" size="small" effect="plain">
             {{ page.permission }}
           </el-tag>
         </div>
@@ -64,8 +49,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GuideSection } from "../data/guideData";
-import { Location, Back } from "@element-plus/icons-vue";
+import type { GuideSection } from '../data/guideData';
+import { Location, Back } from '@element-plus/icons-vue';
 defineProps<{ section: GuideSection }>();
 defineEmits<{ back: [] }>();
 </script>
@@ -168,7 +153,7 @@ defineEmits<{ back: [] }>();
 }
 
 .route-badge code {
-  font-family: "SF Mono", Monaco, monospace;
+  font-family: 'SF Mono', Monaco, monospace;
   font-size: 13px;
 }
 

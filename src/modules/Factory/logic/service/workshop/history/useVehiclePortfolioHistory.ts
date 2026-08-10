@@ -1,9 +1,9 @@
-import { computed, ref, type ComputedRef, type Ref } from "vue";
+import { computed, ref, type ComputedRef, type Ref } from 'vue';
 
-import type { RepairOrder } from "@/api/sales";
-import { VehicleApi, type Vehicle } from "@/api/vehicle";
+import type { RepairOrder } from '@/api/sales';
+import { VehicleApi, type Vehicle } from '@/api/vehicle';
 
-export type QueryType = "auto" | "vin" | "licensePlate" | "phone";
+export type QueryType = 'auto' | 'vin' | 'licensePlate' | 'phone';
 
 type SearchInput = {
   query: string;
@@ -15,7 +15,7 @@ type SearchInput = {
 type AlertItem = {
   title: string;
   severity: string;
-  type: "warning" | "danger" | "info" | "success";
+  type: 'warning' | 'danger' | 'info' | 'success';
   description: string;
 };
 
@@ -39,9 +39,9 @@ type UseVehiclePortfolioHistoryResult = {
 
 export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
   const loading = ref(false);
-  const error = ref("");
+  const error = ref('');
 
-  const queryType = ref<QueryType>("auto");
+  const queryType = ref<QueryType>('auto');
 
   const vehicle = ref<Vehicle | null>(null);
   const timeline = ref<RepairOrder[]>([]);
@@ -59,49 +59,47 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
 
     if (mileage >= 3000) {
       list.push({
-        title: "Nhắc bảo dưỡng định kỳ (mốc ODO)",
-        severity: "Cảnh báo",
-        type: mileage >= 5000 ? "warning" : "info",
-        description:
-          "Hiện trạng ODO đang vượt mốc nhắc nhở theo chu kỳ gần nhất.",
+        title: 'Nhắc bảo dưỡng định kỳ (mốc ODO)',
+        severity: 'Cảnh báo',
+        type: mileage >= 5000 ? 'warning' : 'info',
+        description: 'Hiện trạng ODO đang vượt mốc nhắc nhở theo chu kỳ gần nhất.',
       });
     }
 
     list.push({
-      title: "Nhắc thay phụ tùng theo chu kỳ",
-      severity: "Gợi ý",
-      type: "warning",
-      description:
-        "Có thể cần kiểm tra/đề xuất thay thế phụ tùng theo tình trạng thực tế và ODO.",
+      title: 'Nhắc thay phụ tùng theo chu kỳ',
+      severity: 'Gợi ý',
+      type: 'warning',
+      description: 'Có thể cần kiểm tra/đề xuất thay thế phụ tùng theo tình trạng thực tế và ODO.',
     });
 
     return list.slice(0, 3);
   });
 
   const handleReset = () => {
-    error.value = "";
-    queryType.value = "auto";
+    error.value = '';
+    queryType.value = 'auto';
     vehicle.value = null;
     timeline.value = [];
     pagination.value = { ...pagination.value, current: 1, total: 0 };
   };
 
   function normalizeQueryType(q: string, forced: QueryType): QueryType {
-    if (forced !== "auto") return forced;
+    if (forced !== 'auto') return forced;
     const s = q.trim();
-    if (!s) return "auto";
-    if (/^\d{10,}$/.test(s.replace(/\s/g, ""))) return "phone";
-    if (/^[A-HJ-NPR-Z0-9]{8,}$/i.test(s)) return "vin";
-    if (/^[0-9]{2}[-A-Za-z]?[0-9A-Za-z.-]/.test(s)) return "licensePlate";
-    return "vin";
+    if (!s) return 'auto';
+    if (/^\d{10,}$/.test(s.replace(/\s/g, ''))) return 'phone';
+    if (/^[A-HJ-NPR-Z0-9]{8,}$/i.test(s)) return 'vin';
+    if (/^[0-9]{2}[-A-Za-z]?[0-9A-Za-z.-]/.test(s)) return 'licensePlate';
+    return 'vin';
   }
 
   async function handleSearch(payload: SearchInput) {
     const q = payload.query.trim();
-    error.value = "";
+    error.value = '';
 
     if (!q) {
-      error.value = "Vui lòng nhập VIN / biển số / SĐT.";
+      error.value = 'Vui lòng nhập VIN / biển số / SĐT.';
       return;
     }
 
@@ -123,19 +121,18 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
         vehicle.value = res.vehicle;
         timeline.value = res.history;
         pagination.value.total = res.totalHistoryCount;
-        error.value = ""; // Clear error on success
+        error.value = '';
       }
     } catch (e: any) {
-      // Handle "Not Found" specifically as a state, not a critical error
       if (
         e?.response?.status === 400 &&
-        JSON.stringify(e?.response?.data || {}).includes("No vehicle found")
+        JSON.stringify(e?.response?.data || {}).includes('No vehicle found')
       ) {
-        error.value = "Không tìm thấy hồ sơ xe phù hợp với thông tin đã nhập.";
+        error.value = 'Không tìm thấy hồ sơ xe phù hợp với thông tin đã nhập.';
         vehicle.value = null;
         timeline.value = [];
       } else {
-        error.value = e?.message || "Đã xảy ra lỗi trong quá trình tra cứu.";
+        error.value = e?.message || 'Đã xảy ra lỗi trong quá trình tra cứu.';
         vehicle.value = null;
         timeline.value = [];
       }

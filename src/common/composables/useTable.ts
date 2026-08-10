@@ -1,20 +1,12 @@
-import {
-  ref,
-  reactive,
-  computed,
-  onMounted,
-  onUnmounted,
-  nextTick,
-  readonly,
-} from "vue";
-import { useWindowSize } from "@vueuse/core";
-import { useTableColumns } from "./useTableColumns";
-import type { ColumnOption } from "@/types/component";
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, readonly } from 'vue';
+import { useWindowSize } from '@vueuse/core';
+import { useTableColumns } from './useTableColumns';
+import type { ColumnOption } from '@/types/component';
 import {
   TableCache,
   CacheInvalidationStrategy,
   type ApiResponse,
-} from "@/common/utils/table/tableCache";
+} from '@/common/utils/table/tableCache';
 import {
   type TableError,
   defaultResponseAdapter,
@@ -22,15 +14,12 @@ import {
   updatePaginationFromResponse,
   createSmartDebounce,
   createErrorHandler,
-} from "@/common/utils/table/tableUtils";
-import { tableConfig } from "@/common/utils/table/tableConfig";
+} from '@/common/utils/table/tableUtils';
+import { tableConfig } from '@/common/utils/table/tableConfig';
 
 type InferApiParams<T> = T extends (params: infer P) => any ? P : never;
-type InferApiResponse<T> = T extends (params: any) => Promise<infer R>
-  ? R
-  : never;
-type InferRecordType<T> =
-  T extends Api.Common.PaginatedResponse<infer U> ? U : never;
+type InferApiResponse<T> = T extends (params: any) => Promise<infer R> ? R : never;
+type InferRecordType<T> = T extends Api.Common.PaginatedResponse<infer U> ? U : never;
 
 export interface UseTableConfig<
   TApiFn extends (params: any) => Promise<any> = (params: any) => Promise<any>,
@@ -87,18 +76,18 @@ export interface UseTableConfig<
   debug?: {
     enableLog?: boolean;
 
-    logLevel?: "info" | "warn" | "error";
+    logLevel?: 'info' | 'warn' | 'error';
   };
 }
 
 export function useTable<TApiFn extends (params: any) => Promise<any>>(
-  config: UseTableConfig<TApiFn>,
+  config: UseTableConfig<TApiFn>
 ) {
   return useTableImpl(config);
 }
 
 function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
-  config: UseTableConfig<TApiFn>,
+  config: UseTableConfig<TApiFn>
 ) {
   type TRecord = InferRecordType<InferApiResponse<TApiFn>>;
   type TParams = InferApiParams<TApiFn>;
@@ -111,10 +100,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       columnsFactory,
       paginationKey,
     },
-    transform: {
-      dataTransformer,
-      responseAdapter = defaultResponseAdapter,
-    } = {},
+    transform: { dataTransformer, responseAdapter = defaultResponseAdapter } = {},
     performance: {
       enableCache = false,
       cacheTime = 5 * 60 * 1000,
@@ -145,13 +131,11 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     },
   };
 
-  const cache = enableCache
-    ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog)
-    : null;
+  const cache = enableCache ? new TableCache<TRecord>(cacheTime, maxCacheSize, enableLog) : null;
 
-  type LoadingState = "idle" | "loading" | "success" | "error";
-  const loadingState = ref<LoadingState>("idle");
-  const loading = computed(() => loadingState.value === "loading");
+  type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+  const loadingState = ref<LoadingState>('idle');
+  const loading = computed(() => loadingState.value === 'loading');
 
   const error = ref<TableError | null>(null);
 
@@ -167,13 +151,12 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
         [pageKey]: 1,
         [sizeKey]: 10,
       },
-      apiParams || {},
-    ) as TParams,
+      apiParams || {}
+    ) as TParams
   );
 
   const pagination = reactive<Api.Common.PaginationParams>({
-    current:
-      ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
+    current: ((searchParams as Record<string, unknown>)[pageKey] as number) || 1,
     size: ((searchParams as Record<string, unknown>)[sizeKey] as number) || 10,
     total: 0,
   });
@@ -184,9 +167,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     small: width.value < 768,
   }));
 
-  const columnConfig = columnsFactory
-    ? useTableColumns<TRecord>(columnsFactory)
-    : null;
+  const columnConfig = columnsFactory ? useTableColumns<TRecord>(columnsFactory) : null;
   const columns = columnConfig?.columns;
   const columnChecks = columnConfig?.columnChecks;
 
@@ -194,16 +175,13 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   const cacheInfo = computed(() => {
     void cacheUpdateTrigger.value;
-    if (!cache) return { total: 0, size: "0KB", hitRate: "0 avg hits" };
+    if (!cache) return { total: 0, size: '0KB', hitRate: '0 avg hits' };
     return cache.getStats();
   });
 
   const handleError = createErrorHandler(onError, enableLog);
 
-  const clearCache = (
-    strategy: CacheInvalidationStrategy,
-    context?: string,
-  ): void => {
+  const clearCache = (strategy: CacheInvalidationStrategy, context?: string): void => {
     if (!cache) return;
 
     let clearedCount = 0;
@@ -211,26 +189,22 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     switch (strategy) {
       case CacheInvalidationStrategy.CLEAR_ALL:
         cache.clear();
-        logger.log(`xóakhôngnêncóCache - ${context || ""}`);
+        logger.log(`xóakhôngnêncóCache - ${context || ''}`);
         break;
 
       case CacheInvalidationStrategy.CLEAR_CURRENT:
         clearedCount = cache.clearCurrentSearch(searchParams);
-        logger.log(
-          `xóakhôngkhitrướcTìm kiếmCache ${clearedCount} điều - ${context || ""}`,
-        );
+        logger.log(`xóakhôngkhitrướcTìm kiếmCache ${clearedCount} điều - ${context || ''}`);
         break;
 
       case CacheInvalidationStrategy.CLEAR_PAGINATION:
         clearedCount = cache.clearPagination();
-        logger.log(
-          `xóakhôngPhân trangCache ${clearedCount} điều - ${context || ""}`,
-        );
+        logger.log(`xóakhôngPhân trangCache ${clearedCount} điều - ${context || ''}`);
         break;
 
       case CacheInvalidationStrategy.KEEP_ALL:
       default:
-        logger.log(`Duy trìCacheKhôngbiến - ${context || ""}`);
+        logger.log(`Duy trìCacheKhôngbiến - ${context || ''}`);
         break;
     }
 
@@ -239,7 +213,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   const fetchData = async (
     params?: Partial<TParams>,
-    useCache = enableCache,
+    useCache = enableCache
   ): Promise<ApiResponse<TRecord>> => {
     if (abortController) {
       abortController.abort();
@@ -248,7 +222,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     const currentController = new AbortController();
     abortController = currentController;
 
-    loadingState.value = "loading";
+    loadingState.value = 'loading';
     error.value = null;
 
     try {
@@ -259,7 +233,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
           [pageKey]: pagination.current,
           [sizeKey]: pagination.size,
         },
-        params || {},
+        params || {}
       ) as TParams;
 
       if (excludeParams.length > 0) {
@@ -284,7 +258,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
             paramsRecord[sizeKey] = pagination.size;
           }
 
-          loadingState.value = "success";
+          loadingState.value = 'success';
 
           if (onCacheHit) {
             onCacheHit(cachedItem.data, cachedItem.response);
@@ -298,7 +272,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       const response = await apiFn(requestParams);
 
       if (currentController.signal.aborted) {
-        throw new Error("Vui lòngcầuĐãHủy");
+        throw new Error('Vui lòngcầuĐãHủy');
       }
 
       const standardResponse = responseAdapter(response);
@@ -327,7 +301,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
         logger.log(`Dữ liệuĐãCache`);
       }
 
-      loadingState.value = "success";
+      loadingState.value = 'success';
 
       if (onSuccess) {
         onSuccess(tableData, standardResponse);
@@ -335,14 +309,14 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
       return standardResponse;
     } catch (err) {
-      if (err instanceof Error && err.message === "Vui lòngcầuĐãHủy") {
-        loadingState.value = "idle";
+      if (err instanceof Error && err.message === 'Vui lòngcầuĐãHủy') {
+        loadingState.value = 'idle';
         return { records: [], total: 0, current: 1, size: 10 };
       }
 
-      loadingState.value = "error";
+      loadingState.value = 'error';
       data.value = [];
-      const tableError = handleError(err, "LấyBảngDữ liệuThatBai");
+      const tableError = handleError(err, 'LấyBảngDữ liệuThatBai');
       throw tableError;
     } finally {
       if (abortController === currentController) {
@@ -351,9 +325,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   };
 
-  const getData = async (
-    params?: Partial<TParams>,
-  ): Promise<ApiResponse<TRecord> | void> => {
+  const getData = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
     try {
       return await fetchData(params);
     } catch {
@@ -361,13 +333,11 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   };
 
-  const getDataByPage = async (
-    params?: Partial<TParams>,
-  ): Promise<ApiResponse<TRecord> | void> => {
+  const getDataByPage = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
     pagination.current = 1;
     (searchParams as Record<string, unknown>)[pageKey] = 1;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "Tìm kiếmDữ liệu");
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Tìm kiếmDữ liệu');
 
     try {
       return await fetchData(params, false);
@@ -376,10 +346,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
   };
 
-  const debouncedGetDataByPage = createSmartDebounce(
-    getDataByPage,
-    debounceTime,
-  );
+  const debouncedGetDataByPage = createSmartDebounce(getDataByPage, debounceTime);
 
   const resetSearchParams = async (): Promise<void> => {
     debouncedGetDataByPage.cancel();
@@ -401,7 +368,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
     error.value = null;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "Đặt lạiTìm kiếm");
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Đặt lạiTìm kiếm');
 
     await getData();
 
@@ -413,8 +380,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   const replaceSearchParams = (params?: Partial<TParams>): void => {
     const paramsRecord = searchParams as Record<string, unknown>;
-    const currentSize =
-      pagination.size || ((paramsRecord[sizeKey] as number) ?? 10);
+    const currentSize = pagination.size || ((paramsRecord[sizeKey] as number) ?? 10);
 
     Object.keys(searchParams).forEach((key) => {
       if (key !== pageKey && key !== sizeKey) {
@@ -428,7 +394,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
         [pageKey]: 1,
         [sizeKey]: currentSize,
       },
-      params || {},
+      params || {}
     );
 
     pagination.current = 1;
@@ -448,10 +414,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     paramsRecord[sizeKey] = newSize;
     paramsRecord[pageKey] = 1;
 
-    clearCache(
-      CacheInvalidationStrategy.CLEAR_CURRENT,
-      "Phân trangKích thướcbiếnhóa",
-    );
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Phân trangKích thướcbiếnhóa');
 
     await getData();
   };
@@ -464,7 +427,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
 
     if (pagination.current === newCurrent) {
-      logger.log("Phân trangtrangmãChưabiếnhóa，nhảyquaVui lòngcầu");
+      logger.log('Phân trangtrangmãChưabiếnhóa，nhảyquaVui lòngcầu');
       return;
     }
 
@@ -488,19 +451,19 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     debouncedGetDataByPage.cancel();
     pagination.current = 1;
     (searchParams as Record<string, unknown>)[pageKey] = 1;
-    clearCache(CacheInvalidationStrategy.CLEAR_PAGINATION, "Thêm mớiDữ liệu");
+    clearCache(CacheInvalidationStrategy.CLEAR_PAGINATION, 'Thêm mớiDữ liệu');
     await getData();
   };
 
   const refreshUpdate = async (): Promise<void> => {
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "Chỉnh sửaDữ liệu");
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Chỉnh sửaDữ liệu');
     await getData();
   };
 
   const refreshRemove = async (): Promise<void> => {
     const { current } = pagination;
 
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "XóaDữ liệu");
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'XóaDữ liệu');
     await getData();
 
     if (data.value.length === 0 && current > 1) {
@@ -512,12 +475,12 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   const refreshData = async (): Promise<void> => {
     debouncedGetDataByPage.cancel();
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "tayđộngLàm mới");
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'tayđộngLàm mới');
     await getData();
   };
 
   const refreshSoft = async (): Promise<void> => {
-    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, "mềmLàm mới");
+    clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'mềmLàm mới');
     await getData();
   };
 
@@ -531,7 +494,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   const clearData = (): void => {
     data.value = [];
     error.value = null;
-    clearCache(CacheInvalidationStrategy.CLEAR_ALL, "xóakhôngDữ liệu");
+    clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'xóakhôngDữ liệu');
   };
 
   const clearExpiredCache = (): number => {
@@ -647,9 +610,6 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   };
 }
 
-export { CacheInvalidationStrategy } from "@/common/utils/table/tableCache";
-export type { ApiResponse, CacheItem } from "@/common/utils/table/tableCache";
-export type {
-  BaseRequestParams,
-  TableError,
-} from "@/common/utils/table/tableUtils";
+export { CacheInvalidationStrategy } from '@/common/utils/table/tableCache';
+export type { ApiResponse, CacheItem } from '@/common/utils/table/tableCache';
+export type { BaseRequestParams, TableError } from '@/common/utils/table/tableUtils';

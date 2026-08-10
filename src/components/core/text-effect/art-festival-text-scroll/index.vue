@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { useSettingStore } from "@/application/store/setting";
-import { useCeremony } from "@/common/composables/useCeremony";
+import { useSettingStore } from '@/application/store/setting';
+import { useCeremony } from '@/common/composables/useCeremony';
 
-defineOptions({ name: "ArtFestivalTextScroll" });
+defineOptions({ name: 'ArtFestivalTextScroll' });
 
 const settingStore = useSettingStore();
 const { showFestivalText } = storeToRefs(settingStore);

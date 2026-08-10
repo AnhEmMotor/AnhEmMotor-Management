@@ -42,9 +42,7 @@
     <el-card shadow="never">
       <template #header>
         <div class="card-header flex justify-between items-center">
-          <span class="font-bold text-lg">{{
-            $t("menus.contract.sales")
-          }}</span>
+          <span class="font-bold text-lg">{{ $t('menus.contract.sales') }}</span>
         </div>
       </template>
       <div>
@@ -79,26 +77,13 @@
             <el-option label="Honda Vision" value="Vision" />
             <el-option label="Yamaha Exciter" value="Exciter" />
           </el-select>
-          <el-button
-            type="primary"
-            :icon="Search"
-            class="w-full md:w-auto"
-            @click="fetchData"
+          <el-button type="primary" :icon="Search" class="w-full md:w-auto" @click="fetchData"
             >Tìm kiếm</el-button
           >
         </div>
 
-        <el-table
-          :data="tableData"
-          border
-          style="width: 100%"
-          v-loading="loading"
-        >
-          <el-table-column
-            prop="contractNumber"
-            label="Số Hợp Đồng"
-            width="160"
-          />
+        <el-table :data="tableData" border style="width: 100%" v-loading="loading">
+          <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
           <el-table-column label="Mã Đơn Hàng" width="140">
             <template #default="scope">
               <el-button
@@ -111,25 +96,15 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="customerName"
-            label="Khách Hàng"
-            min-width="160"
-          />
-          <el-table-column
-            prop="vehicle"
-            label="Xe Giao Dịch"
-            min-width="180"
-          />
+          <el-table-column prop="customerName" label="Khách Hàng" min-width="160" />
+          <el-table-column prop="vehicle" label="Xe Giao Dịch" min-width="180" />
 
           <el-table-column label="Hạn Bàn Giao" width="130">
             <template #default="scope">
               <div class="flex flex-col items-start">
                 <span
                   :class="{
-                    'text-red-500 font-bold': isOverdue(
-                      scope.row.deliveryDeadline,
-                    ),
+                    'text-red-500 font-bold': isOverdue(scope.row.deliveryDeadline),
                   }"
                 >
                   {{ formatDate(scope.row.deliveryDeadline) }}
@@ -161,12 +136,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            prop="status"
-            label="Trạng Thái HĐ"
-            width="130"
-            align="center"
-          >
+          <el-table-column prop="status" label="Trạng Thái HĐ" width="130" align="center">
             <template #default="scope">
               <el-tag :type="getStatusType(scope.row.status)" effect="dark">
                 {{ scope.row.status }}
@@ -174,19 +144,10 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            label="Thao Tác"
-            width="110"
-            align="center"
-            fixed="right"
-          >
+          <el-table-column label="Thao Tác" width="110" align="center" fixed="right">
             <template #default="scope">
               <el-dropdown trigger="click">
-                <el-button
-                  type="primary"
-                  link
-                  v-auth="Permissions.Admin.ContractManagement.Edit"
-                >
+                <el-button type="primary" link v-auth="Permissions.Admin.ContractManagement.Edit">
                   Thao tác
                   <el-icon class="el-icon--right"><ArrowDown /></el-icon>
                 </el-button>
@@ -218,9 +179,7 @@
                         disabled
                         v-auth="Permissions.Admin.ContractManagement.View"
                       >
-                        <el-icon class="text-orange-500"
-                          ><WarningFilled
-                        /></el-icon>
+                        <el-icon class="text-orange-500"><WarningFilled /></el-icon>
                         <span class="text-orange-500">Ký HĐ để giao xe</span>
                       </el-dropdown-item>
                     </template>
@@ -236,9 +195,7 @@
                         disabled
                         v-auth="Permissions.Admin.ContractManagement.Edit"
                       >
-                        <el-icon class="text-red-500"
-                          ><WarnTriangleFilled
-                        /></el-icon>
+                        <el-icon class="text-red-500"><WarnTriangleFilled /></el-icon>
                         <span class="text-red-500">Trễ hạn bàn giao!</span>
                       </el-dropdown-item>
                     </template>
@@ -266,10 +223,10 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
+import { Permissions } from '@/common/constants/permissions';
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import {
   View,
   Search,
@@ -282,18 +239,18 @@ import {
   WarningFilled,
   WarnTriangleFilled,
   ArrowDown,
-} from "@element-plus/icons-vue";
+} from '@element-plus/icons-vue';
 
-import { ElMessage } from "element-plus";
-import { SalesContractApi } from "@/infrastructure/api/sales-contract.api";
+import { ElMessage } from 'element-plus';
+import { SalesContractApi } from '@/infrastructure/api/sales-contract.api';
 
 const { t: $t } = useI18n();
 const router = useRouter();
 
 const loading = ref(false);
-const searchQuery = ref("");
-const statusFilter = ref("");
-const vehicleFilter = ref("");
+const searchQuery = ref('');
+const statusFilter = ref('');
+const vehicleFilter = ref('');
 
 const tableData = ref<any[]>([]);
 const statistics = reactive({
@@ -337,16 +294,11 @@ const fetchData = async () => {
     const res = await SalesContractApi.getList(params);
     tableData.value = res.items.map((c: any) => ({
       ...c,
-      progress:
-        c.status === "Fulfilled"
-          ? "delivered"
-          : c.status === "Signed"
-            ? "paid"
-            : "deposit",
+      progress: c.status === 'Fulfilled' ? 'delivered' : c.status === 'Signed' ? 'paid' : 'deposit',
     }));
     pagination.total = res.total;
   } catch (_e) {
-    ElMessage.error("Không tải được danh sách hợp đồng.");
+    ElMessage.error('Không tải được danh sách hợp đồng.');
   } finally {
     loading.value = false;
   }
@@ -359,7 +311,6 @@ const loadStatistics = async () => {
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
   } catch (_e) {
-    // silent fail for stats
   }
 };
 
@@ -370,33 +321,33 @@ onMounted(() => {
 
 const getStatusType = (status: string) => {
   switch (status) {
-    case "Draft":
-      return "warning";
-    case "Signed":
-      return "primary";
-    case "Fulfilled":
-      return "success";
+    case 'Draft':
+      return 'warning';
+    case 'Signed':
+      return 'primary';
+    case 'Fulfilled':
+      return 'success';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    Draft: "Nháp (Draft)",
-    Signed: "Đã ký (Signed)",
-    Fulfilled: "Hoàn tất (Fulfilled)",
+    Draft: 'Nháp (Draft)',
+    Signed: 'Đã ký (Signed)',
+    Fulfilled: 'Hoàn tất (Fulfilled)',
   };
   return map[status] || status;
 };
 
 const getProgressActive = (progress: string) => {
   switch (progress) {
-    case "deposit":
+    case 'deposit':
       return 1;
-    case "paid":
+    case 'paid':
       return 2;
-    case "delivered":
+    case 'delivered':
       return 3;
     default:
       return 0;
@@ -409,12 +360,12 @@ const isOverdue = (dateStr: string) => {
 };
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("vi-VN");
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('vi-VN');
 };
 
 const goToPreview = (id?: string) => {
-  router.push({ name: "SalesContractPreview", params: { id: id || "" } });
+  router.push({ name: 'SalesContractPreview', params: { id: id || '' } });
 };
 </script>
 

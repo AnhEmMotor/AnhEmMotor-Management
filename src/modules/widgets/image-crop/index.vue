@@ -22,27 +22,23 @@
 </template>
 
 <script setup lang="ts">
-import lockImg from "@imgs/lock/bg_dark.webp";
+import lockImg from '@imgs/lock/bg_dark.webp';
 
-defineOptions({ name: "WidgetsImageCrop" });
+defineOptions({ name: 'WidgetsImageCrop' });
 
 const imageUrl = ref(lockImg);
 
 const handleError = (error: Error) => {
-  console.error("CắtLỗi:", error);
-  ElMessage.error("Cắt ảnhThatBai");
+  console.error('CắtLỗi:', error);
+  ElMessage.error('Cắt ảnhThatBai');
 };
 
-const handleLoadComplete = (result: {
-  url: string;
-  width: number;
-  height: number;
-}) => {
-  console.log("Hình ảnhLoadinghoànthành:", result);
+const handleLoadComplete = (result: { url: string; width: number; height: number }) => {
+  console.log('Hình ảnhLoadinghoànthành:', result);
 };
 
 const handleLoadError = (error: Error) => {
-  console.error("Hình ảnhLoadingThatBai:", error);
-  ElMessage.error("Hình ảnhLoadingThatBai");
+  console.error('Hình ảnhLoadingThatBai:', error);
+  ElMessage.error('Hình ảnhLoadingThatBai');
 };
 </script>

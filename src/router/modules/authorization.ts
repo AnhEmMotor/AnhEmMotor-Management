@@ -1,36 +1,36 @@
-import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from '@/types/router';
 
 export const authorizationRoutes: AppRouteRecord = {
-  path: "/auth-manage",
-  name: "Authorization",
-  component: "/index/index",
+  path: '/auth-manage',
+  name: 'Authorization',
+  component: '/index/index',
   meta: {
-    title: "menus.auth.title",
-    icon: "ri:shield-user-line",
-    roles: ["Admin", "SuperAdmin"],
-    permissions: ["Permissions.Admin"],
+    title: 'menus.auth.title',
+    icon: 'ri:shield-user-line',
+    roles: ['Admin', 'SuperAdmin'],
+    permissions: ['Permissions.Admin'],
   },
   children: [
     {
-      path: "user",
-      name: "User",
-      component: "/system/user",
+      path: 'user',
+      name: 'User',
+      component: '/system/user',
       meta: {
-        title: "menus.auth.user",
-        icon: "ri:user-shared-line",
+        title: 'menus.auth.user',
+        icon: 'ri:user-shared-line',
         keepAlive: true,
-        roles: ["Admin", "SuperAdmin"],
+        roles: ['Admin', 'SuperAdmin'],
       },
     },
     {
-      path: "role",
-      name: "Role",
-      component: "/system/role",
+      path: 'role',
+      name: 'Role',
+      component: '/system/role',
       meta: {
-        title: "menus.auth.role",
-        icon: "ri:shield-keyhole-line",
+        title: 'menus.auth.role',
+        icon: 'ri:shield-keyhole-line',
         keepAlive: true,
-        roles: ["Admin", "SuperAdmin"],
+        roles: ['Admin', 'SuperAdmin'],
       },
     },
   ],

@@ -1,9 +1,4 @@
-export type SalesContractStatus =
-  | "Draft"
-  | "PendingApproval"
-  | "Approved"
-  | "Signed"
-  | "Fulfilled";
+export type SalesContractStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Signed' | 'Fulfilled';
 
 export interface SalesContractListDto {
   id: string;

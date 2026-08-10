@@ -13,9 +13,7 @@
             <span class="text-sm font-medium">{{ item.name }}</span>
             <span class="text-sm text-g-600">{{ item.ip }}</span>
           </div>
-          <div
-            class="flex-c p-9 scale-[0.8] max-lg:p-5 max-md:block max-md:p-5 max-sm:!block"
-          >
+          <div class="flex-c p-9 scale-[0.8] max-lg:p-5 max-md:block max-md:p-5 max-sm:!block">
             <div class="mx-10 max-lg:m-0 max-lg:mr-5 max-md:m-0">
               <img
                 src="@imgs/safeguard/server.png"
@@ -24,26 +22,16 @@
               />
               <div class="flex justify-center -mt-2.5 max-md:mt-2.5">
                 <ElButtonGroup>
-                  <ElButton type="primary" size="default">{{
-                    $t("admin.t121")
-                  }}</ElButton>
-                  <ElButton type="danger" size="default">{{
-                    $t("admin.t122")
-                  }}</ElButton>
-                  <ElButton type="warning" size="default">{{
-                    $t("admin.t123")
-                  }}</ElButton>
+                  <ElButton type="primary" size="default">{{ $t('admin.t121') }}</ElButton>
+                  <ElButton type="danger" size="default">{{ $t('admin.t122') }}</ElButton>
+                  <ElButton type="warning" size="default">{{ $t('admin.t123') }}</ElButton>
                 </ElButtonGroup>
               </div>
             </div>
             <div class="flex-1 mt-1 max-lg:mt-0 max-md:mt-7.5">
               <div class="my-3.5">
                 <p class="mb-1 text-sm">CPU</p>
-                <ElProgress
-                  :percentage="item.cup"
-                  :text-inside="true"
-                  :stroke-width="17"
-                />
+                <ElProgress :percentage="item.cup" :text-inside="true" :stroke-width="17" />
               </div>
               <div class="my-3.5">
                 <p class="mb-1 text-sm">RAM</p>
@@ -81,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "SafeguardServer" });
+defineOptions({ name: 'SafeguardServer' });
 
 interface ServerInfo {
   name: string;
@@ -96,32 +84,32 @@ const UPDATE_INTERVAL = 3000;
 
 const serverList = reactive<ServerInfo[]>([
   {
-    name: "mởphátphụcvụthiết bị",
-    ip: "192.168.1.100",
+    name: 'mởphátphụcvụthiết bị',
+    ip: '192.168.1.100',
     cup: 85,
     memory: 65,
     swap: 45,
     disk: 92,
   },
   {
-    name: "đothửphụcvụthiết bị",
-    ip: "192.168.1.101",
+    name: 'đothửphụcvụthiết bị',
+    ip: '192.168.1.101',
     cup: 32,
     memory: 78,
     swap: 90,
     disk: 45,
   },
   {
-    name: "trướcĐăng tảiphụcvụthiết bị",
-    ip: "192.168.1.102",
+    name: 'trướcĐăng tảiphụcvụthiết bị',
+    ip: '192.168.1.102',
     cup: 95,
     memory: 42,
     swap: 67,
     disk: 88,
   },
   {
-    name: "đườngtrênphụcvụthiết bị",
-    ip: "192.168.1.103",
+    name: 'đườngtrênphụcvụthiết bị',
+    ip: '192.168.1.103',
     cup: 58,
     memory: 93,
     swap: 25,

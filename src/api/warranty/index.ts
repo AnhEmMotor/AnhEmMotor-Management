@@ -1,1 +1,1 @@
-export * from "./warranty-category.api";
+export * from './warranty-category.api';

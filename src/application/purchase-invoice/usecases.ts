@@ -2,7 +2,7 @@ import type {
   PurchaseInvoice,
   PurchaseInvoiceListResult,
   CreatePurchaseInvoicePayload,
-} from "@/domain/purchase-invoice/types";
+} from '@/domain/purchase-invoice/types';
 
 export interface GetPurchaseInvoicesUseCase {
   call(params: {

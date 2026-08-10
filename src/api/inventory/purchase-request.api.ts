@@ -1,17 +1,17 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   PurchaseRequestDetailResponse,
   PurchaseRequestList,
   CreatePurchaseRequest,
   UpdatePurchaseRequest,
   ApprovedPurchaseRequestDetailResponse,
-} from "@/domain/purchase-request/request.types";
+} from '@/domain/purchase-request/request.types';
 
 export const PurchaseRequestApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<PurchaseRequestList>({
-      url: "/api/v1/purchase-requests",
+      url: '/api/v1/purchase-requests',
       params: {
         Page: current,
         PageSize: size,
@@ -23,7 +23,7 @@ export const PurchaseRequestApi = {
   getApprovedList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<PurchaseRequestList>({
-      url: "/api/v1/purchase-requests/approved",
+      url: '/api/v1/purchase-requests/approved',
       params: {
         Page: current,
         PageSize: size,
@@ -47,12 +47,12 @@ export const PurchaseRequestApi = {
 
   create(data: CreatePurchaseRequest) {
     return request.post<PurchaseRequestDetailResponse>({
-      url: "/api/v1/purchase-requests",
+      url: '/api/v1/purchase-requests',
       data,
     });
   },
 
-  update(id: number, data: Omit<UpdatePurchaseRequest, "id">) {
+  update(id: number, data: Omit<UpdatePurchaseRequest, 'id'>) {
     return request.put<PurchaseRequestDetailResponse>({
       url: `/api/v1/purchase-requests/${id}`,
       data,
@@ -80,7 +80,7 @@ export const PurchaseRequestApi = {
 
   getStatuses() {
     return request.get<Record<string, string>>({
-      url: "/api/v1/purchase-requests/status",
+      url: '/api/v1/purchase-requests/status',
     });
   },
 
@@ -92,14 +92,14 @@ export const PurchaseRequestApi = {
 
   deleteMany(ids: number[]) {
     return request.del({
-      url: "/api/v1/purchase-requests/delete-many",
+      url: '/api/v1/purchase-requests/delete-many',
       data: { ids },
     });
   },
 
   cloneMany(ids: number[]) {
     return request.post<number>({
-      url: "/api/v1/purchase-requests/clone-many",
+      url: '/api/v1/purchase-requests/clone-many',
       data: { ids },
     });
   },
@@ -112,7 +112,7 @@ export const PurchaseRequestApi = {
 
   restoreMany(ids: number[]) {
     return request.post<number>({
-      url: "/api/v1/purchase-requests/restore-many",
+      url: '/api/v1/purchase-requests/restore-many',
       data: { ids },
     });
   },
@@ -120,7 +120,7 @@ export const PurchaseRequestApi = {
   getDeletedList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<PurchaseRequestList>({
-      url: "/api/v1/purchase-requests/deleted",
+      url: '/api/v1/purchase-requests/deleted',
       params: {
         Page: current,
         PageSize: size,
@@ -131,29 +131,29 @@ export const PurchaseRequestApi = {
 
   exportExcel(params: any) {
     return request.get<Blob>({
-      url: "/api/v1/purchase-requests/export",
+      url: '/api/v1/purchase-requests/export',
       params,
-      responseType: "blob",
+      responseType: 'blob',
     });
   },
 
   importExcel(file: File) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     return request.post<Blob>({
-      url: "/api/v1/purchase-requests/import",
+      url: '/api/v1/purchase-requests/import',
       data: formData,
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
-      responseType: "blob", // To handle the error file if returned
+      responseType: 'blob',
     });
   },
 
   downloadImportTemplate() {
     return request.get<Blob>({
-      url: "/api/v1/purchase-requests/import-template",
-      responseType: "blob",
+      url: '/api/v1/purchase-requests/import-template',
+      responseType: 'blob',
     });
   },
 };

@@ -1,7 +1,6 @@
 <template>
   <div class="resp-page art-card p-5 mb-5">
     <ElRow :gutter="20">
-      <!-- Biểu đồ -->
       <ElCol :xl="18" :lg="16" :md="24" :sm="24" :xs="24">
         <h4 class="m-0 mb-4 font-bold text-lg">BIỂU ĐỒ DOANH THU CHÍNH</h4>
         <div style="height: 300px">
@@ -16,7 +15,6 @@
         </div>
       </ElCol>
 
-      <!-- 3 con số tóm tắt -->
       <ElCol
         :xl="6"
         :lg="8"
@@ -30,16 +28,12 @@
         </h5>
 
         <div class="mb-6">
-          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">
-            Đã đạt
-          </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Đã đạt</div>
           <div class="text-xl font-bold text-blue-600">285.000.000đ</div>
         </div>
 
         <div class="mb-6">
-          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">
-            Cần thêm
-          </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Cần thêm</div>
           <div class="text-xl font-bold text-orange-500">415.000.000đ</div>
         </div>
 
@@ -49,9 +43,7 @@
           </div>
           <div class="text-xl font-bold text-green-600">
             ~890.000.000đ
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400"
-              >(89%)</span
-            >
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">(89%)</span>
           </div>
         </div>
       </ElCol>
@@ -60,37 +52,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
+import { computed } from 'vue';
+import ArtBarChart from '@/components/core/charts/art-bar-chart/index.vue';
 
 const props = defineProps({
   period: {
     type: String,
-    default: "today",
+    default: 'today',
   },
 });
 
 const xAxisData = computed(() => {
-  if (props.period === "today") {
+  if (props.period === 'today') {
     return [];
   }
-  // month
   return [];
 });
 
 const chartData = computed(() => {
-  if (props.period === "today") {
+  if (props.period === 'today') {
     return [
       {
-        name: "Doanh thu",
+        name: 'Doanh thu',
         data: [],
       },
     ];
   }
-  // month
   return [
     {
-      name: "Doanh thu",
+      name: 'Doanh thu',
       data: [],
     },
   ];

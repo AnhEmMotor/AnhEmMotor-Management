@@ -9,19 +9,19 @@
 </template>
 
 <script setup lang="ts">
-import "@/assets/styles/core/md.scss";
-import "@/assets/styles/custom/one-dark-pro.scss";
-import { useCommon } from "@/common/composables/useCommon";
-import { useRoute } from "vue-router";
-import { ref, shallowRef, computed, onMounted } from "vue";
-import { NewsApi } from "@/api/marketing";
+import '@/assets/styles/core/md.scss';
+import '@/assets/styles/custom/one-dark-pro.scss';
+import { useCommon } from '@/common/composables/useCommon';
+import { useRoute } from 'vue-router';
+import { ref, shallowRef, computed, onMounted } from 'vue';
+import { NewsApi } from '@/api/marketing';
 
-defineOptions({ name: "ArticleDetail" });
+defineOptions({ name: 'ArticleDetail' });
 
 const route = useRoute();
 const articleId = computed(() => Number(route.params.id));
-const articleTitle = ref("");
-const articleHtml = shallowRef("");
+const articleTitle = ref('');
+const articleHtml = shallowRef('');
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -37,11 +37,11 @@ const getArticleDetail = async () => {
 
     if (res) {
       articleTitle.value = res.title;
-      articleHtml.value = res.content || "";
+      articleHtml.value = res.content || '';
     }
   } catch (err) {
-    error.value = "Tải bài viết thất bại";
-    console.error("Lỗi khi tải chi tiết bài viết:", err);
+    error.value = 'Tải bài viết thất bại';
+    console.error('Lỗi khi tải chi tiết bài viết:', err);
   } finally {
     loading.value = false;
   }
@@ -80,7 +80,7 @@ onMounted(() => {
         left: 50px;
         width: 1px;
         height: 100%;
-        content: "";
+        content: '';
         background: #0a0a0e;
       }
     }

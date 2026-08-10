@@ -1,5 +1,5 @@
-import { MenuThemeEnum, SystemThemeEnum } from "@/common/enums/appEnum";
-import { LocationQueryRaw } from "vue-router";
+import { MenuThemeEnum, SystemThemeEnum } from '@/common/enums/appEnum';
+import { LocationQueryRaw } from 'vue-router';
 
 export interface SystemThemeType {
   className: string;
@@ -80,7 +80,7 @@ export interface UserState {
 export interface SettingStoreState extends SettingState {
   collapsed: boolean;
 
-  device: "desktop" | "mobile";
+  device: 'desktop' | 'mobile';
 
   language: string;
 }

@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-defineOptions({ name: "ArtIconButton" });
+defineOptions({ name: 'ArtIconButton' });
 
 interface Props {
   icon: string;

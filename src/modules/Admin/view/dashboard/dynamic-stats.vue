@@ -17,9 +17,7 @@
           v-for="(item, index) in list"
           :key="index"
         >
-          <el-tag type="info" size="small" effect="light">{{
-            item.category
-          }}</el-tag>
+          <el-tag type="info" size="small" effect="light">{{ item.category }}</el-tag>
           <span class="mx-2 text-g-600">{{ item.action }}</span>
           <span class="text-theme">{{ item.targetType }}</span>
         </div>
@@ -29,15 +27,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
-import { fetchRecentAuditLogs } from "@/api/dashboard.api";
+import { ref, reactive, onMounted } from 'vue';
+import { fetchRecentAuditLogs } from '@/api/dashboard.api';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  order: "text-blue-600",
-  inventory: "text-amber-500",
-  customer: "text-emerald-500",
-  operations: "text-rose-500",
-  finance: "text-purple-500",
+  order: 'text-blue-600',
+  inventory: 'text-amber-500',
+  customer: 'text-emerald-500',
+  operations: 'text-rose-500',
+  finance: 'text-purple-500',
 };
 
 interface AuditLogItem {
@@ -57,24 +55,24 @@ const isLoading = ref(false);
 
 function fmtTime(iso: string): string {
   const date = new Date(iso);
-  return date.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
   });
 }
 
 const targetTypeLabel: Record<string, string> = {
-  Order: "Đơn hàng",
-  Vehicle: "Xe",
-  Part: "Phụ tùng",
-  Customer: "Khách hàng",
-  Feedback: "Phản hồi",
-  Appointment: "Lịch hẹn",
-  FinanceContract: "Hợp đồng",
+  Order: 'Đơn hàng',
+  Vehicle: 'Xe',
+  Part: 'Phụ tùng',
+  Customer: 'Khách hàng',
+  Feedback: 'Phản hồi',
+  Appointment: 'Lịch hẹn',
+  FinanceContract: 'Hợp đồng',
 };
 
 async function fetchData() {
@@ -86,7 +84,7 @@ async function fetchData() {
       list.push({ ...log });
     });
   } catch (error) {
-    console.error("Failed to fetch recent audit logs:", error);
+    console.error('Failed to fetch recent audit logs:', error);
   } finally {
     isLoading.value = false;
   }

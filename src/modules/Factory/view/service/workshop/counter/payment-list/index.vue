@@ -1,37 +1,29 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <!-- Header -->
     <div
       class="flex items-start justify-between gap-4 flex-wrap bg-white p-6 rounded-xl shadow-sm border border-slate-100"
     >
       <div>
         <h1 class="text-2xl font-bold">
-          {{ $t("menus.service.workshop.counter.title") }}
+          {{ $t('menus.service.workshop.counter.title') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Quản lý thu tiền dịch vụ xưởng: Sửa chữa, Bảo trì, Bảo hành, Đặt dịch
-          vụ. Xưởng in phiếu → Khách mang đến quầy → Thu ngân thu tiền.
+          Quản lý thu tiền dịch vụ xưởng: Sửa chữa, Bảo trì, Bảo hành, Đặt dịch vụ. Xưởng in phiếu →
+          Khách mang đến quầy → Thu ngân thu tiền.
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <ElButton :icon="Refresh" :loading="loading" @click="refreshData">
-          Làm mới
-        </ElButton>
+        <ElButton :icon="Refresh" :loading="loading" @click="refreshData"> Làm mới </ElButton>
       </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ElCard shadow="never" class="border-l-4 border-l-red-400">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
-          Chưa thanh toán
-        </div>
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chưa thanh toán</div>
         <div class="text-2xl font-black text-red-600 mt-1">
           {{ stats.unpaid }}
         </div>
-        <div class="text-xs text-slate-400 mt-1">
-          {{ formatCurrency(stats.unpaidAmount) }} đ
-        </div>
+        <div class="text-xs text-slate-400 mt-1">{{ formatCurrency(stats.unpaidAmount) }} đ</div>
       </ElCard>
       <ElCard shadow="never" class="border-l-4 border-l-amber-400">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -40,9 +32,7 @@
         <div class="text-2xl font-black text-amber-600 mt-1">
           {{ stats.partial }}
         </div>
-        <div class="text-xs text-slate-400 mt-1">
-          {{ formatCurrency(stats.partialAmount) }} đ
-        </div>
+        <div class="text-xs text-slate-400 mt-1">{{ formatCurrency(stats.partialAmount) }} đ</div>
       </ElCard>
       <ElCard shadow="never" class="border-l-4 border-l-green-400">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -51,9 +41,7 @@
         <div class="text-2xl font-black text-green-600 mt-1">
           {{ stats.paidToday }}
         </div>
-        <div class="text-xs text-slate-400 mt-1">
-          {{ formatCurrency(stats.paidTodayAmount) }} đ
-        </div>
+        <div class="text-xs text-slate-400 mt-1">{{ formatCurrency(stats.paidTodayAmount) }} đ</div>
       </ElCard>
       <ElCard shadow="never" class="border-l-4 border-l-blue-400">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -65,13 +53,10 @@
       </ElCard>
     </div>
 
-    <!-- Filters -->
     <ElCard shadow="never">
       <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label
-            class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2"
-          >
+          <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">
             Tìm kiếm
           </label>
           <ElInput
@@ -82,17 +67,10 @@
           />
         </div>
         <div>
-          <label
-            class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2"
-          >
+          <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">
             Loại phiếu
           </label>
-          <ElSelect
-            v-model="sourceType"
-            placeholder="Chọn loại"
-            class="w-full"
-            clearable
-          >
+          <ElSelect v-model="sourceType" placeholder="Chọn loại" class="w-full" clearable>
             <ElOption
               v-for="s in sourceTypeOptions"
               :key="s.value"
@@ -102,17 +80,10 @@
           </ElSelect>
         </div>
         <div>
-          <label
-            class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2"
-          >
+          <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">
             Trạng thái TT
           </label>
-          <ElSelect
-            v-model="paymentStatus"
-            placeholder="Chọn trạng thái"
-            class="w-full"
-            clearable
-          >
+          <ElSelect v-model="paymentStatus" placeholder="Chọn trạng thái" class="w-full" clearable>
             <ElOption
               v-for="s in paymentStatusOptions"
               :key="s.value"
@@ -123,18 +94,13 @@
         </div>
         <div class="flex flex-col justify-end">
           <div class="flex items-center gap-3">
-            <ElButton type="primary" :loading="loading" @click="handleSearch">
-              Tìm kiếm
-            </ElButton>
-            <ElButton :disabled="loading" @click="handleReset">
-              Đặt lại
-            </ElButton>
+            <ElButton type="primary" :loading="loading" @click="handleSearch"> Tìm kiếm </ElButton>
+            <ElButton :disabled="loading" @click="handleReset"> Đặt lại </ElButton>
           </div>
         </div>
       </div>
     </ElCard>
 
-    <!-- Table -->
     <ElCard shadow="never">
       <ArtTable
         row-key="id"
@@ -162,7 +128,7 @@
           <b class="text-red-600">{{ formatCurrency(row.totalAmount) }} đ</b>
         </template>
         <template #paidAt="{ row }">
-          {{ row.paidAt ? formatDateTime(row.paidAt) : "—" }}
+          {{ row.paidAt ? formatDateTime(row.paidAt) : '—' }}
         </template>
         <template #createdAt="{ row }">
           {{ formatDate(row.createdAt) }}
@@ -189,13 +155,7 @@
             >
               In phiếu
             </ElButton>
-            <ElButton
-              type="primary"
-              size="small"
-              :icon="View"
-              link
-              @click="openDetail(row.id)"
-            >
+            <ElButton type="primary" size="small" :icon="View" link @click="openDetail(row.id)">
               Chi tiết
             </ElButton>
           </div>
@@ -203,7 +163,6 @@
       </ArtTable>
     </ElCard>
 
-    <!-- Payment Dialog -->
     <ElDialog
       v-model="paymentDialogVisible"
       :title="paymentDialogTitle"
@@ -225,17 +184,11 @@
             <span class="text-slate-500">SĐT:</span>
             <b>{{ paymentForm.customerPhone }}</b>
           </div>
-          <div
-            class="flex justify-between text-sm"
-            v-if="paymentForm.vehicleInfo"
-          >
+          <div class="flex justify-between text-sm" v-if="paymentForm.vehicleInfo">
             <span class="text-slate-500">Xe:</span>
             <b>{{ paymentForm.vehicleInfo }}</b>
           </div>
-          <div
-            class="flex justify-between text-sm"
-            v-if="paymentForm.serviceDescription"
-          >
+          <div class="flex justify-between text-sm" v-if="paymentForm.serviceDescription">
             <span class="text-slate-500">Dịch vụ:</span>
             <b>{{ paymentForm.serviceDescription }}</b>
           </div>
@@ -265,9 +218,7 @@
         </div>
 
         <ElFormItem label="Tổng thanh toán">
-          <div class="text-2xl font-black text-red-600">
-            {{ formatCurrency(calcTotalValue) }} đ
-          </div>
+          <div class="text-2xl font-black text-red-600">{{ formatCurrency(calcTotalValue) }} đ</div>
         </ElFormItem>
 
         <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -306,18 +257,13 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="paymentDialogVisible = false">Hủy bỏ</ElButton>
-          <ElButton
-            type="success"
-            :loading="submitting"
-            @click="handlePaymentSubmit"
-          >
+          <ElButton type="success" :loading="submitting" @click="handlePaymentSubmit">
             <ArtSvgIcon icon="ri:checkbox-circle-line" /> Xác nhận thu tiền
           </ElButton>
         </div>
       </template>
     </ElDialog>
 
-    <!-- Receipt Preview Dialog -->
     <ElDialog
       v-model="receiptDialogVisible"
       title="Phiếu thu dịch vụ"
@@ -328,9 +274,7 @@
         <div class="text-center border-b pb-3">
           <h2 class="text-lg font-black">ANH EM MOTOR</h2>
           <p class="text-xs text-slate-400">Xưởng dịch vụ sửa chữa xe máy</p>
-          <p class="text-xs text-slate-400">
-            Phiếu thu: {{ receiptData.paymentNumber }}
-          </p>
+          <p class="text-xs text-slate-400">Phiếu thu: {{ receiptData.paymentNumber }}</p>
         </div>
         <div class="space-y-1">
           <div class="flex justify-between">
@@ -349,10 +293,7 @@
             <span class="text-slate-500">Xe:</span>
             <b>{{ receiptData.vehicleInfo }}</b>
           </div>
-          <div
-            class="flex justify-between"
-            v-if="receiptData.serviceDescription"
-          >
+          <div class="flex justify-between" v-if="receiptData.serviceDescription">
             <span class="text-slate-500">Dịch vụ:</span>
             <b>{{ receiptData.serviceDescription }}</b>
           </div>
@@ -368,9 +309,7 @@
           </div>
           <div class="flex justify-between text-lg font-black border-t pt-2">
             <span>Thành tiền:</span>
-            <span class="text-red-600"
-              >{{ formatCurrency(receiptData.totalAmount) }} đ</span
-            >
+            <span class="text-red-600">{{ formatCurrency(receiptData.totalAmount) }} đ</span>
           </div>
         </div>
         <div class="border-t pt-3 space-y-1">
@@ -401,27 +340,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { Refresh, View, Money, Document } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import dayjs from "dayjs";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { Refresh, View, Money, Document } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
+import dayjs from 'dayjs';
 
-import ArtTable from "@/components/core/tables/art-table/index.vue";
+import ArtTable from '@/components/core/tables/art-table/index.vue';
 import {
   WorkshopPaymentApi,
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
   SOURCE_TYPES,
-} from "@/api/service/workshop-payment.api";
-import { createPaymentUseCases } from "@/infrastructure/payment/usecasesFactory";
+} from '@/api/service/workshop-payment.api';
+import { createPaymentUseCases } from '@/infrastructure/payment/usecasesFactory';
 
-defineOptions({ name: "ServiceWorkshopCounterPaymentList" });
+defineOptions({ name: 'ServiceWorkshopCounterPaymentList' });
 
 const useCases = createPaymentUseCases(WorkshopPaymentApi);
 const loading = ref(false);
 const submitting = ref(false);
-const query = ref("");
+const query = ref('');
 const sourceType = ref<string | undefined>(undefined);
 const paymentStatus = ref<string | undefined>(undefined);
 
@@ -445,59 +384,59 @@ const stats = reactive({
 
 const columns = computed(() => [
   {
-    prop: "paymentNumber",
-    label: "Mã phiếu",
+    prop: 'paymentNumber',
+    label: 'Mã phiếu',
     minWidth: 150,
     useSlot: true,
-    slot: "paymentNumber",
+    slot: 'paymentNumber',
   },
   {
-    prop: "sourceType",
-    label: "Loại phiếu",
+    prop: 'sourceType',
+    label: 'Loại phiếu',
     width: 130,
     useSlot: true,
-    slot: "sourceType",
+    slot: 'sourceType',
   },
-  { prop: "customerName", label: "Khách hàng", minWidth: 150 },
-  { prop: "customerPhone", label: "SĐT", width: 120 },
-  { prop: "vehicleInfo", label: "Xe / Biển số", minWidth: 140 },
+  { prop: 'customerName', label: 'Khách hàng', minWidth: 150 },
+  { prop: 'customerPhone', label: 'SĐT', width: 120 },
+  { prop: 'vehicleInfo', label: 'Xe / Biển số', minWidth: 140 },
   {
-    prop: "totalAmount",
-    label: "Thành tiền",
+    prop: 'totalAmount',
+    label: 'Thành tiền',
     width: 140,
     useSlot: true,
-    slot: "totalAmount",
+    slot: 'totalAmount',
   },
-  { prop: "paymentMethod", label: "HT thanh toán", width: 130 },
+  { prop: 'paymentMethod', label: 'HT thanh toán', width: 130 },
   {
-    prop: "paymentStatus",
-    label: "Trạng thái",
+    prop: 'paymentStatus',
+    label: 'Trạng thái',
     width: 140,
     useSlot: true,
-    slot: "paymentStatus",
+    slot: 'paymentStatus',
   },
   {
-    prop: "paidAt",
-    label: "Ngày thu",
+    prop: 'paidAt',
+    label: 'Ngày thu',
     width: 120,
     useSlot: true,
-    slot: "paidAt",
+    slot: 'paidAt',
   },
   {
-    prop: "createdAt",
-    label: "Ngày tạo",
+    prop: 'createdAt',
+    label: 'Ngày tạo',
     width: 120,
     useSlot: true,
-    slot: "createdAt",
+    slot: 'createdAt',
   },
   {
-    prop: "operation",
-    label: "Hành động",
+    prop: 'operation',
+    label: 'Hành động',
     width: 200,
-    align: "center" as const,
-    fixed: "right" as const,
+    align: 'center' as const,
+    fixed: 'right' as const,
     useSlot: true,
-    slot: "operation",
+    slot: 'operation',
   },
 ]);
 
@@ -516,95 +455,75 @@ const getPaymentMethodLabel = (val: string) => {
   return found?.label || val;
 };
 
-const sourceTypeTagType = (
-  val: string,
-): "primary" | "success" | "warning" | "info" | "danger" => {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    RepairOrder: "danger",
-    Warranty: "info",
-    ServiceBooking: "primary",
+const sourceTypeTagType = (val: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    RepairOrder: 'danger',
+    Warranty: 'info',
+    ServiceBooking: 'primary',
   };
-  return map[val] || "primary";
+  return map[val] || 'primary';
 };
 
 const paymentStatusTagType = (
-  val: string,
-): "primary" | "success" | "warning" | "info" | "danger" => {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    Paid: "success",
-    Unpaid: "danger",
-    Partial: "warning",
-    Refunded: "info",
+  val: string
+): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    Paid: 'success',
+    Unpaid: 'danger',
+    Partial: 'warning',
+    Refunded: 'info',
   };
-  return map[val] || "primary";
+  return map[val] || 'primary';
 };
 
 const formatCurrency = (val: number) => {
-  if (!val) return "0";
-  return new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(
-    val,
-  );
+  if (!val) return '0';
+  return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(val);
 };
 
 const formatDate = (d?: string) => {
-  if (!d) return "—";
-  return dayjs(d).format("DD/MM/YYYY");
+  if (!d) return '—';
+  return dayjs(d).format('DD/MM/YYYY');
 };
 
 const formatDateTime = (d?: string) => {
-  if (!d) return "—";
-  return dayjs(d).format("DD/MM/YYYY HH:mm");
+  if (!d) return '—';
+  return dayjs(d).format('DD/MM/YYYY HH:mm');
 };
 
-// Payment Dialog
 const paymentDialogVisible = ref(false);
 const paymentFormRef = ref<FormInstance>();
 const editingPaymentId = ref<number | null>(null);
 
 const paymentForm = reactive({
-  sourceType: "RepairOrder" as string,
+  sourceType: 'RepairOrder' as string,
   sourceId: 0,
-  customerName: "",
-  customerPhone: "",
-  vehicleInfo: "",
-  serviceDescription: "",
+  customerName: '',
+  customerPhone: '',
+  vehicleInfo: '',
+  serviceDescription: '',
   subTotal: 0,
   discountAmount: 0,
   totalAmount: 0,
-  paymentMethod: "Cash",
-  paymentStatus: "Paid",
-  notes: "",
+  paymentMethod: 'Cash',
+  paymentStatus: 'Paid',
+  notes: '',
 });
 
 const paymentFormRules: FormRules = {
-  customerName: [
-    { required: true, message: "Nhập tên khách hàng", trigger: "blur" },
-  ],
-  customerPhone: [{ required: true, message: "Nhập SĐT", trigger: "blur" }],
-  subTotal: [{ required: true, message: "Nhập tạm tính", trigger: "blur" }],
-  totalAmount: [
-    { required: true, message: "Nhập tổng thanh toán", trigger: "blur" },
-  ],
-  paymentMethod: [
-    { required: true, message: "Chọn phương thức", trigger: "change" },
-  ],
+  customerName: [{ required: true, message: 'Nhập tên khách hàng', trigger: 'blur' }],
+  customerPhone: [{ required: true, message: 'Nhập SĐT', trigger: 'blur' }],
+  subTotal: [{ required: true, message: 'Nhập tạm tính', trigger: 'blur' }],
+  totalAmount: [{ required: true, message: 'Nhập tổng thanh toán', trigger: 'blur' }],
+  paymentMethod: [{ required: true, message: 'Chọn phương thức', trigger: 'change' }],
 };
 
 const paymentDialogTitle = computed(() =>
-  editingPaymentId.value ? "Cập nhật thanh toán" : "Thu tiền - Tạo phiếu thu",
+  editingPaymentId.value ? 'Cập nhật thanh toán' : 'Thu tiền - Tạo phiếu thu'
 );
 
 const calcTotalValue = computed(() => {
-  return Math.max(
-    0,
-    (paymentForm.subTotal || 0) - (paymentForm.discountAmount || 0),
-  );
+  return Math.max(0, (paymentForm.subTotal || 0) - (paymentForm.discountAmount || 0));
 });
 
 function calcTotal() {
@@ -618,14 +537,14 @@ function openPaymentDialog(row: any) {
     sourceId: row.sourceId,
     customerName: row.customerName,
     customerPhone: row.customerPhone,
-    vehicleInfo: row.vehicleInfo || "",
-    serviceDescription: row.serviceDescription || "",
+    vehicleInfo: row.vehicleInfo || '',
+    serviceDescription: row.serviceDescription || '',
     subTotal: row.totalAmount,
     discountAmount: 0,
     totalAmount: row.totalAmount,
-    paymentMethod: "Cash",
-    paymentStatus: "Paid",
-    notes: "",
+    paymentMethod: 'Cash',
+    paymentStatus: 'Paid',
+    notes: '',
   });
   paymentDialogVisible.value = true;
 }
@@ -652,19 +571,18 @@ async function handlePaymentSubmit() {
       };
       const id = await useCases.create.call(payload as any);
       if (id) {
-        ElMessage.success("Thu tiền thành công!");
+        ElMessage.success('Thu tiền thành công!');
         paymentDialogVisible.value = false;
         await refreshData();
       }
     } catch (e: any) {
-      ElMessage.error(e?.message || "Thu tiền thất bại.");
+      ElMessage.error(e?.message || 'Thu tiền thất bại.');
     } finally {
       submitting.value = false;
     }
   });
 }
 
-// Receipt Dialog
 const receiptDialogVisible = ref(false);
 const receiptData = ref<any>(null);
 
@@ -678,7 +596,7 @@ async function printReceipt(row: any) {
 
 function doPrint() {
   if (!receiptData.value) return;
-  const w = window.open("", "_blank", "width=400,height=600");
+  const w = window.open('', '_blank', 'width=400,height=600');
   if (!w) return;
   const r = receiptData.value;
   w.document.write(`
@@ -691,7 +609,7 @@ function doPrint() {
       .total { font-size: 16px; font-weight: bold; border-top: 1px dashed #000; padding-top: 8px; margin-top: 8px; }
       .center { text-align: center; }
       @media print { body { padding: 10px; } }
-    </style>
+</style>
     </head>
     <body>
       <h2>ANH EM MOTOR</h2>
@@ -701,13 +619,13 @@ function doPrint() {
       <div class="row"><span>Ngày:</span><b>${formatDate(r.paidAt || r.createdAt)}</b></div>
       <div class="row"><span>Khách:</span><b>${r.customerName}</b></div>
       <div class="row"><span>SĐT:</span><b>${r.customerPhone}</b></div>
-      ${r.vehicleInfo ? `<div class="row"><span>Xe:</span><b>${r.vehicleInfo}</b></div>` : ""}
-      ${r.serviceDescription ? `<div class="row"><span>Dịch vụ:</span><b>${r.serviceDescription}</b></div>` : ""}
+      ${r.vehicleInfo ? `<div class="row"><span>Xe:</span><b>${r.vehicleInfo}</b></div>` : ''}
+      ${r.serviceDescription ? `<div class="row"><span>Dịch vụ:</span><b>${r.serviceDescription}</b></div>` : ''}
       <div class="row"><span>Tạm tính:</span><b>${formatCurrency(r.subTotal)} đ</b></div>
       <div class="row"><span>Giảm giá:</span><b>-${formatCurrency(r.discountAmount)} đ</b></div>
       <div class="total row"><span>THÀNH TIỀN:</span><b>${formatCurrency(r.totalAmount)} đ</b></div>
       <div class="row"><span>HT thanh toán:</span><b>${getPaymentMethodLabel(r.paymentMethod)}</b></div>
-      ${r.notes ? `<div class="row"><span>Ghi chú:</span><b>${r.notes}</b></div>` : ""}
+      ${r.notes ? `<div class="row"><span>Ghi chú:</span><b>${r.notes}</b></div>` : ''}
       <p class="center" style="margin-top:30px">Cảm ơn quý khách!</p>
     </body>
     </html>
@@ -717,16 +635,14 @@ function doPrint() {
   w.print();
 }
 
-// Detail
 const router = useRouter();
 function openDetail(id: number) {
   router.push({
-    name: "ServiceWorkshopPaymentDetail",
+    name: 'ServiceWorkshopPaymentDetail',
     params: { id: String(id) },
   });
 }
 
-// Fetch
 async function fetchData() {
   loading.value = true;
   try {
@@ -766,7 +682,7 @@ async function fetchData() {
       Object.assign(stats, statsResult);
     }
   } catch (e: any) {
-    ElMessage.error(e?.message || "Không thể tải danh sách phiếu thanh toán");
+    ElMessage.error(e?.message || 'Không thể tải danh sách phiếu thanh toán');
     data.value = [];
     pagination.value.total = 0;
   } finally {
@@ -782,7 +698,7 @@ const handleSearch = async () => {
   await fetchData();
 };
 const handleReset = async () => {
-  query.value = "";
+  query.value = '';
   sourceType.value = undefined;
   paymentStatus.value = undefined;
   pagination.value.current = 1;

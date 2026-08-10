@@ -6,14 +6,14 @@
 </template>
 
 <script setup lang="ts">
-import { useEventListener } from "@vueuse/core";
-import { mittBus } from "@/common/utils/sys";
-import type { Handler } from "mitt";
-import bp from "@/assets/images/ceremony/hb.png";
-import sd from "@/assets/images/ceremony/sd.png";
-import yd from "@/assets/images/ceremony/yd.png";
+import { useEventListener } from '@vueuse/core';
+import { mittBus } from '@/common/utils/sys';
+import type { Handler } from 'mitt';
+import bp from '@/assets/images/ceremony/hb.png';
+import sd from '@/assets/images/ceremony/sd.png';
+import yd from '@/assets/images/ceremony/yd.png';
 
-defineOptions({ name: "ArtFireworksEffect" });
+defineOptions({ name: 'ArtFireworksEffect' });
 
 interface FireworkConfig {
   readonly POOL_SIZE: number;
@@ -81,31 +81,31 @@ const CONFIG: FireworkConfig = {
     OPACITY_DECAY: 0.02,
   },
   COLORS: [
-    "rgba(255, 68, 68, 1)",
-    "rgba(255, 68, 68, 0.9)",
-    "rgba(255, 68, 68, 0.8)",
-    "rgba(255, 116, 188, 1)",
-    "rgba(255, 116, 188, 0.9)",
-    "rgba(255, 116, 188, 0.8)",
-    "rgba(68, 68, 255, 0.8)",
-    "rgba(92, 202, 56, 0.7)",
-    "rgba(255, 68, 255, 0.8)",
-    "rgba(68, 255, 255, 0.7)",
-    "rgba(255, 136, 68, 0.7)",
-    "rgba(68, 136, 255, 1)",
-    "rgba(250, 198, 122, 0.8)",
+    'rgba(255, 68, 68, 1)',
+    'rgba(255, 68, 68, 0.9)',
+    'rgba(255, 68, 68, 0.8)',
+    'rgba(255, 116, 188, 1)',
+    'rgba(255, 116, 188, 0.9)',
+    'rgba(255, 116, 188, 0.8)',
+    'rgba(68, 68, 255, 0.8)',
+    'rgba(92, 202, 56, 0.7)',
+    'rgba(255, 68, 255, 0.8)',
+    'rgba(68, 255, 255, 0.7)',
+    'rgba(255, 136, 68, 0.7)',
+    'rgba(68, 136, 255, 1)',
+    'rgba(250, 198, 122, 0.8)',
   ],
   SHAPES: [
-    "rectangle",
-    "rectangle",
-    "rectangle",
-    "rectangle",
-    "rectangle",
-    "rectangle",
-    "rectangle",
-    "circle",
-    "triangle",
-    "oval",
+    'rectangle',
+    'rectangle',
+    'rectangle',
+    'rectangle',
+    'rectangle',
+    'rectangle',
+    'rectangle',
+    'circle',
+    'triangle',
+    'oval',
   ],
 } as const;
 const canvasRef = ref<HTMLCanvasElement>();
@@ -135,11 +135,11 @@ class FireworkSystem {
       y: 0,
       vx: 0,
       vy: 0,
-      color: "",
+      color: '',
       rotation: 0,
       rotationSpeed: 0,
       scale: 1,
-      shape: "circle",
+      shape: 'circle',
       opacity: 1,
       active: false,
     };
@@ -166,7 +166,7 @@ class FireworkSystem {
 
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         this.imageCache[url] = img;
         resolve(img);
@@ -181,15 +181,14 @@ class FireworkSystem {
     try {
       await Promise.all(imageUrls.map((url) => this.preloadImage(url)));
     } catch (error) {
-      console.error("Image preloading failed:", error);
+      console.error('Image preloading failed:', error);
     }
   }
 
   createFirework(imageUrl?: string): void {
     const startX = Math.random() * this.canvasWidth;
     const startY = this.canvasHeight;
-    const availableShapes =
-      imageUrl && this.imageCache[imageUrl] ? ["image"] : CONFIG.SHAPES;
+    const availableShapes = imageUrl && this.imageCache[imageUrl] ? ['image'] : CONFIG.SHAPES;
     const particles: Firework[] = [];
     for (let i = 0; i < CONFIG.PARTICLES_PER_BURST; i++) {
       const particle = this.getAvailableParticle();
@@ -199,25 +198,17 @@ class FireworkSystem {
       const spread = Math.random() * Math.PI * 2;
       particle.x = startX;
       particle.y = startY;
-      particle.vx =
-        Math.cos(angle) *
-        Math.cos(spread) *
-        speed *
-        (Math.random() * 0.5 + 0.5);
+      particle.vx = Math.cos(angle) * Math.cos(spread) * speed * (Math.random() * 0.5 + 0.5);
       particle.vy = Math.sin(angle) * speed - 15;
-      particle.color =
-        CONFIG.COLORS[Math.floor(Math.random() * CONFIG.COLORS.length)];
+      particle.color = CONFIG.COLORS[Math.floor(Math.random() * CONFIG.COLORS.length)];
       particle.rotation = Math.random() * 360;
       particle.rotationSpeed =
-        (Math.random() * CONFIG.ROTATION.RANDOM_SPEED +
-          CONFIG.ROTATION.BASE_SPEED) *
+        (Math.random() * CONFIG.ROTATION.RANDOM_SPEED + CONFIG.ROTATION.BASE_SPEED) *
         (Math.random() > 0.5 ? 1 : -1);
       particle.scale = 0.8 + Math.random() * 0.4;
-      particle.shape =
-        availableShapes[Math.floor(Math.random() * availableShapes.length)];
+      particle.shape = availableShapes[Math.floor(Math.random() * availableShapes.length)];
       particle.opacity = 1;
-      particle.imageUrl =
-        imageUrl && this.imageCache[imageUrl] ? imageUrl : undefined;
+      particle.imageUrl = imageUrl && this.imageCache[imageUrl] ? imageUrl : undefined;
       particles.push(particle);
     }
     this.activeParticles.push(...particles);
@@ -280,31 +271,31 @@ class FireworkSystem {
     ctx.value.fillStyle = particle.color;
 
     switch (particle.shape) {
-      case "rectangle":
+      case 'rectangle':
         ctx.value.fillRect(
           -SIZES.RECTANGLE.WIDTH / 2,
           -SIZES.RECTANGLE.HEIGHT / 2,
           SIZES.RECTANGLE.WIDTH,
-          SIZES.RECTANGLE.HEIGHT,
+          SIZES.RECTANGLE.HEIGHT
         );
         break;
 
-      case "square":
+      case 'square':
         ctx.value.fillRect(
           -SIZES.SQUARE.SIZE / 2,
           -SIZES.SQUARE.SIZE / 2,
           SIZES.SQUARE.SIZE,
-          SIZES.SQUARE.SIZE,
+          SIZES.SQUARE.SIZE
         );
         break;
 
-      case "circle":
+      case 'circle':
         ctx.value.beginPath();
         ctx.value.arc(0, 0, SIZES.CIRCLE.SIZE / 2, 0, Math.PI * 2);
         ctx.value.fill();
         break;
 
-      case "triangle":
+      case 'triangle':
         ctx.value.beginPath();
         ctx.value.moveTo(0, -SIZES.TRIANGLE.SIZE);
         ctx.value.lineTo(SIZES.TRIANGLE.SIZE, SIZES.TRIANGLE.SIZE);
@@ -313,21 +304,13 @@ class FireworkSystem {
         ctx.value.fill();
         break;
 
-      case "oval":
+      case 'oval':
         ctx.value.beginPath();
-        ctx.value.ellipse(
-          0,
-          0,
-          SIZES.OVAL.WIDTH / 2,
-          SIZES.OVAL.HEIGHT / 2,
-          0,
-          0,
-          Math.PI * 2,
-        );
+        ctx.value.ellipse(0, 0, SIZES.OVAL.WIDTH / 2, SIZES.OVAL.HEIGHT / 2, 0, 0, Math.PI * 2);
         ctx.value.fill();
         break;
 
-      case "image":
+      case 'image':
         this.renderImage(particle);
         break;
     }
@@ -347,7 +330,7 @@ class FireworkSystem {
     if (!ctx.value || !canvasRef.value) return;
 
     ctx.value.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    ctx.value.globalCompositeOperation = "lighter";
+    ctx.value.globalCompositeOperation = 'lighter';
 
     for (const particle of this.activeParticles) {
       this.drawParticle(particle);
@@ -385,8 +368,8 @@ const fireworkSystem = new FireworkSystem();
 
 const handleKeyPress = (event: KeyboardEvent): void => {
   const isFireworkShortcut =
-    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "p") ||
-    (event.metaKey && event.shiftKey && event.key.toLowerCase() === "p");
+    (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') ||
+    (event.metaKey && event.shiftKey && event.key.toLowerCase() === 'p');
 
   if (isFireworkShortcut) {
     event.preventDefault();
@@ -411,7 +394,7 @@ const handleFireworkTrigger: Handler<unknown> = (event: unknown) => {
 onMounted(async () => {
   if (!canvasRef.value) return;
 
-  ctx.value = canvasRef.value.getContext("2d");
+  ctx.value = canvasRef.value.getContext('2d');
   if (!ctx.value) return;
 
   resizeCanvas();
@@ -420,13 +403,13 @@ onMounted(async () => {
 
   fireworkSystem.start();
 
-  useEventListener(window, "keydown", handleKeyPress);
-  useEventListener(window, "resize", resizeCanvas);
-  mittBus.on("triggerFireworks", handleFireworkTrigger);
+  useEventListener(window, 'keydown', handleKeyPress);
+  useEventListener(window, 'resize', resizeCanvas);
+  mittBus.on('triggerFireworks', handleFireworkTrigger);
 });
 
 onUnmounted(() => {
   fireworkSystem.stop();
-  mittBus.off("triggerFireworks", handleFireworkTrigger);
+  mittBus.off('triggerFireworks', handleFireworkTrigger);
 });
 </script>

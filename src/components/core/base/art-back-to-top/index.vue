@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { useCommon } from "@/common/composables/useCommon";
+import { useCommon } from '@/common/composables/useCommon';
 
-defineOptions({ name: "ArtBackToTop" });
+defineOptions({ name: 'ArtBackToTop' });
 
 const { scrollToTop } = useCommon();
 
@@ -28,7 +28,7 @@ const showButton = ref(false);
 const scrollThreshold = 300;
 
 onMounted(() => {
-  const scrollContainer = document.getElementById("app-main");
+  const scrollContainer = document.getElementById('app-main');
   if (scrollContainer) {
     const { y } = useScroll(scrollContainer);
     watch(y, (newY: number) => {

@@ -1,11 +1,6 @@
 <template>
   <div class="resp-page asset-wizard pb-4">
-    <ElSteps
-      :active="activeStep"
-      finish-status="success"
-      align-center
-      class="mb-8"
-    >
+    <ElSteps :active="activeStep" finish-status="success" align-center class="mb-8">
       <ElStep title="Tiếp nhận" description="Chọn NCC & Dòng xe" />
       <ElStep title="Định danh" description="Số khung & Số máy" />
       <ElStep title="Lưu kho" description="Phân bổ vị trí" />
@@ -16,9 +11,7 @@
       <div v-if="activeStep === 0" class="space-y-6">
         <div class="grid grid-cols-2 gap-8">
           <div class="space-y-4">
-            <label class="block text-sm font-bold text-gray-700"
-              >1. Nhà cung cấp</label
-            >
+            <label class="block text-sm font-bold text-gray-700">1. Nhà cung cấp</label>
             <ElSelect
               v-model="form.supplierId"
               placeholder="Tìm nhà cung cấp..."
@@ -30,9 +23,7 @@
             </ElSelect>
           </div>
           <div class="space-y-4">
-            <label class="block text-sm font-bold text-gray-700"
-              >2. Dòng xe nhập về</label
-            >
+            <label class="block text-sm font-bold text-gray-700">2. Dòng xe nhập về</label>
             <ElSelect
               v-model="form.productId"
               placeholder="Chọn mẫu xe..."
@@ -46,9 +37,7 @@
           </div>
         </div>
         <div class="max-w-xs space-y-4">
-          <label class="block text-sm font-bold text-gray-700"
-            >3. Đơn giá nhập (Giá vốn)</label
-          >
+          <label class="block text-sm font-bold text-gray-700">3. Đơn giá nhập (Giá vốn)</label>
           <ElInputNumber
             v-model="form.costPrice"
             :min="0"
@@ -126,11 +115,7 @@
           </ElTableColumn>
           <ElTableColumn width="50" align="center">
             <template #default="{ $index }">
-              <ElButton
-                link
-                type="danger"
-                @click="form.units.splice($index, 1)"
-              >
+              <ElButton link type="danger" @click="form.units.splice($index, 1)">
                 <ElIcon><Delete /></ElIcon>
               </ElButton>
             </template>
@@ -148,25 +133,17 @@
           >
             <div class="flex-1">
               <div class="font-bold text-sm text-gray-800">
-                {{ unit.frameNo || "Chưa nhập số khung" }}
+                {{ unit.frameNo || 'Chưa nhập số khung' }}
               </div>
-              <div class="text-[11px] text-gray-400">
-                Số máy: {{ unit.engineNo || "-" }}
-              </div>
+              <div class="text-[11px] text-gray-400">Số máy: {{ unit.engineNo || '-' }}</div>
             </div>
             <div class="w-64">
-              <ElSelect
-                v-model="unit.location"
-                placeholder="Chọn vị trí..."
-                class="w-full"
-              >
+              <ElSelect v-model="unit.location" placeholder="Chọn vị trí..." class="w-full">
                 <ElOption label="Khu trưng bày (Showroom)" value="showroom" />
                 <ElOption label="Kho dự phòng (Back-up)" value="backup" />
               </ElSelect>
             </div>
-            <ElTag type="success" effect="dark" round size="small"
-              >AVAILABLE</ElTag
-            >
+            <ElTag type="success" effect="dark" round size="small">AVAILABLE</ElTag>
           </div>
         </div>
       </div>
@@ -199,18 +176,10 @@
         </div>
 
         <ElDescriptions title="Thông tin chung" :column="2" border>
-          <ElDescriptionsItem label="Nhà cung cấp"
-            >Honda Việt Nam</ElDescriptionsItem
-          >
-          <ElDescriptionsItem label="Dòng xe"
-            >Honda Vision 2024</ElDescriptionsItem
-          >
-          <ElDescriptionsItem label="Thời gian khởi tạo"
-            >04/05/2026 08:30</ElDescriptionsItem
-          >
-          <ElDescriptionsItem label="Người thực hiện"
-            >Admin - Hệ thống</ElDescriptionsItem
-          >
+          <ElDescriptionsItem label="Nhà cung cấp">Honda Việt Nam</ElDescriptionsItem>
+          <ElDescriptionsItem label="Dòng xe">Honda Vision 2024</ElDescriptionsItem>
+          <ElDescriptionsItem label="Thời gian khởi tạo">04/05/2026 08:30</ElDescriptionsItem>
+          <ElDescriptionsItem label="Người thực hiện">Admin - Hệ thống</ElDescriptionsItem>
         </ElDescriptions>
       </div>
     </div>
@@ -218,12 +187,8 @@
     <div class="flex justify-between mt-8 border-t pt-6 px-4">
       <ElButton @click="$emit('cancel')">Đóng</ElButton>
       <div class="flex gap-2">
-        <ElButton v-if="activeStep > 0" @click="activeStep--"
-          >Quay lại</ElButton
-        >
-        <ElButton v-if="activeStep < 3" type="primary" @click="activeStep++"
-          >Tiếp theo</ElButton
-        >
+        <ElButton v-if="activeStep > 0" @click="activeStep--">Quay lại</ElButton>
+        <ElButton v-if="activeStep < 3" type="primary" @click="activeStep++">Tiếp theo</ElButton>
         <ElButton v-else type="danger" @click="handleComplete"
           >Xác nhận & Hoàn tất nhập kho</ElButton
         >
@@ -233,11 +198,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { Plus, Delete, WarningFilled } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { ref, reactive } from 'vue';
+import { Plus, Delete, WarningFilled } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 
-const emit = defineEmits(["cancel", "complete"]);
+const emit = defineEmits(['cancel', 'complete']);
 const activeStep = ref(0);
 
 const form = reactive({
@@ -246,35 +211,33 @@ const form = reactive({
   costPrice: 0,
   units: [
     {
-      frameNo: "",
-      engineNo: "",
-      quality: "new",
+      frameNo: '',
+      engineNo: '',
+      quality: 'new',
       keyCount: 2,
-      location: "showroom",
+      location: 'showroom',
     },
   ],
 });
 
 const addUnit = () => {
   form.units.push({
-    frameNo: "",
-    engineNo: "",
-    quality: "new",
+    frameNo: '',
+    engineNo: '',
+    quality: 'new',
     keyCount: 2,
-    location: "showroom",
+    location: 'showroom',
   });
 };
 
 const checkDuplicate = (val: string, field: string, index: number) => {
   if (!val) return false;
-  return form.units.some(
-    (u, i) => i !== index && u[field as keyof typeof u] === val,
-  );
+  return form.units.some((u, i) => i !== index && u[field as keyof typeof u] === val);
 };
 
 const handleComplete = () => {
-  ElMessage.success("Hoàn tất nhập kho và sinh nhật ký định danh!");
-  emit("complete");
+  ElMessage.success('Hoàn tất nhập kho và sinh nhật ký định danh!');
+  emit('complete');
 };
 </script>
 

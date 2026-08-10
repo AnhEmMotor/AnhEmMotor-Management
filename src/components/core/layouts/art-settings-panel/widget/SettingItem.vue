@@ -1,15 +1,8 @@
 <template>
-  <div
-    class="flex-cb mb-4 last:mb-2"
-    :class="{ 'mobile-hide': config.mobileHide }"
-  >
+  <div class="flex-cb mb-4 last:mb-2" :class="{ 'mobile-hide': config.mobileHide }">
     <span class="text-sm">{{ config.label }}</span>
 
-    <ElSwitch
-      v-if="config.type === 'switch'"
-      :model-value="modelValue"
-      @change="handleChange"
-    />
+    <ElSwitch v-if="config.type === 'switch'" :model-value="modelValue" @change="handleChange" />
 
     <ElInputNumber
       v-else-if="config.type === 'input-number'"
@@ -39,22 +32,21 @@
 </template>
 
 <script setup lang="ts">
-import type { ComputedRef } from "vue";
+import type { ComputedRef } from 'vue';
 
 interface SettingItemConfig {
   key: string;
   label: string;
-  type: "switch" | "input-number" | "select";
+  type: 'switch' | 'input-number' | 'select';
   handler: string;
   mobileHide?: boolean;
   min?: number;
   max?: number;
   step?: number;
   style?: Record<string, string>;
-  controlsPosition?: "" | "right";
+  controlsPosition?: '' | 'right';
   options?:
-    | Array<{ value: any; label: string }>
-    | ComputedRef<Array<{ value: any; label: string }>>;
+    Array<{ value: any; label: string }> | ComputedRef<Array<{ value: any; label: string }>>;
 }
 
 interface Props {
@@ -63,7 +55,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: "change", value: any): void;
+  (e: 'change', value: any): void;
 }
 
 const props = defineProps<Props>();
@@ -73,29 +65,22 @@ const normalizedOptions = computed(() => {
   if (!props.config.options) return [];
 
   try {
-    if (
-      typeof props.config.options === "object" &&
-      "value" in props.config.options
-    ) {
+    if (typeof props.config.options === 'object' && 'value' in props.config.options) {
       return props.config.options.value || [];
     }
 
     return Array.isArray(props.config.options) ? props.config.options : [];
   } catch (error) {
-    console.warn(
-      "Error processing options for config:",
-      props.config.key,
-      error,
-    );
+    console.warn('Error processing options for config:', props.config.key, error);
     return [];
   }
 });
 
 const handleChange = (value: any) => {
   try {
-    emit("change", value);
+    emit('change', value);
   } catch (error) {
-    console.error("Error handling change for config:", props.config.key, error);
+    console.error('Error handling change for config:', props.config.key, error);
   }
 };
 </script>

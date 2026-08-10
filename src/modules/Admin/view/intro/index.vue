@@ -4,30 +4,22 @@
       <img src="@/assets/images/banner/admin_banner.webp" alt="Admin Banner" />
     </div>
 
-    <!-- Info Cards Section -->
     <div class="info-cards-container">
-      <!-- Card 1: Hỗ trợ kỹ thuật -->
       <div class="info-card">
         <div class="card-badge bg-green">
           <ArtSvgIcon icon="ri:customer-service-2-line" /> HỖ TRỢ KỸ THUẬT
         </div>
-        <h2 class="card-title">
-          CÔNG TY TNHH <span class="text-rose">ANH EM MOTOR</span>
-        </h2>
+        <h2 class="card-title">CÔNG TY TNHH <span class="text-rose">ANH EM MOTOR</span></h2>
         <p class="card-text">
-          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi
-          nhận, đồng hành và hỗ trợ liên tục 24/7 trong quá trình vận hành, khai
-          thác hệ thống.
+          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi nhận, đồng hành và hỗ
+          trợ liên tục 24/7 trong quá trình vận hành, khai thác hệ thống.
         </p>
 
         <div class="address-line">
           <ArtSvgIcon icon="ri:map-pin-line" class="icon-rose" />
           <div class="address-content">
             <strong>Địa chỉ</strong>
-            <span
-              >Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt
-              Nam</span
-            >
+            <span>Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt Nam</span>
           </div>
         </div>
 
@@ -71,21 +63,16 @@
         </div>
       </div>
 
-      <!-- Card 2: Ban Điều Hành -->
       <div class="info-card">
         <div class="card-header">
           <div class="card-badge bg-rose">BAN ĐIỀU HÀNH & CHỦ SHOWROOM</div>
-          <div class="website-link">
-            <ArtSvgIcon icon="ri:global-line" /> anhemmotor.com
-          </div>
+          <div class="website-link"><ArtSvgIcon icon="ri:global-line" /> anhemmotor.com</div>
         </div>
 
-        <h2 class="card-title-dark">
-          Hệ thống quản trị & báo cáo điều hành toàn diện
-        </h2>
+        <h2 class="card-title-dark">Hệ thống quản trị & báo cáo điều hành toàn diện</h2>
         <p class="card-text">
-          Quản lý toàn bộ hệ thống showroom, phân quyền nhân sự, thiết lập chính
-          sách và theo dõi các chỉ số hoạt động kinh doanh theo thời gian thực.
+          Quản lý toàn bộ hệ thống showroom, phân quyền nhân sự, thiết lập chính sách và theo dõi
+          các chỉ số hoạt động kinh doanh theo thời gian thực.
         </p>
 
         <div class="action-buttons">
@@ -105,10 +92,7 @@
               <span class="btn-title text-rose">BÁO CÁO TỔNG QUAN</span>
               <span class="btn-subtitle">anhemmotor.com</span>
             </div>
-            <ArtSvgIcon
-              icon="ri:share-box-line"
-              class="external-icon text-rose"
-            />
+            <ArtSvgIcon icon="ri:share-box-line" class="external-icon text-rose" />
           </div>
         </div>
 
@@ -130,8 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-// Admin banner intro component
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 </script>
 
 <style scoped lang="scss">
@@ -161,7 +144,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
-/* Info Cards Container */
 .info-cards-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -175,7 +157,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   }
 }
 
-/* Info Card Common */
 .info-card {
   background-color: #fff;
   border-radius: 12px;
@@ -205,7 +186,7 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
 
 .bg-rose {
   background-color: #e11d48;
-} /* Changed to match Admin branding */
+} 
 .text-rose {
   color: #e11d48;
 }
@@ -236,7 +217,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   margin: 0 0 20px;
 }
 
-/* Left Card Details */
 .address-line {
   display: flex;
   align-items: flex-start;
@@ -271,7 +251,7 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border: 1px solid #fda4af; /* Subtle rose border */
+  border: 1px solid #fda4af; 
   border-radius: 8px;
   background-color: #fff;
   transition: all 0.2s;
@@ -304,7 +284,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   }
 }
 
-/* Right Card Details */
 .card-header {
   display: flex;
   justify-content: space-between;

@@ -1,26 +1,23 @@
 export class StorageConfig {
   static readonly CURRENT_VERSION = __APP_VERSION__;
 
-  static readonly STORAGE_PREFIX = "sys-v";
+  static readonly STORAGE_PREFIX = 'sys-v';
 
-  static readonly VERSION_KEY = "sys-version";
+  static readonly VERSION_KEY = 'sys-version';
 
-  static readonly THEME_KEY = "sys-theme";
+  static readonly THEME_KEY = 'sys-theme';
 
-  static readonly LAST_USER_ID_KEY = "sys-last-user-id";
+  static readonly LAST_USER_ID_KEY = 'sys-last-user-id';
 
-  static readonly RESPONSIVE_MENU_TYPE_KEY = "sys-responsive-menu-type";
+  static readonly RESPONSIVE_MENU_TYPE_KEY = 'sys-responsive-menu-type';
 
-  static readonly SKIP_UPGRADE_VERSION = "1.0.0";
+  static readonly SKIP_UPGRADE_VERSION = '1.0.0';
 
   static readonly UPGRADE_DELAY = 1000;
 
   static readonly LOGOUT_DELAY = 1000;
 
-  static generateStorageKey(
-    storeId: string,
-    version: string = this.CURRENT_VERSION,
-  ): string {
+  static generateStorageKey(storeId: string, version: string = this.CURRENT_VERSION): string {
     return `${this.STORAGE_PREFIX}${version}-${storeId}`;
   }
 

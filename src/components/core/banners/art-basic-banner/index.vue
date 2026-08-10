@@ -21,21 +21,13 @@
 
     <div class="basic-banner__content">
       <slot name="title">
-        <p
-          v-if="title"
-          class="basic-banner__title"
-          :style="{ color: titleColor }"
-        >
+        <p v-if="title" class="basic-banner__title" :style="{ color: titleColor }">
           {{ title }}
         </p>
       </slot>
 
       <slot name="subtitle">
-        <p
-          v-if="subtitle"
-          class="basic-banner__subtitle"
-          :style="{ color: subtitleColor }"
-        >
+        <p v-if="subtitle" class="basic-banner__subtitle" :style="{ color: subtitleColor }">
           {{ subtitle }}
         </p>
       </slot>
@@ -74,12 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
-import { useSettingStore } from "@/application/store/setting";
+import { onMounted, ref, computed } from 'vue';
+import { useSettingStore } from '@/application/store/setting';
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
 
-defineOptions({ name: "ArtBasicBanner" });
+defineOptions({ name: 'ArtBasicBanner' });
 
 interface Meteor {
   x: number;
@@ -121,30 +113,30 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: "11rem",
-  titleColor: "white",
-  subtitleColor: "white",
-  boxStyle: "!bg-theme/60",
+  height: '11rem',
+  titleColor: 'white',
+  subtitleColor: 'white',
+  boxStyle: '!bg-theme/60',
   decoration: true,
   buttonConfig: () => ({
     show: true,
-    text: "Xem",
-    color: "#fff",
-    textColor: "#333",
-    radius: "6px",
+    text: 'Xem',
+    color: '#fff',
+    textColor: '#333',
+    radius: '6px',
   }),
   meteorConfig: () => ({ enabled: false, count: 10 }),
-  imageConfig: () => ({ src: "", width: "12rem", bottom: "-3rem", right: "0" }),
+  imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' }),
 });
 
 const emit = defineEmits<{
-  (e: "click"): void;
-  (e: "buttonClick"): void;
+  (e: 'click'): void;
+  (e: 'buttonClick'): void;
 }>();
 
-const buttonColor = computed(() => props.buttonConfig?.color ?? "#fff");
-const buttonTextColor = computed(() => props.buttonConfig?.textColor ?? "#333");
-const buttonRadius = computed(() => props.buttonConfig?.radius ?? "6px");
+const buttonColor = computed(() => props.buttonConfig?.color ?? '#fff');
+const buttonTextColor = computed(() => props.buttonConfig?.textColor ?? '#333');
+const buttonRadius = computed(() => props.buttonConfig?.radius ?? '6px');
 
 const meteors = ref<Meteor[]>([]);
 onMounted(() => {
@@ -230,7 +222,7 @@ function generateMeteors(count: number): Meteor[] {
     bottom: -20%;
     width: 60%;
     height: 140%;
-    content: "";
+    content: '';
     background: rgb(255 255 255 / 10%);
     border-radius: 30%;
     transform: rotate(-20deg);
@@ -267,7 +259,7 @@ function generateMeteors(count: number): Meteor[] {
         bottom: 0;
         width: 2px;
         height: 2px;
-        content: "";
+        content: '';
         background: rgb(255 255 255 / 50%);
       }
     }

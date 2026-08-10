@@ -4,30 +4,22 @@
       <img src="@/assets/images/banner/order_banner.webp" alt="Order Banner" />
     </div>
 
-    <!-- Info Cards Section -->
     <div class="info-cards-container">
-      <!-- Card 1: Hỗ trợ kỹ thuật -->
       <div class="info-card">
         <div class="card-badge bg-green">
           <ArtSvgIcon icon="ri:customer-service-2-line" /> HỖ TRỢ KỸ THUẬT
         </div>
-        <h2 class="card-title">
-          CÔNG TY TNHH <span class="text-orange">ANH EM MOTOR</span>
-        </h2>
+        <h2 class="card-title">CÔNG TY TNHH <span class="text-orange">ANH EM MOTOR</span></h2>
         <p class="card-text">
-          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi
-          nhận, đồng hành và hỗ trợ liên tục 24/7 trong quá trình vận hành, khai
-          thác hệ thống.
+          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi nhận, đồng hành và hỗ
+          trợ liên tục 24/7 trong quá trình vận hành, khai thác hệ thống.
         </p>
 
         <div class="address-line">
           <ArtSvgIcon icon="ri:map-pin-line" class="icon-orange" />
           <div class="address-content">
             <strong>Địa chỉ</strong>
-            <span
-              >Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt
-              Nam</span
-            >
+            <span>Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt Nam</span>
           </div>
         </div>
 
@@ -71,21 +63,16 @@
         </div>
       </div>
 
-      <!-- Card 2: Bán Hàng & Đơn Hàng -->
       <div class="info-card">
         <div class="card-header">
           <div class="card-badge bg-orange">BÁN HÀNG & ĐƠN HÀNG</div>
-          <div class="website-link">
-            <ArtSvgIcon icon="ri:global-line" /> anhemmotor.com
-          </div>
+          <div class="website-link"><ArtSvgIcon icon="ri:global-line" /> anhemmotor.com</div>
         </div>
 
-        <h2 class="card-title-dark">
-          Hệ sinh thái quản lý kinh doanh phụ tùng & dịch vụ
-        </h2>
+        <h2 class="card-title-dark">Hệ sinh thái quản lý kinh doanh phụ tùng & dịch vụ</h2>
         <p class="card-text">
-          Quản lý toàn diện quy trình bán hàng, từ đặt hàng, báo giá đến xử lý
-          thanh toán, giúp tối ưu hóa doanh thu và nâng cao trải nghiệm mua sắm.
+          Quản lý toàn diện quy trình bán hàng, từ đặt hàng, báo giá đến xử lý thanh toán, giúp tối
+          ưu hóa doanh thu và nâng cao trải nghiệm mua sắm.
         </p>
 
         <div class="action-buttons">
@@ -107,10 +94,7 @@
               <span class="btn-title text-orange">QUẢN LÝ BÁN HÀNG</span>
               <span class="btn-subtitle">anhemmotor.com</span>
             </div>
-            <ArtSvgIcon
-              icon="ri:share-box-line"
-              class="external-icon text-orange"
-            />
+            <ArtSvgIcon icon="ri:share-box-line" class="external-icon text-orange" />
           </div>
         </div>
 
@@ -132,8 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-// Order banner intro component
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 </script>
 
 <style scoped lang="scss">
@@ -163,7 +146,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
-/* Info Cards Container */
 .info-cards-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -177,7 +159,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   }
 }
 
-/* Info Card Common */
 .info-card {
   background-color: #fff;
   border-radius: 12px;
@@ -207,7 +188,7 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
 
 .bg-orange {
   background-color: #ea580c;
-} /* Changed to match Order branding */
+} 
 .text-orange {
   color: #ea580c;
 }
@@ -238,7 +219,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   margin: 0 0 20px;
 }
 
-/* Left Card Details */
 .address-line {
   display: flex;
   align-items: flex-start;
@@ -273,7 +253,7 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border: 1px solid #fed7aa; /* Subtle orange border */
+  border: 1px solid #fed7aa; 
   border-radius: 8px;
   background-color: #fff;
   transition: all 0.2s;
@@ -306,7 +286,6 @@ import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
   }
 }
 
-/* Right Card Details */
 .card-header {
   display: flex;
   justify-content: space-between;

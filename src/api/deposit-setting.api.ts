@@ -1,4 +1,4 @@
-import request from "@/utils/http";
+import request from '@/common/utils/http';
 
 export interface DepositSettingItemDto {
   orderType: string;
@@ -18,19 +18,19 @@ export interface DepositSettingHistoryResponse {
 export const DepositSettingApi = {
   getSettings() {
     return request.get<DepositSettingItemDto[]>({
-      url: "/api/v1/DepositSetting",
+      url: '/api/v1/DepositSetting',
     });
   },
 
   getHistory() {
     return request.get<DepositSettingHistoryResponse[]>({
-      url: "/api/v1/DepositSetting/history",
+      url: '/api/v1/DepositSetting/history',
     });
   },
 
   updateSettings(settings: DepositSettingItemDto[]) {
     return request.put<boolean>({
-      url: "/api/v1/DepositSetting",
+      url: '/api/v1/DepositSetting',
       data: { settings },
     });
   },
