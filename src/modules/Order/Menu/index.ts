@@ -78,18 +78,6 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
           {
-            path: 'returns',
-            name: 'OrderLogisticsReturns',
-            component: '/Order/view/logistics/returns/index',
-            meta: {
-              title: 'Trả hàng - Hoàn trả',
-              icon: 'ri:arrow-go-back-line',
-              keepAlive: true,
-              showBadge: true,
-              showTextBadge: '1',
-            },
-          },
-          {
             path: 'returns/detail/:id?',
             name: 'ReturnDetail',
             component: '/Order/view/logistics/returns/detail',
