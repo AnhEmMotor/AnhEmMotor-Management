@@ -1,14 +1,19 @@
 <template>
   <div
-    class="resp-page tracking-container relative w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden bg-gray-100 rounded-lg flex border border-gray-200"
+    class="resp-page tracking-container relative w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden bg-gray-100 dark:bg-gray-900 rounded-lg flex border border-gray-200 dark:border-gray-700"
   >
     <div
-      class="w-[30%] min-w-[360px] max-w-[420px] h-full bg-white shadow-[4px_0_24px_rgba(0,0,0,0.05)] z-20 flex flex-col relative transition-all duration-300 border-r border-gray-200"
+      class="w-[30%] min-w-[360px] max-w-[420px] h-full bg-white dark:bg-gray-800 shadow-[4px_0_24px_rgba(0,0,0,0.05)] z-20 flex flex-col relative transition-all duration-300 border-r border-gray-200 dark:border-gray-700"
     >
       <transition name="el-fade-in-linear">
-        <div v-show="!selectedOrder" class="absolute inset-0 flex flex-col h-full bg-white z-10">
-          <div class="p-4 border-b flex flex-col gap-3 bg-white">
-            <h2 class="font-bold text-lg text-gray-800 flex items-center">
+        <div
+          v-show="!selectedOrder"
+          class="absolute inset-0 flex flex-col h-full bg-white dark:bg-gray-800 z-10"
+        >
+          <div
+            class="p-4 border-b dark:border-gray-700 flex flex-col gap-3 bg-white dark:bg-gray-800"
+          >
+            <h2 class="font-bold text-lg text-gray-800 dark:text-gray-100 flex items-center">
               <el-icon class="mr-2 text-blue-600"><MapLocation /></el-icon>
               {{ t('logistics.tracking.title', 'Tra cứu hành trình') }}
             </h2>
@@ -27,39 +32,41 @@
           </div>
 
           <div
-            class="flex-1 overflow-y-auto p-3 bg-gray-50 custom-scrollbar"
+            class="flex-1 overflow-y-auto p-3 bg-gray-50 dark:bg-gray-900 custom-scrollbar"
             v-loading="loadingList"
           >
             <div
               v-if="filteredOrders.length === 0 && !loadingList"
-              class="text-center text-gray-500 py-10 flex flex-col items-center"
+              class="text-center text-gray-500 dark:text-gray-400 py-10 flex flex-col items-center"
             >
-              <el-icon class="text-4xl text-gray-300 mb-2"><Box /></el-icon>
+              <el-icon class="text-4xl text-gray-300 dark:text-gray-600 mb-2"><Box /></el-icon>
               Không có đơn hàng nào đang vận chuyển
             </div>
 
             <div
               v-for="order in filteredOrders"
               :key="order.trackingNumber"
-              class="mb-3 rounded-xl bg-white border border-gray-200 transition-all duration-200 cursor-pointer overflow-hidden shadow-sm hover:shadow-md hover:border-blue-400 group"
+              class="mb-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all duration-200 cursor-pointer overflow-hidden shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 group"
               @click="selectOrder(order)"
             >
               <div class="p-3.5">
                 <div class="flex justify-between items-start mb-2">
                   <div>
                     <span
-                      class="font-bold text-blue-700 text-[15px] group-hover:text-blue-800 transition-colors"
+                      class="font-bold text-blue-700 dark:text-blue-400 text-[15px] group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors"
                       >{{ order.trackingNumber }}</span
                     >
                   </div>
                 </div>
 
-                <div class="text-sm mt-3 pt-2 border-t border-gray-50">
-                  <div class="font-semibold text-gray-800">
+                <div class="text-sm mt-3 pt-2 border-t border-gray-50 dark:border-gray-700">
+                  <div class="font-semibold text-gray-800 dark:text-gray-200">
                     {{ order.customerName }}
                   </div>
-                  <div class="text-gray-600 text-xs flex items-center mt-1">
-                    <el-icon class="mr-1 text-gray-400"><Phone /></el-icon>
+                  <div class="text-gray-600 dark:text-gray-400 text-xs flex items-center mt-1">
+                    <el-icon class="mr-1 text-gray-400 dark:text-gray-500 dark:text-gray-400"
+                      ><Phone
+                    /></el-icon>
                     {{ order.customerPhone }}
                   </div>
                 </div>
@@ -72,70 +79,78 @@
       <transition name="slide-left">
         <div
           v-if="selectedOrder"
-          class="absolute inset-0 flex flex-col h-full bg-white z-20 overflow-hidden shadow-xl"
+          class="absolute inset-0 flex flex-col h-full bg-white dark:bg-gray-800 z-20 overflow-hidden shadow-xl"
         >
           <div
-            class="p-3.5 border-b flex items-center bg-white sticky top-0 z-10 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+            class="p-3.5 border-b dark:border-gray-700 flex items-center bg-white dark:bg-gray-800 sticky top-0 z-10 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             @click="deselectOrder"
           >
-            <el-icon class="text-gray-600 mr-2 text-xl"><ArrowLeft /></el-icon>
-            <span class="font-semibold text-gray-700">Trở lại danh sách đơn</span>
+            <el-icon class="text-gray-600 dark:text-gray-300 mr-2 text-xl"><ArrowLeft /></el-icon>
+            <span class="font-semibold text-gray-700 dark:text-gray-200"
+              >Trở lại danh sách đơn</span
+            >
           </div>
 
           <div
-            class="flex-1 overflow-y-auto p-4 custom-scrollbar bg-gray-50/50"
+            class="flex-1 overflow-y-auto p-4 custom-scrollbar bg-gray-50/50 dark:bg-gray-900"
             v-loading="loadingDetails"
           >
             <template v-if="trackingData">
-              <div class="mb-5 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <div class="flex justify-between items-start mb-4 border-b border-gray-100 pb-4">
+              <div
+                class="mb-5 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+              >
+                <div
+                  class="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4"
+                >
                   <div>
                     <div
-                      class="text-[11px] text-gray-500 uppercase tracking-widest font-semibold mb-1"
+                      class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1"
                     >
                       Mã đơn hàng
                     </div>
-                    <div class="font-bold text-gray-900 text-base">
+                    <div class="font-bold text-gray-900 dark:text-gray-100 text-base">
                       {{ trackingData.trackingNumber }}
                     </div>
                   </div>
                   <div class="text-right">
                     <div
-                      class="text-[11px] text-gray-500 uppercase tracking-widest font-semibold mb-1"
+                      class="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-semibold mb-1"
                     >
                       Thu hộ (COD)
                     </div>
                     <div
                       v-if="trackingData.codAmount === 0"
-                      class="text-xs px-2.5 py-1 bg-green-50 text-green-700 rounded-md font-bold border border-green-200"
+                      class="text-xs px-2.5 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md font-bold border border-green-200 dark:border-green-800"
                     >
                       ĐÃ THANH TOÁN 0đ
                     </div>
-                    <div v-else class="font-bold text-blue-700 text-lg">
+                    <div v-else class="font-bold text-blue-700 dark:text-blue-400 text-lg">
                       {{ formatCurrency(trackingData.codAmount) }}
                     </div>
                   </div>
                 </div>
                 <div class="space-y-2.5">
-                  <div class="font-semibold text-gray-800 flex items-center gap-2.5">
+                  <div
+                    class="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2.5"
+                  >
                     <div
-                      class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"
+                      class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300"
                     >
                       <el-icon><User /></el-icon>
                     </div>
                     {{ trackingData.customerName }}
                   </div>
-                  <div class="text-gray-600 text-sm flex items-center gap-2.5">
+                  <div class="text-gray-600 dark:text-gray-400 text-sm flex items-center gap-2.5">
                     <div
-                      class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"
+                      class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300"
                     >
                       <el-icon><Phone /></el-icon>
                     </div>
                     {{ trackingData.customerPhone }}
                   </div>
-                  <div class="text-gray-600 text-sm flex items-start gap-2.5">
+                  <div class="text-gray-600 dark:text-gray-400 text-sm flex items-start gap-2.5">
                     <div
-                      class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 shrink-0"
+                      class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0"
                     >
                       <el-icon><Location /></el-icon>
                     </div>
@@ -147,10 +162,13 @@
               </div>
 
               <div class="mb-6">
-                <h4 class="font-bold text-gray-800 mb-3 text-sm flex items-center gap-2">
-                  <el-icon class="text-blue-600 text-lg"><Box /></el-icon> Sản phẩm bên trong
+                <h4
+                  class="font-bold text-gray-800 dark:text-gray-200 mb-3 text-sm flex items-center gap-2"
+                >
+                  <el-icon class="text-blue-600 dark:text-blue-400 text-lg"><Box /></el-icon> Sản
+                  phẩm bên trong
                   <span
-                    class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-[11px] ml-auto border border-gray-200"
+                    class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-[11px] ml-auto border border-gray-200 dark:border-gray-600"
                     >{{ trackingData.items?.length || 0 }} món</span
                   >
                 </h4>
@@ -158,28 +176,30 @@
                   <div
                     v-for="(item, idx) in trackingData.items"
                     :key="idx"
-                    class="flex gap-3.5 items-center bg-white p-2.5 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                    class="flex gap-3.5 items-center bg-white dark:bg-gray-800 p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow"
                   >
                     <div
-                      class="w-14 h-14 bg-gray-50 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 flex items-center justify-center"
+                      class="w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 dark:border-gray-600 flex items-center justify-center"
                     >
                       <img
                         v-if="item.thumbnailUrl"
                         :src="formatImageUrl(item.thumbnailUrl)"
                         class="w-full h-full object-cover"
                       />
-                      <el-icon v-else class="text-gray-300 text-2xl"><Picture /></el-icon>
+                      <el-icon v-else class="text-gray-300 dark:text-gray-500 text-2xl"
+                        ><Picture
+                      /></el-icon>
                     </div>
                     <div class="flex-1 min-w-0">
                       <div
-                        class="text-sm font-semibold text-gray-800 truncate"
+                        class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate"
                         :title="item.productName"
                       >
                         {{ item.productName }}
                       </div>
                     </div>
                     <div
-                      class="text-sm font-bold bg-orange-50 text-orange-600 px-2.5 py-1.5 rounded-lg border border-orange-100 shadow-sm"
+                      class="text-sm font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2.5 py-1.5 rounded-lg border border-orange-100 dark:border-orange-800 shadow-sm"
                     >
                       x{{ item.quantity }}
                     </div>
@@ -188,11 +208,15 @@
               </div>
 
               <div class="mb-6">
-                <h4 class="font-bold text-gray-800 mb-3 text-sm flex items-center gap-2">
-                  <el-icon class="text-blue-600 text-lg"><Timer /></el-icon>
+                <h4
+                  class="font-bold text-gray-800 dark:text-gray-200 mb-3 text-sm flex items-center gap-2"
+                >
+                  <el-icon class="text-blue-600 dark:text-blue-400 text-lg"><Timer /></el-icon>
                   Lịch sử hành trình
                 </h4>
-                <div class="bg-white p-4 border border-gray-200 rounded-xl shadow-sm">
+                <div
+                  class="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm"
+                >
                   <el-timeline class="tracking-timeline mt-2">
                     <el-timeline-item
                       v-for="(milestone, idx) in sortedMilestones"
@@ -204,14 +228,20 @@
                       <div class="flex flex-col gap-1">
                         <div
                           class="font-semibold text-sm"
-                          :class="milestone.isCurrent ? 'text-blue-600' : 'text-gray-700'"
+                          :class="
+                            milestone.isCurrent
+                              ? 'text-blue-600 dark:text-blue-400'
+                              : 'text-gray-700 dark:text-gray-200'
+                          "
                         >
                           {{ milestone.description }}
                         </div>
                         <div class="text-xs text-gray-500">
                           {{ formatDate(milestone.timestamp) }}
                         </div>
-                        <div class="text-xs text-gray-600 mt-1">Tại: {{ milestone.location }}</div>
+                        <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          Tại: {{ milestone.location }}
+                        </div>
                       </div>
                     </el-timeline-item>
                   </el-timeline>
@@ -220,9 +250,11 @@
             </template>
             <div
               v-else-if="!loadingDetails"
-              class="text-center text-gray-500 py-12 flex flex-col items-center"
+              class="text-center text-gray-500 dark:text-gray-400 py-12 flex flex-col items-center"
             >
-              <el-icon class="text-4xl text-gray-300 mb-2"><WarningFilled /></el-icon>
+              <el-icon class="text-4xl text-gray-300 dark:text-gray-600 mb-2"
+                ><WarningFilled
+              /></el-icon>
               Không tải được dữ liệu chi tiết
             </div>
           </div>
@@ -230,7 +262,7 @@
       </transition>
     </div>
 
-    <div class="flex-1 h-full relative z-0 bg-gray-100">
+    <div class="flex-1 h-full relative z-0 bg-gray-100 dark:bg-gray-900">
       <div id="map" class="absolute inset-0 w-full h-full"></div>
     </div>
   </div>
@@ -305,7 +337,7 @@ const sortedMilestones = computed(() => {
   if (!trackingData.value?.milestones) return [];
   return [...trackingData.value.milestones].sort(
     (a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf()
-  ); 
+  );
 });
 
 onMounted(() => {
@@ -433,7 +465,7 @@ async function drawTrackingData() {
     return;
 
   L.polyline(fullPath || [startCoords, destCoords], {
-    color: '#3b82f6', 
+    color: '#3b82f6',
     weight: 5,
     opacity: 0.9,
     lineJoin: 'round',
@@ -467,7 +499,8 @@ function getMilestoneColor(milestone: TrackingMilestone) {
   if (milestone.isCurrent) {
     return '#3b82f6';
   }
-  return '#e5e7eb'; 
+  const isDark = document.documentElement.classList.contains('dark');
+  return isDark ? '#374151' : '#e5e7eb';
 }
 
 function formatCurrency(amount: number) {
@@ -517,7 +550,15 @@ function formatDate(dateStr: string) {
   box-shadow: 0 0 0 4px white;
 }
 
+html.dark :deep(.tracking-timeline .el-timeline-item__node) {
+  box-shadow: 0 0 0 4px #1f2937;
+}
+
 :deep(.tracking-timeline .el-timeline-item__tail) {
   border-left: 2px solid #e5e7eb;
+}
+
+html.dark :deep(.tracking-timeline .el-timeline-item__tail) {
+  border-left: 2px solid #374151;
 }
 </style>

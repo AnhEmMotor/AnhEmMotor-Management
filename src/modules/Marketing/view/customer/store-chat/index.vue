@@ -200,7 +200,7 @@ const deleteSession = async (session: StoreChatSessionListItem) => {
       { confirmButtonText: 'Xoá', cancelButtonText: 'Huỷ', type: 'warning' }
     );
   } catch {
-    return; 
+    return;
   }
 
   actingSessionIds.value.add(session.id);
@@ -353,10 +353,12 @@ const sendMessage = async () => {
 
 <template>
   <div
-    class="flex h-[calc(100vh-140px)] border border-gray-200 rounded-lg overflow-hidden bg-white"
+    class="flex h-[calc(100vh-140px)] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
   >
-    <div class="w-80 flex flex-col border-r border-gray-200 bg-gray-50 shrink-0">
-      <div class="p-3 border-b border-gray-200 bg-white">
+    <div
+      class="w-80 flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shrink-0"
+    >
+      <div class="p-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <el-radio-group v-model="filter" size="small">
           <el-radio-button value="active">Đang chờ / Đang chat</el-radio-button>
           <el-radio-button value="all">Tất cả</el-radio-button>
@@ -373,8 +375,8 @@ const sendMessage = async () => {
           class="p-3 mb-2 rounded-lg cursor-pointer border transition-colors"
           :class="
             activeSessionId === session.id
-              ? 'bg-blue-50 border-blue-300'
-              : 'bg-white hover:bg-gray-100 border-transparent'
+              ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700'
+              : 'bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent'
           "
           @click="selectSession(session.id)"
         >
@@ -431,7 +433,9 @@ const sendMessage = async () => {
         Chọn 1 phiên chat để xem hội thoại
       </div>
       <template v-else>
-        <div class="p-3 border-b border-gray-200 flex justify-between items-center">
+        <div
+          class="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center"
+        >
           <div>
             <p class="font-semibold">
               {{ activeSession ? displayName(activeSession) : '' }}
@@ -447,7 +451,7 @@ const sendMessage = async () => {
 
         <div
           ref="messagesContainer"
-          class="flex-1 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3"
+          class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900 flex flex-col gap-3"
           v-loading="isLoadingHistory"
         >
           <template v-for="msg in messages" :key="msg.id">
@@ -466,7 +470,7 @@ const sendMessage = async () => {
                 class="max-w-[70%] rounded-2xl px-4 py-2 shadow-sm"
                 :class="
                   msg.sender === 'Visitor'
-                    ? 'bg-white border border-gray-200 rounded-bl-none'
+                    ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-bl-none'
                     : 'bg-blue-600 text-white rounded-br-none'
                 "
               >
@@ -510,7 +514,10 @@ const sendMessage = async () => {
           </template>
         </div>
 
-        <div v-if="canReply" class="border-t border-gray-200">
+        <div
+          v-if="canReply"
+          class="border-t border-gray-200 dark:border-gray-700 dark:border-gray-700 dark:border-gray-700"
+        >
           <div v-if="pendingCards.length > 0" class="flex flex-wrap gap-1.5 px-3 pt-2">
             <el-tag
               v-for="card in pendingCards"
@@ -543,7 +550,10 @@ const sendMessage = async () => {
             </div>
           </div>
         </div>
-        <div v-else class="p-3 border-t border-gray-200 text-center text-xs text-gray-400">
+        <div
+          v-else
+          class="p-3 border-t border-gray-200 dark:border-gray-700 text-center text-xs text-gray-400"
+        >
           Phiên này do nhân viên khác phụ trách.
         </div>
       </template>
@@ -566,7 +576,7 @@ const sendMessage = async () => {
         <div
           v-for="product in productSearchResults"
           :key="product.productId"
-          class="border border-gray-200 rounded-lg p-3"
+          class="border border-gray-200 dark:border-gray-700 rounded-lg p-3"
         >
           <div
             class="flex items-center justify-between gap-2 cursor-pointer"
@@ -575,7 +585,7 @@ const sendMessage = async () => {
             <div class="flex items-center gap-2 min-w-0">
               <el-image
                 :src="product.imageUrl || ''"
-                class="w-10 h-10 rounded object-cover border border-gray-100 shrink-0"
+                class="w-10 h-10 rounded object-cover border border-gray-100 dark:border-gray-600 shrink-0"
                 fit="cover"
               />
               <span class="text-sm font-medium truncate">{{ product.productName }}</span>
@@ -588,12 +598,12 @@ const sendMessage = async () => {
           <div
             v-if="expandedProductId === product.productId"
             v-loading="isLoadingVariants"
-            class="mt-2 pl-2 space-y-1 border-t border-gray-100 pt-2"
+            class="mt-2 pl-2 space-y-1 border-t border-gray-100 dark:border-gray-600 pt-2"
           >
             <div
               v-for="variant in expandedProductVariants"
               :key="variant.variantId"
-              class="flex flex-col gap-1.5 text-sm py-1.5 border-b border-gray-50 last:border-b-0"
+              class="flex flex-col gap-1.5 text-sm py-1.5 border-b border-gray-50 dark:border-gray-700 last:border-b-0"
             >
               <div class="flex items-center justify-between gap-2">
                 <span class="truncate">{{

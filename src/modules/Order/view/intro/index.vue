@@ -125,7 +125,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background-color: #f5f5f5;
+  background-color: var(--el-bg-color-page);
   overflow-y: auto;
   padding: 0 16px 16px;
 }
@@ -160,11 +160,11 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 }
 
 .info-card {
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--el-border-color-light);
   display: flex;
   flex-direction: column;
 }
@@ -177,7 +177,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   border-radius: 20px;
   font-weight: 600;
   font-size: 13px;
-  color: #fff;
+  color: var(--el-bg-color-overlay);
   width: fit-content;
   margin-bottom: 16px;
 }
@@ -188,7 +188,8 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 
 .bg-orange {
   background-color: #ea580c;
-} 
+}
+
 .text-orange {
   color: #ea580c;
 }
@@ -202,19 +203,19 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 12px;
-  color: #333;
+  color: var(--el-text-color-primary);
 }
 
 .card-title-dark {
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 12px;
-  color: #1a1a1a;
+  color: var(--el-text-color-primary);
 }
 
 .card-text {
   font-size: 14px;
-  color: #4f4f4f;
+  color: var(--el-text-color-regular);
   line-height: 1.5;
   margin: 0 0 20px;
 }
@@ -231,13 +232,13 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 
     strong {
       font-size: 14px;
-      color: #333;
+      color: var(--el-text-color-primary);
       margin-bottom: 4px;
     }
 
     span {
       font-size: 14px;
-      color: #4f4f4f;
+      color: var(--el-text-color-regular);
     }
   }
 }
@@ -253,9 +254,9 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border: 1px solid #fed7aa; 
+  border: 1px solid #fed7aa;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   transition: all 0.2s;
 
   &:hover {
@@ -276,13 +277,13 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   .contact-label {
     font-size: 12px;
     font-weight: 600;
-    color: #333;
+    color: var(--el-text-color-primary);
     margin-bottom: 2px;
   }
 
   .contact-value {
     font-size: 13px;
-    color: #4f4f4f;
+    color: var(--el-text-color-regular);
   }
 }
 
@@ -298,7 +299,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #333;
+  color: var(--el-text-color-primary);
   font-weight: 500;
 
   :deep(svg) {
@@ -353,18 +354,18 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 }
 
 .btn-dark {
-  background-color: #000;
-  color: #fff;
+  background-color: var(--el-text-color-primary);
+  color: var(--el-bg-color-overlay);
 
   &:hover {
-    background-color: #222;
+    opacity: 0.9;
   }
 }
 
 .btn-light {
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   border: 1px solid #fed7aa;
-  color: #333;
+  color: var(--el-text-color-primary);
 
   &:hover {
     box-shadow: 0 2px 8px rgb(234 88 12 / 15%);
@@ -381,7 +382,7 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   .tags-title {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--el-text-color-primary);
     margin-bottom: 12px;
   }
 
@@ -392,8 +393,8 @@ import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
   }
 
   .tag {
-    background-color: #e0e0e0;
-    color: #4f4f4f;
+    background-color: var(--el-fill-color-dark);
+    color: var(--el-text-color-regular);
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 11px;
