@@ -1,6 +1,7 @@
 import { ref, onMounted, type Ref } from 'vue';
 import { useTable } from '@/common/composables/useTable';
 import { WarrantyTermApi } from '@/api/warranty';
+import { BrandApi } from '@/api/product';
 import type { WarrantyTerm, WarrantyTermStatus } from '@/domain/warranty/warranty-category.types';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
@@ -231,12 +232,9 @@ export function useWarrantyCategoryTable() {
   });
 
   const updateSearchBrandOptions = () => {
-    const brandSearchItem = searchItems.value.find(
-      (item) => item.key === "brandId",
-    );
+    const brandSearchItem = searchItems.value.find((item) => item.key === 'brandId');
     if (brandSearchItem) {
       const coveredIds = statistics.value.coveredBrandIds || [];
-      // Only show brands that are currently covered by warranty terms
       const opts = brandOptions.value.filter((b) => coveredIds.includes(b.id));
       brandSearchItem.props.options = opts.map((b: any) => ({
         label: b.name,
@@ -267,9 +265,7 @@ export function useWarrantyCategoryTable() {
         activeTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status === 'Active').length,
         inactiveTerms: MOCK_WARRANTY_TERMS.filter((t) => t.status !== 'Active').length,
         brandsCovered: new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId)).size,
-        coveredBrandIds: Array.from(
-          new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId)),
-        ),
+        coveredBrandIds: Array.from(new Set(MOCK_WARRANTY_TERMS.map((t) => t.brandId))),
       };
       updateSearchBrandOptions();
     }
@@ -517,7 +513,7 @@ export function useWarrantyCategoryTable() {
       label: 'Hãng xe',
       type: 'select',
       props: {
-        options: [], // populated asynchronously
+        options: [],
         clearable: true,
         filterable: true,
         placeholder: 'Tất cả hãng',
