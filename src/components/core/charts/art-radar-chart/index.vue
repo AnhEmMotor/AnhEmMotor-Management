@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import type { EChartsOption } from "@/plugins/echarts";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import type { RadarChartProps } from "@/types/component/chart";
+import type { EChartsOption } from '@/plugins/echarts';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import type { RadarChartProps } from '@/types/component/chart';
 
-defineOptions({ name: "ArtRadarChart" });
+defineOptions({ name: 'ArtRadarChart' });
 
 const props = withDefaults(defineProps<RadarChartProps>(), {
   height: useChartOps().chartHeight,
@@ -25,51 +25,48 @@ const props = withDefaults(defineProps<RadarChartProps>(), {
 
   showTooltip: true,
   showLegend: false,
-  legendPosition: "bottom",
+  legendPosition: 'bottom',
 });
 
 const { isDark, getAnimationConfig, getTooltipStyle } = useChartComponent({
   props,
   checkEmpty: () => {
-    return (
-      !props.data?.length ||
-      props.data.every((item) => item.value.every((val) => val === 0))
-    );
+    return !props.data?.length || props.data.every((item) => item.value.every((val) => val === 0));
   },
   watchSources: [() => props.data, () => props.indicator, () => props.colors],
   generateOptions: (): EChartsOption => {
     return {
-      tooltip: props.showTooltip ? getTooltipStyle("item") : undefined,
+      tooltip: props.showTooltip ? getTooltipStyle('item') : undefined,
       radar: {
         indicator: props.indicator,
-        center: ["50%", "50%"],
-        radius: "70%",
+        center: ['50%', '50%'],
+        radius: '70%',
         axisName: {
-          color: isDark.value ? "#ccc" : "#666",
+          color: isDark.value ? '#ccc' : '#666',
           fontSize: 12,
         },
         splitLine: {
           lineStyle: {
-            color: isDark.value ? "#444" : "#e6e6e6",
+            color: isDark.value ? '#444' : '#e6e6e6',
           },
         },
         axisLine: {
           lineStyle: {
-            color: isDark.value ? "#444" : "#e6e6e6",
+            color: isDark.value ? '#444' : '#e6e6e6',
           },
         },
         splitArea: {
           show: true,
           areaStyle: {
             color: isDark.value
-              ? ["rgba(255, 255, 255, 0.02)", "rgba(255, 255, 255, 0.05)"]
-              : ["rgba(0, 0, 0, 0.02)", "rgba(0, 0, 0, 0.05)"],
+              ? ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.05)']
+              : ['rgba(0, 0, 0, 0.02)', 'rgba(0, 0, 0, 0.05)'],
           },
         },
       },
       series: [
         {
-          type: "radar",
+          type: 'radar',
           data: props.data.map((item, index) => ({
             name: item.name,
             value: item.value,

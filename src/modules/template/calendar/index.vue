@@ -11,9 +11,7 @@
             {{ formatDate(data.day) }}
           </p>
 
-          <div
-            class="flex flex-col gap-1 w-full max-h-21 pr-1 mt-6 overflow-y-auto"
-          >
+          <div class="flex flex-col gap-1 w-full max-h-21 pr-1 mt-6 overflow-y-auto">
             <div
               v-for="event in getEvents(data.day)"
               :key="`${event.date}-${event.content}`"
@@ -31,26 +29,14 @@
       </template>
     </ElCalendar>
 
-    <ElDialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      @closed="resetForm"
-    >
+    <ElDialog v-model="dialogVisible" :title="dialogTitle" width="600px" @closed="resetForm">
       <ElForm :model="eventForm" label-width="80px">
         <ElFormItem label="sốngđộngTieuDe" required>
-          <ElInput
-            v-model="eventForm.content"
-            placeholder="Vui lòng nhậpsốngđộngTieuDe"
-          />
+          <ElInput v-model="eventForm.content" placeholder="Vui lòng nhậpsốngđộngTieuDe" />
         </ElFormItem>
         <ElFormItem label="SuKienMàu sắc">
           <ElRadioGroup v-model="eventForm.type">
-            <ElRadio
-              v-for="type in eventTypes"
-              :key="type.value"
-              :value="type.value"
-            >
+            <ElRadio v-for="type in eventTypes" :key="type.value" :value="type.value">
               {{ type.label }}
             </ElRadio>
           </ElRadioGroup>
@@ -79,11 +65,9 @@
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
-          <ElButton v-if="isEditing" type="danger" @click="handleDeleteEvent">
-            Xóa
-          </ElButton>
+          <ElButton v-if="isEditing" type="danger" @click="handleDeleteEvent"> Xóa </ElButton>
           <ElButton type="primary" @click="handleSaveEvent">
-            {{ isEditing ? "Cập nhật" : "Thêm mới" }}
+            {{ isEditing ? 'Cập nhật' : 'Thêm mới' }}
           </ElButton>
         </span>
       </template>
@@ -92,67 +76,67 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "TemplateCalendar" });
+defineOptions({ name: 'TemplateCalendar' });
 
 interface CalendarEvent {
   date: string;
   endDate?: string;
   content: string;
-  type?: "primary" | "success" | "warning" | "danger";
+  type?: 'primary' | 'success' | 'warning' | 'danger';
   bgClass?: string;
   textClass?: string;
 }
 
 const eventTypes = [
-  { label: "quyển", value: "primary" },
-  { label: "ThanhCong", value: "success" },
-  { label: "CanhBao", value: "warning" },
-  { label: "Nguy hiểm", value: "danger" },
+  { label: 'quyển', value: 'primary' },
+  { label: 'ThanhCong', value: 'success' },
+  { label: 'CanhBao', value: 'warning' },
+  { label: 'Nguy hiểm', value: 'danger' },
 ] as const;
 
-const currentDate = ref(new Date("2025-02-07"));
+const currentDate = ref(new Date('2025-02-07'));
 const dialogVisible = ref(false);
-const dialogTitle = ref("Thêm mớiSuKien");
+const dialogTitle = ref('Thêm mớiSuKien');
 const editingEventIndex = ref<number>(-1);
 
 const events = ref<CalendarEvent[]>([
   {
-    date: "2025-02-01",
-    content: "sinhsản phẩmcầncầuBìnhduyệt",
-    type: "primary",
+    date: '2025-02-01',
+    content: 'sinhsản phẩmcầncầuBìnhduyệt',
+    type: 'primary',
   },
   {
-    date: "2025-02-03",
-    endDate: "2025-02-05",
-    content: "mụcmụctuầnbáosẽnghị（vượtNgày）",
-    type: "primary",
+    date: '2025-02-03',
+    endDate: '2025-02-05',
+    content: 'mụcmụctuầnbáosẽnghị（vượtNgày）',
+    type: 'primary',
   },
-  { date: "2025-02-10", content: "dugiàkhóatrình", type: "success" },
-  { date: "2025-02-15", content: "đoànđộixâythiếtsốngđộng", type: "primary" },
-  { date: "2025-02-20", content: "khỏethânhuấnluyện", type: "success" },
-  { date: "2025-02-20", content: "đạimãBìnhduyệt", type: "danger" },
-  { date: "2025-02-20", content: "đoànđộitrưabữa", type: "primary" },
-  { date: "2025-02-20", content: "mụcmụcvàođộhợpbáo", type: "warning" },
-  { date: "2025-02-28", content: "Hàng thángtổngKếtsẽ", type: "warning" },
+  { date: '2025-02-10', content: 'dugiàkhóatrình', type: 'success' },
+  { date: '2025-02-15', content: 'đoànđộixâythiếtsốngđộng', type: 'primary' },
+  { date: '2025-02-20', content: 'khỏethânhuấnluyện', type: 'success' },
+  { date: '2025-02-20', content: 'đạimãBìnhduyệt', type: 'danger' },
+  { date: '2025-02-20', content: 'đoànđộitrưabữa', type: 'primary' },
+  { date: '2025-02-20', content: 'mụcmụcvàođộhợpbáo', type: 'warning' },
+  { date: '2025-02-28', content: 'Hàng thángtổngKếtsẽ', type: 'warning' },
 ]);
 
 const eventForm = ref<CalendarEvent>({
-  date: "",
-  endDate: "",
-  content: "",
-  type: "primary",
+  date: '',
+  endDate: '',
+  content: '',
+  type: 'primary',
 });
 
 const isEditing = computed(() => editingEventIndex.value >= 0);
 
-const formatDate = (date: string) => date.split("-")[2];
+const formatDate = (date: string) => date.split('-')[2];
 
-const getEventClasses = (type: CalendarEvent["type"] = "primary") => {
+const getEventClasses = (type: CalendarEvent['type'] = 'primary') => {
   const classMap = {
-    primary: { bgClass: "bg-theme/12", textClass: "text-theme" },
-    success: { bgClass: "bg-success/12", textClass: "text-success" },
-    warning: { bgClass: "bg-warning/12", textClass: "text-warning" },
-    danger: { bgClass: "bg-danger/12", textClass: "text-danger" },
+    primary: { bgClass: 'bg-theme/12', textClass: 'text-theme' },
+    success: { bgClass: 'bg-success/12', textClass: 'text-success' },
+    warning: { bgClass: 'bg-warning/12', textClass: 'text-warning' },
+    danger: { bgClass: 'bg-danger/12', textClass: 'text-danger' },
   };
   return classMap[type];
 };
@@ -162,9 +146,7 @@ const getEvents = (day: string) => {
     .filter((event) => {
       const eventDate = new Date(event.date);
       const currentDate = new Date(day);
-      const endDate = event.endDate
-        ? new Date(event.endDate)
-        : new Date(event.date);
+      const endDate = event.endDate ? new Date(event.endDate) : new Date(event.date);
 
       return currentDate >= eventDate && currentDate <= endDate;
     })
@@ -176,30 +158,30 @@ const getEvents = (day: string) => {
 
 const resetForm = () => {
   eventForm.value = {
-    date: "",
-    endDate: "",
-    content: "",
-    type: "primary",
+    date: '',
+    endDate: '',
+    content: '',
+    type: 'primary',
   };
   editingEventIndex.value = -1;
 };
 
 const handleCellClick = (day: string) => {
-  dialogTitle.value = "Thêm mớiSuKien";
+  dialogTitle.value = 'Thêm mớiSuKien';
   eventForm.value = {
     date: day,
-    content: "",
-    type: "primary",
+    content: '',
+    type: 'primary',
   };
   editingEventIndex.value = -1;
   dialogVisible.value = true;
 };
 
 const handleEventClick = (event: CalendarEvent) => {
-  dialogTitle.value = "Chỉnh sửaSuKien";
+  dialogTitle.value = 'Chỉnh sửaSuKien';
   eventForm.value = { ...event };
   editingEventIndex.value = events.value.findIndex(
-    (e) => e.date === event.date && e.content === event.content,
+    (e) => e.date === event.date && e.content === event.content
   );
   dialogVisible.value = true;
 };

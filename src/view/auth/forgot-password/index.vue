@@ -1,9 +1,7 @@
 <template>
   <div class="forgot-password-page">
     <div class="login-bg-overlay"></div>
-    <div
-      class="login-container relative z-10 flex items-center justify-center min-h-screen"
-    >
+    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
@@ -14,12 +12,9 @@
               <el-icon :size="32" color="white"><Key /></el-icon>
             </div>
           </div>
-          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">
-            Quên mật khẩu
-          </h2>
+          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">Quên mật khẩu</h2>
           <p class="mt-3 text-sm subtitle px-4">
-            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết
-            để đặt lại mật khẩu.
+            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.
           </p>
         </div>
 
@@ -42,21 +37,11 @@
           </el-form-item>
 
           <div v-if="errorMessage" class="text-center">
-            <el-alert
-              :title="errorMessage"
-              type="error"
-              show-icon
-              :closable="false"
-            />
+            <el-alert :title="errorMessage" type="error" show-icon :closable="false" />
           </div>
 
           <div v-if="successMessage" class="text-center">
-            <el-alert
-              :title="successMessage"
-              type="success"
-              show-icon
-              :closable="false"
-            />
+            <el-alert :title="successMessage" type="success" show-icon :closable="false" />
           </div>
 
           <el-form-item class="mt-6">
@@ -87,40 +72,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { Message, Key, Back } from "@element-plus/icons-vue";
-import { fetchForgotPassword } from "@/api/auth";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Message, Key, Back } from '@element-plus/icons-vue';
+import { fetchForgotPassword } from '@/api/auth';
 
 const router = useRouter();
 
-const email = ref("");
+const email = ref('');
 const isLoading = ref(false);
-const errorMessage = ref("");
-const successMessage = ref("");
+const errorMessage = ref('');
+const successMessage = ref('');
 
 const handleForgotPassword = async () => {
   if (!email.value) {
-    errorMessage.value = "Vui lòng nhập địa chỉ email";
+    errorMessage.value = 'Vui lòng nhập địa chỉ email';
     return;
   }
 
   isLoading.value = true;
-  errorMessage.value = "";
-  successMessage.value = "";
+  errorMessage.value = '';
+  successMessage.value = '';
 
   try {
     const res = await fetchForgotPassword({ email: email.value });
 
     if (res.data) {
       successMessage.value =
-        res.data.message ||
-        "Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.";
+        res.data.message || 'Vui lòng kiểm tra email của bạn để nhận link đặt lại mật khẩu.';
     }
 
-    email.value = "";
+    email.value = '';
   } catch (error: any) {
-    errorMessage.value = error.message || "Gửi yêu cầu thất bại";
+    errorMessage.value = error.message || 'Gửi yêu cầu thất bại';
   } finally {
     isLoading.value = false;
   }
@@ -133,7 +117,7 @@ const handleForgotPassword = async () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920");
+  background-image: url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=1920');
   background-attachment: fixed;
   background-position: center;
   background-size: cover;

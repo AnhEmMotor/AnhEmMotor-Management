@@ -1,5 +1,5 @@
-export type BookingStatus = "Pending" | "Confirmed" | "Cancelled" | string;
-export type BookingType = "TestDrive" | "Consult" | string;
+export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | string;
+export type BookingType = 'TestDrive' | 'Consult' | string;
 
 export interface Booking {
   id: number;
@@ -17,12 +17,12 @@ export interface Booking {
 
 export interface BookingEventVM {
   id: number;
-  date: string; // YYYY-MM-DD
-  endDate?: string; // YYYY-MM-DD
+  date: string;
+  endDate?: string;
   content: string;
   type?: BookingType;
   status?: BookingStatus;
-  time?: string; // HH:mm
+  time?: string;
   bgClass?: string;
   textClass?: string;
 }
@@ -31,7 +31,7 @@ export interface BookingFormVM {
   customerName: string;
   phone: string;
   time: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   type: BookingType;
   content: string;
   status: BookingStatus;

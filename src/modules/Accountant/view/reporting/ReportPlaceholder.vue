@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ReportPlaceholder" });
+defineOptions({ name: 'ReportPlaceholder' });
 
 withDefaults(
   defineProps<{
@@ -22,8 +22,8 @@ withDefaults(
     icon?: string;
   }>(),
   {
-    icon: "ri:bar-chart-box-line",
-  },
+    icon: 'ri:bar-chart-box-line',
+  }
 );
 </script>
 

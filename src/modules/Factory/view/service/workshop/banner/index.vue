@@ -1,10 +1,7 @@
 <template>
   <div class="resp-page banner-container">
     <div class="banner-image">
-      <img
-        src="@/assets/images/banner/banner_factory.webp"
-        alt="Workshop Banner"
-      />
+      <img src="@/assets/images/banner/banner_factory.webp" alt="Workshop Banner" />
     </div>
 
     <!-- Info Cards Section -->
@@ -14,23 +11,17 @@
         <div class="card-badge bg-green">
           <ArtSvgIcon icon="ri:customer-service-2-line" /> HỖ TRỢ KỸ THUẬT
         </div>
-        <h2 class="card-title">
-          CÔNG TY TNHH <span class="text-red">ANH EM MOTOR</span>
-        </h2>
+        <h2 class="card-title">CÔNG TY TNHH <span class="text-red">ANH EM MOTOR</span></h2>
         <p class="card-text">
-          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi
-          nhận, đồng hành và hỗ trợ liên tục 24/7 trong quá trình vận hành, khai
-          thác hệ thống.
+          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi nhận, đồng hành và hỗ
+          trợ liên tục 24/7 trong quá trình vận hành, khai thác hệ thống.
         </p>
 
         <div class="address-line">
           <ArtSvgIcon icon="ri:map-pin-line" class="icon-red" />
           <div class="address-content">
             <strong>Địa chỉ</strong>
-            <span
-              >Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt
-              Nam</span
-            >
+            <span>Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt Nam</span>
           </div>
         </div>
 
@@ -78,17 +69,13 @@
       <div class="info-card">
         <div class="card-header">
           <div class="card-badge bg-red">XƯỞNG</div>
-          <div class="website-link">
-            <ArtSvgIcon icon="ri:global-line" /> anhemmotor.com
-          </div>
+          <div class="website-link"><ArtSvgIcon icon="ri:global-line" /> anhemmotor.com</div>
         </div>
 
-        <h2 class="card-title-dark">
-          Hệ sinh thái quản lý quy trình sửa chữa và bảo dưỡng xe máy
-        </h2>
+        <h2 class="card-title-dark">Hệ sinh thái quản lý quy trình sửa chữa và bảo dưỡng xe máy</h2>
         <p class="card-text">
-          Kết nối truy xuất nguồn gốc, dữ liệu vòng đời xe và các nền tảng
-          chuyển đổi số trong chuỗi giá trị dịch vụ xe máy.
+          Kết nối truy xuất nguồn gốc, dữ liệu vòng đời xe và các nền tảng chuyển đổi số trong chuỗi
+          giá trị dịch vụ xe máy.
         </p>
 
         <div class="action-buttons">
@@ -105,15 +92,10 @@
               <ArtSvgIcon icon="ri:search-line" />
             </div>
             <div class="btn-text">
-              <span class="btn-title text-red"
-                >TRA CỨU PHỤ TÙNG & ĐẶT LỊCH</span
-              >
+              <span class="btn-title text-red">TRA CỨU PHỤ TÙNG & ĐẶT LỊCH</span>
               <span class="btn-subtitle">anhemmotor.com</span>
             </div>
-            <ArtSvgIcon
-              icon="ri:share-box-line"
-              class="external-icon text-red"
-            />
+            <ArtSvgIcon icon="ri:share-box-line" class="external-icon text-red" />
           </div>
         </div>
 
@@ -135,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 // Banner component with Info Cards
 </script>
 

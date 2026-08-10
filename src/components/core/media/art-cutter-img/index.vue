@@ -13,9 +13,7 @@
         class="img-cutter"
       >
         <template #choose>
-          <ElButton type="primary" plain v-ripple>{{
-            $t("admin.t14")
-          }}</ElButton>
+          <ElButton type="primary" plain v-ripple>{{ $t('admin.t14') }}</ElButton>
         </template>
         <template #cancel>
           <ElButton type="danger" plain v-ripple>xóachia</ElButton>
@@ -35,18 +33,9 @@
           height: `${cutterProps.cutHeight}px`,
         }"
       >
-        <img
-          class="preview-img"
-          :src="temImgPath"
-          alt="Xem trướcảnh"
-          v-if="temImgPath"
-        />
+        <img class="preview-img" :src="temImgPath" alt="Xem trướcảnh" v-if="temImgPath" />
       </div>
-      <ElButton
-        class="download-btn"
-        @click="downloadImg"
-        :disabled="!temImgPath"
-        v-ripple
+      <ElButton class="download-btn" @click="downloadImg" :disabled="!temImgPath" v-ripple
         >Tải xuốngHình ảnh</ElButton
       >
     </div>
@@ -54,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import ImgCutter from "vue-img-cutter";
+import ImgCutter from 'vue-img-cutter';
 
-defineOptions({ name: "ArtCutterImg" });
+defineOptions({ name: 'ArtCutterImg' });
 
 interface CutterProps {
   isModal?: boolean;
@@ -75,7 +64,7 @@ interface CutterProps {
   scaleAble?: boolean;
   originalGraph?: boolean;
   crossOrigin?: boolean;
-  fileType?: "png" | "jpeg" | "webp";
+  fileType?: 'png' | 'jpeg' | 'webp';
   quality?: number;
   watermarkText?: string;
   watermarkFontSize?: number;
@@ -95,9 +84,9 @@ interface CutterResult {
 const props = withDefaults(defineProps<CutterProps>(), {
   isModal: false,
   tool: true,
-  toolBgc: "#fff",
-  title: "",
-  previewTitle: "",
+  toolBgc: '#fff',
+  title: '',
+  previewTitle: '',
   showPreview: true,
   boxWidth: 700,
   boxHeight: 458,
@@ -109,23 +98,18 @@ const props = withDefaults(defineProps<CutterProps>(), {
   scaleAble: true,
   originalGraph: true,
   crossOrigin: true,
-  fileType: "png",
+  fileType: 'png',
   quality: 0.9,
-  watermarkText: "",
+  watermarkText: '',
   watermarkFontSize: 20,
-  watermarkColor: "#ffffff",
+  watermarkColor: '#ffffff',
   saveCutPosition: true,
   previewMode: true,
 });
 
-const emit = defineEmits([
-  "update:imgUrl",
-  "error",
-  "imageLoadComplete",
-  "imageLoadError",
-]);
+const emit = defineEmits(['update:imgUrl', 'error', 'imageLoadComplete', 'imageLoadError']);
 
-const temImgPath = ref("");
+const temImgPath = ref('');
 const imgCutterModal = ref();
 
 const cutterProps = computed(() => ({
@@ -138,7 +122,7 @@ const cutterProps = computed(() => ({
 function preloadImage(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    img.crossOrigin = 'anonymous';
     img.onload = () => resolve();
     img.onerror = reject;
     img.src = url;
@@ -150,12 +134,12 @@ async function initImgCutter() {
     try {
       await preloadImage(props.imgUrl);
       imgCutterModal.value?.handleOpen({
-        name: "Ảnh bìaHình ảnh",
+        name: 'Ảnh bìaHình ảnh',
         src: props.imgUrl,
       });
     } catch (error) {
-      emit("error", error);
-      console.error("Hình ảnhLoadingThatBai:", error);
+      emit('error', error);
+      console.error('Hình ảnhLoadingThatBai:', error);
     }
   }
 }
@@ -174,7 +158,7 @@ watch(
       temImgPath.value = newVal;
       initImgCutter();
     }
-  },
+  }
 );
 
 function cutterPrintImg(result: { dataURL: string }) {
@@ -182,27 +166,27 @@ function cutterPrintImg(result: { dataURL: string }) {
 }
 
 function cutDownImg(result: CutterResult) {
-  emit("update:imgUrl", result.dataURL);
+  emit('update:imgUrl', result.dataURL);
 }
 
 function handleImageLoadComplete(result: any) {
-  emit("imageLoadComplete", result);
+  emit('imageLoadComplete', result);
 }
 
 function handleImageLoadError(error: any) {
-  emit("error", error);
-  emit("imageLoadError", error);
+  emit('error', error);
+  emit('imageLoadError', error);
 }
 
 function handleClearAll() {
-  temImgPath.value = "";
+  temImgPath.value = '';
 }
 
 function downloadImg() {
-  console.log("Tải xuốngHình ảnh");
-  const a = document.createElement("a");
+  console.log('Tải xuốngHình ảnh');
+  const a = document.createElement('a');
   a.href = temImgPath.value;
-  a.download = "image.png";
+  a.download = 'image.png';
   a.click();
 }
 </script>

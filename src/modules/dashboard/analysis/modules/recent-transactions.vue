@@ -5,12 +5,7 @@
       <ElButton link type="primary">Xem tất cả</ElButton>
     </div>
 
-    <ElTable
-      :data="transactions"
-      style="width: 100%"
-      class="custom-table"
-      :show-header="false"
-    >
+    <ElTable :data="transactions" style="width: 100%" class="custom-table" :show-header="false">
       <ElTableColumn prop="time" width="80">
         <template #default="scope">
           <span class="text-gray-500">{{ scope.row.time }}</span>
@@ -32,12 +27,7 @@
             :class="getAmountColor(scope.row.type)"
           >
             <span>{{ scope.row.amount }}</span>
-            <span
-              v-if="scope.row.type === 'pending'"
-              class="ml-1"
-              title="Tiền đang treo"
-              >⏳</span
-            >
+            <span v-if="scope.row.type === 'pending'" class="ml-1" title="Tiền đang treo">⏳</span>
             <span
               v-else-if="scope.row.type === 'refund'"
               class="ml-1 text-red-500"
@@ -64,70 +54,68 @@
         <span class="mr-1">⏳</span> Tiền đang treo, chưa chắc chắn
       </div>
       <div class="flex items-center">
-        <span class="mr-1 text-red-500">🔴</span> Hoàn tiền / giao dịch âm — cần
-        chú ý
+        <span class="mr-1 text-red-500">🔴</span> Hoàn tiền / giao dịch âm — cần chú ý
       </div>
       <div class="flex items-center">
         <span class="text-green-500 font-bold mr-1">+</span> Màu xanh: Thu vào
       </div>
       <div class="flex items-center">
-        <span class="text-red-500 font-bold mr-1">-</span> Màu đỏ: Chi ra hoặc
-        hoàn trả
+        <span class="text-red-500 font-bold mr-1">-</span> Màu đỏ: Chi ra hoặc hoàn trả
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
 const transactions = ref([
   {
-    time: "14:32",
-    customer: "Nguyễn Văn A",
-    product: "Winner X",
-    amount: "+33.000.000đ",
-    type: "in",
-    staff: "Trần B",
+    time: '14:32',
+    customer: 'Nguyễn Văn A',
+    product: 'Winner X',
+    amount: '+33.000.000đ',
+    type: 'in',
+    staff: 'Trần B',
   },
   {
-    time: "14:15",
-    customer: "Lê Thị B",
-    product: "Nhớt Castrol",
-    amount: "+450.000đ",
-    type: "in",
-    staff: "Nguyễn A",
+    time: '14:15',
+    customer: 'Lê Thị B',
+    product: 'Nhớt Castrol',
+    amount: '+450.000đ',
+    type: 'in',
+    staff: 'Nguyễn A',
   },
   {
-    time: "13:58",
-    customer: "Trần C",
-    product: "Cọc giữ xe",
-    amount: "+5.000.000đ",
-    type: "pending",
-    staff: "Lê C",
+    time: '13:58',
+    customer: 'Trần C',
+    product: 'Cọc giữ xe',
+    amount: '+5.000.000đ',
+    type: 'pending',
+    staff: 'Lê C',
   },
   {
-    time: "13:20",
-    customer: "Phạm D",
-    product: "Hoàn tiền",
-    amount: "-200.000đ",
-    type: "refund",
-    staff: "Nguyễn A",
+    time: '13:20',
+    customer: 'Phạm D',
+    product: 'Hoàn tiền',
+    amount: '-200.000đ',
+    type: 'refund',
+    staff: 'Nguyễn A',
   },
   {
-    time: "11:45",
-    customer: "Hoàng E",
-    product: "Bảo dưỡng xe ga",
-    amount: "+1.200.000đ",
-    type: "in",
-    staff: "Trần B",
+    time: '11:45',
+    customer: 'Hoàng E',
+    product: 'Bảo dưỡng xe ga',
+    amount: '+1.200.000đ',
+    type: 'in',
+    staff: 'Trần B',
   },
 ]);
 
 const getAmountColor = (type: string) => {
-  if (type === "refund") return "text-red-500";
-  if (type === "pending") return "text-orange-500";
-  return "text-green-500";
+  if (type === 'refund') return 'text-red-500';
+  if (type === 'pending') return 'text-orange-500';
+  return 'text-green-500';
 };
 </script>
 

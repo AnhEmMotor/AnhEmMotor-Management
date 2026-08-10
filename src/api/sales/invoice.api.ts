@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface InvoiceSummaryResponse {
   id: number;
@@ -125,7 +125,7 @@ export interface UpdateInvoiceStatusRequest {
 export const invoiceApi = {
   getList() {
     return request.get<InvoiceSummaryResponse[]>({
-      url: "/api/v1/client/invoices",
+      url: '/api/v1/client/invoices',
     });
   },
   getDetail(id: number) {
@@ -133,7 +133,6 @@ export const invoiceApi = {
       url: `/api/v1/client/invoices/${id}`,
     });
   },
-  // Admin endpoints
   getAdminList(params: {
     Page?: number;
     PageSize?: number;
@@ -146,7 +145,7 @@ export const invoiceApi = {
       totalCount: number;
       pageNumber: number;
       pageSize: number;
-    }>({ url: "/api/v1/Admin/invoices", params });
+    }>({ url: '/api/v1/Admin/invoices', params });
   },
   getAdminDetail(id: number) {
     return request.get<AdminInvoiceDetailResponse>({
@@ -155,7 +154,7 @@ export const invoiceApi = {
   },
   createAdmin(data: CreateAdminInvoiceRequest) {
     return request.post<AdminInvoiceDetailResponse>({
-      url: "/api/v1/Admin/invoices",
+      url: '/api/v1/Admin/invoices',
       data,
     });
   },

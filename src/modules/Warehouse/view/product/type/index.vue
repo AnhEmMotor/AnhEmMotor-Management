@@ -29,11 +29,7 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton
             type="primary"
@@ -70,32 +66,21 @@
               :preview-src-list="[row.imageUrl]"
               preview-teleported
             />
-            <ElIcon v-else class="category-image-placeholder"
-              ><Picture
-            /></ElIcon>
+            <ElIcon v-else class="category-image-placeholder"><Picture /></ElIcon>
           </span>
         </template>
 
         <template #name="{ row }">
           <div class="flex flex-col text-left">
-            <span
-              :class="
-                row.parentId ? 'category-name-child' : 'category-name-root'
-              "
-            >
+            <span :class="row.parentId ? 'category-name-child' : 'category-name-root'">
               {{ row.name }}
             </span>
           </div>
         </template>
 
         <template #isActive="{ row }">
-          <ElTag
-            :type="row.isActive ? 'success' : 'info'"
-            size="small"
-            effect="light"
-            round
-          >
-            {{ row.isActive ? "Hoạt động" : "Tạm dừng" }}
+          <ElTag :type="row.isActive ? 'success' : 'info'" size="small" effect="light" round>
+            {{ row.isActive ? 'Hoạt động' : 'Tạm dừng' }}
           </ElTag>
         </template>
 
@@ -209,11 +194,7 @@
         </ElFormItem>
 
         <ElFormItem label="Trạng thái">
-          <ElSwitch
-            v-model="formData.isActive"
-            active-text="Hoạt động"
-            inactive-text="Tạm dừng"
-          />
+          <ElSwitch v-model="formData.isActive" active-text="Hoạt động" inactive-text="Tạm dừng" />
         </ElFormItem>
 
         <ElFormItem label="Mô tả">
@@ -228,9 +209,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -238,14 +217,14 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { computed, ref, watch, nextTick } from "vue";
-import { Plus, Picture, Download } from "@element-plus/icons-vue";
-import { useCategoryTable } from "@/modules/Warehouse/logic/product/type/hooks/useCategoryTable";
-import { FileApi } from "@/api/operations";
-import { ElMessage } from "element-plus";
+import { Permissions } from '@/domain/constants/permissions';
+import { computed, ref, watch, nextTick } from 'vue';
+import { Plus, Picture, Download } from '@element-plus/icons-vue';
+import { useCategoryTable } from '@/modules/Warehouse/logic/product/type/hooks/useCategoryTable';
+import { FileApi } from '@/api/operations';
+import { ElMessage } from 'element-plus';
 
-defineOptions({ name: "ProductType" });
+defineOptions({ name: 'ProductType' });
 
 const tableRef = ref();
 
@@ -295,45 +274,41 @@ watch(
       });
     }
   },
-  { deep: true },
+  { deep: true }
 );
 
 const formatDateTime = (val: string | null | undefined) => {
-  if (!val) return "Chưa có cập nhật";
-  return new Date(val).toLocaleString("vi-VN");
+  if (!val) return 'Chưa có cập nhật';
+  return new Date(val).toLocaleString('vi-VN');
 };
 
 const handleUpload = async (options: any) => {
   try {
     const res = await FileApi.uploadProductImage(options.file);
     formData.value.imageUrl = res.publicUrl;
-    ElMessage.success("Tải ảnh lên thành công");
+    ElMessage.success('Tải ảnh lên thành công');
   } catch (err: any) {
-    ElMessage.error(err.message || "Tải ảnh thất bại");
+    ElMessage.error(err.message || 'Tải ảnh thất bại');
   }
 };
 
 const getManagementTypeLabel = (value?: string) => {
-  return (
-    managementTypes.value.find((item) => item.value === value)?.label ||
-    value ||
-    "Chưa chọn"
-  );
+  return managementTypes.value.find((item) => item.value === value)?.label || value || 'Chưa chọn';
 };
 
 const searchItems = computed(() => [
   {
-    key: "name",
-    label: "Tên danh mục",
-    type: "input",
-    props: { placeholder: "Tìm kiếm tên..." },
+    key: 'name',
+    label: 'Tên danh mục',
+    type: 'input',
+    props: { placeholder: 'Tìm kiếm tên...' },
   },
   {
-    key: "managementType",
-    label: "Loại quản lý",
-    type: "select",
+    key: 'managementType',
+    label: 'Loại quản lý',
+    type: 'select',
     props: {
-      placeholder: "Chọn loại quản lý...",
+      placeholder: 'Chọn loại quản lý...',
       clearable: true,
       filterable: true,
       options: managementTypes.value,

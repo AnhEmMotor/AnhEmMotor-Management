@@ -9,14 +9,8 @@
     @open="fetchData"
     class="rounded-xl overflow-hidden audit-trail-modal"
   >
-    <div
-      v-loading="loading"
-      class="min-h-[200px] max-h-[60vh] overflow-y-auto px-4 py-2"
-    >
-      <ElEmpty
-        v-if="!loading && logs.length === 0"
-        description="Chưa có lịch sử chỉnh sửa nào"
-      />
+    <div v-loading="loading" class="min-h-[200px] max-h-[60vh] overflow-y-auto px-4 py-2">
+      <ElEmpty v-if="!loading && logs.length === 0" description="Chưa có lịch sử chỉnh sửa nào" />
 
       <template v-else>
         <!-- Bảng cho Supplier Debt -->
@@ -27,12 +21,7 @@
           stripe
           style="width: 100%"
         >
-          <ElTableColumn
-            label="Lần trả"
-            type="index"
-            width="80"
-            align="center"
-          />
+          <ElTableColumn label="Lần trả" type="index" width="80" align="center" />
           <ElTableColumn label="Thời gian" min-width="150" align="center">
             <template #default="{ row }">
               {{ formatDate(row.changedAt) }}
@@ -41,26 +30,18 @@
           <ElTableColumn label="Người nhập" min-width="150">
             <template #default="{ row }">
               <span class="font-medium text-gray-700">{{
-                row.changedByName || row.changedById || "Hệ thống"
+                row.changedByName || row.changedById || 'Hệ thống'
               }}</span>
             </template>
           </ElTableColumn>
-          <ElTableColumn
-            label="Số tiền trả (VNĐ)"
-            min-width="150"
-            align="right"
-          >
+          <ElTableColumn label="Số tiền trả (VNĐ)" min-width="150" align="right">
             <template #default="{ row }">
               <span class="text-success font-medium">
                 {{ formatCurrencyForTable(getPaidAmount(row)) }}
               </span>
             </template>
           </ElTableColumn>
-          <ElTableColumn
-            label="Tổng đã trả (VNĐ)"
-            min-width="150"
-            align="right"
-          >
+          <ElTableColumn label="Tổng đã trả (VNĐ)" min-width="150" align="right">
             <template #default="{ row }">
               <span class="text-danger font-medium">
                 {{ formatCurrencyForTable(getNewAmount(row)) }}
@@ -80,9 +61,7 @@
           >
             <ElCard shadow="hover" class="mb-4">
               <div class="flex justify-between items-center mb-2 border-b pb-2">
-                <div
-                  class="font-semibold text-gray-800 flex items-center gap-2"
-                >
+                <div class="font-semibold text-gray-800 flex items-center gap-2">
                   <ElTag size="small" :type="getActionType(log.action)">{{
                     getActionName(log.action)
                   }}</ElTag>
@@ -95,23 +74,18 @@
                 <div class="text-sm text-gray-500">
                   Thực hiện bởi:
                   <span class="font-medium text-gray-700">{{
-                    log.changedByName || log.changedById || "Hệ thống"
+                    log.changedByName || log.changedById || 'Hệ thống'
                   }}</span>
                 </div>
               </div>
 
-              <div
-                v-if="log.changes && log.changes.length > 0"
-                class="mt-3 space-y-2"
-              >
+              <div v-if="log.changes && log.changes.length > 0" class="mt-3 space-y-2">
                 <div
                   v-for="(change, idx) in log.changes"
                   :key="idx"
                   class="text-sm bg-gray-50 p-2 rounded"
                 >
-                  <div class="font-medium text-gray-700 mb-1">
-                    {{ change.field }}:
-                  </div>
+                  <div class="font-medium text-gray-700 mb-1">{{ change.field }}:</div>
                   <div class="flex items-center gap-2 text-gray-600">
                     <template
                       v-if="
@@ -132,35 +106,17 @@
                 </div>
               </div>
               <div v-if="log.details" class="mt-3">
-                <div
-                  v-if="log.details.items && Array.isArray(log.details.items)"
-                >
-                  <div class="font-medium text-gray-700 mb-2 text-sm">
-                    Chi tiết mặt hàng:
-                  </div>
-                  <ElTable
-                    :data="log.details.items"
-                    size="small"
-                    border
-                    class="w-full"
-                  >
-                    <ElTableColumn
-                      prop="action"
-                      label="Hành động"
-                      width="110"
-                      align="center"
-                    >
+                <div v-if="log.details.items && Array.isArray(log.details.items)">
+                  <div class="font-medium text-gray-700 mb-2 text-sm">Chi tiết mặt hàng:</div>
+                  <ElTable :data="log.details.items" size="small" border class="w-full">
+                    <ElTableColumn prop="action" label="Hành động" width="110" align="center">
                       <template #default="{ row }">
                         <ElTag size="small" :type="getActionType(row.action)">{{
                           getActionName(row.action)
                         }}</ElTag>
                       </template>
                     </ElTableColumn>
-                    <ElTableColumn
-                      prop="productVariant"
-                      label="Sản phẩm"
-                      minWidth="200"
-                    />
+                    <ElTableColumn prop="productVariant" label="Sản phẩm" minWidth="200" />
                     <ElTableColumn
                       v-if="log.details.items.some((i) => i.quantity)"
                       prop="quantity"
@@ -184,26 +140,14 @@
                   </ElTable>
                 </div>
                 <div
-                  v-if="
-                    log.details.infoLogs && Array.isArray(log.details.infoLogs)
-                  "
+                  v-if="log.details.infoLogs && Array.isArray(log.details.infoLogs)"
                   class="mb-3"
                 >
                   <div class="font-medium text-gray-700 mb-2 text-sm">
                     Chi tiết thông tin nhập hàng:
                   </div>
-                  <ElTable
-                    :data="log.details.infoLogs"
-                    size="small"
-                    border
-                    class="w-full"
-                  >
-                    <ElTableColumn
-                      prop="action"
-                      label="Hành động"
-                      width="110"
-                      align="center"
-                    >
+                  <ElTable :data="log.details.infoLogs" size="small" border class="w-full">
+                    <ElTableColumn prop="action" label="Hành động" width="110" align="center">
                       <template #default="{ row }">
                         <ElTag size="small" :type="getActionType(row.action)">{{
                           getActionName(row.action)
@@ -226,27 +170,12 @@
                   </ElTable>
                 </div>
                 <div
-                  v-if="
-                    log.details.vehicleLogs &&
-                    Array.isArray(log.details.vehicleLogs)
-                  "
+                  v-if="log.details.vehicleLogs && Array.isArray(log.details.vehicleLogs)"
                   class="mb-3"
                 >
-                  <div class="font-medium text-gray-700 mb-2 text-sm">
-                    Chi tiết xe:
-                  </div>
-                  <ElTable
-                    :data="log.details.vehicleLogs"
-                    size="small"
-                    border
-                    class="w-full"
-                  >
-                    <ElTableColumn
-                      prop="action"
-                      label="Hành động"
-                      width="110"
-                      align="center"
-                    >
+                  <div class="font-medium text-gray-700 mb-2 text-sm">Chi tiết xe:</div>
+                  <ElTable :data="log.details.vehicleLogs" size="small" border class="w-full">
+                    <ElTableColumn prop="action" label="Hành động" width="110" align="center">
                       <template #default="{ row }">
                         <ElTag size="small" :type="getActionType(row.action)">{{
                           getActionName(row.action)
@@ -254,37 +183,22 @@
                       </template>
                     </ElTableColumn>
                     <ElTableColumn
-                      v-if="
-                        log.details.vehicleLogs.some((vl) => vl.productVariant)
-                      "
+                      v-if="log.details.vehicleLogs.some((vl) => vl.productVariant)"
                       prop="productVariant"
                       label="Sản phẩm"
                       minWidth="200"
                     />
-                    <ElTableColumn
-                      prop="vinNumber"
-                      label="Số khung"
-                      minWidth="150"
-                    />
-                    <ElTableColumn
-                      prop="engineNumber"
-                      label="Số máy"
-                      minWidth="150"
-                    />
+                    <ElTableColumn prop="vinNumber" label="Số khung" minWidth="150" />
+                    <ElTableColumn prop="engineNumber" label="Số máy" minWidth="150" />
                   </ElTable>
                 </div>
                 <div
-                  v-if="
-                    !log.details.items &&
-                    !log.details.infoLogs &&
-                    !log.details.vehicleLogs
-                  "
+                  v-if="!log.details.items && !log.details.infoLogs && !log.details.vehicleLogs"
                   class="text-sm text-gray-600"
                 >
-                  <pre
-                    class="whitespace-pre-wrap font-sans bg-gray-50 p-2 rounded"
-                    >{{ JSON.stringify(log.details, null, 2) }}</pre
-                  >
+                  <pre class="whitespace-pre-wrap font-sans bg-gray-50 p-2 rounded">{{
+                    JSON.stringify(log.details, null, 2)
+                  }}</pre>
                 </div>
               </div>
             </ElCard>
@@ -302,24 +216,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import dayjs from "dayjs";
-import { AuditTrailApi, type AuditLogItem } from "@/api/operations";
-import { ElMessage } from "element-plus";
-import { Right } from "@element-plus/icons-vue";
+import { ref } from 'vue';
+import dayjs from 'dayjs';
+import { AuditTrailApi, type AuditLogItem } from '@/api/operations';
+import { ElMessage } from 'element-plus';
+import { Right } from '@element-plus/icons-vue';
 
 const props = defineProps<{
   visible: boolean;
   recordId: number | null | undefined;
-  type:
-    | "inventory-receipt"
-    | "output"
-    | "supplier-debt-settlement"
-    | "purchase-request";
+  type: 'inventory-receipt' | 'output' | 'supplier-debt-settlement' | 'purchase-request';
 }>();
 
 defineEmits<{
-  (e: "update:visible", value: boolean): void;
+  (e: 'update:visible', value: boolean): void;
 }>();
 
 const loading = ref(false);
@@ -335,85 +245,83 @@ const fetchData = async () => {
     let res: AuditLogItem[] = [];
 
     switch (props.type) {
-      case "inventory-receipt":
+      case 'inventory-receipt':
         res = await AuditTrailApi.getInventoryReceiptLogs(props.recordId);
         break;
-      case "output":
+      case 'output':
         res = await AuditTrailApi.getOutputLogs(props.recordId);
         break;
-      case "supplier-debt-settlement":
+      case 'supplier-debt-settlement':
         res = await AuditTrailApi.getSupplierDebtSettlementLogs(props.recordId);
         break;
-      case "purchase-request":
+      case 'purchase-request':
         res = await AuditTrailApi.getPurchaseRequestLogs(props.recordId);
         break;
     }
 
     logs.value = res || [];
   } catch (error) {
-    console.error("Lỗi khi tải lịch sử:", error);
-    ElMessage.error("Không thể tải lịch sử chỉnh sửa");
+    console.error('Lỗi khi tải lịch sử:', error);
+    ElMessage.error('Không thể tải lịch sử chỉnh sửa');
   } finally {
     loading.value = false;
   }
 };
 
 const formatDate = (dateString?: string) => {
-  if (!dateString) return "";
-  return dayjs(dateString).format("DD/MM/YYYY HH:mm:ss");
+  if (!dateString) return '';
+  return dayjs(dateString).format('DD/MM/YYYY HH:mm:ss');
 };
 
 const formatValue = (val: any) => {
-  if (val === null || val === undefined || val === "") return "Trống";
-  if (typeof val === "boolean") return val ? "Có" : "Không";
+  if (val === null || val === undefined || val === '') return 'Trống';
+  if (typeof val === 'boolean') return val ? 'Có' : 'Không';
   return val;
 };
 
 const getActionType = (action: string) => {
-  if (!action) return "info";
+  if (!action) return 'info';
   const act = action.toLowerCase();
-  if (act.includes("add") || act.includes("create") || act.includes("thêm"))
-    return "success";
+  if (act.includes('add') || act.includes('create') || act.includes('thêm')) return 'success';
   if (
-    act.includes("update") ||
-    act.includes("edit") ||
-    act.includes("sửa") ||
-    act.includes("cập nhật")
+    act.includes('update') ||
+    act.includes('edit') ||
+    act.includes('sửa') ||
+    act.includes('cập nhật')
   )
-    return "warning";
-  if (act.includes("delete") || act.includes("remove") || act.includes("xóa"))
-    return "danger";
-  return "primary";
+    return 'warning';
+  if (act.includes('delete') || act.includes('remove') || act.includes('xóa')) return 'danger';
+  return 'primary';
 };
 
 const getActionName = (action: string) => {
-  if (!action) return "Thao tác";
+  if (!action) return 'Thao tác';
   const act = action.toLowerCase();
-  if (act === "add" || act === "create") return "Thêm mới";
-  if (act === "update" || act === "edit") return "Cập nhật";
-  if (act === "delete" || act === "remove") return "Xóa";
+  if (act === 'add' || act === 'create') return 'Thêm mới';
+  if (act === 'update' || act === 'edit') return 'Cập nhật';
+  if (act === 'delete' || act === 'remove') return 'Xóa';
   return action;
 };
 
 const formatCurrencyForTable = (val: number | string) => {
-  if (val === null || val === undefined) return "0";
-  const num = typeof val === "string" ? parseFloat(val) : val;
-  return num.toLocaleString("vi-VN");
+  if (val === null || val === undefined) return '0';
+  const num = typeof val === 'string' ? parseFloat(val) : val;
+  return num.toLocaleString('vi-VN');
 };
 
 const getPaidAmount = (log: any) => {
-  const change = log.changes?.find((c: any) => c.field === "Số tiền");
+  const change = log.changes?.find((c: any) => c.field === 'Số tiền');
   if (change) {
-    const oldAmount = typeof change.oldValue === "number" ? change.oldValue : 0;
-    const newAmount = typeof change.newValue === "number" ? change.newValue : 0;
+    const oldAmount = typeof change.oldValue === 'number' ? change.oldValue : 0;
+    const newAmount = typeof change.newValue === 'number' ? change.newValue : 0;
     return newAmount - oldAmount;
   }
   return 0;
 };
 
 const getNewAmount = (log: any) => {
-  const change = log.changes?.find((c: any) => c.field === "Số tiền");
-  if (change && typeof change.newValue === "number") {
+  const change = log.changes?.find((c: any) => c.field === 'Số tiền');
+  if (change && typeof change.newValue === 'number') {
     return change.newValue;
   }
   return 0;

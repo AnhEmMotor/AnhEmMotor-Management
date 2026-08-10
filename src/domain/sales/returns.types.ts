@@ -17,12 +17,12 @@ export interface ReturnRequestDetail {
   customerName: string;
   customerPhone: string;
   carrier: string;
-  type: "return" | "cancel";
-  status: "pending" | "inspecting" | "completed" | "rejected";
+  type: 'return' | 'cancel';
+  status: 'pending' | 'inspecting' | 'completed' | 'rejected';
   reason: string;
   cancelReason?: string;
   note?: string;
-  returnAction?: "restock" | "defect" | "refund";
+  returnAction?: 'restock' | 'defect' | 'refund';
   evidenceImages?: string[];
   rejectionReason?: string;
   createdAt: string;
@@ -40,7 +40,7 @@ export interface ReturnRequestListResponse {
 
 export interface CreateReturnRequestCommand {
   orderId: number;
-  type: "return";
+  type: 'return';
   reason: string;
   note?: string;
   evidenceImages?: string[];
@@ -48,12 +48,12 @@ export interface CreateReturnRequestCommand {
     productId: number;
     returnQuantity: number;
   }>;
-  returnAction: "restock" | "defect" | "refund";
+  returnAction: 'restock' | 'defect' | 'refund';
 }
 
 export interface CreateCancelRequestCommand {
   orderId: number;
-  type: "cancel";
+  type: 'cancel';
   reason: string;
   note?: string;
 }

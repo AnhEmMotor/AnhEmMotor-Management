@@ -1,10 +1,10 @@
-import AppConfig from "@/config";
+import AppConfig from '@/config';
 import {
   SystemThemeEnum,
   MenuThemeEnum,
   MenuTypeEnum,
   ContainerWidthEnum,
-} from "@/common/enums/appEnum";
+} from '@/common/enums/appEnum';
 
 export const SETTING_DEFAULT_CONFIG = {
   menuType: MenuTypeEnum.LEFT,
@@ -55,15 +55,15 @@ export const SETTING_DEFAULT_CONFIG = {
 
   boxBorderMode: true,
 
-  pageTransition: "slide-left",
+  pageTransition: 'slide-left',
 
-  tabStyle: "tab-default",
+  tabStyle: 'tab-default',
 
-  customRadius: "0.75",
+  customRadius: '0.75',
 
   containerWidth: ContainerWidthEnum.FULL,
 
-  festivalDate: "",
+  festivalDate: '',
 };
 
 export function getSettingDefaults() {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type Period = "today" | "month" | "year" | "custom";
+type Period = 'today' | 'month' | 'year' | 'custom';
 
 defineProps<{
   modelValue: Period;
@@ -8,13 +8,13 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "update:modelValue": [value: Period];
-  "update:startDate": [value: string];
-  "update:endDate": [value: string];
+  'update:modelValue': [value: Period];
+  'update:startDate': [value: string];
+  'update:endDate': [value: string];
 }>();
 
 function select(value: string | number | boolean | undefined) {
-  emit("update:modelValue", value as Period);
+  emit('update:modelValue', value as Period);
 }
 </script>
 

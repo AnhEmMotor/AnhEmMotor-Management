@@ -7,7 +7,7 @@ export const buildTree = <
     children?: T[];
   },
 >(
-  items: T[],
+  items: T[]
 ): T[] => {
   const map: Record<number, T & { children: T[] }> = {};
   items.forEach((item) => {

@@ -1,11 +1,11 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface ChatSession {
   id: string;
   title: string;
 }
 
-export type ChatRole = "User" | "AI" | "System";
+export type ChatRole = 'User' | 'AI' | 'System';
 
 export interface ChatToolPreview {
   preview: string;
@@ -22,7 +22,7 @@ export interface ChatMessageToolCall {
   name: string;
   label: string;
   summary?: string;
-  status: "running" | "done";
+  status: 'running' | 'done';
   durationMs?: number;
   argsPreview?: ChatToolPreview;
   resultPreview?: ChatToolPreview;
@@ -35,9 +35,9 @@ export interface ChatMessageToolCall {
 }
 
 export type ChatReasoningStep =
-  | { kind: "thinking"; text: string }
-  | { kind: "suggestion"; text: string }
-  | ({ kind: "tool" } & ChatMessageToolCall);
+  | { kind: 'thinking'; text: string }
+  | { kind: 'suggestion'; text: string }
+  | ({ kind: 'tool' } & ChatMessageToolCall);
 
 export interface ChatMessage {
   id?: string;
@@ -52,7 +52,7 @@ export interface ChatMessage {
 
 export interface SteeringResultDto {
   runId: string;
-  mode: "queue" | "interrupt" | "restart";
+  mode: 'queue' | 'interrupt' | 'restart';
 }
 
 export interface ChatSessionHistory {
@@ -61,7 +61,6 @@ export interface ChatSessionHistory {
   messages: ChatMessage[];
 }
 
-// SignalR trả về chuỗi JSON theo camelCase
 export interface ChatRunEventDto {
   seq: number;
   type: string;
@@ -82,13 +81,7 @@ export interface ChatToolLabelDto {
   label: string;
 }
 
-export type PlanStepStatus =
-  | "pending"
-  | "running"
-  | "done"
-  | "failed"
-  | "skipped"
-  | "invalid";
+export type PlanStepStatus = 'pending' | 'running' | 'done' | 'failed' | 'skipped' | 'invalid';
 
 export interface PlanStepCommentDto {
   id: string;
@@ -110,12 +103,7 @@ export interface PlanStepDto {
 }
 
 export type ChatPlanStatus =
-  | "Drafting"
-  | "Ready"
-  | "Approved"
-  | "Executing"
-  | "Completed"
-  | "Rejected";
+  'Drafting' | 'Ready' | 'Approved' | 'Executing' | 'Completed' | 'Rejected';
 
 export interface ChatPlanDto {
   runId: string;
@@ -127,7 +115,7 @@ export interface ChatPlanDto {
 }
 
 export interface PlanStepOperation {
-  type: "edit" | "add" | "remove" | "reorder" | "comment";
+  type: 'edit' | 'add' | 'remove' | 'reorder' | 'comment';
   stepId?: string;
   title?: string;
   detail?: string;
@@ -137,7 +125,7 @@ export interface PlanStepOperation {
 }
 
 export interface PlanChatResultDto {
-  action: "approved" | "rejected" | "edited" | "unclear";
+  action: 'approved' | 'rejected' | 'edited' | 'unclear';
   plan: ChatPlanDto | null;
   reply: string | null;
 }
@@ -145,14 +133,14 @@ export interface PlanChatResultDto {
 export const ManagerChatApi = {
   getSessions() {
     return request.get<ChatSession[]>({
-      url: "/api/v1/manager-chat/sessions",
+      url: '/api/v1/manager-chat/sessions',
     });
   },
 
   createSession(title?: string, initialMessage?: string) {
     return request.post<ChatSession>({
-      url: "/api/v1/manager-chat/sessions",
-      data: { title: title ?? "", initialMessage: initialMessage ?? "" },
+      url: '/api/v1/manager-chat/sessions',
+      data: { title: title ?? '', initialMessage: initialMessage ?? '' },
     });
   },
 
@@ -170,7 +158,7 @@ export const ManagerChatApi = {
 
   getToolCatalog() {
     return request.get<ChatToolLabelDto[]>({
-      url: "/api/v1/manager-chat/tool-catalog",
+      url: '/api/v1/manager-chat/tool-catalog',
     });
   },
 
@@ -190,7 +178,7 @@ export const ManagerChatApi = {
   submitFeedback(runId: string, comment?: string) {
     return request.post({
       url: `/api/v1/manager-chat/runs/${runId}/feedback`,
-      data: { comment: comment ?? "" },
+      data: { comment: comment ?? '' },
     });
   },
 

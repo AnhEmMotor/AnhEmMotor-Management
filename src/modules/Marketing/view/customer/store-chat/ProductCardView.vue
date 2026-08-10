@@ -8,15 +8,15 @@ const props = defineProps<{
 }>();
 
 const formatCurrency = (val?: number | null) => {
-  if (val === undefined || val === null) return "Liên hệ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (val === undefined || val === null) return 'Liên hệ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 };
 
 const priceLabel = computed(() => {
-  if (!props.priceFrom) return "Liên hệ";
+  if (!props.priceFrom) return 'Liên hệ';
   if (props.priceTo && props.priceTo !== props.priceFrom) {
     return `${formatCurrency(props.priceFrom)} - ${formatCurrency(props.priceTo)}`;
   }

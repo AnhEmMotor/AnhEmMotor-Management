@@ -14,12 +14,12 @@
             <h1
               class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none"
             >
-              {{ $t("contact.title") }}
+              {{ $t('contact.title') }}
             </h1>
             <p
               class="m-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mt-1.5"
             >
-              {{ $t("contact.subtitle") }}
+              {{ $t('contact.subtitle') }}
             </p>
           </div>
         </div>
@@ -27,9 +27,8 @@
           v-if="contactStore.unreadBadge > 0"
           class="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100"
         >
-          <span
-            class="text-[9px] font-bold text-red-400 uppercase tracking-tighter"
-            >{{ $t("contact.unreadBadge") }}:</span
+          <span class="text-[9px] font-bold text-red-400 uppercase tracking-tighter"
+            >{{ $t('contact.unreadBadge') }}:</span
           >
           <span class="text-sm font-bold text-red-600 leading-none">{{
             contactStore.unreadBadge
@@ -39,11 +38,7 @@
     </div>
 
     <div class="p-4">
-      <ElTabs
-        v-model="activeTab"
-        @tab-change="onTabChange"
-        class="contact-tabs"
-      >
+      <ElTabs v-model="activeTab" @tab-change="onTabChange" class="contact-tabs">
         <!-- TAB 1: YÊU CẦU HỖ TRỢ -->
         <ElTabPane :label="$t('contact.tabSupport')" name="support">
           <div class="split-layout">
@@ -83,19 +78,13 @@
                 :header-cell-style="tableHeaderStyle"
                 @row-click="selectItem"
               >
-                <ElTableColumn
-                  :label="$t('contact.columnIdCustomer')"
-                  min-width="160"
-                >
+                <ElTableColumn :label="$t('contact.columnIdCustomer')" min-width="160">
                   <template #default="{ row }">
                     <div class="flex flex-col py-0.5">
-                      <span class="text-xs font-extrabold text-slate-800"
-                        >#{{ row.id }}</span
-                      >
-                      <span
-                        class="text-[11px] text-slate-400 font-semibold truncate"
-                        >{{ row.contact?.fullName || row.email }}</span
-                      >
+                      <span class="text-xs font-extrabold text-slate-800">#{{ row.id }}</span>
+                      <span class="text-[11px] text-slate-400 font-semibold truncate">{{
+                        row.contact?.fullName || row.email
+                      }}</span>
                     </div>
                   </template>
                 </ElTableColumn>
@@ -105,14 +94,11 @@
                   min-width="170"
                   show-overflow-tooltip
                 />
-                <ElTableColumn
-                  :label="$t('contact.columnCategory')"
-                  width="130"
-                >
+                <ElTableColumn :label="$t('contact.columnCategory')" width="130">
                   <template #default="{ row }">
                     <span class="badge" :class="categoryStyle(row.category)">{{
-                      $te("contact.category." + row.category)
-                        ? $t("contact.category." + row.category)
+                      $te('contact.category.' + row.category)
+                        ? $t('contact.category.' + row.category)
                         : row.category
                     }}</span>
                   </template>
@@ -120,7 +106,7 @@
                 <ElTableColumn :label="$t('contact.columnStatus')" width="120">
                   <template #default="{ row }">
                     <span class="badge" :class="statusStyle(row.status)">{{
-                      $t("contact.supportStatus." + row.status)
+                      $t('contact.supportStatus.' + row.status)
                     }}</span>
                   </template>
                 </ElTableColumn>
@@ -133,7 +119,7 @@
 
               <div class="pagination-bar">
                 <span class="text-[11px] text-slate-400 font-bold">{{
-                  $t("contact.totalCount", { count: contactStore.totalCount })
+                  $t('contact.totalCount', { count: contactStore.totalCount })
                 }}</span>
                 <ElPagination
                   :current-page="contactStore.page"
@@ -150,58 +136,34 @@
 
             <div class="detail-panel">
               <div v-if="!contactStore.hasActive" class="empty-state">
-                <ArtSvgIcon
-                  icon="ri:file-list-3-line"
-                  class="text-5xl text-slate-200 mb-3"
-                />
+                <ArtSvgIcon icon="ri:file-list-3-line" class="text-5xl text-slate-200 mb-3" />
                 <p class="text-sm text-slate-400 font-bold">
-                  {{ $t("contact.noDetail") }}
+                  {{ $t('contact.noDetail') }}
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
                 <!-- Header -->
-                <div
-                  class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]"
-                >
+                <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <span
-                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
+                      <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
-                      <span
-                        class="badge"
-                        :class="statusStyle(activeItem!.status)"
-                        >{{
-                          $t("contact.supportStatus." + activeItem!.status)
-                        }}</span
-                      >
+                      <span class="badge" :class="statusStyle(activeItem!.status)">{{
+                        $t('contact.supportStatus.' + activeItem!.status)
+                      }}</span>
                     </div>
-                    <ElButton
-                      size="small"
-                      type="danger"
-                      text
-                      @click="closeDetail"
-                      >Đóng</ElButton
-                    >
+                    <ElButton size="small" type="danger" text @click="closeDetail">Đóng</ElButton>
                   </div>
                   <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemSubject }}
                   </h2>
-                  <div
-                    class="flex items-center gap-3 mt-1 text-xs text-slate-500"
-                  >
-                    <span class="text-blue-600 font-bold">{{
-                      activeItemEmail
-                    }}</span>
+                  <div class="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                    <span class="text-blue-600 font-bold">{{ activeItemEmail }}</span>
                     <span class="text-slate-300">|</span>
                     <span>{{ activeItemPhone }}</span>
-                    <span class="text-slate-300" v-if="activeItemOrderCode"
-                      >|</span
-                    >
-                    <span
-                      v-if="activeItemOrderCode"
-                      class="font-semibold text-slate-700"
+                    <span class="text-slate-300" v-if="activeItemOrderCode">|</span>
+                    <span v-if="activeItemOrderCode" class="font-semibold text-slate-700"
                       >Đơn hàng: {{ activeItemOrderCode }}</span
                     >
                   </div>
@@ -211,14 +173,10 @@
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
                   <!-- Content Body -->
                   <div>
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Nội dung yêu cầu
                     </h4>
-                    <div
-                      class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
-                    >
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
                       <p
                         class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium"
                       >
@@ -237,58 +195,43 @@
 
                   <!-- Reply -->
                   <div class="pt-2">
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Soạn thảo phản hồi
                     </h4>
                     <ElInput
                       v-model="replyDraft"
                       type="textarea"
                       :rows="3"
-                      :placeholder="
-                        $t('contact.replyDialog.contentPlaceholder')
-                      "
+                      :placeholder="$t('contact.replyDialog.contentPlaceholder')"
                       class="reply-input text-xs"
                       resize="none"
                     />
                     <div class="flex justify-between items-center mt-3">
                       <div class="flex gap-2">
                         <ElButton
-                          v-if="
-                            activeItem?.status === 'InProgress' &&
-                            isAssignedToCurrentUser
-                          "
+                          v-if="activeItem?.status === 'InProgress' && isAssignedToCurrentUser"
                           size="small"
                           type="success"
                           plain
                           class="font-bold text-[10px]"
                           @click="handleStatus('Closed')"
                         >
-                          <ArtSvgIcon
-                            icon="ri:checkbox-circle-line"
-                            class="mr-1"
-                          />Đóng yêu cầu
+                          <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />Đóng yêu cầu
                         </ElButton>
                         <ElButton
-                          v-if="
-                            activeItem?.status === 'Assigned' &&
-                            isAssignedToCurrentUser
-                          "
+                          v-if="activeItem?.status === 'Assigned' && isAssignedToCurrentUser"
                           size="small"
                           type="primary"
                           plain
                           class="font-bold text-[10px]"
                           @click="handleStatus('InProgress')"
                         >
-                          <ArtSvgIcon icon="ri:loader-4-line" class="mr-1" />Bắt
-                          đầu hỗ trợ
+                          <ArtSvgIcon icon="ri:loader-4-line" class="mr-1" />Bắt đầu hỗ trợ
                         </ElButton>
                         <ElTag
                           v-if="
-                            ['Assigned', 'InProgress'].includes(
-                              activeItem?.status,
-                            ) && !isAssignedToCurrentUser
+                            ['Assigned', 'InProgress'].includes(activeItem?.status) &&
+                            !isAssignedToCurrentUser
                           "
                           type="info"
                           effect="plain"
@@ -303,24 +246,18 @@
                           class="font-bold text-[10px]"
                           @click="openAssignDialog"
                         >
-                          <ArtSvgIcon
-                            icon="ri:user-settings-line"
-                            class="mr-1"
-                          />Phân công
+                          <ArtSvgIcon icon="ri:user-settings-line" class="mr-1" />Phân công
                         </ElButton>
                       </div>
                       <ElButton
                         type="primary"
-                        :disabled="
-                          activeItem?.status !== 'InProgress' ||
-                          !isAssignedToCurrentUser
-                        "
+                        :disabled="activeItem?.status !== 'InProgress' || !isAssignedToCurrentUser"
                         class="font-bold text-xs uppercase"
                         style="background: #001529; border-color: #001529"
                         @click="handleReply"
                       >
                         <ArtSvgIcon icon="ri:send-plane-fill" class="mr-1" />{{
-                          $t("contact.replyDialog.sendBtn")
+                          $t('contact.replyDialog.sendBtn')
                         }}
                       </ElButton>
                     </div>
@@ -330,9 +267,7 @@
                 <!-- Footer (Sticky Internal Notes) -->
                 <div class="border-t border-slate-100 p-5 bg-slate-50">
                   <div class="flex items-center justify-between mb-2">
-                    <h4
-                      class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
-                    >
+                    <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
                       Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400"
@@ -351,11 +286,7 @@
                     <ElButton
                       type="primary"
                       class="font-bold text-xs"
-                      style="
-                        height: 50px;
-                        background: #4f46e5;
-                        border-color: #4f46e5;
-                      "
+                      style="height: 50px; background: #4f46e5; border-color: #4f46e5"
                       @click="saveNote"
                       >Lưu</ElButton
                     >
@@ -430,15 +361,13 @@
                   show-overflow-tooltip
                   :formatter="
                     (row, col, val) =>
-                      $te('contact.category.' + val)
-                        ? $t('contact.category.' + val)
-                        : val
+                      $te('contact.category.' + val) ? $t('contact.category.' + val) : val
                   "
                 />
                 <ElTableColumn :label="$t('contact.columnStatus')" width="120">
                   <template #default="{ row }">
                     <span class="badge" :class="statusStyle(row.status)">{{
-                      $t("contact.feedbackStatus." + row.status)
+                      $t('contact.feedbackStatus.' + row.status)
                     }}</span>
                   </template>
                 </ElTableColumn>
@@ -446,7 +375,7 @@
 
               <div class="pagination-bar">
                 <span class="text-[11px] text-slate-400 font-bold">{{
-                  $t("contact.totalCount", { count: contactStore.totalCount })
+                  $t('contact.totalCount', { count: contactStore.totalCount })
                 }}</span>
                 <ElPagination
                   :current-page="contactStore.page"
@@ -463,69 +392,38 @@
 
             <div class="detail-panel">
               <div v-if="!contactStore.hasActive" class="empty-state">
-                <ArtSvgIcon
-                  icon="ri:file-list-3-line"
-                  class="text-5xl text-slate-200 mb-3"
-                />
+                <ArtSvgIcon icon="ri:file-list-3-line" class="text-5xl text-slate-200 mb-3" />
                 <p class="text-sm text-slate-400 font-bold">
-                  {{ $t("contact.noDetail") }}
+                  {{ $t('contact.noDetail') }}
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
                 <!-- Header -->
-                <div
-                  class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]"
-                >
+                <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <span
-                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
+                      <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
-                      <span
-                        class="badge"
-                        :class="statusStyle(activeItem!.status)"
-                        >{{
-                          $t("contact.feedbackStatus." + activeItem!.status)
-                        }}</span
-                      >
+                      <span class="badge" :class="statusStyle(activeItem!.status)">{{
+                        $t('contact.feedbackStatus.' + activeItem!.status)
+                      }}</span>
                     </div>
-                    <ElButton
-                      size="small"
-                      type="danger"
-                      text
-                      @click="closeDetail"
-                      >Đóng</ElButton
-                    >
+                    <ElButton size="small" type="danger" text @click="closeDetail">Đóng</ElButton>
                   </div>
                   <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemCustomerName }}
                   </h2>
-                  <div
-                    class="flex items-center gap-3 mt-1 text-xs text-slate-500"
-                  >
-                    <span class="text-blue-600 font-bold">{{
-                      activeItemEmail
-                    }}</span>
+                  <div class="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                    <span class="text-blue-600 font-bold">{{ activeItemEmail }}</span>
                     <span class="text-slate-300">|</span>
                     <span>{{ activeItemPhone }}</span>
-                    <span class="text-slate-300" v-if="activeItemFeedbackArea"
-                      >|</span
-                    >
-                    <span
-                      v-if="activeItemFeedbackArea"
-                      class="font-semibold text-slate-700"
+                    <span class="text-slate-300" v-if="activeItemFeedbackArea">|</span>
+                    <span v-if="activeItemFeedbackArea" class="font-semibold text-slate-700"
                       >Lĩnh vực: {{ activeItemFeedbackArea }}</span
                     >
-                    <span
-                      class="text-slate-300"
-                      v-if="(activeItem as any)?.rating"
-                      >|</span
-                    >
-                    <span
-                      v-if="(activeItem as any)?.rating"
-                      class="flex items-center gap-0.5"
-                    >
+                    <span class="text-slate-300" v-if="(activeItem as any)?.rating">|</span>
+                    <span v-if="(activeItem as any)?.rating" class="flex items-center gap-0.5">
                       <ArtSvgIcon
                         v-for="n in (activeItem as any).rating"
                         :key="n"
@@ -540,14 +438,10 @@
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
                   <!-- Content Body -->
                   <div>
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Nội dung đóng góp
                     </h4>
-                    <div
-                      class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
-                    >
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
                       <p
                         class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium"
                       >
@@ -558,18 +452,14 @@
 
                   <!-- Reply -->
                   <div class="pt-2">
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Soạn thảo phản hồi
                     </h4>
                     <ElInput
                       v-model="replyDraft"
                       type="textarea"
                       :rows="3"
-                      :placeholder="
-                        $t('contact.replyDialog.contentPlaceholder')
-                      "
+                      :placeholder="$t('contact.replyDialog.contentPlaceholder')"
                       class="reply-input text-xs"
                       resize="none"
                     />
@@ -583,10 +473,7 @@
                           class="font-bold text-[10px]"
                           @click="handleStatus('Resolved')"
                         >
-                          <ArtSvgIcon
-                            icon="ri:checkbox-circle-line"
-                            class="mr-1"
-                          />Giải quyết
+                          <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />Giải quyết
                         </ElButton>
                         <ElButton
                           v-if="activeItem && activeItem.status !== 'Read'"
@@ -606,10 +493,7 @@
                           class="font-bold text-[10px]"
                           @click="handleStatus('Pending')"
                         >
-                          <ArtSvgIcon
-                            icon="ri:arrow-go-back-line"
-                            class="mr-1"
-                          />Chờ xử lý
+                          <ArtSvgIcon icon="ri:arrow-go-back-line" class="mr-1" />Chờ xử lý
                         </ElButton>
                       </div>
                       <ElButton
@@ -619,7 +503,7 @@
                         @click="handleReply"
                       >
                         <ArtSvgIcon icon="ri:send-plane-fill" class="mr-1" />{{
-                          $t("contact.replyDialog.sendBtn")
+                          $t('contact.replyDialog.sendBtn')
                         }}
                       </ElButton>
                     </div>
@@ -629,9 +513,7 @@
                 <!-- Footer (Sticky Internal Notes) -->
                 <div class="border-t border-slate-100 p-5 bg-slate-50">
                   <div class="flex items-center justify-between mb-2">
-                    <h4
-                      class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
-                    >
+                    <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
                       Ghi chú nội bộ
                     </h4>
                     <span class="text-[10px] text-slate-400"
@@ -650,11 +532,7 @@
                     <ElButton
                       type="primary"
                       class="font-bold text-xs"
-                      style="
-                        height: 50px;
-                        background: #4f46e5;
-                        border-color: #4f46e5;
-                      "
+                      style="height: 50px; background: #4f46e5; border-color: #4f46e5"
                       @click="saveNote"
                       >Lưu</ElButton
                     >
@@ -723,14 +601,9 @@
                       type="primary"
                       link
                       size="small"
-                      @click.stop="
-                        downloadCvUrl((row as Contact.JobApplication).cvFileUrl)
-                      "
+                      @click.stop="downloadCvUrl((row as Contact.JobApplication).cvFileUrl)"
                     >
-                      <ArtSvgIcon
-                        icon="ri:file-pdf-2-fill"
-                        class="text-red-500 mr-1"
-                      />CV
+                      <ArtSvgIcon icon="ri:file-pdf-2-fill" class="text-red-500 mr-1" />CV
                     </ElButton>
                     <span v-else class="text-[11px] text-slate-300">-</span>
                   </template>
@@ -738,7 +611,7 @@
                 <ElTableColumn :label="$t('contact.columnStatus')" width="120">
                   <template #default="{ row }">
                     <span class="badge" :class="statusStyle(row.status)">{{
-                      $t("contact.candidateStatus." + row.status)
+                      $t('contact.candidateStatus.' + row.status)
                     }}</span>
                   </template>
                 </ElTableColumn>
@@ -746,7 +619,7 @@
 
               <div class="pagination-bar">
                 <span class="text-[11px] text-slate-400 font-bold">{{
-                  $t("contact.totalCount", { count: contactStore.totalCount })
+                  $t('contact.totalCount', { count: contactStore.totalCount })
                 }}</span>
                 <ElPagination
                   :current-page="contactStore.page"
@@ -763,50 +636,32 @@
 
             <div class="detail-panel">
               <div v-if="!contactStore.hasActive" class="empty-state">
-                <ArtSvgIcon
-                  icon="ri:file-list-3-line"
-                  class="text-5xl text-slate-200 mb-3"
-                />
+                <ArtSvgIcon icon="ri:file-list-3-line" class="text-5xl text-slate-200 mb-3" />
                 <p class="text-sm text-slate-400 font-bold">
-                  {{ $t("contact.noDetail") }}
+                  {{ $t('contact.noDetail') }}
                 </p>
               </div>
               <div v-else class="detail-content flex flex-col h-full">
                 <!-- Header -->
-                <div
-                  class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]"
-                >
+                <div class="detail-header p-5 border-b border-slate-100 bg-[#FAFCFF]">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <span
-                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
+                      <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest"
                         >#{{ activeItem?.id }}</span
                       >
-                      <span
-                        class="badge"
-                        :class="statusStyle(activeItem!.status)"
-                        >{{
-                          $t("contact.candidateStatus." + activeItem!.status)
-                        }}</span
-                      >
+                      <span class="badge" :class="statusStyle(activeItem!.status)">{{
+                        $t('contact.candidateStatus.' + activeItem!.status)
+                      }}</span>
                     </div>
-                    <ElButton
-                      size="small"
-                      type="danger"
-                      text
-                      @click="closeDetail"
-                      >{{ $t("contact.closeBtn") }}</ElButton
-                    >
+                    <ElButton size="small" type="danger" text @click="closeDetail">{{
+                      $t('contact.closeBtn')
+                    }}</ElButton>
                   </div>
                   <h2 class="text-base font-bold text-slate-800 mt-2">
                     {{ activeItemFullName }}
                   </h2>
-                  <div
-                    class="flex items-center gap-3 mt-1 text-xs text-slate-500"
-                  >
-                    <span class="text-blue-600 font-bold">{{
-                      activeItemEmail
-                    }}</span>
+                  <div class="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                    <span class="text-blue-600 font-bold">{{ activeItemEmail }}</span>
                     <span class="text-slate-300">|</span>
                     <span>{{ activeItemPhone }}</span>
                     <span class="text-slate-300">|</span>
@@ -820,9 +675,7 @@
                 <div class="flex-1 overflow-y-auto p-5 space-y-5">
                   <!-- CV File and Preview Section -->
                   <div>
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Hồ sơ ứng viên (CV)
                     </h4>
 
@@ -831,9 +684,7 @@
                       <div
                         class="cv-file-header flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-t-xl border border-slate-200 dark:border-slate-700 border-b-0"
                       >
-                        <div
-                          class="flex items-center gap-2 overflow-hidden mr-3"
-                        >
+                        <div class="flex items-center gap-2 overflow-hidden mr-3">
                           <ArtSvgIcon
                             :icon="
                               isLegacyCv
@@ -852,11 +703,7 @@
                               'text-red-500': !isLegacyCv && isCvPdf,
                               'text-blue-500': !isLegacyCv && isCvWord,
                               'text-emerald-500': !isLegacyCv && isCvImage,
-                              'text-slate-500':
-                                !isLegacyCv &&
-                                !isCvPdf &&
-                                !isCvWord &&
-                                !isCvImage,
+                              'text-slate-500': !isLegacyCv && !isCvPdf && !isCvWord && !isCvImage,
                             }"
                           />
                           <span
@@ -864,9 +711,7 @@
                             :title="cvFileName"
                           >
                             {{ cvFileName }}
-                            <span
-                              v-if="isLegacyCv"
-                              class="text-amber-600 font-semibold ml-1"
+                            <span v-if="isLegacyCv" class="text-amber-600 font-semibold ml-1"
                               >(File cũ - Không có trên server)</span
                             >
                           </span>
@@ -896,17 +741,14 @@
                             icon="ri:error-warning-line"
                             class="text-5xl text-amber-500 mb-3"
                           />
-                          <p
-                            class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1"
-                          >
+                          <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                             Hồ sơ CV cũ (Chưa tải lên)
                           </p>
                           <p
                             class="text-xs text-slate-400 dark:text-slate-500 max-w-xs leading-relaxed"
                           >
-                            Hồ sơ này được tạo trước khi hệ thống tải tệp CV
-                            hoạt động. Máy chủ chỉ lưu tên file và không chứa
-                            tệp tin vật lý để xem trước hoặc tải xuống.
+                            Hồ sơ này được tạo trước khi hệ thống tải tệp CV hoạt động. Máy chủ chỉ
+                            lưu tên file và không chứa tệp tin vật lý để xem trước hoặc tải xuống.
                           </p>
                         </div>
 
@@ -934,12 +776,10 @@
                             icon="ri:file-word-2-line"
                             class="text-5xl text-blue-500 mb-3"
                           />
-                          <p class="text-sm font-bold text-slate-700 mb-1">
-                            Tệp Word (.docx/.doc)
-                          </p>
+                          <p class="text-sm font-bold text-slate-700 mb-1">Tệp Word (.docx/.doc)</p>
                           <p class="text-xs text-slate-400 max-w-xs mb-4">
-                            Không hỗ trợ xem trực tiếp tệp Word trên trình
-                            duyệt. Vui lòng tải xuống để xem chi tiết.
+                            Không hỗ trợ xem trực tiếp tệp Word trên trình duyệt. Vui lòng tải xuống
+                            để xem chi tiết.
                           </p>
                           <ElButton
                             type="primary"
@@ -947,10 +787,7 @@
                             size="default"
                             @click="downloadCvUrl(cvFileUrl)"
                           >
-                            <ArtSvgIcon
-                              icon="ri:download-2-line"
-                              class="mr-1.5"
-                            />
+                            <ArtSvgIcon icon="ri:download-2-line" class="mr-1.5" />
                             Tải về máy tính
                           </ElButton>
                         </div>
@@ -960,16 +797,11 @@
                           v-else
                           class="flex flex-col items-center justify-center text-center p-6 text-slate-500"
                         >
-                          <ArtSvgIcon
-                            icon="ri:file-line"
-                            class="text-5xl text-slate-400 mb-3"
-                          />
-                          <p class="text-sm font-bold text-slate-700 mb-1">
-                            Tệp đính kèm
-                          </p>
+                          <ArtSvgIcon icon="ri:file-line" class="text-5xl text-slate-400 mb-3" />
+                          <p class="text-sm font-bold text-slate-700 mb-1">Tệp đính kèm</p>
                           <p class="text-xs text-slate-400 max-w-xs mb-4">
-                            Không hỗ trợ xem trực tiếp định dạng này. Vui lòng
-                            tải xuống để xem chi tiết.
+                            Không hỗ trợ xem trực tiếp định dạng này. Vui lòng tải xuống để xem chi
+                            tiết.
                           </p>
                           <ElButton
                             type="primary"
@@ -977,10 +809,7 @@
                             size="default"
                             @click="downloadCvUrl(cvFileUrl)"
                           >
-                            <ArtSvgIcon
-                              icon="ri:download-2-line"
-                              class="mr-1.5"
-                            />
+                            <ArtSvgIcon icon="ri:download-2-line" class="mr-1.5" />
                             Tải về máy tính
                           </ElButton>
                         </div>
@@ -996,42 +825,30 @@
                         icon="ri:file-pdf-2-line"
                         class="text-3xl mb-1.5 text-slate-300"
                       />
-                      <p class="text-xs font-semibold">
-                        Ứng viên chưa tải lên tệp CV
-                      </p>
+                      <p class="text-xs font-semibold">Ứng viên chưa tải lên tệp CV</p>
                     </div>
                   </div>
 
                   <!-- Cover Letter -->
                   <div>
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Thư giới thiệu
                     </h4>
-                    <div
-                      class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm"
-                    >
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
                       <p
                         class="text-xs text-slate-600 leading-relaxed m-0 whitespace-pre-line font-medium"
                       >
-                        {{
-                          activeItemCoverLetter || "Không có thư giới thiệu."
-                        }}
+                        {{ activeItemCoverLetter || 'Không có thư giới thiệu.' }}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <!-- Footer (Sticky Action & Internal Notes) -->
-                <div
-                  class="border-t border-slate-100 p-5 bg-slate-50 space-y-4"
-                >
+                <div class="border-t border-slate-100 p-5 bg-slate-50 space-y-4">
                   <!-- Process Actions -->
                   <div>
-                    <h4
-                      class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2"
-                    >
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                       Quy trình xử lý hồ sơ
                     </h4>
                     <div class="flex gap-2">
@@ -1042,10 +859,7 @@
                         style="background: #3b82f6; border-color: #3b82f6"
                         @click="handleStatus('Interview')"
                       >
-                        <ArtSvgIcon
-                          icon="ri:calendar-event-line"
-                          class="mr-1"
-                        />Hẹn phỏng vấn
+                        <ArtSvgIcon icon="ri:calendar-event-line" class="mr-1" />Hẹn phỏng vấn
                       </ElButton>
                       <ElButton
                         v-if="activeItem && activeItem.status !== 'Offer'"
@@ -1054,10 +868,7 @@
                         style="background: #10b981; border-color: #10b981"
                         @click="handleStatus('Offer')"
                       >
-                        <ArtSvgIcon
-                          icon="ri:checkbox-circle-line"
-                          class="mr-1"
-                        />Nhận việc (Offer)
+                        <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />Nhận việc (Offer)
                       </ElButton>
                       <ElButton
                         v-if="activeItem && activeItem.status !== 'Rejected'"
@@ -1066,10 +877,7 @@
                         style="background: #ef4444; border-color: #ef4444"
                         @click="handleStatus('Rejected')"
                       >
-                        <ArtSvgIcon
-                          icon="ri:close-circle-line"
-                          class="mr-1"
-                        />Từ chối
+                        <ArtSvgIcon icon="ri:close-circle-line" class="mr-1" />Từ chối
                       </ElButton>
                       <ElButton
                         size="small"
@@ -1077,10 +885,7 @@
                         class="font-bold text-[10px] w-28 shrink-0"
                         @click="openAssignDialog"
                       >
-                        <ArtSvgIcon
-                          icon="ri:user-settings-line"
-                          class="mr-1"
-                        />Phân công
+                        <ArtSvgIcon icon="ri:user-settings-line" class="mr-1" />Phân công
                       </ElButton>
                     </div>
                   </div>
@@ -1088,10 +893,8 @@
                   <!-- Inline Internal Notes -->
                   <div class="pt-2 border-t border-slate-200/60">
                     <div class="flex items-center justify-between mb-2">
-                      <h4
-                        class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0"
-                      >
-                        {{ $t("contact.internalNote") }}
+                      <h4 class="text-xs font-bold text-indigo-500 uppercase tracking-wider m-0">
+                        {{ $t('contact.internalNote') }}
                       </h4>
                       <span class="text-[10px] text-slate-400"
                         >Chỉ hiển thị với nhân viên điều hành</span
@@ -1109,11 +912,7 @@
                       <ElButton
                         type="primary"
                         class="font-bold text-xs"
-                        style="
-                          height: 50px;
-                          background: #4f46e5;
-                          border-color: #4f46e5;
-                        "
+                        style="height: 50px; background: #4f46e5; border-color: #4f46e5"
                         @click="saveNote"
                         >Lưu</ElButton
                       >
@@ -1128,11 +927,7 @@
     </div>
 
     <!-- ASSIGN DIALOG -->
-    <ElDialog
-      v-model="assignDialogVisible"
-      :title="$t('contact.assignDialog.title')"
-      width="400px"
-    >
+    <ElDialog v-model="assignDialogVisible" :title="$t('contact.assignDialog.title')" width="400px">
       <ElSelect
         v-model="assignedUser"
         :placeholder="$t('contact.assignDialog.selectUser')"
@@ -1142,12 +937,7 @@
         filterable
         clearable
       >
-        <ElOption
-          v-for="u in userOptions"
-          :key="u.id"
-          :label="u.name"
-          :value="u.id"
-        />
+        <ElOption v-for="u in userOptions" :key="u.id" :label="u.name" :value="u.id" />
       </ElSelect>
       <template #footer>
         <ElButton @click="assignDialogVisible = false">Hủy</ElButton>
@@ -1158,33 +948,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from "vue";
-import { ElMessage } from "element-plus";
-import { storeToRefs } from "pinia";
-import { useContactStore } from "@/application/store/contact";
-import { useSettingStore } from "@/application/store/setting";
-import { useUserStore } from "@/application/store/user";
-import { ContactApi } from "@/api/customer/contact.api";
+import { ref, watch, computed, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { storeToRefs } from 'pinia';
+import { useContactStore } from '@/application/store/contact';
+import { useSettingStore } from '@/application/store/setting';
+import { useUserStore } from '@/application/store/user';
+import { ContactApi } from '@/api/customer/contact.api';
 import {
   SupportStatuses,
   FeedbackStatuses,
   CandidateStatuses,
-} from "@/infrastructure/api/contact.api";
-import { resolveContactId, type Contact } from "@/types";
-import SupportWorkflowPanel from "./components/SupportWorkflowPanel.vue";
+} from '@/infrastructure/api/contact.api';
+import { resolveContactId, type Contact } from '@/types';
+import SupportWorkflowPanel from './components/SupportWorkflowPanel.vue';
 
-defineOptions({ name: "ContactManagement" });
+defineOptions({ name: 'ContactManagement' });
 const contactStore = useContactStore();
 const userStore = useUserStore();
 const { isDark } = storeToRefs(useSettingStore());
 
-const activeTab = ref("support");
-const searchQuery = ref("");
-const statusFilter = ref("");
-const replyDraft = ref("");
-const noteDraft = ref("");
+const activeTab = ref('support');
+const searchQuery = ref('');
+const statusFilter = ref('');
+const replyDraft = ref('');
+const noteDraft = ref('');
 const assignDialogVisible = ref(false);
-const assignedUser = ref("");
+const assignedUser = ref('');
 const ratingSubmitting = ref(false);
 
 const userOptions = ref<{ id: string; name: string }[]>([]);
@@ -1202,20 +992,20 @@ const fetchAssignableUsers = async () => {
       }));
   } catch {
     userOptions.value = [];
-    ElMessage.error("Không thể tải danh sách nhân viên");
+    ElMessage.error('Không thể tải danh sách nhân viên');
   } finally {
     userOptionsLoading.value = false;
   }
 };
 
 const tableHeaderStyle = computed(() => ({
-  background: isDark.value ? "#111827" : "#f8fafc",
-  color: isDark.value ? "#cbd5e1" : "#64748b",
-  fontSize: "11px",
+  background: isDark.value ? '#111827' : '#f8fafc',
+  color: isDark.value ? '#cbd5e1' : '#64748b',
+  fontSize: '11px',
   fontWeight: 700,
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  borderColor: isDark.value ? "rgb(255 255 255 / 10%)" : "#f1f5f9",
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  borderColor: isDark.value ? 'rgb(255 255 255 / 10%)' : '#f1f5f9',
 }));
 
 onMounted(async () => {
@@ -1224,17 +1014,15 @@ onMounted(async () => {
 });
 
 watch(activeTab, () => {
-  searchQuery.value = "";
-  statusFilter.value = "";
+  searchQuery.value = '';
+  statusFilter.value = '';
   contactStore.setFilter(activeTab.value, statusFilter.value);
   contactStore.fetchList();
 });
 
 const activeItem = computed(() => contactStore.activeItem as any);
 const activeSupportRequest = computed<Contact.SupportRequest | null>(() =>
-  activeTab.value === "support"
-    ? (contactStore.activeItem as Contact.SupportRequest | null)
-    : null,
+  activeTab.value === 'support' ? (contactStore.activeItem as Contact.SupportRequest | null) : null
 );
 const isAssignedToCurrentUser = computed(() => {
   const assignedUserId = activeSupportRequest.value?.assignedUserId;
@@ -1242,7 +1030,7 @@ const isAssignedToCurrentUser = computed(() => {
   return Boolean(
     assignedUserId &&
     currentUserId &&
-    assignedUserId.toLowerCase() === String(currentUserId).toLowerCase(),
+    assignedUserId.toLowerCase() === String(currentUserId).toLowerCase()
   );
 });
 
@@ -1250,17 +1038,17 @@ watch(
   activeItem,
   (newVal) => {
     if (newVal) {
-      noteDraft.value = (newVal as any).internalNote || "";
+      noteDraft.value = (newVal as any).internalNote || '';
     } else {
-      noteDraft.value = "";
+      noteDraft.value = '';
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const onTabChange = () => {
   contactStore.clearActive();
-  replyDraft.value = "";
+  replyDraft.value = '';
 };
 const onSearch = () => {
   contactStore.fetchList();
@@ -1271,79 +1059,73 @@ const onFilterChange = () => {
 };
 const selectItem = (row: Contact.ContactItem) => {
   contactStore.selectItem(row);
-  replyDraft.value = "";
+  replyDraft.value = '';
 };
 const closeDetail = () => {
   contactStore.clearActive();
-  replyDraft.value = "";
+  replyDraft.value = '';
 };
 
 const categoryStyle = (cat: string) => {
   const m: Record<string, string> = {
-    Quality: "bg-red-600 text-white",
-    Service: "bg-orange-500 text-white",
-    Rating: "bg-blue-600 text-white",
-    General: "bg-slate-500 text-white",
-    Sales: "bg-emerald-600 text-white",
-    AfterSales: "bg-amber-500 text-white",
-    Other: "bg-gray-400 text-white",
+    Quality: 'bg-red-600 text-white',
+    Service: 'bg-orange-500 text-white',
+    Rating: 'bg-blue-600 text-white',
+    General: 'bg-slate-500 text-white',
+    Sales: 'bg-emerald-600 text-white',
+    AfterSales: 'bg-amber-500 text-white',
+    Other: 'bg-gray-400 text-white',
   };
-  return m[cat] || "bg-slate-400 text-white";
+  return m[cat] || 'bg-slate-400 text-white';
 };
 
 const statusStyle = (status: string) => {
   const m: Record<string, string> = {
-    New: "bg-red-50 text-red-600 border-red-100",
-    Pending: "bg-red-50 text-red-600 border-red-100",
-    InProgress: "bg-blue-50 text-blue-600 border-blue-200",
-    Interview: "bg-blue-50 text-blue-600 border-blue-200",
-    Read: "bg-amber-50 text-amber-600 border-amber-100",
-    Closed: "bg-slate-100 text-slate-600 border-slate-200",
-    Resolved: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    Offer: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    Rejected: "bg-red-50 text-red-600 border-red-100",
+    New: 'bg-red-50 text-red-600 border-red-100',
+    Pending: 'bg-red-50 text-red-600 border-red-100',
+    InProgress: 'bg-blue-50 text-blue-600 border-blue-200',
+    Interview: 'bg-blue-50 text-blue-600 border-blue-200',
+    Read: 'bg-amber-50 text-amber-600 border-amber-100',
+    Closed: 'bg-slate-100 text-slate-600 border-slate-200',
+    Resolved: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    Offer: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    Rejected: 'bg-red-50 text-red-600 border-red-100',
   };
-  return m[status] || "bg-slate-100 text-slate-600 border-slate-200";
+  return m[status] || 'bg-slate-100 text-slate-600 border-slate-200';
 };
-const cvFileUrl = computed(
-  () => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? "",
-);
+const cvFileUrl = computed(() => (activeItem.value as Contact.JobApplication)?.cvFileUrl ?? '');
 
 const isLegacyCv = computed(() => {
   if (!cvFileUrl.value) return false;
   return (
-    !cvFileUrl.value.startsWith("cv/") &&
-    !cvFileUrl.value.startsWith("http://") &&
-    !cvFileUrl.value.startsWith("https://")
+    !cvFileUrl.value.startsWith('cv/') &&
+    !cvFileUrl.value.startsWith('http://') &&
+    !cvFileUrl.value.startsWith('https://')
   );
 });
-const cvExtension = computed(
-  () => cvFileUrl.value.split(".").pop()?.toLowerCase() ?? "",
-);
+const cvExtension = computed(() => cvFileUrl.value.split('.').pop()?.toLowerCase() ?? '');
 
 const isCvImage = computed(() => {
-  return ["png", "jpg", "jpeg", "webp", "gif"].includes(cvExtension.value);
+  return ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(cvExtension.value);
 });
 
 const isCvPdf = computed(() => {
-  return cvExtension.value === "pdf";
+  return cvExtension.value === 'pdf';
 });
 
 const isCvWord = computed(() => {
-  return ["doc", "docx"].includes(cvExtension.value);
+  return ['doc', 'docx'].includes(cvExtension.value);
 });
 
 const cvFileName = computed(() => {
-  if (!cvFileUrl.value) return "";
-  return cvFileUrl.value.split("/").pop() ?? cvFileUrl.value;
+  if (!cvFileUrl.value) return '';
+  return cvFileUrl.value.split('/').pop() ?? cvFileUrl.value;
 });
 
 const getFullCvUrl = (url: string | undefined) => {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  const baseUrl =
-    import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT ||
-    "http://localhost:5000";
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  const baseUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
   return `${baseUrl}/api/v1/MediaFile/view-image/${url}`;
 };
 
@@ -1351,9 +1133,7 @@ const handleReply = async () => {
   if (!replyDraft.value.trim() || !contactStore.activeItem) return;
   const contactId = resolveContactId(contactStore.activeItem);
   if (contactId === null) {
-    ElMessage.error(
-      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi phản hồi.",
-    );
+    ElMessage.error('Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi phản hồi.');
     return;
   }
   try {
@@ -1361,9 +1141,9 @@ const handleReply = async () => {
       contactId,
       replyDraft.value,
       contactStore.activeItem.id,
-      activeTab.value,
+      activeTab.value
     );
-    if (sent) replyDraft.value = "";
+    if (sent) replyDraft.value = '';
   } catch {
     /* handled */
   }
@@ -1371,63 +1151,49 @@ const handleReply = async () => {
 
 const tableData = computed(() => contactStore.records);
 const activeItemSubject = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.subject ?? "",
+  () => (activeItem.value as Contact.SupportRequest)?.subject ?? ''
 );
 const activeItemEmail = computed(
-  () =>
-    activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? "",
+  () => activeItem.value?.contact?.email ?? (activeItem.value as any)?.email ?? ''
 );
 const activeItemPhone = computed(
-  () =>
-    activeItem.value?.contact?.phoneNumber ??
-    (activeItem.value as any)?.phoneNumber ??
-    "",
+  () => activeItem.value?.contact?.phoneNumber ?? (activeItem.value as any)?.phoneNumber ?? ''
 );
 const activeItemContent = computed(
-  () =>
-    activeItem.value?.contact?.content ??
-    (activeItem.value as any)?.content ??
-    "",
+  () => activeItem.value?.contact?.content ?? (activeItem.value as any)?.content ?? ''
 );
 const activeItemOrderCode = computed(
-  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? "",
+  () => (activeItem.value as Contact.SupportRequest)?.orderCode ?? ''
 );
 const activeItemCustomerName = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? "",
+  () => (activeItem.value as Contact.CustomerFeedback)?.customerName ?? ''
 );
 const activeItemFeedbackArea = computed(
-  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? "",
+  () => (activeItem.value as Contact.CustomerFeedback)?.feedbackArea ?? ''
 );
 const activeItemFullName = computed(
-  () => (activeItem.value as Contact.JobApplication)?.fullName ?? "",
+  () => (activeItem.value as Contact.JobApplication)?.fullName ?? ''
 );
 const activeItemAppliedPosition = computed(
-  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? "",
+  () => (activeItem.value as Contact.JobApplication)?.appliedPosition ?? ''
 );
 const activeItemCoverLetter = computed(
-  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? "",
+  () => (activeItem.value as Contact.JobApplication)?.coverLetter ?? ''
 );
 
 const handleStatus = async (newStatus: string) => {
   if (!contactStore.activeItem) return;
-  if (activeTab.value === "support" && !isAssignedToCurrentUser.value) {
-    ElMessage.warning("Chỉ nhân viên được phân công mới có thể xử lý yêu cầu");
+  if (activeTab.value === 'support' && !isAssignedToCurrentUser.value) {
+    ElMessage.warning('Chỉ nhân viên được phân công mới có thể xử lý yêu cầu');
     return;
   }
-  await contactStore.updateStatus(
-    contactStore.activeItem.id,
-    activeTab.value,
-    newStatus,
-  );
+  await contactStore.updateStatus(contactStore.activeItem.id, activeTab.value, newStatus);
 };
 
-const handleRateCustomer = async (payload: {
-  rating: number;
-  comment: string;
-}) => {
+const handleRateCustomer = async (payload: { rating: number; comment: string }) => {
   if (!activeSupportRequest.value) return;
   if (!isAssignedToCurrentUser.value) {
-    ElMessage.warning("Chỉ nhân viên được phân công mới có thể đánh giá");
+    ElMessage.warning('Chỉ nhân viên được phân công mới có thể đánh giá');
     return;
   }
   ratingSubmitting.value = true;
@@ -1435,7 +1201,7 @@ const handleRateCustomer = async (payload: {
     await contactStore.rateSupportCustomer(
       activeSupportRequest.value.id,
       payload.rating,
-      payload.comment,
+      payload.comment
     );
   } finally {
     ratingSubmitting.value = false;
@@ -1447,7 +1213,7 @@ const saveNote = async () => {
   const contactId = resolveContactId(contactStore.activeItem);
   if (contactId === null) {
     ElMessage.error(
-      "Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi lưu ghi chú.",
+      'Không tìm thấy mã liên hệ gốc. Vui lòng tải lại dữ liệu trước khi lưu ghi chú.'
     );
     return;
   }
@@ -1455,26 +1221,23 @@ const saveNote = async () => {
 };
 
 const downloadCvUrl = (url: string) => {
-  if (url) window.open(url, "_blank");
+  if (url) window.open(url, '_blank');
 };
 const openAssignDialog = () => {
   const currentAssignedUserId =
-    (contactStore.activeItem as Contact.SupportRequest | null)
-      ?.assignedUserId ?? "";
-  const isValidOption = userOptions.value.some(
-    (option) => option.id === currentAssignedUserId,
-  );
-  assignedUser.value = isValidOption ? currentAssignedUserId : "";
+    (contactStore.activeItem as Contact.SupportRequest | null)?.assignedUserId ?? '';
+  const isValidOption = userOptions.value.some((option) => option.id === currentAssignedUserId);
+  assignedUser.value = isValidOption ? currentAssignedUserId : '';
   assignDialogVisible.value = true;
 };
 const handleAssign = async () => {
-  if (!contactStore.activeItem || activeTab.value !== "support") {
-    ElMessage.warning("Chỉ yêu cầu hỗ trợ mới có thể phân công");
+  if (!contactStore.activeItem || activeTab.value !== 'support') {
+    ElMessage.warning('Chỉ yêu cầu hỗ trợ mới có thể phân công');
     return;
   }
   const assigned = await contactStore.assignSupportRequest(
     contactStore.activeItem.id,
-    assignedUser.value || null,
+    assignedUser.value || null
   );
   if (assigned) assignDialogVisible.value = false;
 };

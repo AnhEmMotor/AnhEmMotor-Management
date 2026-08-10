@@ -1,17 +1,17 @@
-import { ref, watch, computed, reactive } from "vue";
-import { useDebounceFn } from "@vueuse/core";
-import { TechnologyApi } from "@/api/product";
-import { ProductApi } from "@/api/product";
-import { CategoryApi } from "@/api/product";
-import { BrandApi } from "@/api/product";
-import { SupplierApi } from "@/api/supplier";
-import { useTable } from "@/common/composables/useTable";
-import type { Product } from "@/domain/product/product.types";
-import type { ProductCategory } from "@/domain/product/category.types";
-import type { Brand } from "@/domain/product/brand.types";
-import type { Technology } from "@/domain/product/technology.types";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { buildTree } from "@/common/utils";
+import { ref, watch, computed, reactive } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+import { TechnologyApi } from '@/api/product';
+import { ProductApi } from '@/api/product';
+import { CategoryApi } from '@/api/product';
+import { BrandApi } from '@/api/product';
+import { SupplierApi } from '@/api/supplier';
+import { useTable } from '@/common/composables/useTable';
+import type { Product } from '@/domain/product/product.types';
+import type { ProductCategory } from '@/domain/product/category.types';
+import type { Brand } from '@/domain/product/brand.types';
+import type { Technology } from '@/domain/product/technology.types';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { buildTree } from '@/common/utils';
 
 export function useProductTable() {
   const categories = ref<ProductCategory[]>([]);
@@ -27,10 +27,10 @@ export function useProductTable() {
     Object.entries(predefinedOptions.value)
       .filter(
         ([key, value]) =>
-          !["color", "màu sắc"].includes(key.trim().toLowerCase()) &&
-          !["color", "màu sắc"].includes(value.trim().toLowerCase()),
+          !['color', 'màu sắc'].includes(key.trim().toLowerCase()) &&
+          !['color', 'màu sắc'].includes(value.trim().toLowerCase())
       )
-      .map(([key, label]) => ({ key, label })),
+      .map(([key, label]) => ({ key, label }))
   );
   const suppliersList = ref<any[]>([]);
 
@@ -61,14 +61,14 @@ export function useProductTable() {
   };
 
   const getBrandNameById = (id?: number) => {
-    if (!id) return "";
+    if (!id) return '';
     const numId = Number(id);
     return brandCache.get(numId)?.name || `Thương hiệu #${numId}`;
   };
 
   const brandSelectorVisible = ref(false);
   const brandSelectorLoading = ref(false);
-  const brandSelectorQuery = ref("");
+  const brandSelectorQuery = ref('');
   const brandSelectorPage = ref(1);
   const brandSelectorPageSize = ref(12);
   const brandSelectorTotal = ref(0);
@@ -76,7 +76,7 @@ export function useProductTable() {
   const brandSelectorCallback = ref<((brand: Brand) => void) | null>(null);
 
   const dialogVisible = ref(false);
-  const dialogTitle = ref("");
+  const dialogTitle = ref('');
   const formData = ref<Partial<Product>>({
     product_technologies: [],
   });
@@ -90,7 +90,7 @@ export function useProductTable() {
       const res = await TechnologyApi.getList();
       availableTechnologies.value = res || [];
     } catch (_err) {
-      console.error("Failed to fetch techs:", _err);
+      console.error('Failed to fetch techs:', _err);
     } finally {
       loadingTechs.value = false;
     }
@@ -101,7 +101,7 @@ export function useProductTable() {
       const res = await TechnologyApi.getCategories();
       technologyCategories.value = res || [];
     } catch (_err) {
-      console.error("Failed to fetch tech categories:", _err);
+      console.error('Failed to fetch tech categories:', _err);
     }
   };
 
@@ -109,7 +109,7 @@ export function useProductTable() {
     try {
       predefinedOptions.value = await ProductApi.getPredefinedOptions();
     } catch (err) {
-      console.error("Failed to fetch predefined options:", err);
+      console.error('Failed to fetch predefined options:', err);
       predefinedOptions.value = {};
     }
   };
@@ -124,11 +124,11 @@ export function useProductTable() {
   }) => {
     try {
       const newTech = await TechnologyApi.create(techData);
-      ElMessage.success("Tạo công nghệ mới thành công");
+      ElMessage.success('Tạo công nghệ mới thành công');
       await fetchTechnologies();
       return newTech;
     } catch (err: any) {
-      ElMessage.error(err.message || "Tạo công nghệ thất bại");
+      ElMessage.error(err.message || 'Tạo công nghệ thất bại');
       throw err;
     }
   };
@@ -136,11 +136,11 @@ export function useProductTable() {
   const createTechnologyCategory = async (name: string) => {
     try {
       const newCat = await TechnologyApi.createCategory({ name });
-      ElMessage.success("Tạo nhóm công nghệ thành công");
+      ElMessage.success('Tạo nhóm công nghệ thành công');
       await fetchTechnologyCategories();
       return newCat;
     } catch (err: any) {
-      ElMessage.error(err.message || "Tạo nhóm công nghệ thất bại");
+      ElMessage.error(err.message || 'Tạo nhóm công nghệ thất bại');
       throw err;
     }
   };
@@ -148,11 +148,11 @@ export function useProductTable() {
   const updateTechnology = async (id: number, techData: any) => {
     try {
       const updatedTech = await TechnologyApi.update(id, techData);
-      ElMessage.success("Cập nhật công nghệ thành công");
+      ElMessage.success('Cập nhật công nghệ thành công');
       await fetchTechnologies();
       return updatedTech;
     } catch (err: any) {
-      ElMessage.error(err.message || "Cập nhật công nghệ thất bại");
+      ElMessage.error(err.message || 'Cập nhật công nghệ thất bại');
       throw err;
     }
   };
@@ -160,16 +160,16 @@ export function useProductTable() {
   const deleteTechnology = async (id: number) => {
     try {
       await TechnologyApi.delete(id);
-      ElMessage.success("Xóa công nghệ thành công");
+      ElMessage.success('Xóa công nghệ thành công');
       await fetchTechnologies();
       selectedTechIds.value = selectedTechIds.value.filter((tid) => tid !== id);
       if (formData.value.highlights_list) {
         formData.value.highlights_list = formData.value.highlights_list.filter(
-          (h: any) => Number(h.technology_id) !== id,
+          (h: any) => Number(h.technology_id) !== id
         );
       }
     } catch (err: any) {
-      ElMessage.error(err.message || "Xóa công nghệ thất bại");
+      ElMessage.error(err.message || 'Xóa công nghệ thất bại');
       throw err;
     }
   };
@@ -180,11 +180,11 @@ export function useProductTable() {
       const res = await CategoryApi.getList({
         current: 1,
         size: 1000,
-        Filters: "CategoryGroup==Product",
+        Filters: 'CategoryGroup==Product',
       });
       categories.value = res.items || [];
     } catch (_err) {
-      console.error("Failed to fetch categories:", _err);
+      console.error('Failed to fetch categories:', _err);
       categories.value = [];
     } finally {
       loadingCategories.value = false;
@@ -202,21 +202,21 @@ export function useProductTable() {
       const res = await BrandApi.getList({
         current: brandSelectorPage.value,
         size: brandSelectorPageSize.value,
-        Filters: filters.join(","),
+        Filters: filters.join(','),
       });
 
       brandSelectorItems.value = res.items || [];
       brandSelectorTotal.value = res.totalCount || 0;
       cacheBrands(res.items || []);
     } catch (err) {
-      console.error("Failed to fetch selector brands:", err);
+      console.error('Failed to fetch selector brands:', err);
     } finally {
       brandSelectorLoading.value = false;
     }
   };
 
   const openBrandSelector = (onSelect: (brand: Brand) => void) => {
-    brandSelectorQuery.value = "";
+    brandSelectorQuery.value = '';
     brandSelectorPage.value = 1;
     brandSelectorCallback.value = onSelect;
     brandSelectorVisible.value = true;
@@ -255,19 +255,17 @@ export function useProductTable() {
         const res = await ProductApi.getList(params);
         if (res && res.items) {
           res.items = res.items.map((product: any) => {
-            const children = (product.variants || []).map(
-              (variant: any, idx: number) => {
-                return {
-                  id: `variant-${variant.id || idx}-${product.id}`,
-                  name: variant.variant_name || `Biến thể ${idx + 1}`,
-                  cover_image_url: variant.cover_image_url || "",
-                  brand: "",
-                  category: "",
-                  sku: variant.sku || "",
-                  isVariant: true,
-                };
-              },
-            );
+            const children = (product.variants || []).map((variant: any, idx: number) => {
+              return {
+                id: `variant-${variant.id || idx}-${product.id}`,
+                name: variant.variant_name || `Biến thể ${idx + 1}`,
+                cover_image_url: variant.cover_image_url || '',
+                brand: '',
+                category: '',
+                sku: variant.sku || '',
+                isVariant: true,
+              };
+            });
             return {
               ...product,
               children: children.length > 0 ? children : undefined,
@@ -279,27 +277,27 @@ export function useProductTable() {
       apiParams: {
         current: 1,
         size: 10,
-        Filters: "",
+        Filters: '',
       },
       immediate: true,
       columnsFactory: () => [
         {
-          prop: "cover_image_url",
-          label: "Hình ảnh",
+          prop: 'cover_image_url',
+          label: 'Hình ảnh',
           width: 120,
-          align: "left",
+          align: 'left',
           useSlot: true,
         },
-        { prop: "name", label: "Sản phẩm", minWidth: 250, useSlot: true },
-        { prop: "brand", label: "Thương hiệu", width: 150 },
-        { prop: "category", label: "Thể loại", width: 180 },
-        { prop: "origin", label: "Xuất xứ", width: 120 },
+        { prop: 'name', label: 'Sản phẩm', minWidth: 250, useSlot: true },
+        { prop: 'brand', label: 'Thương hiệu', width: 150 },
+        { prop: 'category', label: 'Thể loại', width: 180 },
+        { prop: 'origin', label: 'Xuất xứ', width: 120 },
         {
-          prop: "operation",
-          label: "Hành động",
+          prop: 'operation',
+          label: 'Hành động',
           width: 150,
-          align: "center",
-          fixed: "right",
+          align: 'center',
+          fixed: 'right',
           useSlot: true,
         },
       ],
@@ -307,66 +305,66 @@ export function useProductTable() {
   });
 
   const handleAdd = () => {
-    dialogTitle.value = "Thêm sản phẩm mới";
+    dialogTitle.value = 'Thêm sản phẩm mới';
     formData.value = {
-      name: "",
+      name: '',
       category_id: undefined,
       brand_id: undefined,
-      meta_title: "",
-      meta_description: "",
-      short_description: "",
-      description: "",
-      material: "",
-      origin: "",
-      warranty_period: "",
-      unit: "Chiếc",
+      meta_title: '',
+      meta_description: '',
+      short_description: '',
+      description: '',
+      material: '',
+      origin: '',
+      warranty_period: '',
+      unit: 'Chiếc',
       std_dot: false,
       std_ece: false,
       std_snell: false,
       std_jis: false,
-      other_standards: "",
+      other_standards: '',
       compatible_vehicle_model_ids: [],
-      cover_image_url: "",
+      cover_image_url: '',
       product_technologies: [],
-      engine_type: "",
-      max_power: "",
+      engine_type: '',
+      max_power: '',
       fuel_capacity: undefined,
-      fuel_consumption: "",
+      fuel_consumption: '',
       wheelbase: undefined,
       seat_height: undefined,
       ground_clearance: undefined,
       oil_capacity: undefined,
-      transmission_type: "",
-      starter_system: "",
-      max_torque: "",
+      transmission_type: '',
+      starter_system: '',
+      max_torque: '',
       displacement: undefined,
-      bore_stroke: "",
-      compression_ratio: "",
-      fuel_system: "",
-      frame_type: "",
-      front_suspension: "",
-      rear_suspension: "",
-      front_tire_size: "",
-      rear_tire_size: "",
-      front_brake: "",
-      rear_brake: "",
-      battery_type: "",
-      lighting_system: "",
-      dashboard_type: "",
+      bore_stroke: '',
+      compression_ratio: '',
+      fuel_system: '',
+      frame_type: '',
+      front_suspension: '',
+      rear_suspension: '',
+      front_tire_size: '',
+      rear_tire_size: '',
+      front_brake: '',
+      rear_brake: '',
+      battery_type: '',
+      lighting_system: '',
+      dashboard_type: '',
       highlights_list: [],
       variants: [
         {
           id: null,
           price: null,
-          variant_name: "",
-          cover_image_url: "",
+          variant_name: '',
+          cover_image_url: '',
           colors: [],
           supplier_prices: [],
-          sku: "",
+          sku: '',
           photo_collection: [],
           optionValues: {},
           option_rows: [],
-          url_slug: "",
+          url_slug: '',
           stock_quantity: 0,
           weight: null,
           length: null,
@@ -376,7 +374,7 @@ export function useProductTable() {
           seat_height: null,
           ground_clearance: null,
           fuel_capacity: null,
-          tire_size: "",
+          tire_size: '',
           showSpecs: false,
         },
       ],
@@ -386,90 +384,68 @@ export function useProductTable() {
   };
 
   const handleEdit = async (row: Product) => {
-    dialogTitle.value = "Cập nhật sản phẩm";
+    dialogTitle.value = 'Cập nhật sản phẩm';
 
     try {
       const fullProduct = await ProductApi.getById(row.id);
 
-      fullProduct.meta_title = fullProduct.meta_title || "";
-      fullProduct.meta_description = fullProduct.meta_description || "";
-      fullProduct.short_description = fullProduct.short_description || "";
-      fullProduct.description = fullProduct.description || "";
-      fullProduct.material = fullProduct.material || "";
-      fullProduct.origin = fullProduct.origin || "";
-      fullProduct.warranty_period = fullProduct.warranty_period || "";
-      fullProduct.unit = fullProduct.unit || "Chiếc";
+      fullProduct.meta_title = fullProduct.meta_title || '';
+      fullProduct.meta_description = fullProduct.meta_description || '';
+      fullProduct.short_description = fullProduct.short_description || '';
+      fullProduct.description = fullProduct.description || '';
+      fullProduct.material = fullProduct.material || '';
+      fullProduct.origin = fullProduct.origin || '';
+      fullProduct.warranty_period = fullProduct.warranty_period || '';
+      fullProduct.unit = fullProduct.unit || 'Chiếc';
       fullProduct.std_dot = !!fullProduct.std_dot;
       fullProduct.std_ece = !!fullProduct.std_ece;
       fullProduct.std_snell = !!fullProduct.std_snell;
       fullProduct.std_jis = !!fullProduct.std_jis;
-      fullProduct.other_standards = fullProduct.other_standards || "";
-      fullProduct.compatible_vehicle_model_ids =
-        fullProduct.compatible_vehicle_model_ids || [];
+      fullProduct.other_standards = fullProduct.other_standards || '';
+      fullProduct.compatible_vehicle_model_ids = fullProduct.compatible_vehicle_model_ids || [];
 
-      fullProduct.engine_type = fullProduct.engine_type || "";
-      fullProduct.max_power = fullProduct.max_power || "";
+      fullProduct.engine_type = fullProduct.engine_type || '';
+      fullProduct.max_power = fullProduct.max_power || '';
       fullProduct.fuel_capacity = fullProduct.fuel_capacity || undefined;
-      fullProduct.fuel_consumption = fullProduct.fuel_consumption || "";
+      fullProduct.fuel_consumption = fullProduct.fuel_consumption || '';
       fullProduct.wheelbase = fullProduct.wheelbase || undefined;
       fullProduct.seat_height = fullProduct.seat_height || undefined;
       fullProduct.ground_clearance = fullProduct.ground_clearance || undefined;
       fullProduct.oil_capacity = fullProduct.oil_capacity || undefined;
-      fullProduct.transmission_type = fullProduct.transmission_type || "";
-      fullProduct.starter_system = fullProduct.starter_system || "";
-      fullProduct.max_torque = fullProduct.max_torque || "";
+      fullProduct.transmission_type = fullProduct.transmission_type || '';
+      fullProduct.starter_system = fullProduct.starter_system || '';
+      fullProduct.max_torque = fullProduct.max_torque || '';
       fullProduct.displacement = fullProduct.displacement || undefined;
-      fullProduct.bore_stroke = fullProduct.bore_stroke || "";
-      fullProduct.compression_ratio = fullProduct.compression_ratio || "";
-      fullProduct.fuel_system = fullProduct.fuel_system || "";
-      fullProduct.frame_type = fullProduct.frame_type || "";
-      fullProduct.front_suspension = fullProduct.front_suspension || "";
-      fullProduct.rear_suspension = fullProduct.rear_suspension || "";
-      fullProduct.front_tire_size = fullProduct.front_tire_size || "";
-      fullProduct.rear_tire_size = fullProduct.rear_tire_size || "";
-      fullProduct.front_brake = fullProduct.front_brake || "";
-      fullProduct.rear_brake = fullProduct.rear_brake || "";
-      fullProduct.battery_type = fullProduct.battery_type || "";
-      fullProduct.lighting_system = fullProduct.lighting_system || "";
-      fullProduct.dashboard_type = fullProduct.dashboard_type || "";
+      fullProduct.bore_stroke = fullProduct.bore_stroke || '';
+      fullProduct.compression_ratio = fullProduct.compression_ratio || '';
+      fullProduct.fuel_system = fullProduct.fuel_system || '';
+      fullProduct.frame_type = fullProduct.frame_type || '';
+      fullProduct.front_suspension = fullProduct.front_suspension || '';
+      fullProduct.rear_suspension = fullProduct.rear_suspension || '';
+      fullProduct.front_tire_size = fullProduct.front_tire_size || '';
+      fullProduct.rear_tire_size = fullProduct.rear_tire_size || '';
+      fullProduct.front_brake = fullProduct.front_brake || '';
+      fullProduct.rear_brake = fullProduct.rear_brake || '';
+      fullProduct.battery_type = fullProduct.battery_type || '';
+      fullProduct.lighting_system = fullProduct.lighting_system || '';
+      fullProduct.dashboard_type = fullProduct.dashboard_type || '';
 
-      if (
-        fullProduct.product_technologies &&
-        Array.isArray(fullProduct.product_technologies)
-      ) {
-        fullProduct.highlights_list = fullProduct.product_technologies.map(
-          (pt: any) => {
-            const techId = Number(pt.technology_id);
-            const tech = availableTechnologies.value.find(
-              (t) => t.id === techId,
-            );
-            return {
-              technology_id: techId,
-              custom_title:
-                pt.custom_title ??
-                pt.title ??
-                tech?.defaultTitle ??
-                tech?.name ??
-                "",
-              custom_description:
-                pt.custom_description ??
-                pt.description ??
-                tech?.defaultDescription ??
-                "",
-              custom_image_url:
-                pt.custom_image_url ??
-                pt.image_url ??
-                tech?.defaultImageUrl ??
-                "",
-              _defaultTitle: tech?.defaultTitle ?? pt._default_title,
-              _defaultDescription:
-                tech?.defaultDescription ?? pt._default_description,
-              _defaultImageUrl: tech?.defaultImageUrl ?? pt._default_image_url,
-              _categoryName:
-                (tech?.categoryName ?? pt._category_name) || "TECHNOLOGY",
-            };
-          },
-        );
+      if (fullProduct.product_technologies && Array.isArray(fullProduct.product_technologies)) {
+        fullProduct.highlights_list = fullProduct.product_technologies.map((pt: any) => {
+          const techId = Number(pt.technology_id);
+          const tech = availableTechnologies.value.find((t) => t.id === techId);
+          return {
+            technology_id: techId,
+            custom_title: pt.custom_title ?? pt.title ?? tech?.defaultTitle ?? tech?.name ?? '',
+            custom_description:
+              pt.custom_description ?? pt.description ?? tech?.defaultDescription ?? '',
+            custom_image_url: pt.custom_image_url ?? pt.image_url ?? tech?.defaultImageUrl ?? '',
+            _defaultTitle: tech?.defaultTitle ?? pt._default_title,
+            _defaultDescription: tech?.defaultDescription ?? pt._default_description,
+            _defaultImageUrl: tech?.defaultImageUrl ?? pt._default_image_url,
+            _categoryName: (tech?.categoryName ?? pt._category_name) || 'TECHNOLOGY',
+          };
+        });
       } else {
         fullProduct.highlights_list = [];
       }
@@ -478,39 +454,28 @@ export function useProductTable() {
         fullProduct.variants.forEach((v: any) => {
           v.colors = (v.colors || []).map((color: any) => ({
             id: color.id,
-            name: color.name ?? color.colorName ?? color.color_name ?? "",
-            code:
-              color.code ?? color.colorCode ?? color.color_code ?? "#000000",
-            image:
-              color.image ?? color.coverImageUrl ?? color.cover_image_url ?? "",
+            name: color.name ?? color.colorName ?? color.color_name ?? '',
+            code: color.code ?? color.colorCode ?? color.color_code ?? '#000000',
+            image: color.image ?? color.coverImageUrl ?? color.cover_image_url ?? '',
             showSupplierPrices: false,
-            supplier_prices: (
-              color.supplier_prices ||
-              color.supplierPrices ||
-              []
-            ).map((price: any) => ({
-              supplier_id: price.supplier_id ?? price.supplierId,
-              product_variant_color_id:
-                price.product_variant_color_id ??
-                price.productVariantColorId ??
-                color.id,
-              quote_price: price.quote_price ?? price.quotePrice,
-              note: price.note || "",
-            })),
+            supplier_prices: (color.supplier_prices || color.supplierPrices || []).map(
+              (price: any) => ({
+                supplier_id: price.supplier_id ?? price.supplierId,
+                product_variant_color_id:
+                  price.product_variant_color_id ?? price.productVariantColorId ?? color.id,
+                quote_price: price.quote_price ?? price.quotePrice,
+                note: price.note || '',
+              })
+            ),
           }));
           v.optionValues = v.optionValues || {};
           v.option_rows = Object.entries(v.optionValues)
-            .filter(
-              ([key]) =>
-                !["color", "màu sắc"].includes(
-                  String(key).trim().toLowerCase(),
-                ),
-            )
-            .map(([key, value]) => ({ key, value: String(value || "") }));
+            .filter(([key]) => !['color', 'màu sắc'].includes(String(key).trim().toLowerCase()))
+            .map(([key, value]) => ({ key, value: String(value || '') }));
           if (!v.photo_collection) {
             v.photo_collection = [];
           }
-          v.url_slug = v.url_slug || "";
+          v.url_slug = v.url_slug || '';
           v.stock_quantity = v.stock_quantity ?? 0;
 
           v.weight = v.weight || null;
@@ -521,34 +486,31 @@ export function useProductTable() {
           v.seat_height = v.seat_height || null;
           v.ground_clearance = v.ground_clearance || null;
           v.fuel_capacity = v.fuel_capacity || null;
-          v.tire_size = v.tire_size || "";
+          v.tire_size = v.tire_size || '';
           v.showSpecs = !!v.showSpecs;
           v.showSupplierPrices = false;
-          v.supplier_prices = (v.supplier_prices || v.supplierPrices || []).map(
-            (price: any) => ({
-              supplier_id: price.supplier_id ?? price.supplierId,
-              product_variant_color_id:
-                price.product_variant_color_id ?? price.productVariantColorId,
-              quote_price: price.quote_price ?? price.quotePrice,
-              note: price.note || "",
-            }),
-          );
+          v.supplier_prices = (v.supplier_prices || v.supplierPrices || []).map((price: any) => ({
+            supplier_id: price.supplier_id ?? price.supplierId,
+            product_variant_color_id: price.product_variant_color_id ?? price.productVariantColorId,
+            quote_price: price.quote_price ?? price.quotePrice,
+            note: price.note || '',
+          }));
         });
       } else {
         fullProduct.variants = [
           {
             id: null,
             price: null,
-            variant_name: "",
-            cover_image_url: "",
+            variant_name: '',
+            cover_image_url: '',
             colors: [],
             supplier_prices: [],
             showSupplierPrices: false,
-            sku: "",
+            sku: '',
             photo_collection: [],
             optionValues: {},
             option_rows: [],
-            url_slug: "",
+            url_slug: '',
             stock_quantity: 0,
             weight: null,
             length: null,
@@ -558,7 +520,7 @@ export function useProductTable() {
             seat_height: null,
             ground_clearance: null,
             fuel_capacity: null,
-            tire_size: "",
+            tire_size: '',
             showSpecs: false,
           } as any,
         ];
@@ -570,70 +532,71 @@ export function useProductTable() {
           brandCache.set(Number(formData.value.brand_id), {
             id: Number(formData.value.brand_id),
             name: fullProduct.brand,
-            origin: "",
-            logoUrl: "",
-            description: "",
+            origin: '',
+            logoUrl: '',
+            description: '',
           });
         }
         ensureBrandLoaded(Number(formData.value.brand_id));
       }
 
       selectedTechIds.value = (fullProduct.product_technologies || []).map(
-        (pt: any) => pt.technology_id,
+        (pt: any) => pt.technology_id
       );
 
       dialogVisible.value = true;
     } catch (_err: any) {
-      ElMessage.error("Không thể lấy chi tiết sản phẩm");
+      ElMessage.error('Không thể lấy chi tiết sản phẩm');
     }
   };
 
   const handleDelete = (row: Product) => {
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa sản phẩm "${row.name}" không?`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         await ProductApi.delete(row.id);
-        ElMessage.success("Xóa sản phẩm thành công");
+        ElMessage.success('Xóa sản phẩm thành công');
         refreshData();
       } catch (_err: any) {
-        ElMessage.error(_err.message || "Xóa thất bại");
+        ElMessage.error(_err.message || 'Xóa thất bại');
       }
     });
   };
 
   const getVariantDefaultCover = (variant: any) => {
-    return (variant.cover_image_url || "")
-      .split(",")
+    return (variant.cover_image_url || '')
+      .split(',')
       .map((image: string) => image.trim())
       .find(Boolean);
   };
 
   const getColorName = (color: any) =>
-    (color.color_name ?? color.colorName ?? color.name ?? "").trim();
+    (color.color_name ?? color.colorName ?? color.name ?? '').trim();
   const getColorCode = (color: any) =>
-    (color.color_code ?? color.colorCode ?? color.code ?? "").trim();
+    (color.color_code ?? color.colorCode ?? color.code ?? '').trim();
   const getColorImage = (color: any) =>
-    (color.cover_image_url ?? color.coverImageUrl ?? color.image ?? "").trim();
+    (color.cover_image_url ?? color.coverImageUrl ?? color.image ?? '').trim();
 
   const submitForm = async () => {
     submitting.value = true;
     try {
       if (formData.value.highlights_list) {
-        formData.value.product_technologies =
-          formData.value.highlights_list.map((h: any, idx: number) => ({
+        formData.value.product_technologies = formData.value.highlights_list.map(
+          (h: any, idx: number) => ({
             technology_id: Number(h.technology_id),
-            custom_title: h.custom_title || "",
-            custom_description: h.custom_description || "",
-            custom_image_url: h.custom_image_url || "",
+            custom_title: h.custom_title || '',
+            custom_description: h.custom_description || '',
+            custom_image_url: h.custom_image_url || '',
             display_order: idx + 1,
-          }));
+          })
+        );
       } else {
         formData.value.product_technologies = [];
       }
@@ -644,15 +607,9 @@ export function useProductTable() {
 
       if (formData.value.variants) {
         formData.value.variants.forEach((variant: any) => {
-          validateUniqueSupplierPrices(
-            variant.supplier_prices || [],
-            "Báo giá của biến thể",
-          );
+          validateUniqueSupplierPrices(variant.supplier_prices || [], 'Báo giá của biến thể');
           (variant.colors || []).forEach((color: any) => {
-            validateUniqueSupplierPrices(
-              color.supplier_prices || [],
-              "Báo giá của màu",
-            );
+            validateUniqueSupplierPrices(color.supplier_prices || [], 'Báo giá của màu');
           });
         });
 
@@ -660,53 +617,43 @@ export function useProductTable() {
           const colors = v.colors || [];
           const optionValues = (v.option_rows || []).reduce(
             (acc: Record<string, string>, row: any) => {
-              const key = (row.key || "").trim();
-              const value = (row.value || "").trim();
+              const key = (row.key || '').trim();
+              const value = (row.value || '').trim();
               if (key && value) {
                 acc[key] = value;
               }
               return acc;
             },
-            {},
+            {}
           );
           const hasColors = colors.length > 0;
           if (
             hasColors &&
             colors.some(
-              (color: any) =>
-                !getColorName(color) ||
-                !getColorCode(color) ||
-                !getColorImage(color),
+              (color: any) => !getColorName(color) || !getColorCode(color) || !getColorImage(color)
             )
           ) {
-            throw new Error(
-              "Mỗi màu sắc của biến thể phải có đủ tên màu, mã màu và hình ảnh.",
-            );
+            throw new Error('Mỗi màu sắc của biến thể phải có đủ tên màu, mã màu và hình ảnh.');
           }
           const colorImages = colors.map(getColorImage).filter(Boolean);
           const photoCollection = (v.photo_collection || []).filter(
-            (image: string) => !colorImages.includes((image || "").trim()),
+            (image: string) => !colorImages.includes((image || '').trim())
           );
-          const cover_image_url = hasColors
-            ? ""
-            : getVariantDefaultCover(v) || "";
+          const cover_image_url = hasColors ? '' : getVariantDefaultCover(v) || '';
           const serializedColors = colors.map((color: any) => ({
             id: color.id,
             color_name: getColorName(color),
             color_code: getColorCode(color),
             cover_image_url: getColorImage(color),
             supplier_prices: (color.supplier_prices || [])
-              .filter(
-                (price: any) =>
-                  price.supplier_id && Number(price.supplier_id) > 0,
-              )
+              .filter((price: any) => price.supplier_id && Number(price.supplier_id) > 0)
               .map((price: any) => ({
                 supplier_id: Number(price.supplier_id),
                 quote_price:
-                  price.quote_price === "" || price.quote_price === null
+                  price.quote_price === '' || price.quote_price === null
                     ? undefined
                     : Number(price.quote_price),
-                note: price.note || "",
+                note: price.note || '',
               })),
           }));
 
@@ -736,17 +683,14 @@ export function useProductTable() {
             engine_type: v.engine_type,
             showSupplierPrices: undefined,
             supplier_prices: (v.supplier_prices || [])
-              .filter(
-                (price: any) =>
-                  price.supplier_id && Number(price.supplier_id) > 0,
-              )
+              .filter((price: any) => price.supplier_id && Number(price.supplier_id) > 0)
               .map((price: any) => ({
                 supplier_id: Number(price.supplier_id),
                 quote_price:
-                  price.quote_price === "" || price.quote_price === null
+                  price.quote_price === '' || price.quote_price === null
                     ? undefined
                     : Number(price.quote_price),
-                note: price.note || "",
+                note: price.note || '',
               })),
           };
         });
@@ -759,15 +703,15 @@ export function useProductTable() {
 
       if (formData.value.id) {
         await ProductApi.update(formData.value.id, payload);
-        ElMessage.success("Cập nhật sản phẩm thành công");
+        ElMessage.success('Cập nhật sản phẩm thành công');
       } else {
         await ProductApi.create(payload);
-        ElMessage.success("Thêm sản phẩm thành công");
+        ElMessage.success('Thêm sản phẩm thành công');
       }
       dialogVisible.value = false;
       refreshData();
     } catch (_err: any) {
-      ElMessage.error(_err.message || "Thao tác thất bại");
+      ElMessage.error(_err.message || 'Thao tác thất bại');
     } finally {
       submitting.value = false;
     }
@@ -780,16 +724,16 @@ export function useProductTable() {
     formData.value.variants.push({
       id: null,
       price: null,
-      variant_name: "",
-      cover_image_url: "",
+      variant_name: '',
+      cover_image_url: '',
       colors: [],
       supplier_prices: [],
       showSupplierPrices: false,
-      sku: "",
+      sku: '',
       photo_collection: [],
       optionValues: {},
       option_rows: [],
-      url_slug: "",
+      url_slug: '',
       stock_quantity: 0,
       weight: null,
       length: null,
@@ -799,7 +743,7 @@ export function useProductTable() {
       seat_height: null,
       ground_clearance: null,
       fuel_capacity: null,
-      tire_size: "",
+      tire_size: '',
       showSpecs: false,
     } as any);
   };
@@ -817,11 +761,11 @@ export function useProductTable() {
     if (!variant.colors) {
       variant.colors = [];
     }
-    variant.cover_image_url = "";
+    variant.cover_image_url = '';
     variant.colors.push({
-      name: "",
-      code: "#000000",
-      image: "",
+      name: '',
+      code: '#000000',
+      image: '',
       supplier_prices: [],
       showSupplierPrices: false,
     });
@@ -832,7 +776,7 @@ export function useProductTable() {
       const res = await SupplierApi.getList({ current: 1, size: 1000 });
       suppliersList.value = res.items || [];
     } catch (err) {
-      console.error("Failed to load suppliers:", err);
+      console.error('Failed to load suppliers:', err);
       suppliersList.value = [];
     }
   };
@@ -847,7 +791,7 @@ export function useProductTable() {
     if (!variant.option_rows) {
       variant.option_rows = [];
     }
-    variant.option_rows.push({ key: "", value: "" });
+    variant.option_rows.push({ key: '', value: '' });
   };
 
   const addVariantSupplierPrice = (variant: any) => {
@@ -858,7 +802,7 @@ export function useProductTable() {
     variant.supplier_prices.push({
       supplier_id: undefined,
       quote_price: 0,
-      note: "",
+      note: '',
     });
   };
 
@@ -876,7 +820,7 @@ export function useProductTable() {
     color.supplier_prices.push({
       supplier_id: undefined,
       quote_price: 0,
-      note: "",
+      note: '',
     });
   };
 
@@ -897,12 +841,11 @@ export function useProductTable() {
   const isSupplierUsedInRows = (
     rows: any[],
     supplierId: number | undefined,
-    currentIndex: number,
+    currentIndex: number
   ) => {
     if (!supplierId) return false;
     return rows.some(
-      (row, idx) =>
-        idx !== currentIndex && Number(row?.supplier_id) === Number(supplierId),
+      (row, idx) => idx !== currentIndex && Number(row?.supplier_id) === Number(supplierId)
     );
   };
 
@@ -912,9 +855,7 @@ export function useProductTable() {
       const supplierId = Number(row?.supplier_id);
       if (!supplierId) continue;
       if (seen.has(supplierId)) {
-        throw new Error(
-          `${scopeLabel} chỉ được chọn mỗi nhà cung cấp một lần.`,
-        );
+        throw new Error(`${scopeLabel} chỉ được chọn mỗi nhà cung cấp một lần.`);
       }
       seen.add(supplierId);
     }
@@ -933,9 +874,7 @@ export function useProductTable() {
 
     if (params.category_id) {
       if (Array.isArray(params.category_id) && params.category_id.length > 0) {
-        const catFilters = params.category_id
-          .map((id: number) => `category_id==${id}`)
-          .join("|");
+        const catFilters = params.category_id.map((id: number) => `category_id==${id}`).join('|');
         filters.push(catFilters);
       } else if (!Array.isArray(params.category_id)) {
         filters.push(`category_id==${params.category_id}`);
@@ -943,14 +882,14 @@ export function useProductTable() {
     }
 
     replaceSearchParams({
-      Filters: filters.join(","),
+      Filters: filters.join(','),
     });
     getData();
   };
 
   const handleReset = () => {
     replaceSearchParams({
-      Filters: "",
+      Filters: '',
     });
     getData();
   };
@@ -966,17 +905,16 @@ export function useProductTable() {
           if (!c) return false;
           const currentName = c.name.toLowerCase();
           const vehicleKeywords = [
-            "xe máy",
-            "xe",
-            "vehicle",
-            "motor",
-            "mô tô",
-            "scooter",
-            "tay ga",
-            "tay côn",
+            'xe máy',
+            'xe',
+            'vehicle',
+            'motor',
+            'mô tô',
+            'scooter',
+            'tay ga',
+            'tay côn',
           ];
-          if (vehicleKeywords.some((kw) => currentName.includes(kw)))
-            return true;
+          if (vehicleKeywords.some((kw) => currentName.includes(kw))) return true;
           if (c.parentId) return findCategoryRecursive(c.parentId);
           return false;
         };
@@ -993,11 +931,9 @@ export function useProductTable() {
         size: 1000,
       });
       const ids = vehicleCategoryIds.value;
-      allVehicles.value = (res.items || []).filter((p: any) =>
-        ids.includes(p.category_id),
-      );
+      allVehicles.value = (res.items || []).filter((p: any) => ids.includes(p.category_id));
     } catch (err) {
-      console.error("Failed to fetch vehicles:", err);
+      console.error('Failed to fetch vehicles:', err);
     } finally {
       isVehiclesLoading.value = false;
     }
@@ -1009,13 +945,11 @@ export function useProductTable() {
     }
   });
 
-  const vehicleSearch = ref("");
+  const vehicleSearch = ref('');
   const filteredVehicles = computed(() => {
     if (!vehicleSearch.value) return [];
     return allVehicles.value
-      .filter((v) =>
-        v.name.toLowerCase().includes(vehicleSearch.value.toLowerCase()),
-      )
+      .filter((v) => v.name.toLowerCase().includes(vehicleSearch.value.toLowerCase()))
       .slice(0, 10);
   });
 
@@ -1030,15 +964,13 @@ export function useProductTable() {
     if (!formData.value.compatible_vehicle_model_ids.includes(id)) {
       formData.value.compatible_vehicle_model_ids.push(id);
     }
-    vehicleSearch.value = "";
+    vehicleSearch.value = '';
   };
 
   const removeCompatibleVehicle = (id: number) => {
     if (formData.value.compatible_vehicle_model_ids) {
       formData.value.compatible_vehicle_model_ids =
-        formData.value.compatible_vehicle_model_ids.filter(
-          (vId: number) => vId !== id,
-        );
+        formData.value.compatible_vehicle_model_ids.filter((vId: number) => vId !== id);
     }
   };
 
@@ -1049,24 +981,22 @@ export function useProductTable() {
 
     const techId = Number(tech.id);
     const existingIndex = formData.value.highlights_list.findIndex(
-      (h: any) => Number(h.technology_id) === techId,
+      (h: any) => Number(h.technology_id) === techId
     );
 
     if (existingIndex >= 0) {
       formData.value.highlights_list.splice(existingIndex, 1);
-      selectedTechIds.value = selectedTechIds.value.filter(
-        (id) => Number(id) !== techId,
-      );
+      selectedTechIds.value = selectedTechIds.value.filter((id) => Number(id) !== techId);
     } else {
       formData.value.highlights_list.push({
         technology_id: tech.id,
         custom_title: tech.defaultTitle || tech.name,
-        custom_description: tech.defaultDescription || "",
-        custom_image_url: tech.defaultImageUrl || "",
+        custom_description: tech.defaultDescription || '',
+        custom_image_url: tech.defaultImageUrl || '',
         _defaultTitle: tech.defaultTitle,
         _defaultDescription: tech.defaultDescription,
         _defaultImageUrl: tech.defaultImageUrl,
-        _categoryName: tech.categoryName || "TECHNOLOGY",
+        _categoryName: tech.categoryName || 'TECHNOLOGY',
       });
       if (!selectedTechIds.value.includes(techId)) {
         selectedTechIds.value.push(techId);
@@ -1077,7 +1007,7 @@ export function useProductTable() {
   const isTechnologySelected = (techId: number) => {
     if (!formData.value.highlights_list) return false;
     return formData.value.highlights_list.some(
-      (h: any) => Number(h.technology_id) === Number(techId),
+      (h: any) => Number(h.technology_id) === Number(techId)
     );
   };
 
@@ -1101,21 +1031,21 @@ export function useProductTable() {
       const resBlob: any = await ProductApi.exportProducts(exportParams);
 
       const url = window.URL.createObjectURL(new Blob([resBlob]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.setAttribute(
-        "download",
-        `Danh_sach_san_pham_${new Date().toISOString().slice(0, 10)}.xlsx`,
+        'download',
+        `Danh_sach_san_pham_${new Date().toISOString().slice(0, 10)}.xlsx`
       );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      ElMessage.success("Xuất file Excel thành công");
+      ElMessage.success('Xuất file Excel thành công');
     } catch (err: any) {
       console.error(err);
-      ElMessage.error(err.message || "Xuất file Excel thất bại");
+      ElMessage.error(err.message || 'Xuất file Excel thất bại');
     } finally {
       exporting.value = false;
     }

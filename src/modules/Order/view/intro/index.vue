@@ -11,23 +11,17 @@
         <div class="card-badge bg-green">
           <ArtSvgIcon icon="ri:customer-service-2-line" /> HỖ TRỢ KỸ THUẬT
         </div>
-        <h2 class="card-title">
-          CÔNG TY TNHH <span class="text-orange">ANH EM MOTOR</span>
-        </h2>
+        <h2 class="card-title">CÔNG TY TNHH <span class="text-orange">ANH EM MOTOR</span></h2>
         <p class="card-text">
-          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi
-          nhận, đồng hành và hỗ trợ liên tục 24/7 trong quá trình vận hành, khai
-          thác hệ thống.
+          Cảm ơn Quý khách đã tin tưởng sử dụng hệ thống. AnhEm Motor luôn ghi nhận, đồng hành và hỗ
+          trợ liên tục 24/7 trong quá trình vận hành, khai thác hệ thống.
         </p>
 
         <div class="address-line">
           <ArtSvgIcon icon="ri:map-pin-line" class="icon-orange" />
           <div class="address-content">
             <strong>Địa chỉ</strong>
-            <span
-              >Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt
-              Nam</span
-            >
+            <span>Khu phố 6, P. Linh Trung, Thủ Đức, TP. Hồ Chí Minh, Việt Nam</span>
           </div>
         </div>
 
@@ -75,17 +69,13 @@
       <div class="info-card">
         <div class="card-header">
           <div class="card-badge bg-orange">BÁN HÀNG & ĐƠN HÀNG</div>
-          <div class="website-link">
-            <ArtSvgIcon icon="ri:global-line" /> anhemmotor.com
-          </div>
+          <div class="website-link"><ArtSvgIcon icon="ri:global-line" /> anhemmotor.com</div>
         </div>
 
-        <h2 class="card-title-dark">
-          Hệ sinh thái quản lý kinh doanh phụ tùng & dịch vụ
-        </h2>
+        <h2 class="card-title-dark">Hệ sinh thái quản lý kinh doanh phụ tùng & dịch vụ</h2>
         <p class="card-text">
-          Quản lý toàn diện quy trình bán hàng, từ đặt hàng, báo giá đến xử lý
-          thanh toán, giúp tối ưu hóa doanh thu và nâng cao trải nghiệm mua sắm.
+          Quản lý toàn diện quy trình bán hàng, từ đặt hàng, báo giá đến xử lý thanh toán, giúp tối
+          ưu hóa doanh thu và nâng cao trải nghiệm mua sắm.
         </p>
 
         <div class="action-buttons">
@@ -107,10 +97,7 @@
               <span class="btn-title text-orange">QUẢN LÝ BÁN HÀNG</span>
               <span class="btn-subtitle">anhemmotor.com</span>
             </div>
-            <ArtSvgIcon
-              icon="ri:share-box-line"
-              class="external-icon text-orange"
-            />
+            <ArtSvgIcon icon="ri:share-box-line" class="external-icon text-orange" />
           </div>
         </div>
 
@@ -132,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 // Order banner intro component
 </script>
 

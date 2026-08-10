@@ -78,15 +78,11 @@
 
     <!-- Progress Pipeline -->
     <el-card shadow="never" class="mb-4 pipeline-card">
-      <div class="text-sm text-gray-500 mb-4 font-medium">
-        Trạng thái vòng đời hợp đồng
-      </div>
+      <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời hợp đồng</div>
 
       <div class="pipeline-steps-wrapper relative flex w-full">
         <!-- Track line nền xám -->
-        <div
-          class="pipeline-track-bg absolute top-4 left-[10%] right-[10%] h-0.5 z-0"
-        ></div>
+        <div class="pipeline-track-bg absolute top-4 left-[10%] right-[10%] h-0.5 z-0"></div>
         <!-- Track line đỏ tiến trình -->
         <div
           class="pipeline-track-active absolute top-4 left-[10%] h-0.5 z-0 transition-all duration-700"
@@ -114,11 +110,7 @@
           </div>
           <div
             class="step-label mt-2 text-center text-sm px-1 w-full"
-            :class="
-              activeStep >= index
-                ? 'step-label--active'
-                : 'step-label--inactive'
-            "
+            :class="activeStep >= index ? 'step-label--active' : 'step-label--inactive'"
           >
             {{ step.label }}
           </div>
@@ -225,19 +217,14 @@
               accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
             >
               <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-              <div class="el-upload__text">
-                Kéo thả file hoặc <em>Bấm vào đây</em> để tải lên
-              </div>
+              <div class="el-upload__text">Kéo thả file hoặc <em>Bấm vào đây</em> để tải lên</div>
               <template #tip>
-                <div class="el-upload__tip">
-                  Chỉ hỗ trợ file PDF/JPG/PNG (Tối đa 10MB)
-                </div>
+                <div class="el-upload__tip">Chỉ hỗ trợ file PDF/JPG/PNG (Tối đa 10MB)</div>
               </template>
             </el-upload>
             <div v-if="contractData.scannedFileUrl" class="uploaded-file mt-3">
               <span
-                ><el-icon><CircleCheck /></el-icon> Đã lưu bản quét có chữ
-                ký</span
+                ><el-icon><CircleCheck /></el-icon> Đã lưu bản quét có chữ ký</span
               >
               <el-button type="primary" link @click="handleViewScannedFile">
                 Xem bản quét
@@ -250,12 +237,8 @@
       <!-- Cột bên phải: Trình xem trước (Preview) -->
       <el-col :xs="24" :sm="24" :md="14">
         <el-card shadow="never" class="preview-card reporting-card">
-          <div
-            class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center"
-          >
-            <span
-              class="text-sm font-bold text-gray-600 flex items-center gap-2"
-            >
+          <div class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center">
+            <span class="text-sm font-bold text-gray-600 flex items-center gap-2">
               <el-icon class="text-report-red"><Document /></el-icon>
               Trình Xem Trước Bản In (A4)
             </span>
@@ -266,25 +249,17 @@
 
           <div class="a4-preview-container p-6">
             <div class="a4-paper bg-white shadow-lg p-8 mx-auto">
-              <h2 class="text-center font-bold text-xl mb-4">
-                HỢP ĐỒNG MUA BÁN XE MÁY
-              </h2>
-              <p class="text-right italic mb-6">
-                Số: {{ contractData.contractNumber }}
-              </p>
+              <h2 class="text-center font-bold text-xl mb-4">HỢP ĐỒNG MUA BÁN XE MÁY</h2>
+              <p class="text-right italic mb-6">Số: {{ contractData.contractNumber }}</p>
 
               <div class="section mb-4">
                 <h3 class="font-bold mb-2">BÊN BÁN (BÊN A):</h3>
-                <p>
-                  <strong>Tên cửa hàng:</strong> {{ contractData.showroomName }}
-                </p>
+                <p><strong>Tên cửa hàng:</strong> {{ contractData.showroomName }}</p>
                 <p>
                   <strong>Mã số thuế:</strong>
                   {{ contractData.showroomTaxCode }}
                 </p>
-                <p>
-                  <strong>Địa chỉ:</strong> {{ contractData.showroomAddress }}
-                </p>
+                <p><strong>Địa chỉ:</strong> {{ contractData.showroomAddress }}</p>
                 <p>
                   <strong>Đại diện pháp luật:</strong>
                   {{ contractData.showroomRepresentative }}
@@ -302,15 +277,11 @@
                   <strong>Địa chỉ thường trú:</strong>
                   {{ contractData.customerAddress }}
                 </p>
-                <p>
-                  <strong>Điện thoại:</strong> {{ contractData.customerPhone }}
-                </p>
+                <p><strong>Điện thoại:</strong> {{ contractData.customerPhone }}</p>
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 1: THÔNG TIN PHƯƠNG TIỆN GIAO DỊCH
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 1: THÔNG TIN PHƯƠNG TIỆN GIAO DỊCH</h3>
                 <table class="w-full border-collapse border mb-2">
                   <tr>
                     <td class="border p-1">
@@ -342,9 +313,7 @@
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 2: ĐIỀU KHOẢN TÀI CHÍNH & THANH TOÁN
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 2: ĐIỀU KHOẢN TÀI CHÍNH & THANH TOÁN</h3>
                 <p>
                   <strong>Số tiền đặt cọc:</strong>
                   {{ formatCurrency(contractData.depositAmount) }}
@@ -360,9 +329,7 @@
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 3: BẢO HÀNH & ĐIỀU KHOẢN ĐẶC BIỆT
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 3: BẢO HÀNH & ĐIỀU KHOẢN ĐẶC BIỆT</h3>
                 <p>
                   <strong>Thời gian bảo hành:</strong>
                   {{ contractData.warrantyPeriod }}
@@ -396,9 +363,9 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
   UploadFilled,
   Document,
@@ -408,48 +375,48 @@ import {
   Check,
   ArrowLeft,
   Promotion,
-} from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import type { UploadRawFile, UploadRequestOptions } from "element-plus";
-import { SalesContractApi } from "@/api/sales";
-import type { SalesContractStatus } from "@/domain/sales/contract.types";
-import ReportPageHeader from "@/modules/Accountant/view/reporting/ReportPageHeader.vue";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+} from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import type { UploadRawFile, UploadRequestOptions } from 'element-plus';
+import { SalesContractApi } from '@/api/sales';
+import type { SalesContractStatus } from '@/domain/sales/contract.types';
+import ReportPageHeader from '@/modules/Accountant/view/reporting/ReportPageHeader.vue';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const contractData = ref({
-  id: "" as string,
+  id: '' as string,
   orderId: undefined as number | undefined,
-  contractNumber: "" as string,
-  status: "Draft" as SalesContractStatus,
+  contractNumber: '' as string,
+  status: 'Draft' as SalesContractStatus,
 
-  showroomName: "",
-  showroomTaxCode: "",
-  showroomAddress: "",
-  showroomRepresentative: "",
+  showroomName: '',
+  showroomTaxCode: '',
+  showroomAddress: '',
+  showroomRepresentative: '',
 
-  customerFullName: "",
-  customerCCCD: "",
-  customerAddress: "",
-  customerPhone: "",
+  customerFullName: '',
+  customerCCCD: '',
+  customerAddress: '',
+  customerPhone: '',
 
-  vehicleModel: "",
-  vehicleVersion: "",
-  vehicleColor: "",
-  frameNumber: "",
-  engineNumber: "",
+  vehicleModel: '',
+  vehicleVersion: '',
+  vehicleColor: '',
+  frameNumber: '',
+  engineNumber: '',
   actualSalePrice: 0,
 
   depositAmount: 0,
   remainingAmount: 0,
-  finalPaymentDeadline: "",
+  finalPaymentDeadline: '',
 
-  warrantyPeriod: "",
-  warrantyScope: "",
-  specialTerms: "",
-  note: "",
+  warrantyPeriod: '',
+  warrantyScope: '',
+  specialTerms: '',
+  note: '',
 
   scannedFileUrl: null as string | null,
 });
@@ -457,44 +424,42 @@ const contractData = ref({
 const isUploading = ref(false);
 const isSubmittingApproval = ref(false);
 const MAX_SCAN_FILE_SIZE = 10 * 1024 * 1024;
-const ALLOWED_SCAN_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png"];
+const ALLOWED_SCAN_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
 
 const lifecycleSteps = [
-  { label: "Soạn thảo", desc: "Map dữ liệu từ đơn hàng" },
-  { label: "Chờ duyệt", desc: "Đã gửi Admin rà soát" },
-  { label: "Đã duyệt", desc: "Sẵn sàng in và ký" },
-  { label: "Đã ký", desc: "Đã lưu bản quét" },
-  { label: "Hoàn tất", desc: "Đã bàn giao xe" },
+  { label: 'Soạn thảo', desc: 'Map dữ liệu từ đơn hàng' },
+  { label: 'Chờ duyệt', desc: 'Đã gửi Admin rà soát' },
+  { label: 'Đã duyệt', desc: 'Sẵn sàng in và ký' },
+  { label: 'Đã ký', desc: 'Đã lưu bản quét' },
+  { label: 'Hoàn tất', desc: 'Đã bàn giao xe' },
 ];
 
 const activeStep = computed(() => {
-  if (contractData.value.status === "Fulfilled") return 4;
-  if (contractData.value.status === "Signed") return 3;
-  if (contractData.value.status === "Approved") return 2;
-  if (contractData.value.status === "PendingApproval") return 1;
+  if (contractData.value.status === 'Fulfilled') return 4;
+  if (contractData.value.status === 'Signed') return 3;
+  if (contractData.value.status === 'Approved') return 2;
+  if (contractData.value.status === 'PendingApproval') return 1;
   return 0;
 });
 
-const isContractLocked = computed(() => contractData.value.status !== "Draft");
-const canUploadSignedScan = computed(
-  () => contractData.value.status === "Approved",
-);
+const isContractLocked = computed(() => contractData.value.status !== 'Draft');
+const canUploadSignedScan = computed(() => contractData.value.status === 'Approved');
 const canPrintContract = computed(() =>
-  ["Approved", "Signed", "Fulfilled"].includes(contractData.value.status),
+  ['Approved', 'Signed', 'Fulfilled'].includes(contractData.value.status)
 );
 
 const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
-    case "Draft":
-      return "Nháp";
-    case "PendingApproval":
-      return "Chờ Admin duyệt";
-    case "Approved":
-      return "Đã duyệt";
-    case "Signed":
-      return "Đã ký";
-    case "Fulfilled":
-      return "Hoàn tất";
+    case 'Draft':
+      return 'Nháp';
+    case 'PendingApproval':
+      return 'Chờ Admin duyệt';
+    case 'Approved':
+      return 'Đã duyệt';
+    case 'Signed':
+      return 'Đã ký';
+    case 'Fulfilled':
+      return 'Hoàn tất';
     default:
       return status;
   }
@@ -503,7 +468,7 @@ const getStatusLabel = (status: SalesContractStatus): string => {
 const loadData = async () => {
   const contractId = route.params?.id as string | undefined;
   if (!contractId) {
-    ElMessage.error("Thiếu ID hợp đồng.");
+    ElMessage.error('Thiếu ID hợp đồng.');
     return;
   }
 
@@ -513,37 +478,37 @@ const loadData = async () => {
     contractData.value.orderId = c.orderId;
     contractData.value.contractNumber = c.contractNumber;
     contractData.value.status = c.status as SalesContractStatus;
-    contractData.value.customerFullName = c.customerFullName || "";
-    contractData.value.customerCCCD = c.customerCCCD || "";
-    contractData.value.customerAddress = c.customerAddress || "";
-    contractData.value.customerPhone = c.customerPhone || "";
-    contractData.value.showroomName = c.showroomName || "";
-    contractData.value.showroomTaxCode = c.showroomTaxCode || "";
-    contractData.value.showroomAddress = c.showroomAddress || "";
-    contractData.value.showroomRepresentative = c.showroomRepresentative || "";
-    contractData.value.vehicleModel = c.vehicleModel || "";
-    contractData.value.vehicleVersion = c.vehicleVersion || "";
-    contractData.value.vehicleColor = c.vehicleColor || "";
-    contractData.value.frameNumber = c.frameNumber || "";
-    contractData.value.engineNumber = c.engineNumber || "";
+    contractData.value.customerFullName = c.customerFullName || '';
+    contractData.value.customerCCCD = c.customerCCCD || '';
+    contractData.value.customerAddress = c.customerAddress || '';
+    contractData.value.customerPhone = c.customerPhone || '';
+    contractData.value.showroomName = c.showroomName || '';
+    contractData.value.showroomTaxCode = c.showroomTaxCode || '';
+    contractData.value.showroomAddress = c.showroomAddress || '';
+    contractData.value.showroomRepresentative = c.showroomRepresentative || '';
+    contractData.value.vehicleModel = c.vehicleModel || '';
+    contractData.value.vehicleVersion = c.vehicleVersion || '';
+    contractData.value.vehicleColor = c.vehicleColor || '';
+    contractData.value.frameNumber = c.frameNumber || '';
+    contractData.value.engineNumber = c.engineNumber || '';
     contractData.value.actualSalePrice = c.actualSalePrice;
     contractData.value.depositAmount = c.depositAmount;
     contractData.value.remainingAmount = c.remainingAmount;
-    contractData.value.finalPaymentDeadline = c.finalPaymentDeadline || "";
-    contractData.value.warrantyPeriod = c.warrantyPeriod || "";
-    contractData.value.warrantyScope = c.warrantyScope || "";
-    contractData.value.specialTerms = c.specialTerms || "";
-    contractData.value.note = c.note || "";
+    contractData.value.finalPaymentDeadline = c.finalPaymentDeadline || '';
+    contractData.value.warrantyPeriod = c.warrantyPeriod || '';
+    contractData.value.warrantyScope = c.warrantyScope || '';
+    contractData.value.specialTerms = c.specialTerms || '';
+    contractData.value.note = c.note || '';
     contractData.value.scannedFileUrl = c.scannedFileUrl || null;
   } catch (_e) {
-    ElMessage.error("Không tải được dữ liệu hợp đồng.");
+    ElMessage.error('Không tải được dữ liệu hợp đồng.');
   }
 };
 
 onMounted(loadData);
 
 const handleBack = () => {
-  router.push({ name: "OrderContract" });
+  router.push({ name: 'OrderContract' });
 };
 
 const handlePrint = () => {
@@ -558,9 +523,9 @@ const handleSaveDraft = async () => {
       warrantyScope: contractData.value.warrantyScope,
       note: contractData.value.note,
     });
-    ElMessage.success("Đã lưu bản nháp hợp đồng.");
+    ElMessage.success('Đã lưu bản nháp hợp đồng.');
   } catch (_e) {
-    ElMessage.error("Lưu bản nháp thất bại.");
+    ElMessage.error('Lưu bản nháp thất bại.');
   }
 };
 
@@ -568,12 +533,12 @@ const handleSubmitForApproval = async () => {
   try {
     await ElMessageBox.confirm(
       `Gửi hợp đồng "${contractData.value.contractNumber}" cho Admin duyệt? Sau khi gửi, nội dung sẽ tạm khóa.`,
-      "Xác nhận gửi duyệt",
+      'Xác nhận gửi duyệt',
       {
-        confirmButtonText: "Gửi Admin duyệt",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Gửi Admin duyệt',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     );
     isSubmittingApproval.value = true;
     await SalesContractApi.update(contractData.value.id, {
@@ -582,14 +547,12 @@ const handleSubmitForApproval = async () => {
       warrantyScope: contractData.value.warrantyScope,
       note: contractData.value.note,
     });
-    const updated = await SalesContractApi.submitForApproval(
-      contractData.value.id,
-    );
+    const updated = await SalesContractApi.submitForApproval(contractData.value.id);
     contractData.value.status = updated.status;
-    ElMessage.success("Đã gửi hợp đồng cho Admin duyệt.");
+    ElMessage.success('Đã gửi hợp đồng cho Admin duyệt.');
   } catch (error) {
-    if (error !== "cancel" && error !== "close") {
-      ElMessage.error("Không thể gửi hợp đồng cho Admin duyệt.");
+    if (error !== 'cancel' && error !== 'close') {
+      ElMessage.error('Không thể gửi hợp đồng cho Admin duyệt.');
     }
   } finally {
     isSubmittingApproval.value = false;
@@ -599,14 +562,14 @@ const handleSubmitForApproval = async () => {
 const validateScanFile = (file: UploadRawFile) => {
   const fileName = file.name.toLowerCase();
   const hasAllowedExtension = ALLOWED_SCAN_EXTENSIONS.some((extension) =>
-    fileName.endsWith(extension),
+    fileName.endsWith(extension)
   );
   if (!hasAllowedExtension) {
-    ElMessage.error("Chỉ hỗ trợ file PDF, JPG, JPEG hoặc PNG.");
+    ElMessage.error('Chỉ hỗ trợ file PDF, JPG, JPEG hoặc PNG.');
     return false;
   }
   if (file.size > MAX_SCAN_FILE_SIZE) {
-    ElMessage.error("File hợp đồng không được vượt quá 10MB.");
+    ElMessage.error('File hợp đồng không được vượt quá 10MB.');
     return false;
   }
   return true;
@@ -615,26 +578,18 @@ const validateScanFile = (file: UploadRawFile) => {
 const customUploadRequest = async (options: UploadRequestOptions) => {
   isUploading.value = true;
   try {
-    const res = await SalesContractApi.uploadScannedFile(
-      contractData.value.id,
-      options.file,
-    );
+    const res = await SalesContractApi.uploadScannedFile(contractData.value.id, options.file);
     contractData.value.scannedFileUrl = res.scannedFileUrl;
-    contractData.value.status = "Signed";
-    ElMessage.success(
-      "Đã lưu bản quét. Hợp đồng chuyển sang trạng thái Đã ký.",
-    );
+    contractData.value.status = 'Signed';
+    ElMessage.success('Đã lưu bản quét. Hợp đồng chuyển sang trạng thái Đã ký.');
     options.onSuccess(res);
   } catch (_e) {
-    ElMessage.error("Không thể tải bản quét lên. Vui lòng thử lại.");
-    const uploadError = Object.assign(
-      new Error("Sales contract scan upload failed"),
-      {
-        status: 0,
-        method: "POST",
-        url: `/api/v1/contracts/sales/${contractData.value.id}/scanned-file`,
-      },
-    );
+    ElMessage.error('Không thể tải bản quét lên. Vui lòng thử lại.');
+    const uploadError = Object.assign(new Error('Sales contract scan upload failed'), {
+      status: 0,
+      method: 'POST',
+      url: `/api/v1/contracts/sales/${contractData.value.id}/scanned-file`,
+    });
     options.onError(uploadError as Parameters<typeof options.onError>[0]);
   } finally {
     isUploading.value = false;
@@ -643,47 +598,41 @@ const customUploadRequest = async (options: UploadRequestOptions) => {
 
 const handleViewScannedFile = () => {
   if (!contractData.value.scannedFileUrl) return;
-  window.open(
-    contractData.value.scannedFileUrl,
-    "_blank",
-    "noopener,noreferrer",
-  );
+  window.open(contractData.value.scannedFileUrl, '_blank', 'noopener,noreferrer');
 };
 
 const handleHandover = async () => {
-  if (contractData.value.status !== "Signed") {
+  if (contractData.value.status !== 'Signed') {
     ElMessageBox.alert(
-      "Hợp đồng chưa được ký kết (thiếu bản scan). Không thể xuất bãi và bàn giao xe!",
-      "Cảnh báo Rào Chắn",
-      { confirmButtonText: "Đóng", type: "error" },
+      'Hợp đồng chưa được ký kết (thiếu bản scan). Không thể xuất bãi và bàn giao xe!',
+      'Cảnh báo Rào Chắn',
+      { confirmButtonText: 'Đóng', type: 'error' }
     );
     return;
   }
 
   try {
     await SalesContractApi.updateStatus(contractData.value.id, {
-      status: "Fulfilled",
+      status: 'Fulfilled',
     });
-    contractData.value.status = "Fulfilled";
-    ElMessage.success("Đã hoàn tất bàn giao xe. Hợp đồng đóng (Fulfilled).");
+    contractData.value.status = 'Fulfilled';
+    ElMessage.success('Đã hoàn tất bàn giao xe. Hợp đồng đóng (Fulfilled).');
   } catch (_e) {
-    ElMessage.error("Cập nhật trạng thái bàn giao thất bại.");
+    ElMessage.error('Cập nhật trạng thái bàn giao thất bại.');
   }
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const formatDate = (dateString: string) => {
-  if (!dateString) return "Chưa xác định";
+  if (!dateString) return 'Chưa xác định';
   const date = new Date(dateString);
-  return Number.isNaN(date.getTime())
-    ? "Chưa xác định"
-    : date.toLocaleDateString("vi-VN");
+  return Number.isNaN(date.getTime()) ? 'Chưa xác định' : date.toLocaleDateString('vi-VN');
 };
 </script>
 
@@ -909,7 +858,7 @@ const formatDate = (dateString: string) => {
   width: 210mm;
   max-width: 100%;
   min-height: 297mm;
-  font-family: "Times New Roman", Times, serif;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 14px;
   line-height: 1.5;
   color: #000;

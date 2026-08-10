@@ -25,12 +25,7 @@
           </div>
         </template>
       </ElInput>
-      <ElScrollbar
-        class="mt-5"
-        max-height="370px"
-        ref="searchResultScrollbar"
-        always
-      >
+      <ElScrollbar class="mt-5" max-height="370px" ref="searchResultScrollbar" always>
         <div class="result w-full" v-show="searchResult.length">
           <div
             class="box !mt-0 c-p text-base leading-none"
@@ -39,29 +34,18 @@
           >
             <div
               class="mt-2 h-12 flex-cb rounded-custom-sm bg-g-200/80 px-4 text-sm text-g-700"
-              :class="
-                isHighlighted(index)
-                  ? 'highlighted !bg-theme/70 !text-white'
-                  : ''
-              "
+              :class="isHighlighted(index) ? 'highlighted !bg-theme/70 !text-white' : ''"
               @click="searchGoPage(item)"
               @mouseenter="highlightOnHover(index)"
             >
               {{ formatMenuTitle(item.meta.title) }}
-              <ArtSvgIcon
-                v-show="isHighlighted(index)"
-                icon="fluent:arrow-enter-left-20-filled"
-              />
+              <ArtSvgIcon v-show="isHighlighted(index)" icon="fluent:arrow-enter-left-20-filled" />
             </div>
           </div>
         </div>
 
-        <div
-          v-show="
-            !searchVal && searchResult.length === 0 && historyResult.length > 0
-          "
-        >
-          <p class="text-xs text-g-500">{{ $t("search.historyTitle") }}</p>
+        <div v-show="!searchVal && searchResult.length === 0 && historyResult.length > 0">
+          <p class="text-xs text-g-500">{{ $t('search.historyTitle') }}</p>
           <div class="mt-1.5 w-full">
             <div
               class="box mt-2 h-12 c-p flex-cb rounded-custom-sm bg-g-200/80 px-4 text-sm text-g-800"
@@ -90,28 +74,17 @@
       <template #footer>
         <div class="dialog-footer box-border flex-c border-t-d pt-4.5 pb-1">
           <div class="flex-cc">
-            <ArtSvgIcon
-              icon="fluent:arrow-enter-left-20-filled"
-              class="keyboard"
-            />
-            <span class="mr-3.5 text-xs text-g-700">{{
-              $t("search.selectKeydown")
-            }}</span>
+            <ArtSvgIcon icon="fluent:arrow-enter-left-20-filled" class="keyboard" />
+            <span class="mr-3.5 text-xs text-g-700">{{ $t('search.selectKeydown') }}</span>
           </div>
           <div class="flex-c">
             <ArtSvgIcon icon="ri:arrow-up-wide-fill" class="keyboard" />
             <ArtSvgIcon icon="ri:arrow-down-wide-fill" class="keyboard" />
-            <span class="mr-3.5 text-xs text-g-700">{{
-              $t("search.switchKeydown")
-            }}</span>
+            <span class="mr-3.5 text-xs text-g-700">{{ $t('search.switchKeydown') }}</span>
           </div>
           <div class="flex-c">
-            <i class="keyboard !w-8 flex-cc"
-              ><p class="text-[10px] font-medium">ESC</p></i
-            >
-            <span class="mr-3.5 text-xs text-g-700">{{
-              $t("search.exitKeydown")
-            }}</span>
+            <i class="keyboard !w-8 flex-cc"><p class="text-[10px] font-medium">ESC</p></i>
+            <span class="mr-3.5 text-xs text-g-700">{{ $t('search.exitKeydown') }}</span>
           </div>
         </div>
       </template>
@@ -120,22 +93,22 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "@/application/store/user";
-import { AppRouteRecord } from "@/types/router";
-import { Search } from "@element-plus/icons-vue";
-import { mittBus } from "@/common/utils/sys";
-import { useMenuStore } from "@/application/store/menu";
-import { formatMenuTitle } from "@/common/utils/router";
-import { handleMenuJump } from "@/common/utils/navigation";
-import { type ScrollbarInstance } from "element-plus";
+import { useUserStore } from '@/application/store/user';
+import { AppRouteRecord } from '@/types/router';
+import { Search } from '@element-plus/icons-vue';
+import { mittBus } from '@/common/utils/sys';
+import { useMenuStore } from '@/application/store/menu';
+import { formatMenuTitle } from '@/common/utils/router';
+import { handleMenuJump } from '@/common/utils/navigation';
+import { type ScrollbarInstance } from 'element-plus';
 
-defineOptions({ name: "ArtGlobalSearch" });
+defineOptions({ name: 'ArtGlobalSearch' });
 
 const userStore = useUserStore();
 const { menuList } = storeToRefs(useMenuStore());
 
 const showSearchDialog = ref(false);
-const searchVal = ref("");
+const searchVal = ref('');
 const searchResult = ref<AppRouteRecord[]>([]);
 const historyMaxLength = 10;
 
@@ -147,35 +120,35 @@ const historyHIndex = ref(0);
 const searchResultScrollbar = ref<ScrollbarInstance>();
 const isKeyboardNavigating = ref(false);
 onMounted(() => {
-  mittBus.on("openSearchDialog", openSearchDialog);
-  document.addEventListener("keydown", handleKeydown);
+  mittBus.on('openSearchDialog', openSearchDialog);
+  document.addEventListener('keydown', handleKeydown);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
+  document.removeEventListener('keydown', handleKeydown);
 });
 
 const handleKeydown = (event: KeyboardEvent) => {
-  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isCommandKey = isMac ? event.metaKey : event.ctrlKey;
 
-  if (isCommandKey && event.key.toLowerCase() === "k") {
+  if (isCommandKey && event.key.toLowerCase() === 'k') {
     event.preventDefault();
     showSearchDialog.value = true;
     focusInput();
   }
 
   if (showSearchDialog.value) {
-    if (event.key === "ArrowUp") {
+    if (event.key === 'ArrowUp') {
       event.preventDefault();
       highlightPrevious();
-    } else if (event.key === "ArrowDown") {
+    } else if (event.key === 'ArrowDown') {
       event.preventDefault();
       highlightNext();
-    } else if (event.key === "Enter") {
+    } else if (event.key === 'Enter') {
       event.preventDefault();
       selectHighlighted();
-    } else if (event.key === "Escape") {
+    } else if (event.key === 'Escape') {
       event.preventDefault();
       showSearchDialog.value = false;
     }
@@ -196,10 +169,7 @@ const search = (val: string) => {
   }
 };
 
-const flattenAndFilterMenuItems = (
-  items: AppRouteRecord[],
-  val: string,
-): AppRouteRecord[] => {
+const flattenAndFilterMenuItems = (items: AppRouteRecord[], val: string): AppRouteRecord[] => {
   const lowerVal = val.toLowerCase();
   const result: AppRouteRecord[] = [];
 
@@ -229,13 +199,11 @@ const highlightPrevious = () => {
   isKeyboardNavigating.value = true;
   if (searchVal.value) {
     highlightedIndex.value =
-      (highlightedIndex.value - 1 + searchResult.value.length) %
-      searchResult.value.length;
+      (highlightedIndex.value - 1 + searchResult.value.length) % searchResult.value.length;
     scrollToHighlightedItem();
   } else {
     historyHIndex.value =
-      (historyHIndex.value - 1 + historyResult.value.length) %
-      historyResult.value.length;
+      (historyHIndex.value - 1 + historyResult.value.length) % historyResult.value.length;
     scrollToHighlightedHistoryItem();
   }
   setTimeout(() => {
@@ -246,12 +214,10 @@ const highlightPrevious = () => {
 const highlightNext = () => {
   isKeyboardNavigating.value = true;
   if (searchVal.value) {
-    highlightedIndex.value =
-      (highlightedIndex.value + 1) % searchResult.value.length;
+    highlightedIndex.value = (highlightedIndex.value + 1) % searchResult.value.length;
     scrollToHighlightedItem();
   } else {
-    historyHIndex.value =
-      (historyHIndex.value + 1) % historyResult.value.length;
+    historyHIndex.value = (historyHIndex.value + 1) % historyResult.value.length;
     scrollToHighlightedHistoryItem();
   }
   setTimeout(() => {
@@ -266,12 +232,10 @@ const scrollToHighlightedItem = () => {
     const scrollWrapper = searchResultScrollbar.value.wrapRef;
     if (!scrollWrapper) return;
 
-    const highlightedElements = scrollWrapper.querySelectorAll(".result .box");
+    const highlightedElements = scrollWrapper.querySelectorAll('.result .box');
     if (!highlightedElements[highlightedIndex.value]) return;
 
-    const highlightedElement = highlightedElements[
-      highlightedIndex.value
-    ] as HTMLElement;
+    const highlightedElement = highlightedElements[highlightedIndex.value] as HTMLElement;
     const itemHeight = highlightedElement.offsetHeight;
     const scrollTop = scrollWrapper.scrollTop;
     const containerHeight = scrollWrapper.clientHeight;
@@ -293,7 +257,7 @@ const scrollToHighlightedHistoryItem = () => {
     const scrollWrapper = searchResultScrollbar.value.wrapRef;
     if (!scrollWrapper) return;
 
-    const historyItems = scrollWrapper.querySelectorAll(".history-result .box");
+    const historyItems = scrollWrapper.querySelectorAll('.history-result .box');
     if (!historyItems[historyHIndex.value]) return;
 
     const highlightedElement = historyItems[historyHIndex.value] as HTMLElement;
@@ -331,7 +295,7 @@ const searchGoPage = (item: AppRouteRecord) => {
   showSearchDialog.value = false;
   addHistory(item);
   handleMenuJump(item);
-  searchVal.value = "";
+  searchVal.value = '';
   searchResult.value = [];
 };
 
@@ -342,10 +306,10 @@ const updateHistory = () => {
 };
 
 const addHistory = (item: AppRouteRecord) => {
-  const itemKey = item.path || String(item.meta.link || "");
+  const itemKey = item.path || String(item.meta.link || '');
   const hasItemIndex = historyResult.value.findIndex(
     (historyItem: AppRouteRecord) =>
-      (historyItem.path || String(historyItem.meta.link || "")) === itemKey,
+      (historyItem.path || String(historyItem.meta.link || '')) === itemKey
   );
 
   if (hasItemIndex !== -1) {
@@ -372,7 +336,7 @@ const openSearchDialog = () => {
 };
 
 const closeSearchDialog = () => {
-  searchVal.value = "";
+  searchVal.value = '';
   searchResult.value = [];
   highlightedIndex.value = 0;
   historyHIndex.value = 0;

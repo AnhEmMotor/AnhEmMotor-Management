@@ -55,11 +55,7 @@
 
     <!-- Table -->
     <ElCard class="warranty-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <div class="table-heading">
             <span>Danh sách điều khoản bảo hành</span>
@@ -92,10 +88,7 @@
         </template>
         <template #duration="{ row }">
           <div class="flex items-center gap-1.5 justify-center">
-            <i
-              class="ri-time-line text-amber-500"
-              v-if="row.durationMonths || row.durationKm"
-            ></i>
+            <i class="ri-time-line text-amber-500" v-if="row.durationMonths || row.durationKm"></i>
             <span class="font-medium text-slate-700 whitespace-nowrap">{{
               formatDuration(row)
             }}</span>
@@ -111,9 +104,9 @@
               {{
                 row.coverage
                   ? row.coverage.length > 40
-                    ? row.coverage.slice(0, 40) + "..."
+                    ? row.coverage.slice(0, 40) + '...'
                     : row.coverage
-                  : "-"
+                  : '-'
               }}
             </span>
           </ElTooltip>
@@ -158,31 +151,17 @@
               class="w-full"
               :loading="brandsLoading"
             >
-              <ElOption
-                v-for="b in brandOptions"
-                :key="b.id"
-                :label="b.name"
-                :value="b.id"
-              />
+              <ElOption v-for="b in brandOptions" :key="b.id" :label="b.name" :value="b.id" />
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="Tên điều khoản" prop="termName">
-            <ElInput
-              v-model="formData.termName"
-              placeholder="VD: Bảo hành động cơ"
-            />
+            <ElInput v-model="formData.termName" placeholder="VD: Bảo hành động cơ" />
           </ElFormItem>
           <ElFormItem label="Loại xe áp dụng" prop="vehicleType">
-            <ElInput
-              v-model="formData.vehicleType"
-              placeholder="VD: Xe tay ga, Xe số..."
-            />
+            <ElInput v-model="formData.vehicleType" placeholder="VD: Xe tay ga, Xe số..." />
           </ElFormItem>
           <ElFormItem label="Loại lỗi" prop="errorCategory">
-            <ElInput
-              v-model="formData.errorCategory"
-              placeholder="VD: Động cơ, Hệ thống điện..."
-            />
+            <ElInput v-model="formData.errorCategory" placeholder="VD: Động cơ, Hệ thống điện..." />
           </ElFormItem>
           <ElFormItem label="Thời gian BH (tháng)">
             <ElInputNumber
@@ -250,13 +229,8 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Đóng</ElButton>
-          <ElButton
-            v-if="!isViewMode"
-            type="primary"
-            :loading="submitting"
-            @click="submitForm"
-          >
-            {{ formData.id ? "Cập nhật" : "Tạo mới" }}
+          <ElButton v-if="!isViewMode" type="primary" :loading="submitting" @click="submitForm">
+            {{ formData.id ? 'Cập nhật' : 'Tạo mới' }}
           </ElButton>
         </div>
       </template>
@@ -265,14 +239,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { Plus } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import ReportPageHeader from "@/views/analytics-reporting/components/ReportPageHeader.vue";
-import { useWarrantyCategoryTable } from "@/modules/Factory/logic/service/warranty-category/hooks/useWarrantyCategoryTable";
-import type { WarrantyTerm } from "@/domain/warranty/warranty-category.types";
+import { computed } from 'vue';
+import { Plus } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus';
+import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue';
+import { useWarrantyCategoryTable } from '@/modules/Factory/logic/service/warranty-category/hooks/useWarrantyCategoryTable';
+import type { WarrantyTerm } from '@/domain/warranty/warranty-category.types';
 
-defineOptions({ name: "FactoryWarrantyCategory" });
+defineOptions({ name: 'FactoryWarrantyCategory' });
 
 const {
   data,
@@ -308,7 +282,7 @@ const {
   brandsLoading,
 } = useWarrantyCategoryTable();
 
-const isViewMode = computed(() => dialogTitle.value.startsWith("Chi tiết:"));
+const isViewMode = computed(() => dialogTitle.value.startsWith('Chi tiết:'));
 
 const formRef = ref<FormInstance>();
 const tableRef = ref();
@@ -317,23 +291,19 @@ const formRules = {
   termName: [
     {
       required: true,
-      message: "Vui lòng nhập tên điều khoản",
-      trigger: "blur",
+      message: 'Vui lòng nhập tên điều khoản',
+      trigger: 'blur',
     },
   ],
   brandId: [
     {
       required: true,
-      message: "Vui lòng chọn hãng xe",
-      trigger: "change",
+      message: 'Vui lòng chọn hãng xe',
+      trigger: 'change',
     },
   ],
-  vehicleType: [
-    { required: true, message: "Vui lòng nhập loại xe", trigger: "blur" },
-  ],
-  errorCategory: [
-    { required: true, message: "Vui lòng nhập loại lỗi", trigger: "blur" },
-  ],
+  vehicleType: [{ required: true, message: 'Vui lòng nhập loại xe', trigger: 'blur' }],
+  errorCategory: [{ required: true, message: 'Vui lòng nhập loại lỗi', trigger: 'blur' }],
 };
 </script>
 

@@ -51,7 +51,7 @@
             >
               <ElButton v-ripple :loading="importing" :disabled="importing">
                 <ElIcon class="mr-1"><Upload /></ElIcon>
-                {{ importing ? "Đang nhập..." : "Nhập Excel" }}
+                {{ importing ? 'Đang nhập...' : 'Nhập Excel' }}
                 <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
               </ElButton>
               <template #dropdown>
@@ -93,9 +93,7 @@
             <ElButton
               v-if="
                 selectedRows.length > 0 &&
-                selectedRows.every(
-                  (row) => row.status?.toLowerCase() === 'draft',
-                )
+                selectedRows.every((row) => row.status?.toLowerCase() === 'draft')
               "
               type="danger"
               class="btn-bulk"
@@ -105,9 +103,7 @@
               @click="handleDeleteMany"
               style="margin-left: 0"
             >
-              <ElIcon class="mr-1"><Delete /></ElIcon> Xóa ({{
-                selectedRows.length
-              }})
+              <ElIcon class="mr-1"><Delete /></ElIcon> Xóa ({{ selectedRows.length }})
             </ElButton>
 
             <ElButton
@@ -145,9 +141,7 @@
 
         <template #isFullyImported="{ row }">
           <template v-if="row.status?.toLowerCase() === 'approve'">
-            <ElTag v-if="row.isFullyImported" type="success" size="small">
-              Đã nhập đủ
-            </ElTag>
+            <ElTag v-if="row.isFullyImported" type="success" size="small"> Đã nhập đủ </ElTag>
             <ElTag v-else type="danger" size="small"> Chưa nhập đủ </ElTag>
           </template>
           <span v-else>-</span>
@@ -156,12 +150,7 @@
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
             <ElTooltip content="Xem chi tiết" placement="top">
-              <ElButton
-                circle
-                size="small"
-                type="info"
-                @click="handleViewDetail(row)"
-              >
+              <ElButton circle size="small" type="info" @click="handleViewDetail(row)">
                 <ElIcon><View /></ElIcon>
               </ElButton>
             </ElTooltip>
@@ -180,18 +169,12 @@
                 <ElIcon><Edit /></ElIcon>
               </ElButton>
             </ElTooltip>
-            <ElTooltip
-              v-if="row.status?.toLowerCase() === 'draft'"
-              content="Xóa"
-              placement="top"
-            >
+            <ElTooltip v-if="row.status?.toLowerCase() === 'draft'" content="Xóa" placement="top">
               <ElButton
                 circle
                 size="small"
                 type="danger"
-                v-auth="
-                  'Permissions.Warehouse.PurchaseRequestManagement.Delete'
-                "
+                v-auth="'Permissions.Warehouse.PurchaseRequestManagement.Delete'"
                 @click="handleDelete(row)"
               >
                 <ElIcon><Delete /></ElIcon>
@@ -221,9 +204,7 @@
                 circle
                 size="small"
                 type="success"
-                v-auth="
-                  'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'
-                "
+                v-auth="'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'"
                 @click="handleApproveRejectStatus(row.id, 'approve')"
               >
                 <ElIcon><Check /></ElIcon>
@@ -238,9 +219,7 @@
                 circle
                 size="small"
                 type="danger"
-                v-auth="
-                  'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'
-                "
+                v-auth="'Permissions.Warehouse.PurchaseRequestManagement.ApproveReject'"
                 @click="handleApproveRejectStatus(row.id, 'reject')"
               >
                 <ElIcon><Close /></ElIcon>
@@ -271,15 +250,8 @@
 
         <div class="border-t border-gray-100 pt-4 mt-4">
           <div class="flex justify-between items-center mb-3">
-            <span class="text-sm font-semibold text-gray-700"
-              >Danh sách biến thể yêu cầu</span
-            >
-            <ElButton
-              type="success"
-              size="small"
-              plain
-              @click="handleAddProductRow"
-            >
+            <span class="text-sm font-semibold text-gray-700">Danh sách biến thể yêu cầu</span>
+            <ElButton type="success" size="small" plain @click="handleAddProductRow">
               <ElIcon class="mr-1"><Plus /></ElIcon> Thêm sản phẩm
             </ElButton>
           </div>
@@ -291,23 +263,13 @@
                   class="w-full border border-gray-300 rounded px-2 py-1 bg-white flex items-center justify-between cursor-pointer hover:border-primary transition duration-200 min-h-[32px]"
                   @click="openProductSelector($index)"
                 >
-                  <span
-                    v-if="row.productVariantId"
-                    class="text-gray-800 text-xs font-medium"
-                  >
+                  <span v-if="row.productVariantId" class="text-gray-800 text-xs font-medium">
                     {{ getProductNameById(row.productVariantId) }}
                   </span>
-                  <span v-else class="text-gray-400 text-xs"
-                    >Chọn biến thể sản phẩm...</span
-                  >
+                  <span v-else class="text-gray-400 text-xs">Chọn biến thể sản phẩm...</span>
                   <ElIcon class="text-gray-400 text-xs"><ArrowDown /></ElIcon>
                 </div>
-                <ElTag
-                  v-if="getProductColorName(row)"
-                  size="small"
-                  type="info"
-                  class="mt-1 w-fit"
-                >
+                <ElTag v-if="getProductColorName(row)" size="small" type="info" class="mt-1 w-fit">
                   Màu: {{ getProductColorName(row) }}
                 </ElTag>
               </template>
@@ -325,11 +287,7 @@
               </template>
             </ElTableColumn>
 
-            <ElTableColumn
-              label="Nhà cung cấp & Đơn giá"
-              width="220"
-              align="center"
-            >
+            <ElTableColumn label="Nhà cung cấp & Đơn giá" width="220" align="center">
               <template #default="{ row, $index }">
                 <div v-if="row.supplierId" class="text-left mb-1">
                   <div class="font-medium text-gray-800 text-xs text-center">
@@ -339,15 +297,8 @@
                     {{ formatCurrency(row.unitPrice) }}
                   </div>
                 </div>
-                <div v-else class="text-gray-400 text-xs italic mb-1">
-                  Chưa chọn báo giá
-                </div>
-                <ElButton
-                  type="primary"
-                  size="small"
-                  plain
-                  @click="openQuoteDialog(row, $index)"
-                >
+                <div v-else class="text-gray-400 text-xs italic mb-1">Chưa chọn báo giá</div>
+                <ElButton type="primary" size="small" plain @click="openQuoteDialog(row, $index)">
                   Chọn báo giá
                 </ElButton>
               </template>
@@ -396,11 +347,7 @@
           class="w-full"
           v-loading="quoteLoading"
         >
-          <ElTableColumn
-            label="Nhà cung cấp"
-            prop="supplierName"
-            min-width="200"
-          />
+          <ElTableColumn label="Nhà cung cấp" prop="supplierName" min-width="200" />
           <ElTableColumn label="Đơn giá" width="150" align="right">
             <template #default="{ row }">
               {{ formatCurrency(row.quotePrice) }}
@@ -408,17 +355,12 @@
           </ElTableColumn>
           <ElTableColumn label="Ghi chú" prop="note" min-width="150">
             <template #default="{ row }">
-              {{ row.note || "--" }}
+              {{ row.note || '--' }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Thao tác" width="100" align="center">
             <template #default="{ row }">
-              <ElButton
-                type="primary"
-                size="small"
-                plain
-                @click="applyQuoteFromDialog(row)"
-              >
+              <ElButton type="primary" size="small" plain @click="applyQuoteFromDialog(row)">
                 Chọn
               </ElButton>
             </template>
@@ -458,21 +400,17 @@
           </div>
           <div>
             <span class="text-gray-500">Thời gian tạo:</span>
-            <span class="ml-2 text-gray-700">{{
-              formatDateTime(detailData.createdAt)
-            }}</span>
+            <span class="ml-2 text-gray-700">{{ formatDateTime(detailData.createdAt) }}</span>
           </div>
           <div>
             <span class="text-gray-500">Người tạo:</span>
             <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.createdByName || "N/A"
+              detailData.createdByName || 'N/A'
             }}</span>
           </div>
           <div v-if="detailData.sentByName">
             <span class="text-gray-500">Người gửi:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.sentByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.sentByName }}</span>
           </div>
           <div
             v-if="
@@ -482,9 +420,7 @@
             "
           >
             <span class="text-gray-500">Người duyệt:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.approvedByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.approvedByName }}</span>
           </div>
           <div
             v-if="
@@ -494,44 +430,29 @@
             "
           >
             <span class="text-gray-500">Người từ chối:</span>
-            <span class="ml-2 text-gray-800 font-medium">{{
-              detailData.rejectedByName
-            }}</span>
+            <span class="ml-2 text-gray-800 font-medium">{{ detailData.rejectedByName }}</span>
           </div>
           <div class="col-span-2 border-t border-gray-200 pt-2 mt-1">
             <span class="text-gray-500 font-medium">Ghi chú:</span>
-            <div
-              class="mt-1 bg-white p-2.5 rounded border border-gray-100 text-gray-700"
-            >
-              {{ detailData.note || "Không có ghi chú" }}
+            <div class="mt-1 bg-white p-2.5 rounded border border-gray-100 text-gray-700">
+              {{ detailData.note || 'Không có ghi chú' }}
             </div>
           </div>
         </div>
 
         <div>
-          <h4 class="text-sm font-semibold text-gray-700 mb-2">
-            Danh sách mặt hàng
-          </h4>
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">Danh sách mặt hàng</h4>
           <ElTable :data="detailData.items" border size="small" class="w-full">
             <ElTableColumn type="index" label="STT" width="55" align="center" />
             <ElTableColumn label="Tên sản phẩm" minWidth="200">
               <template #default="{ row }">
-                <span class="font-medium text-gray-800">{{
-                  row.productName
-                }}</span>
+                <span class="font-medium text-gray-800">{{ row.productName }}</span>
                 <div v-if="row.productVariantColorName" class="mt-1">
-                  <ElTag size="small" type="info"
-                    >Màu: {{ row.productVariantColorName }}</ElTag
-                  >
+                  <ElTag size="small" type="info">Màu: {{ row.productVariantColorName }}</ElTag>
                 </div>
               </template>
             </ElTableColumn>
-            <ElTableColumn
-              prop="quantity"
-              label="S/L yêu cầu"
-              width="95"
-              align="center"
-            />
+            <ElTableColumn prop="quantity" label="S/L yêu cầu" width="95" align="center" />
             <ElTableColumn label="Nhà cung cấp & Đơn giá" minWidth="150">
               <template #default="{ row }">
                 <div v-if="row.supplierName" class="text-left">
@@ -542,9 +463,7 @@
                     {{ formatCurrency(row.unitPrice) }}
                   </div>
                 </div>
-                <span v-else class="text-gray-400 italic"
-                  >Chưa chọn báo giá</span
-                >
+                <span v-else class="text-gray-400 italic">Chưa chọn báo giá</span>
               </template>
             </ElTableColumn>
 
@@ -560,11 +479,7 @@
             >
               <template #default="{ row }">
                 <span
-                  :class="
-                    row.importedQuantity > 0
-                      ? 'text-success font-bold'
-                      : 'text-gray-400'
-                  "
+                  :class="row.importedQuantity > 0 ? 'text-success font-bold' : 'text-gray-400'"
                 >
                   {{ row.importedQuantity }}
                 </span>
@@ -581,9 +496,7 @@
               align="center"
             >
               <template #default="{ row }">
-                <span class="text-warning font-medium">{{
-                  row.pendingQuantity
-                }}</span>
+                <span class="text-warning font-medium">{{ row.pendingQuantity }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn
@@ -597,9 +510,7 @@
               align="center"
             >
               <template #default="{ row }">
-                <span class="text-danger font-medium">{{
-                  row.unimportedQuantity
-                }}</span>
+                <span class="text-danger font-medium">{{ row.unimportedQuantity }}</span>
               </template>
             </ElTableColumn>
           </ElTable>
@@ -607,16 +518,9 @@
       </div>
 
       <template #footer>
-        <div
-          class="flex justify-between items-center border-t border-gray-50 pt-3"
-        >
+        <div class="flex justify-between items-center border-t border-gray-50 pt-3">
           <div>
-            <ElButton
-              v-if="detailData?.id"
-              type="primary"
-              plain
-              @click="auditTrailVisible = true"
-            >
+            <ElButton v-if="detailData?.id" type="primary" plain @click="auditTrailVisible = true">
               <ElIcon class="mr-1"><Clock /></ElIcon> Lịch sử chỉnh sửa
             </ElButton>
           </div>
@@ -625,10 +529,7 @@
 
             <template v-if="detailData">
               <template v-if="detailData.status?.toLowerCase() === 'sent'">
-                <ElButton
-                  type="danger"
-                  @click="handleApproveRejectStatus(detailData.id, 'reject')"
-                >
+                <ElButton type="danger" @click="handleApproveRejectStatus(detailData.id, 'reject')">
                   Từ chối duyệt
                 </ElButton>
                 <ElButton
@@ -722,9 +623,7 @@
                       v-if="getSelectedVariantColor(variant)"
                       class="inline-block w-4 h-4 rounded border border-gray-200 flex-shrink-0"
                       :style="{
-                        backgroundColor:
-                          getSelectedVariantColor(variant)?.colorCode ||
-                          '#ffffff',
+                        backgroundColor: getSelectedVariantColor(variant)?.colorCode || '#ffffff',
                       }"
                     ></span>
                   </template>
@@ -745,12 +644,7 @@
                     </div>
                   </ElOption>
                 </ElSelect>
-                <ElButton
-                  type="primary"
-                  size="small"
-                  plain
-                  @click="selectProductVariant(variant)"
-                >
+                <ElButton type="primary" size="small" plain @click="selectProductVariant(variant)">
                   Chọn
                 </ElButton>
               </div>
@@ -788,9 +682,7 @@
       class="rounded-xl overflow-hidden"
     >
       <div class="mb-4 flex justify-between items-center">
-        <span class="text-sm text-gray-500"
-          >Chọn các yêu cầu mua hàng để khôi phục</span
-        >
+        <span class="text-sm text-gray-500">Chọn các yêu cầu mua hàng để khôi phục</span>
         <ElButton
           type="primary"
           :disabled="selectedDeletedRequests.length === 0"
@@ -809,12 +701,7 @@
         <ElTableColumn type="selection" width="50" align="center" />
         <ElTableColumn prop="note" label="Ghi chú" min-width="200" />
         <ElTableColumn prop="createdByName" label="Người tạo" min-width="150" />
-        <ElTableColumn
-          prop="deleted_at"
-          label="Thời gian xóa"
-          width="160"
-          align="center"
-        >
+        <ElTableColumn prop="deleted_at" label="Thời gian xóa" width="160" align="center">
           <template #default="{ row }">
             {{ formatDateTime(row.deleted_at) }}
           </template>
@@ -833,7 +720,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 import {
   Plus,
   Edit,
@@ -849,15 +736,15 @@ import {
   RefreshLeft,
   Upload,
   Download,
-} from "@element-plus/icons-vue";
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
-import AuditTrailModal from "@/components/business/audit-trail-modal/index.vue";
-import { usePurchaseRequestTable } from "@/views/inventory/purchase-request/hooks/usePurchaseRequestTable";
-import ImportResultDialog from "@/components/business/import-result-dialog/index.vue";
-import { formatImageUrl } from "@/common/utils/image";
+} from '@element-plus/icons-vue';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+import AuditTrailModal from '@/components/business/audit-trail-modal/index.vue';
+import { usePurchaseRequestTable } from '@/views/inventory/purchase-request/hooks/usePurchaseRequestTable';
+import ImportResultDialog from '@/components/business/import-result-dialog/index.vue';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "PurchaseRequest" });
+defineOptions({ name: 'PurchaseRequest' });
 
 const auditTrailVisible = ref(false);
 
@@ -940,54 +827,53 @@ const startTour = () => {
   const driverObj = driver({
     showProgress: true,
     animate: true,
-    nextBtnText: "Tiếp theo",
-    prevBtnText: "Quay lại",
-    doneBtnText: "Hoàn thành",
+    nextBtnText: 'Tiếp theo',
+    prevBtnText: 'Quay lại',
+    doneBtnText: 'Hoàn thành',
     steps: [
       {
-        element: ".art-table-card",
+        element: '.art-table-card',
         popover: {
-          title: "Bảng dữ liệu",
-          description: "Hiển thị danh sách yêu cầu mua hàng.",
-          side: "top",
-          align: "start",
+          title: 'Bảng dữ liệu',
+          description: 'Hiển thị danh sách yêu cầu mua hàng.',
+          side: 'top',
+          align: 'start',
         },
       },
       {
-        element: ".btn-add",
+        element: '.btn-add',
         popover: {
-          title: "Thêm yêu cầu",
-          description: "Click vào đây để tạo mới một yêu cầu mua hàng.",
-          side: "bottom",
-          align: "start",
+          title: 'Thêm yêu cầu',
+          description: 'Click vào đây để tạo mới một yêu cầu mua hàng.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-import",
+        element: '.btn-import',
         popover: {
-          title: "Nhập/Xuất Excel",
-          description: "Bạn có thể nhập hoặc xuất danh sách bằng Excel.",
-          side: "bottom",
-          align: "start",
+          title: 'Nhập/Xuất Excel',
+          description: 'Bạn có thể nhập hoặc xuất danh sách bằng Excel.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-bulk",
+        element: '.btn-bulk',
         popover: {
-          title: "Thao tác hàng loạt",
-          description:
-            "Chọn các hàng trong bảng để xóa hoặc nhân bản hàng loạt.",
-          side: "bottom",
-          align: "start",
+          title: 'Thao tác hàng loạt',
+          description: 'Chọn các hàng trong bảng để xóa hoặc nhân bản hàng loạt.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: ".btn-restore",
+        element: '.btn-restore',
         popover: {
-          title: "Khôi phục dữ liệu",
-          description: "Xem và khôi phục các yêu cầu mua hàng đã bị xóa.",
-          side: "bottom",
-          align: "start",
+          title: 'Khôi phục dữ liệu',
+          description: 'Xem và khôi phục các yêu cầu mua hàng đã bị xóa.',
+          side: 'bottom',
+          align: 'start',
         },
       },
     ],

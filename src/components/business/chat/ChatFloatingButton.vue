@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import { ChatSquare } from "@element-plus/icons-vue";
-import ChatDrawer from "./ChatDrawer.vue";
+import { ref, onMounted, onUnmounted } from 'vue';
+import { ChatSquare } from '@element-plus/icons-vue';
+import ChatDrawer from './ChatDrawer.vue';
 
 const isVisible = ref(true);
 const isDrawerOpen = ref(false);
@@ -13,13 +13,13 @@ const observeDialogs = () => {
     let dialogOpen = false;
 
     // Check if body has el-popup-parent--hidden class (added by Element Plus when dialog is open)
-    if (document.body.classList.contains("el-popup-parent--hidden")) {
+    if (document.body.classList.contains('el-popup-parent--hidden')) {
       dialogOpen = true;
     } else {
       // Fallback: check for el-overlay
-      const overlays = document.querySelectorAll(".el-overlay");
+      const overlays = document.querySelectorAll('.el-overlay');
       for (let i = 0; i < overlays.length; i++) {
-        if ((overlays[i] as HTMLElement).style.display !== "none") {
+        if ((overlays[i] as HTMLElement).style.display !== 'none') {
           dialogOpen = true;
           break;
         }
@@ -34,7 +34,7 @@ const observeDialogs = () => {
     attributes: true,
     childList: true,
     subtree: true,
-    attributeFilter: ["class", "style"],
+    attributeFilter: ['class', 'style'],
   });
 };
 

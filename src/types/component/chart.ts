@@ -1,16 +1,9 @@
-import type { EChartsOption } from "@/plugins/echarts";
+import type { EChartsOption } from '@/plugins/echarts';
 
-export type LegendPosition = "bottom" | "top" | "left" | "right";
+export type LegendPosition = 'bottom' | 'top' | 'left' | 'right';
 
 export type SymbolType =
-  | "circle"
-  | "rect"
-  | "roundRect"
-  | "triangle"
-  | "diamond"
-  | "pin"
-  | "arrow"
-  | "none";
+  'circle' | 'rect' | 'roundRect' | 'triangle' | 'diamond' | 'pin' | 'arrow' | 'none';
 
 export interface ChartThemeConfig {
   chartHeight: string;
@@ -69,8 +62,7 @@ export interface BarDataItem {
   stack?: string;
 }
 
-export interface BarChartProps
-  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+export interface BarChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
   data: any[] | BarDataItem[];
 
   xAxisData?: string[];
@@ -106,8 +98,7 @@ export interface LineDataItem {
   symbolSize?: number;
 }
 
-export interface LineChartProps
-  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+export interface LineChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
   data: number[] | LineDataItem[];
 
   xAxisData?: string[];
@@ -181,8 +172,7 @@ export interface ScatterDataItem {
   value: number[];
 }
 
-export interface ScatterChartProps
-  extends BaseChartProps, AxisDisplayProps, InteractionProps {
+export interface ScatterChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
   data?: ScatterDataItem[];
 
   symbolSize?: number;

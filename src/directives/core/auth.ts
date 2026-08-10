@@ -1,7 +1,7 @@
-import { router } from "@/router";
-import { App, Directive, DirectiveBinding, watch } from "vue";
-import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/common/composables/useAppMode";
+import { router } from '@/router';
+import { App, Directive, DirectiveBinding, watch } from 'vue';
+import { useUserStore } from '@/application/store/user';
+import { useAppMode } from '@/common/composables/useAppMode';
 
 export type AuthDirective = Directive<HTMLElement, string>;
 
@@ -9,10 +9,7 @@ interface CustomHTMLElement extends HTMLElement {
   __authWatcher__?: () => void;
 }
 
-function updateElementAuth(
-  el: CustomHTMLElement,
-  binding: DirectiveBinding<string>,
-): void {
+function updateElementAuth(el: CustomHTMLElement, binding: DirectiveBinding<string>): void {
   const userStore = useUserStore();
   const { isFrontendMode } = useAppMode();
 
@@ -30,9 +27,9 @@ function updateElementAuth(
   }
 
   if (!hasPermission) {
-    el.style.display = "none";
+    el.style.display = 'none';
   } else {
-    el.style.display = "";
+    el.style.display = '';
   }
 }
 
@@ -47,7 +44,7 @@ const authDirective: AuthDirective = {
       () => {
         updateElementAuth(el, binding);
       },
-      { deep: true },
+      { deep: true }
     );
   },
   unmounted(el: CustomHTMLElement) {
@@ -59,5 +56,5 @@ const authDirective: AuthDirective = {
 };
 
 export function setupAuthDirective(app: App): void {
-  app.directive("auth", authDirective);
+  app.directive('auth', authDirective);
 }

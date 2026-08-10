@@ -6,11 +6,7 @@
     </div>
     <ElScrollbar :style="{ height: maxHeight }">
       <div v-for="(item, index) in list" :key="index" class="flex-c py-3">
-        <div
-          v-if="item.icon"
-          class="flex-cc mr-3 size-10 rounded-lg"
-          :class="item.class"
-        >
+        <div v-if="item.icon" class="flex-cc mr-3 size-10 rounded-lg" :class="item.class">
           <ArtSvgIcon :icon="item.icon" class="text-xl" />
         </div>
         <div class="flex-1">
@@ -25,13 +21,13 @@
       v-if="showMoreButton"
       v-ripple
       @click="handleMore"
-      >{{ $t("admin.t9") }}</ElButton
+      >{{ $t('admin.t9') }}</ElButton
     >
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "ArtDataListCard" });
+defineOptions({ name: 'ArtDataListCard' });
 
 interface Props {
   list: Activity[];
@@ -67,8 +63,8 @@ const props = withDefaults(defineProps<Props>(), {
 const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`);
 
 const emit = defineEmits<{
-  (e: "more"): void;
+  (e: 'more'): void;
 }>();
 
-const handleMore = () => emit("more");
+const handleMore = () => emit('more');
 </script>

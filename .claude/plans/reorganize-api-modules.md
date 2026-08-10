@@ -142,10 +142,10 @@ src/api/
 2. For each folder, create an `index.ts` that re-exports all API modules:
    ```typescript
    // src/api/product/index.ts
-   export * from "./product.api";
-   export * from "./category";
-   export * from "./brand";
-   export * from "./technology";
+   export * from './product.api';
+   export * from './category';
+   export * from './brand';
+   export * from './technology';
    ```
 
 ### Phase 3: Move & Update Files

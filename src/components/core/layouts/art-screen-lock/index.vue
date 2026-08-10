@@ -7,28 +7,19 @@
       <div class="p-5 text-center select-none">
         <div class="mb-7.5 text-5xl">🔒</div>
         <h1 class="m-0 mb-5 text-3xl font-semibold text-danger">
-          {{ $t("admin.t11") }}
+          {{ $t('admin.t11') }}
         </h1>
         <p class="max-w-125 m-0 text-lg leading-relaxed text-white">
-          {{ $t("admin.t12") }}<br />{{ $t("admin.t13") }}
+          {{ $t('admin.t12') }}<br />{{ $t('admin.t13') }}
         </p>
         <div class="mt-7.5 text-sm text-gray-400">Security Lock Activated</div>
       </div>
     </div>
 
     <div v-if="!isLock">
-      <ElDialog
-        v-model="visible"
-        :width="370"
-        :show-close="false"
-        @open="handleDialogOpen"
-      >
+      <ElDialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
         <div class="flex-c flex-col">
-          <img
-            class="w-16 h-16 rounded-full"
-            src="@imgs/user/avatar.webp"
-            alt="NguoiDungAvatar"
-          />
+          <img class="w-16 h-16 rounded-full" src="@imgs/user/avatar.webp" alt="NguoiDungAvatar" />
           <div class="mt-7.5 mb-3.5 text-base font-medium">
             {{ userInfo.userName }}
           </div>
@@ -57,13 +48,8 @@
                 </template>
               </ElInput>
             </ElFormItem>
-            <ElButton
-              type="primary"
-              class="w-full mt-0.5"
-              @click="handleLock"
-              v-ripple
-            >
-              {{ $t("lockScreen.lock.btnText") }}
+            <ElButton type="primary" class="w-full mt-0.5" @click="handleLock" v-ripple>
+              {{ $t('lockScreen.lock.btnText') }}
             </ElButton>
           </ElForm>
         </div>
@@ -105,13 +91,8 @@
             </ElInput>
           </ElFormItem>
 
-          <ElButton
-            type="primary"
-            class="w-full mt-2"
-            @click="handleUnlock"
-            v-ripple
-          >
-            {{ $t("lockScreen.unlock.btnText") }}
+          <ElButton type="primary" class="w-full mt-2" @click="handleUnlock" v-ripple>
+            {{ $t('lockScreen.unlock.btnText') }}
           </ElButton>
           <div class="w-full text-center">
             <ElButton
@@ -119,7 +100,7 @@
               class="mt-2.5 !text-g-600 hover:!text-theme hover:!bg-transparent"
               @click="toLogin"
             >
-              {{ $t("lockScreen.unlock.backBtnText") }}
+              {{ $t('lockScreen.unlock.backBtnText') }}
             </ElButton>
           </div>
         </ElForm>
@@ -129,12 +110,12 @@
 </template>
 
 <script setup lang="ts">
-import { Lock, Unlock } from "@element-plus/icons-vue";
-import type { FormInstance, FormRules } from "element-plus";
-import { useI18n } from "vue-i18n";
-import CryptoJS from "crypto-js";
-import { useUserStore } from "@/application/store/user";
-import { mittBus } from "@/common/utils/sys";
+import { Lock, Unlock } from '@element-plus/icons-vue';
+import type { FormInstance, FormRules } from 'element-plus';
+import { useI18n } from 'vue-i18n';
+import CryptoJS from 'crypto-js';
+import { useUserStore } from '@/application/store/user';
+import { mittBus } from '@/common/utils/sys';
 
 const { t } = useI18n();
 
@@ -152,27 +133,25 @@ const formRef = ref<FormInstance>();
 const unlockFormRef = ref<FormInstance>();
 
 const formData = reactive({
-  password: "",
+  password: '',
 });
 
 const unlockForm = reactive({
-  password: "",
+  password: '',
 });
 
 const rules = computed<FormRules>(() => ({
   password: [
     {
       required: true,
-      message: t("lockScreen.lock.inputPlaceholder"),
-      trigger: "blur",
+      message: t('lockScreen.lock.inputPlaceholder'),
+      trigger: 'blur',
     },
   ],
 }));
 
 const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
-  );
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
 const disableDevTools = () => {
@@ -183,12 +162,12 @@ const disableDevTools = () => {
       return false;
     }
   };
-  document.addEventListener("contextmenu", handleContextMenu, true);
+  document.addEventListener('contextmenu', handleContextMenu, true);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!isLock.value) return;
 
-    if (e.key === "F12") {
+    if (e.key === 'F12') {
       e.preventDefault();
       e.stopPropagation();
       return false;
@@ -196,74 +175,74 @@ const disableDevTools = () => {
 
     if (e.ctrlKey && e.shiftKey) {
       const key = e.key.toLowerCase();
-      if (["i", "j", "c", "k"].includes(key)) {
+      if (['i', 'j', 'c', 'k'].includes(key)) {
         e.preventDefault();
         e.stopPropagation();
         return false;
       }
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "u") {
+    if (e.ctrlKey && e.key.toLowerCase() === 'u') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+    if (e.ctrlKey && e.key.toLowerCase() === 's') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "a") {
+    if (e.ctrlKey && e.key.toLowerCase() === 'a') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "p") {
+    if (e.ctrlKey && e.key.toLowerCase() === 'p') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "f") {
+    if (e.ctrlKey && e.key.toLowerCase() === 'f') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.altKey && e.key === "Tab") {
+    if (e.altKey && e.key === 'Tab') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key === "Tab") {
+    if (e.ctrlKey && e.key === 'Tab') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.key.toLowerCase() === "w") {
+    if (e.ctrlKey && e.key.toLowerCase() === 'w') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if ((e.ctrlKey && e.key.toLowerCase() === "r") || e.key === "F5") {
+    if ((e.ctrlKey && e.key.toLowerCase() === 'r') || e.key === 'F5') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
 
-    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'r') {
       e.preventDefault();
       e.stopPropagation();
       return false;
     }
   };
-  document.addEventListener("keydown", handleKeyDown, true);
+  document.addEventListener('keydown', handleKeyDown, true);
 
   const handleSelectStart = (e: Event) => {
     if (isLock.value) {
@@ -271,7 +250,7 @@ const disableDevTools = () => {
       return false;
     }
   };
-  document.addEventListener("selectstart", handleSelectStart, true);
+  document.addEventListener('selectstart', handleSelectStart, true);
 
   const handleDragStart = (e: Event) => {
     if (isLock.value) {
@@ -279,7 +258,7 @@ const disableDevTools = () => {
       return false;
     }
   };
-  document.addEventListener("dragstart", handleDragStart, true);
+  document.addEventListener('dragstart', handleDragStart, true);
 
   let devtools = { open: false };
   const threshold = 160;
@@ -306,34 +285,30 @@ const disableDevTools = () => {
   }
 
   return () => {
-    document.removeEventListener("contextmenu", handleContextMenu, true);
-    document.removeEventListener("keydown", handleKeyDown, true);
-    document.removeEventListener("selectstart", handleSelectStart, true);
-    document.removeEventListener("dragstart", handleDragStart, true);
+    document.removeEventListener('contextmenu', handleContextMenu, true);
+    document.removeEventListener('keydown', handleKeyDown, true);
+    document.removeEventListener('selectstart', handleSelectStart, true);
+    document.removeEventListener('dragstart', handleDragStart, true);
     if (devToolsInterval) {
       clearInterval(devToolsInterval);
     }
   };
 };
 
-const verifyPassword = (
-  inputPassword: string,
-  storedPassword: string,
-): boolean => {
+const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
   try {
-    const decryptedPassword = CryptoJS.AES.decrypt(
-      storedPassword,
-      ENCRYPT_KEY,
-    ).toString(CryptoJS.enc.Utf8);
+    const decryptedPassword = CryptoJS.AES.decrypt(storedPassword, ENCRYPT_KEY).toString(
+      CryptoJS.enc.Utf8
+    );
     return inputPassword === decryptedPassword;
   } catch (error) {
-    console.error("Mật khẩugiảimậtThatBai:", error);
+    console.error('Mật khẩugiảimậtThatBai:', error);
     return false;
   }
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.altKey && event.key.toLowerCase() === "¬") {
+  if (event.altKey && event.key.toLowerCase() === '¬') {
     event.preventDefault();
     visible.value = true;
   }
@@ -350,16 +325,13 @@ const handleLock = async () => {
 
   await formRef.value.validate((valid, fields) => {
     if (valid) {
-      const encryptedPassword = CryptoJS.AES.encrypt(
-        formData.password,
-        ENCRYPT_KEY,
-      ).toString();
+      const encryptedPassword = CryptoJS.AES.encrypt(formData.password, ENCRYPT_KEY).toString();
       userStore.setLockStatus(true);
       userStore.setLockPassword(encryptedPassword);
       visible.value = false;
-      formData.password = "";
+      formData.password = '';
     } else {
-      console.error("FormnghiệmtínhThatBai:", fields);
+      console.error('FormnghiệmtínhThatBai:', fields);
     }
   });
 };
@@ -374,26 +346,26 @@ const handleUnlock = async () => {
       if (isValid) {
         try {
           userStore.setLockStatus(false);
-          userStore.setLockPassword("");
-          unlockForm.password = "";
+          userStore.setLockPassword('');
+          unlockForm.password = '';
           visible.value = false;
           showDevToolsWarning.value = false;
         } catch (error) {
-          console.error("Cập nhậtstoreThatBai:", error);
+          console.error('Cập nhậtstoreThatBai:', error);
         }
       } else {
         const inputElement = unlockInputRef.value?.$el;
         if (inputElement) {
-          inputElement.classList.add("shake-animation");
+          inputElement.classList.add('shake-animation');
           setTimeout(() => {
-            inputElement.classList.remove("shake-animation");
+            inputElement.classList.remove('shake-animation');
           }, 300);
         }
-        ElMessage.error(t("lockScreen.pwdError"));
-        unlockForm.password = "";
+        ElMessage.error(t('lockScreen.pwdError'));
+        unlockForm.password = '';
       }
     } else {
-      console.error("FormnghiệmtínhThatBai:", fields);
+      console.error('FormnghiệmtínhThatBai:', fields);
     }
   });
 };
@@ -408,12 +380,12 @@ const openLockScreen = () => {
 
 watch(isLock, (newValue) => {
   if (newValue) {
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     setTimeout(() => {
       unlockInputRef.value?.input?.focus();
     }, 100);
   } else {
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = 'auto';
     showDevToolsWarning.value = false;
   }
 });
@@ -421,8 +393,8 @@ watch(isLock, (newValue) => {
 let cleanupDevTools: (() => void) | null = null;
 
 onMounted(() => {
-  mittBus.on("openLockScreen", openLockScreen);
-  document.addEventListener("keydown", handleKeydown);
+  mittBus.on('openLockScreen', openLockScreen);
+  document.addEventListener('keydown', handleKeydown);
 
   if (isLock.value) {
     visible.value = true;
@@ -435,8 +407,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
-  document.body.style.overflow = "auto";
+  document.removeEventListener('keydown', handleKeydown);
+  document.body.style.overflow = 'auto';
   if (cleanupDevTools) {
     cleanupDevTools();
     cleanupDevTools = null;
@@ -458,14 +430,14 @@ onUnmounted(() => {
   justify-content: center;
   overflow: hidden;
   background-color: #fff;
-  background-image: url("@imgs/lock/bg_light.webp");
+  background-image: url('@imgs/lock/bg_light.webp');
   background-size: cover;
   transition: transform 0.3s ease-in-out;
 }
 
 .dark {
   .unlock-content {
-    background-image: url("@imgs/lock/bg_dark.webp");
+    background-image: url('@imgs/lock/bg_dark.webp');
   }
 }
 

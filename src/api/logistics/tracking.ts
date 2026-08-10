@@ -1,5 +1,5 @@
-import request from "@/common/utils/http";
-import type { ActiveShipmentItem } from "@/domain/logistics/active-shipment.types";
+import request from '@/common/utils/http';
+import type { ActiveShipmentItem } from '@/domain/logistics/active-shipment.types';
 
 export interface TrackingItem {
   sku: string;

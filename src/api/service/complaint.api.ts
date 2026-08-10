@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface ComplaintListItem {
   id: number;
@@ -51,34 +51,34 @@ export const ComplaintApi = {
     filters?: string;
   }): Promise<{ items: ComplaintListItem[]; totalCount: number }> {
     const res = await request.get<CustomerServiceAnalyticsResponse>({
-      url: "/api/v1/statistics/customer-service-analytics",
+      url: '/api/v1/statistics/customer-service-analytics',
     });
 
     let complaints = (res.complaints ?? []).map((c) => ({
       id: c.id,
       complaintNumber: c.ticketCode || `#${c.id}`,
       customerName: c.customerName,
-      customerPhone: "",
-      vehiclePlate: "",
-      complaintType: c.subject || "",
-      statusText: c.status || "",
-      createdAt: c.createdAt || "",
+      customerPhone: '',
+      vehiclePlate: '',
+      complaintType: c.subject || '',
+      statusText: c.status || '',
+      createdAt: c.createdAt || '',
     }));
 
     if (params.filters) {
-      const filterParts = params.filters.split(",");
+      const filterParts = params.filters.split(',');
       for (const part of filterParts) {
-        const [key, value] = part.split("==");
-        if (key === "search" && value) {
+        const [key, value] = part.split('==');
+        if (key === 'search' && value) {
           const q = value.toLowerCase();
           complaints = complaints.filter(
             (c) =>
-              (c.customerName ?? "").toLowerCase().includes(q) ||
-              (c.complaintNumber ?? "").toLowerCase().includes(q) ||
-              (c.complaintType ?? "").toLowerCase().includes(q),
+              (c.customerName ?? '').toLowerCase().includes(q) ||
+              (c.complaintNumber ?? '').toLowerCase().includes(q) ||
+              (c.complaintType ?? '').toLowerCase().includes(q)
           );
         }
-        if (key === "status" && value) {
+        if (key === 'status' && value) {
           complaints = complaints.filter((c) => c.statusText === value);
         }
       }
@@ -93,19 +93,19 @@ export const ComplaintApi = {
 
   async getById(id: number): Promise<ComplaintDetail> {
     const res = await request.get<CustomerServiceAnalyticsResponse>({
-      url: "/api/v1/statistics/customer-service-analytics",
+      url: '/api/v1/statistics/customer-service-analytics',
     });
     const c = (res.complaints ?? []).find((x) => x.id === id);
-    if (!c) throw new Error("Not found");
+    if (!c) throw new Error('Not found');
     return {
       id: c.id,
       complaintNumber: c.ticketCode || `#${c.id}`,
       customerName: c.customerName,
-      customerPhone: "",
-      vehiclePlate: "",
-      complaintType: c.subject || "",
-      statusText: c.status || "",
-      createdAt: c.createdAt || "",
+      customerPhone: '',
+      vehiclePlate: '',
+      complaintType: c.subject || '',
+      statusText: c.status || '',
+      createdAt: c.createdAt || '',
       subject: c.subject,
       rating: c.rating,
       responseHours: c.responseHours ?? null,

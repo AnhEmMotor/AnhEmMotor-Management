@@ -27,8 +27,8 @@ export interface SalesOrder {
   wardCode?: string;
   notes?: string;
   statusId: string;
-  paymentMethod?: "COD" | "VNPay" | "PayOS" | string;
-  paymentStatus?: "pending" | "paid" | "cod" | "failed";
+  paymentMethod?: 'COD' | 'VNPay' | 'PayOS' | string;
+  paymentStatus?: 'pending' | 'paid' | 'cod' | 'failed';
   depositRatio?: number;
   depositAmount?: number;
   remainingAmount?: number;

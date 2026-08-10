@@ -7,28 +7,26 @@
       @change="handleFileChange"
     >
       <ElButton type="primary" v-ripple>
-        <slot>{{ $t("admin.t10") }}</slot>
+        <slot>{{ $t('admin.t10') }}</slot>
       </ElButton>
     </ElUpload>
   </div>
 </template>
 
 <script setup lang="ts">
-import * as XLSX from "xlsx";
-import type { UploadFile } from "element-plus";
+import * as XLSX from 'xlsx';
+import type { UploadFile } from 'element-plus';
 
-defineOptions({ name: "ArtExcelImport" });
+defineOptions({ name: 'ArtExcelImport' });
 
-async function importExcel(
-  file: File,
-): Promise<Array<Record<string, unknown>>> {
+async function importExcel(file: File): Promise<Array<Record<string, unknown>>> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const results = XLSX.utils.sheet_to_json(worksheet);
@@ -44,17 +42,17 @@ async function importExcel(
 }
 
 const emit = defineEmits<{
-  "import-success": [data: Array<Record<string, unknown>>];
-  "import-error": [error: Error];
+  'import-success': [data: Array<Record<string, unknown>>];
+  'import-error': [error: Error];
 }>();
 
 const handleFileChange = async (uploadFile: UploadFile) => {
   try {
     if (!uploadFile.raw) return;
     const results = await importExcel(uploadFile.raw);
-    emit("import-success", results);
+    emit('import-success', results);
   } catch (error) {
-    emit("import-error", error as Error);
+    emit('import-error', error as Error);
   }
 };
 </script>

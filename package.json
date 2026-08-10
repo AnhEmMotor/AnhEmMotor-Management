@@ -25,11 +25,9 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,mjs,mts,tsx}": [
+    "*.{js,mjs,cjs,jsx,ts,tsx}": [
+      "node scripts/strip-comments-runner.mjs",
       "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{cjs,json,jsonc}": [
       "prettier --write"
     ],
     "*.vue": [
@@ -37,17 +35,7 @@
       "stylelint --fix --allow-empty-input",
       "prettier --write"
     ],
-    "*.{html,htm}": [
-      "prettier --write"
-    ],
-    "*.{scss,css,less}": [
-      "stylelint --fix --allow-empty-input",
-      "prettier --write"
-    ],
-    "*.{md,mdx}": [
-      "prettier --write"
-    ],
-    "*.{yaml,yml}": [
+    "*.{json,md,yml,yaml,css,scss,less,html}": [
       "prettier --write"
     ]
   },
@@ -102,16 +90,18 @@
     "@vue/compiler-sfc": "^3.5.34",
     "commitizen": "^4.2.4",
     "cz-git": "^1.13.1",
+    "decomment": "^0.9.5",
     "eslint": "^9.9.1",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-vue": "^9.27.0",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.4",
-    "prettier": "^3.8.3",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass": "~1.79.5",
+    "strip-comments": "^2.0.1",
     "stylelint": "^17.11.1",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recess-order": "^7.7.0",

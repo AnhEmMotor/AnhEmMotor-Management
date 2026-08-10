@@ -2,9 +2,7 @@
   <div class="resp-page ecommerce">
     <!-- Bộ Điều Hướng Chu Kỳ -->
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
-      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-        📊 Tổng quan kinh doanh
-      </h1>
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">📊 Tổng quan kinh doanh</h1>
       <div class="flex items-center gap-2 flex-wrap">
         <ElButton
           v-for="p in periods"
@@ -51,40 +49,28 @@
           </div>
           <div
             class="text-sm font-medium"
-            :class="
-              (summary.revenueChangePercentage || 0) >= 0
-                ? 'text-green-600'
-                : 'text-red-600'
-            "
+            :class="(summary.revenueChangePercentage || 0) >= 0 ? 'text-green-600' : 'text-red-600'"
           >
-            {{ (summary.revenueChangePercentage || 0) >= 0 ? "▲" : "▼ "
+            {{ (summary.revenueChangePercentage || 0) >= 0 ? '▲' : '▼ '
             }}{{ summary.revenueChangePercentage || 0 }}% so với kỳ trước
           </div>
           <div class="text-sm text-gray-500 mt-1">
             Mục tiêu ngày: {{ formatCurrency(summary.dailyTarget) }}
           </div>
-          <div
-            class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1"
-          >
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
             <div
               class="bg-blue-600 h-2 rounded-full transition-all duration-500"
               :style="{
                 width:
                   Math.min(
-                    Math.round(
-                      (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                    ),
-                    100,
+                    Math.round((summary.totalRevenue / (summary.dailyTarget || 1)) * 100),
+                    100
                   ) + '%',
               }"
             ></div>
           </div>
           <div class="text-right text-xs text-gray-500 mt-1">
-            {{
-              Math.round(
-                (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-              )
-            }}
+            {{ Math.round((summary.totalRevenue / (summary.dailyTarget || 1)) * 100) }}
           </div>
           <div
             v-if="summary.isRevenueAlert"
@@ -113,13 +99,9 @@
           <div class="mt-2">
             <span
               class="text-sm"
-              :class="
-                summary.profitVsYesterdayPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
+              :class="summary.profitVsYesterdayPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
             >
-              {{ summary.profitVsYesterdayPercentage >= 0 ? "▲" : "▼" }}
+              {{ summary.profitVsYesterdayPercentage >= 0 ? '▲' : '▼' }}
               {{ summary.profitVsYesterdayPercentage }}% so với hôm qua
             </span>
           </div>
@@ -177,36 +159,28 @@
           </div>
           <div class="mt-2 space-y-3">
             <div class="flex justify-between text-sm cursor-pointer">
-              <span
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
                 ><span class="w-2 h-2 bg-red-500"></span>Khiếu nại mới</span
               >
               <span class="font-bold">{{ summary.newComplaintsCount }}</span>
             </div>
             <div class="flex justify-between text-sm cursor-pointer">
-              <span
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
-                ><span class="w-2 h-2 bg-yellow-400"></span>NH chậm giải
-                ngân</span
+              <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-yellow-400"></span>NH chậm giải ngân</span
               >
               <span class="font-bold">{{ summary.delayedLoansCount }}</span>
             </div>
             <div class="flex justify-between text-sm cursor-pointer">
-              <span
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
-                ><span class="w-2 h-2 bg-yellow-400"></span>Xe sắp hết
-                hàng</span
+              <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                ><span class="w-2 h-2 bg-yellow-400"></span>Xe sắp hết hàng</span
               >
               <span class="font-bold">{{ summary.lowStockVehiclesCount }}</span>
             </div>
             <div class="flex justify-between text-sm cursor-pointer">
-              <span
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
                 ><span class="w-2 h-2 bg-green-500"></span>Lịch hẹn bỏ lỡ</span
               >
-              <span class="font-bold">{{
-                summary.missedAppointmentsCount
-              }}</span>
+              <span class="font-bold">{{ summary.missedAppointmentsCount }}</span>
             </div>
           </div>
         </div>
@@ -223,10 +197,7 @@
             </h3>
           </div>
           <div ref="revenueChartRef" class="h-64 w-full"></div>
-          <div
-            v-if="chartLoading"
-            class="h-64 flex items-center justify-center text-gray-400"
-          >
+          <div v-if="chartLoading" class="h-64 flex items-center justify-center text-gray-400">
             Đang tải dữ liệu...
           </div>
         </div>
@@ -234,17 +205,14 @@
       <ElCol :sm="24" :lg="8">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3 class="font-bold text-gray-800 dark:text-gray-100">
-              Tóm tắt mục tiêu tháng
-            </h3>
+            <h3 class="font-bold text-gray-800 dark:text-gray-100">Tóm tắt mục tiêu tháng</h3>
           </div>
           <div class="space-y-4 mt-4">
             <div class="flex justify-between">
               <span class="text-gray-500">Đã đạt:</span>
-              <span
-                class="font-bold text-lg text-gray-800 dark:text-gray-100"
-                >{{ formatCurrency(summary.monthAchieved) }}</span
-              >
+              <span class="font-bold text-lg text-gray-800 dark:text-gray-100">{{
+                formatCurrency(summary.monthAchieved)
+              }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-gray-500">Cần thêm:</span>
@@ -253,9 +221,7 @@
               }}</span>
             </div>
             <div class="flex justify-between border-t pt-3">
-              <span class="text-gray-600 dark:text-gray-300"
-                >Dự báo cuối tháng:</span
-              >
+              <span class="text-gray-600 dark:text-gray-300">Dự báo cuối tháng:</span>
               <span class="font-bold text-xl text-blue-600">{{
                 formatCurrency(summary.monthForecast)
               }}</span>
@@ -265,19 +231,12 @@
                 <span>Tiến độ</span>
                 <span
                   >{{
-                    Math.round(
-                      (summary.monthAchieved / (summary.monthTarget || 1)) *
-                        100,
-                    )
+                    Math.round((summary.monthAchieved / (summary.monthTarget || 1)) * 100)
                   }}%</span
                 >
               </div>
               <ElProgress
-                :percentage="
-                  Math.round(
-                    (summary.monthAchieved / (summary.monthTarget || 1)) * 100,
-                  )
-                "
+                :percentage="Math.round((summary.monthAchieved / (summary.monthTarget || 1)) * 100)"
                 :show-text="false"
               />
             </div>
@@ -291,34 +250,22 @@
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3
-              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
-            >
+            <h3 class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300">
               NGUỒN DOANH THU
             </h3>
           </div>
           <div class="space-y-4">
-            <div
-              v-for="source in sources"
-              :key="source.name"
-              class="flex items-center gap-3"
-            >
-              <span class="text-sm w-28 text-gray-700 dark:text-gray-300">{{
-                source.name
-              }}</span>
+            <div v-for="source in sources" :key="source.name" class="flex items-center gap-3">
+              <span class="text-sm w-28 text-gray-700 dark:text-gray-300">{{ source.name }}</span>
               <div class="flex-1">
                 <ElProgress :percentage="source.percent" :show-text="false" />
               </div>
-              <span
-                class="text-sm w-28 text-right font-medium text-gray-800 dark:text-gray-100"
-                >{{ formatCurrency(source.amount).replace("₫", "") }}</span
-              >
+              <span class="text-sm w-28 text-right font-medium text-gray-800 dark:text-gray-100">{{
+                formatCurrency(source.amount).replace('₫', '')
+              }}</span>
             </div>
           </div>
-          <div
-            v-if="sources.length === 0"
-            class="text-center text-sm text-gray-400 mt-4"
-          >
+          <div v-if="sources.length === 0" class="text-center text-sm text-gray-400 mt-4">
             Chưa có dữ liệu
           </div>
         </div>
@@ -327,9 +274,7 @@
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3
-              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
-            >
+            <h3 class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300">
               HIỆU SUẤT SALE
             </h3>
           </div>
@@ -342,46 +287,27 @@
                 <span class="font-medium text-gray-800 dark:text-gray-100">{{
                   formatCurrencyShort(staff.totalSales)
                 }}</span>
-                <ElTag
-                  v-if="staff.isTopSeller"
-                  type="success"
-                  size="small"
-                  effect="dark"
+                <ElTag v-if="staff.isTopSeller" type="success" size="small" effect="dark"
                   >⭐ Vượt</ElTag
                 >
-                <ElTag
-                  v-else-if="staff.kpiStatus === 'Đạt'"
-                  type="primary"
-                  size="small"
+                <ElTag v-else-if="staff.kpiStatus === 'Đạt'" type="primary" size="small"
                   >✓ Đạt</ElTag
                 >
                 <ElTag v-else type="warning" size="small">⚠️</ElTag>
               </div>
               <ElProgress
-                :percentage="
-                  Math.round(
-                    (staff.totalSales / (staff.targetSales || 1)) * 100,
-                  )
-                "
+                :percentage="Math.round((staff.totalSales / (staff.targetSales || 1)) * 100)"
                 :stroke-width="8"
               />
             </div>
-            <div
-              v-if="topStaff.length === 0"
-              class="text-center text-sm text-gray-400 mt-4"
-            >
+            <div v-if="topStaff.length === 0" class="text-center text-sm text-gray-400 mt-4">
               Chưa có dữ liệu
             </div>
 
             <div class="mt-4 pt-3 border-t">
               <div class="flex justify-between text-sm">
-                <span class="font-bold text-gray-800 dark:text-gray-100"
-                  >Tổng team</span
-                >
-                <span
-                  >{{ formatCurrency(teamSales) }} /
-                  {{ formatCurrency(teamTarget) }}</span
-                >
+                <span class="font-bold text-gray-800 dark:text-gray-100">Tổng team</span>
+                <span>{{ formatCurrency(teamSales) }} / {{ formatCurrency(teamTarget) }}</span>
               </div>
               <ElProgress
                 :percentage="Math.round((teamSales / (teamTarget || 1)) * 100)"
@@ -399,22 +325,13 @@
       <ElCol :span="24">
         <div class="art-card p-5">
           <div class="art-card-header mb-4 flex justify-between items-center">
-            <h3
-              class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300"
-            >
+            <h3 class="font-bold uppercase text-sm tracking-wider text-gray-700 dark:text-gray-300">
               GIAO DỊCH GẦN NHẤT
             </h3>
           </div>
-          <ElTable
-            :data="transactions"
-            stripe
-            style="width: 100%"
-            :max-height="400"
-          >
+          <ElTable :data="transactions" stripe style="width: 100%" :max-height="400">
             <ElTableColumn prop="reportTime" label="Ngày" width="100">
-              <template #default="scope">{{
-                formatDate(scope.row.reportTime)
-              }}</template>
+              <template #default="scope">{{ formatDate(scope.row.reportTime) }}</template>
             </ElTableColumn>
             <ElTableColumn label="Khách hàng" min-width="150">
               <template #default="scope">{{ scope.row.customerName }}</template>
@@ -433,27 +350,16 @@
               <template #default="scope">
                 <div
                   class="flex items-center gap-1"
-                  :class="
-                    scope.row.isRevenue ? 'text-green-600' : 'text-red-600'
-                  "
+                  :class="scope.row.isRevenue ? 'text-green-600' : 'text-red-600'"
                 >
-                  {{ scope.row.isRevenue ? "+" : "-"
-                  }}{{ formatCurrency(scope.row.revenue) }}
+                  {{ scope.row.isRevenue ? '+' : '-' }}{{ formatCurrency(scope.row.revenue) }}
                   <span v-if="scope.row.isPending" title="Đang chờ">⏳</span>
-                  <span
-                    v-if="scope.row.isRefund"
-                    class="text-red-500"
-                    title="Hoàn tiền"
-                    >🔴</span
-                  >
+                  <span v-if="scope.row.isRefund" class="text-red-500" title="Hoàn tiền">🔴</span>
                 </div>
               </template>
             </ElTableColumn>
           </ElTable>
-          <div
-            v-if="transactions.length === 0"
-            class="text-center text-sm text-gray-400 mt-4"
-          >
+          <div v-if="transactions.length === 0" class="text-center text-sm text-gray-400 mt-4">
             Chưa có giao dịch gần đây
           </div>
         </div>
@@ -463,10 +369,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import * as echarts from "echarts";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { useUserStore } from "@/application/store/user";
+import { ref, computed, onMounted } from 'vue';
+import * as echarts from 'echarts';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { useUserStore } from '@/application/store/user';
 import {
   ElRow,
   ElCol,
@@ -476,29 +382,26 @@ import {
   ElTable,
   ElTableColumn,
   ElTag,
-} from "element-plus";
-import type { ECharts } from "echarts";
+} from 'element-plus';
+import type { ECharts } from 'echarts';
 
-import { AnalyticsService } from "@/services/analytics.service";
+import { AnalyticsService } from '@/services/analytics.service';
 import type {
   DashboardSummary,
   StaffPerformance,
   TransactionLog,
-} from "@/services/analytics.types";
-import {
-  fetchRevenueByCategory,
-  fetchDailyCategoryRevenue,
-} from "@/api/dashboard.api";
+} from '@/services/analytics.types';
+import { fetchRevenueByCategory, fetchDailyCategoryRevenue } from '@/api/dashboard.api';
 
-defineOptions({ name: "Ecommerce" });
+defineOptions({ name: 'Ecommerce' });
 
 const periods = [
-  { label: "Hôm nay", value: "today" },
-  { label: "Tháng này", value: "month" },
-  { label: "Năm nay", value: "year" },
+  { label: 'Hôm nay', value: 'today' },
+  { label: 'Tháng này', value: 'month' },
+  { label: 'Năm nay', value: 'year' },
 ];
 
-const currentPeriod = ref("today");
+const currentPeriod = ref('today');
 const customRange = ref<[string, string] | null>(null);
 const chartLoading = ref(false);
 
@@ -538,21 +441,21 @@ const revenueChartRef = ref<HTMLElement | null>(null);
 let chartInstance: ECharts | null = null;
 
 const teamSales = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + (curr.totalSales ?? 0), 0),
+  topStaff.value.reduce((acc, curr) => acc + (curr.totalSales ?? 0), 0)
 );
 const teamTarget = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales ?? 1), 0),
+  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales ?? 1), 0)
 );
 
 function getDays() {
   switch (currentPeriod.value) {
-    case "today":
+    case 'today':
       return 7;
-    case "month":
+    case 'month':
       return 30;
-    case "year":
+    case 'year':
       return 366;
-    case "custom":
+    case 'custom':
       return 30;
     default:
       return 7;
@@ -560,22 +463,16 @@ function getDays() {
 }
 
 function getDateRange(): { start: string; end: string } {
-  if (
-    currentPeriod.value === "custom" &&
-    customRange.value &&
-    customRange.value.length === 2
-  ) {
+  if (currentPeriod.value === 'custom' && customRange.value && customRange.value.length === 2) {
     return { start: customRange.value[0], end: customRange.value[1] };
   }
   const now = new Date();
   const to = now.toISOString().slice(0, 10);
   let from: string;
-  if (currentPeriod.value === "today") {
+  if (currentPeriod.value === 'today') {
     from = to;
-  } else if (currentPeriod.value === "month") {
-    from = new Date(now.getFullYear(), now.getMonth(), 1)
-      .toISOString()
-      .slice(0, 10);
+  } else if (currentPeriod.value === 'month') {
+    from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   } else {
     from = new Date(now.getFullYear(), 0, 1).toISOString().slice(0, 10);
   }
@@ -586,44 +483,36 @@ async function loadAll() {
   chartLoading.value = true;
   const { start, end } = getDateRange();
   try {
-    const [summaryRes, staffRes, txRes, sourcesRes, chartData] =
-      await Promise.allSettled([
-        AnalyticsService.getDashboardSummary(start, end),
-        AnalyticsService.getStaffPerformance(start, end),
-        AnalyticsService.getRecentTransactions(),
-        fetchRevenueByCategory(start, end),
-        fetchDailyCategoryRevenue(getDays()),
-      ]);
+    const [summaryRes, staffRes, txRes, sourcesRes, chartData] = await Promise.allSettled([
+      AnalyticsService.getDashboardSummary(start, end),
+      AnalyticsService.getStaffPerformance(start, end),
+      AnalyticsService.getRecentTransactions(),
+      fetchRevenueByCategory(start, end),
+      fetchDailyCategoryRevenue(getDays()),
+    ]);
 
-    if (summaryRes.status === "fulfilled" && summaryRes.value)
+    if (summaryRes.status === 'fulfilled' && summaryRes.value)
       summary.value = normalizeSummary(summaryRes.value);
 
-    if (staffRes.status === "fulfilled" && staffRes.value)
-      topStaff.value = staffRes.value;
+    if (staffRes.status === 'fulfilled' && staffRes.value) topStaff.value = staffRes.value;
 
-    if (txRes.status === "fulfilled" && txRes.value)
-      transactions.value = txRes.value;
+    if (txRes.status === 'fulfilled' && txRes.value) transactions.value = txRes.value;
 
-    if (sourcesRes.status === "fulfilled" && Array.isArray(sourcesRes.value)) {
-      const total = sourcesRes.value.reduce(
-        (s: number, i: any) => s + (i.revenue ?? 0),
-        0,
-      );
+    if (sourcesRes.status === 'fulfilled' && Array.isArray(sourcesRes.value)) {
+      const total = sourcesRes.value.reduce((s: number, i: any) => s + (i.revenue ?? 0), 0);
       sources.value = sourcesRes.value.map((i: any) => ({
         name: i.categoryName ?? i.name,
         amount: i.revenue ?? i.amount ?? 0,
-        percent: total
-          ? Math.round(((i.revenue ?? i.amount ?? 0) / total) * 100)
-          : 0,
+        percent: total ? Math.round(((i.revenue ?? i.amount ?? 0) / total) * 100) : 0,
       }));
     } else {
       sources.value = [];
     }
 
-    if (chartData.status === "fulfilled") renderChart(chartData.value ?? []);
+    if (chartData.status === 'fulfilled') renderChart(chartData.value ?? []);
     else renderChart([]);
   } catch (err) {
-    console.error("Ecommerce load error:", err);
+    console.error('Ecommerce load error:', err);
   } finally {
     chartLoading.value = false;
   }
@@ -631,19 +520,16 @@ async function loadAll() {
 
 function normalizeSummary(s: any): DashboardSummary {
   if (!s) return summary.value as any;
-  const safeNum = (v: any, fb = 0) =>
-    v == null ? fb : typeof v === "number" ? v : fb;
+  const safeNum = (v: any, fb = 0) => (v == null ? fb : typeof v === 'number' ? v : fb);
   return {
     totalRevenue: s.totalRevenue ?? s.revenueTotal ?? 0,
     netProfit: s.netProfit ?? s.profitToday ?? 0,
     totalExpense: safeNum(s.totalExpense),
     grossProfit: safeNum(s.grossProfit),
     alertsCount: safeNum(s.alertsCount),
-    revenueChangePercentage: safeNum(
-      s.revenueChangePercentage ?? s.incomeChangePercent ?? 0,
-    ),
+    revenueChangePercentage: safeNum(s.revenueChangePercentage ?? s.incomeChangePercent ?? 0),
     revenueVsYesterdayPercentage: safeNum(
-      s.revenueVsYesterdayPercentage ?? s.incomeChangePercent ?? 0,
+      s.revenueVsYesterdayPercentage ?? s.incomeChangePercent ?? 0
     ),
     dailyTarget: safeNum(s.dailyTarget),
     profitMargin: s.profitMargin ?? 0,
@@ -667,17 +553,15 @@ function normalizeSummary(s: any): DashboardSummary {
   };
 }
 
-function renderChart(
-  data: { reportDay: string; categoryName: string; revenue: number }[],
-) {
+function renderChart(data: { reportDay: string; categoryName: string; revenue: number }[]) {
   if (!revenueChartRef.value) return;
   if (!chartInstance) chartInstance = echarts.init(revenueChartRef.value);
 
   if (!data.length) {
     chartInstance.clear();
     chartInstance.setOption({
-      xAxis: { type: "category", data: [] },
-      yAxis: { type: "value" },
+      xAxis: { type: 'category', data: [] },
+      yAxis: { type: 'value' },
       series: [],
       grid: { left: 10, right: 10, bottom: 20, top: 20 },
     });
@@ -686,38 +570,28 @@ function renderChart(
 
   const days = Array.from(new Set(data.map((d) => d.reportDay)));
   const categories = Array.from(new Set(data.map((d) => d.categoryName)));
-  const palette = [
-    "#2563eb",
-    "#67c23a",
-    "#e6a23c",
-    "#f56c6c",
-    "#9c27b0",
-    "#00bcd4",
-    "#ff9800",
-  ];
+  const palette = ['#2563eb', '#67c23a', '#e6a23c', '#f56c6c', '#9c27b0', '#00bcd4', '#ff9800'];
 
   const series = categories.map((cat, idx) => ({
     name: cat,
-    type: "line" as const,
+    type: 'line' as const,
     smooth: true,
     data: days.map(
-      (day) =>
-        data.find((d) => d.reportDay === day && d.categoryName === cat)
-          ?.revenue ?? 0,
+      (day) => data.find((d) => d.reportDay === day && d.categoryName === cat)?.revenue ?? 0
     ),
     itemStyle: { color: palette[idx % palette.length] },
-    lineStyle: { type: "solid", width: 2 },
-    symbol: "circle",
+    lineStyle: { type: 'solid', width: 2 },
+    symbol: 'circle',
     symbolSize: 6,
-    emphasis: { focus: "series" },
+    emphasis: { focus: 'series' },
   }));
 
   chartInstance.setOption({
-    tooltip: { trigger: "axis" },
-    legend: { bottom: 0, textStyle: { color: "#9ca3af" } },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0, textStyle: { color: '#9ca3af' } },
     grid: { left: 10, right: 10, bottom: 50, top: 10, containLabel: true },
-    xAxis: { type: "category", data: days, axisLabel: { color: "#9ca3af" } },
-    yAxis: { type: "value", name: "VNĐ", axisLabel: { color: "#9ca3af" } },
+    xAxis: { type: 'category', data: days, axisLabel: { color: '#9ca3af' } },
+    yAxis: { type: 'value', name: 'VNĐ', axisLabel: { color: '#9ca3af' } },
     series,
     color: palette,
   });
@@ -725,47 +599,47 @@ function renderChart(
 
 function setPeriod(p: string) {
   currentPeriod.value = p as any;
-  if (p === "custom") return;
+  if (p === 'custom') return;
   loadAll();
 }
 
 function onCustomRangeChange() {
   if (!customRange.value) return;
-  currentPeriod.value = "custom";
+  currentPeriod.value = 'custom';
   loadAll();
 }
 
 function formatCurrency(value: any) {
   const num = Number(value) || 0;
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(num);
 }
 
 function formatCurrencyShort(value: number) {
-  if (!value && value !== 0) return "0đ";
+  if (!value && value !== 0) return '0đ';
   if (Math.abs(value) >= 1_000_000) return `${Math.round(value / 1_000_000)}tr`;
   if (Math.abs(value) >= 1_000) return `${Math.round(value / 1_000)}k`;
   return `${value}`;
 }
 
 function formatDate(ts: string) {
-  if (!ts) return "-";
+  if (!ts) return '-';
   return ts.slice(0, 10);
 }
 
 function mapStatusType(status: string) {
   switch (status) {
-    case "Completed":
-      return "success";
-    case "Pending":
-      return "warning";
-    case "Cancelled":
-      return "danger";
+    case 'Completed':
+      return 'success';
+    case 'Pending':
+      return 'warning';
+    case 'Cancelled':
+      return 'danger';
     default:
-      return "info";
+      return 'info';
   }
 }
 
@@ -776,24 +650,21 @@ onMounted(() => {
   const token = userStore.accessToken;
   if (!token) return;
 
-  fetchEventSource(
-    `${import.meta.env.VITE_API_URL ?? "/api"}/analytics/stream/transactions`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      onmessage(ev) {
-        try {
-          const t = JSON.parse(ev.data) as TransactionLog;
-          if (!t) return;
-          transactions.value = [t, ...transactions.value].slice(0, 50);
-        } catch {
-          // ignore
-        }
-      },
-      onerror() {
-        // stream not available, ignore
-      },
+  fetchEventSource(`${import.meta.env.VITE_API_URL ?? '/api'}/analytics/stream/transactions`, {
+    headers: { Authorization: `Bearer ${token}` },
+    onmessage(ev) {
+      try {
+        const t = JSON.parse(ev.data) as TransactionLog;
+        if (!t) return;
+        transactions.value = [t, ...transactions.value].slice(0, 50);
+      } catch {
+        // ignore
+      }
     },
-  );
+    onerror() {
+      // stream not available, ignore
+    },
+  });
 });
 </script>
 

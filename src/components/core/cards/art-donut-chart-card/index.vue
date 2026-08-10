@@ -14,7 +14,7 @@
               class="mt-1.5 text-xs font-medium"
               :class="percentage > 0 ? 'text-success' : 'text-danger'"
             >
-              {{ percentage > 0 ? "+" : "" }}{{ percentage }}%
+              {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
               <span v-if="percentageLabel">{{ percentageLabel }}</span>
             </div>
           </div>
@@ -38,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { type EChartsOption } from "@/plugins/echarts";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
+import { type EChartsOption } from '@/plugins/echarts';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
 
-defineOptions({ name: "ArtDonutChartCard" });
+defineOptions({ name: 'ArtDonutChartCard' });
 
 interface Props {
   value: number;
@@ -67,7 +67,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   height: 9,
-  radius: () => ["70%", "90%"],
+  radius: () => ['70%', '90%'],
   data: () => [0, 0],
 });
 
@@ -95,7 +95,7 @@ const { chartRef } = useChartComponent({
     return {
       series: [
         {
-          type: "pie",
+          type: 'pie',
           radius: props.radius,
           avoidLabelOverlap: false,
           label: {
@@ -110,7 +110,7 @@ const { chartRef } = useChartComponent({
             {
               value: props.data[1],
               name: props.previousValue,
-              itemStyle: { color: "#e6e8f7" },
+              itemStyle: { color: '#e6e8f7' },
             },
           ],
         },

@@ -1,20 +1,16 @@
-import api from "@/common/utils/http";
+import api from '@/common/utils/http';
 import type {
   DashboardSummary,
   PnlReport,
   StaffPerformance,
   Expense,
   TransactionLog,
-} from "./analytics.types";
+} from './analytics.types';
 
-const API_BASE = "/api";
+const API_BASE = '/api';
 
 export const AnalyticsService = {
-  // Dashboard
-  async getDashboardSummary(
-    start?: string,
-    end?: string,
-  ): Promise<DashboardSummary> {
+  async getDashboardSummary(start?: string, end?: string): Promise<DashboardSummary> {
     return api.get<DashboardSummary>({
       url: `${API_BASE}/analytics/dashboard/summary`,
       params: { start, end },
@@ -27,7 +23,6 @@ export const AnalyticsService = {
     });
   },
 
-  // P&L
   async getPnlReport(month: number, year: number): Promise<PnlReport> {
     return api.get<PnlReport>({
       url: `${API_BASE}/analytics/pnl`,
@@ -35,18 +30,13 @@ export const AnalyticsService = {
     });
   },
 
-  // Staff
-  async getStaffPerformance(
-    start?: string,
-    end?: string,
-  ): Promise<StaffPerformance[]> {
+  async getStaffPerformance(start?: string, end?: string): Promise<StaffPerformance[]> {
     return api.get<StaffPerformance[]>({
       url: `${API_BASE}/analytics/staff-performance`,
       params: { start, end },
     });
   },
 
-  // Expenses
   async getExpenses(params?: {
     page?: number;
     pageSize?: number;

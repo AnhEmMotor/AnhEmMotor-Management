@@ -55,9 +55,7 @@
       </div>
     </div>
 
-    <div
-      class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-4 gap-4"
-    >
+    <div class="flex-1 flex overflow-hidden max-w-[1600px] mx-auto w-full p-4 gap-4">
       <div
         class="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col"
       >
@@ -91,9 +89,7 @@
             </div>
             <div class="flex items-center gap-1.5">
               <span class="size-2 rounded-full bg-blue-500"></span>
-              <span class="text-[9px] font-bold text-slate-400"
-                >Đã xác nhận</span
-              >
+              <span class="text-[9px] font-bold text-slate-400">Đã xác nhận</span>
             </div>
             <div class="flex items-center gap-1.5">
               <span class="size-2 rounded-full bg-orange-400"></span>
@@ -116,15 +112,9 @@
               >
                 <span
                   class="day-num"
-                  :class="
-                    data.isSelected
-                      ? 'is-active'
-                      : isToday(data.day)
-                        ? 'is-today'
-                        : ''
-                  "
+                  :class="data.isSelected ? 'is-active' : isToday(data.day) ? 'is-today' : ''"
                 >
-                  {{ data.day.split("-")[2] }}
+                  {{ data.day.split('-')[2] }}
                 </span>
 
                 <div class="cell-bookings">
@@ -138,10 +128,7 @@
                     <span class="pill-time">{{ booking.time }}</span>
                     <span class="pill-name">{{ booking.customerName }}</span>
                   </div>
-                  <div
-                    v-if="getBookings(data.day).length > 2"
-                    class="more-bookings-badge"
-                  >
+                  <div v-if="getBookings(data.day).length > 2" class="more-bookings-badge">
                     +{{ getBookings(data.day).length - 2 }} lịch hẹn
                   </div>
                 </div>
@@ -164,10 +151,9 @@
               <ArtSvgIcon icon="ri:alarm-warning-line" class="text-xs" />
               Cần xác nhận
             </h3>
-            <span
-              class="bg-red-500 text-white size-4 flex-cc text-[8px] font-bold shadow"
-              >{{ pendingBookings.length }}</span
-            >
+            <span class="bg-red-500 text-white size-4 flex-cc text-[8px] font-bold shadow">{{
+              pendingBookings.length
+            }}</span>
           </div>
 
           <div
@@ -185,17 +171,13 @@
                 >
                   {{ booking.typeLabel }}
                 </span>
-                <span class="text-[8px] font-bold text-slate-400">{{
-                  booking.time
-                }}</span>
+                <span class="text-[8px] font-bold text-slate-400">{{ booking.time }}</span>
               </div>
-              <div
-                class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate"
-              >
+              <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                 {{ booking.customerName }}
               </div>
               <div class="text-[9px] text-slate-400 truncate mt-0.5">
-                {{ booking.content || "—" }}
+                {{ booking.content || '—' }}
               </div>
               <button
                 @click.stop="confirmBooking(booking)"
@@ -205,17 +187,9 @@
               </button>
             </div>
 
-            <div
-              v-if="pendingBookings.length === 0"
-              class="flex-cc flex-col gap-2 py-8 opacity-30"
-            >
-              <ArtSvgIcon
-                icon="ri:checkbox-circle-line"
-                class="text-2xl text-emerald-500"
-              />
-              <span class="text-[8px] font-bold uppercase tracking-wider">
-                Hết lịch chờ
-              </span>
+            <div v-if="pendingBookings.length === 0" class="flex-cc flex-col gap-2 py-8 opacity-30">
+              <ArtSvgIcon icon="ri:checkbox-circle-line" class="text-2xl text-emerald-500" />
+              <span class="text-[8px] font-bold uppercase tracking-wider"> Hết lịch chờ </span>
             </div>
 
             <div
@@ -229,8 +203,7 @@
               >
                 ‹
               </button>
-              <span
-                class="text-[9px] font-bold text-slate-500 min-w-[40px] text-center"
+              <span class="text-[9px] font-bold text-slate-500 min-w-[40px] text-center"
                 >{{ pendingPage }}/{{ pendingTotalPages }}</span
               >
               <button
@@ -255,9 +228,7 @@
             </span>
             <div class="flex items-baseline gap-1">
               <span class="text-2xl font-bold">98%</span>
-              <span class="text-[9px] text-blue-200/70 mb-1"
-                >tỷ lệ gửi thành công</span
-              >
+              <span class="text-[9px] text-blue-200/70 mb-1">tỷ lệ gửi thành công</span>
             </div>
             <div class="flex gap-3 mt-2">
               <span class="text-[8px] text-blue-200/50 flex items-center gap-1">
@@ -306,11 +277,7 @@
                   : 'bg-red-100 text-red-600'
               "
             >
-              {{
-                bookingForm.status === "Confirmed"
-                  ? "Đã xác nhận"
-                  : "Chờ xác nhận"
-              }}
+              {{ bookingForm.status === 'Confirmed' ? 'Đã xác nhận' : 'Chờ xác nhận' }}
             </span>
           </div>
         </div>
@@ -318,8 +285,7 @@
 
       <div class="py-3 space-y-3">
         <div>
-          <label
-            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
             >Tên khách hàng</label
           >
           <ElInput
@@ -335,11 +301,7 @@
               class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
               >SĐT</label
             >
-            <ElInput
-              v-model="bookingForm.phone"
-              placeholder="09xx..."
-              class="compact-input"
-            />
+            <ElInput v-model="bookingForm.phone" placeholder="09xx..." class="compact-input" />
           </div>
           <div>
             <label
@@ -371,8 +333,7 @@
         </div>
 
         <div>
-          <label
-            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block px-1"
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block px-1"
             >Loại yêu cầu</label
           >
           <div class="grid grid-cols-4 gap-1.5">
@@ -393,8 +354,7 @@
         </div>
 
         <div>
-          <label
-            class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block px-1"
             >Nội dung</label
           >
           <ElInput
@@ -416,8 +376,7 @@
           "
         >
           <div class="flex items-center justify-between mb-2.5">
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-slate-500"
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500"
               >Phân luồng xử lý</span
             >
             <span
@@ -428,17 +387,12 @@
                   : 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
               "
             >
-              {{
-                isWorkshopType
-                  ? "Xưởng dịch vụ kỹ thuật"
-                  : "Marketing & Kinh doanh"
-              }}
+              {{ isWorkshopType ? 'Xưởng dịch vụ kỹ thuật' : 'Marketing & Kinh doanh' }}
             </span>
           </div>
 
           <div v-if="!isWorkshopType" class="space-y-2.5">
-            <label
-              class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block"
+            <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block"
               >Nhân viên kinh doanh phụ trách</label
             >
             <ElSelect
@@ -456,17 +410,13 @@
                 :value="user.id"
               />
             </ElSelect>
-            <p
-              v-if="!linkedLead.id"
-              class="m-0 text-[11px] italic text-slate-500"
-            >
+            <p v-if="!linkedLead.id" class="m-0 text-[11px] italic text-slate-500">
               Khách hàng chưa đăng ký hồ sơ tiềm năng trong CRM để phân công.
             </p>
           </div>
 
           <div v-else class="space-y-3">
-            <label
-              class="text-[11px] font-bold text-orange-600 uppercase tracking-wider block"
+            <label class="text-[11px] font-bold text-orange-600 uppercase tracking-wider block"
               >Nhân viên kỹ thuật phụ trách</label
             >
 
@@ -485,15 +435,14 @@
             </ElSelect>
 
             <p class="m-0 text-[11px] italic text-slate-500">
-              Sau khi tạo lịch, hẹn sẽ xuất hiện trong màn Lịch sửa chữa của
-              xưởng.
+              Sau khi tạo lịch, hẹn sẽ xuất hiện trong màn Lịch sửa chữa của xưởng.
             </p>
 
             <p
               class="m-0 text-xs text-orange-700 dark:text-orange-300 leading-relaxed font-bold mt-2"
             >
-              Lịch hẹn này thuộc phân hệ kỹ thuật. Đã được chuyển về Quản lý
-              xưởng để tiếp nhận và điều phối kỹ thuật viên.
+              Lịch hẹn này thuộc phân hệ kỹ thuật. Đã được chuyển về Quản lý xưởng để tiếp nhận và
+              điều phối kỹ thuật viên.
             </p>
             <button
               type="button"
@@ -510,13 +459,8 @@
           v-if="bookingForm.status === 'Pending' && isEditing"
           class="p-3 mt-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/40 flex items-start gap-3"
         >
-          <ArtSvgIcon
-            icon="ri:mail-line"
-            class="text-blue-500 text-base mt-0.5 shrink-0"
-          />
-          <p
-            class="m-0 text-xs font-bold text-blue-700 dark:text-blue-300 leading-snug"
-          >
+          <ArtSvgIcon icon="ri:mail-line" class="text-blue-500 text-base mt-0.5 shrink-0" />
+          <p class="m-0 text-xs font-bold text-blue-700 dark:text-blue-300 leading-snug">
             Xác nhận sẽ tự động gửi Mail/SMS thông báo tới khách hàng.
           </p>
         </div>
@@ -550,7 +494,7 @@
               @click="handleSaveBooking"
               class="h-10 px-6 bg-blue-600 text-white rounded-lg font-bold text-[11px] uppercase shadow hover:bg-blue-700 transition-all"
             >
-              {{ isEditing ? "Cập nhật" : "Tạo mới" }}
+              {{ isEditing ? 'Cập nhật' : 'Tạo mới' }}
             </button>
           </div>
         </div>
@@ -586,8 +530,7 @@
         <div
           class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800/40"
         >
-          <span
-            class="text-[8px] font-bold text-slate-400 uppercase tracking-wider"
+          <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider"
             >Danh sách lịch hẹn trong ngày</span
           >
           <button
@@ -598,9 +541,7 @@
           </button>
         </div>
 
-        <div
-          class="max-h-[300px] overflow-y-auto space-y-2 custom-scrollbar pr-1"
-        >
+        <div class="max-h-[300px] overflow-y-auto space-y-2 custom-scrollbar pr-1">
           <div
             v-for="b in selectedDayBookings"
             :key="b.id"
@@ -609,10 +550,9 @@
           >
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">
-                <span
-                  class="text-[9px] font-extrabold text-blue-600 dark:text-blue-400"
-                  >{{ b.time }}</span
-                >
+                <span class="text-[9px] font-extrabold text-blue-600 dark:text-blue-400">{{
+                  b.time
+                }}</span>
                 <span
                   class="text-[7px] font-extrabold px-1.5 py-0.2 rounded uppercase"
                   :class="getBookingBadgeClass(b)"
@@ -624,7 +564,7 @@
                 {{ b.customerName }}
               </div>
               <p class="m-0 text-[9px] text-slate-400 truncate max-w-[280px]">
-                {{ b.content || "Không có ghi chú" }}
+                {{ b.content || 'Không có ghi chú' }}
               </p>
             </div>
 
@@ -640,11 +580,11 @@
                 "
               >
                 {{
-                  b.status === "Confirmed"
-                    ? "Đã xác nhận"
-                    : b.status === "Cancelled"
-                      ? "Đã hủy"
-                      : "Chờ xác nhận"
+                  b.status === 'Confirmed'
+                    ? 'Đã xác nhận'
+                    : b.status === 'Cancelled'
+                      ? 'Đã hủy'
+                      : 'Chờ xác nhận'
                 }}
               </span>
               <ArtSvgIcon
@@ -659,9 +599,7 @@
             class="py-12 flex flex-col items-center justify-center gap-2 text-slate-400"
           >
             <ArtSvgIcon icon="ri:calendar-line" class="text-3xl opacity-20" />
-            <span class="text-xs font-bold"
-              >Không có lịch hẹn nào trong ngày này.</span
-            >
+            <span class="text-xs font-bold">Không có lịch hẹn nào trong ngày này.</span>
           </div>
         </div>
       </div>
@@ -681,29 +619,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
-import { BookingApi, Booking } from "@/api/sales";
-import { BookingAppointmentApi } from "@/api/booking-appointment.api";
-import { fetchGetUserList } from "@/api/auth/system-manage.api";
-import { fetchGetLeadList, fetchAssignLead } from "@/api/customer";
-import { EmployeeApi } from "@/api/operations/employee.api";
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus';
+import { BookingApi, Booking } from '@/api/sales';
+import { BookingAppointmentApi } from '@/api/booking-appointment.api';
+import { fetchGetUserList } from '@/api/auth/system-manage.api';
+import { fetchGetLeadList, fetchAssignLead } from '@/api/customer';
+import { EmployeeApi } from '@/api/operations/employee.api';
 
-defineOptions({ name: "BookingCalendar" });
+defineOptions({ name: 'BookingCalendar' });
 
 const router = useRouter();
 const currentDate = ref(new Date());
 const dialogVisible = ref(false);
-const dialogTitle = ref("Đặt lịch mới");
+const dialogTitle = ref('Đặt lịch mới');
 const editingBookingId = ref<number | null>(null);
 const activeBooking = ref<any>(null);
 
 const dayListDialogVisible = ref(false);
-const selectedDay = ref("");
+const selectedDay = ref('');
 const selectedDayFormatted = computed(() => {
-  if (!selectedDay.value) return "";
-  const parts = selectedDay.value.split("-");
+  if (!selectedDay.value) return '';
+  const parts = selectedDay.value.split('-');
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 });
 const selectedDayBookings = computed(() => {
@@ -723,10 +661,7 @@ const linkedTechnician = ref<{ id: number | null; name: string | null }>({
 });
 
 const isWorkshopType = computed(() => {
-  return (
-    bookingForm.value.type === "RepairService" ||
-    bookingForm.value.type === "WarrantyService"
-  );
+  return bookingForm.value.type === 'RepairService' || bookingForm.value.type === 'WarrantyService';
 });
 
 const salesList = ref<{ id: string; name: string }[]>([]);
@@ -748,14 +683,14 @@ const handleAssignSalesperson = async (val: string | null) => {
   if (!linkedLead.value.id) return;
   const loading = ElLoading.service({
     lock: true,
-    text: "Đang phân công nhân viên phụ trách...",
-    background: "rgba(0,0,0,0.7)",
+    text: 'Đang phân công nhân viên phụ trách...',
+    background: 'rgba(0,0,0,0.7)',
   });
   try {
-    await fetchAssignLead(linkedLead.value.id, val || "");
-    ElMessage.success("Phân công nhân viên kinh doanh thành công");
+    await fetchAssignLead(linkedLead.value.id, val || '');
+    ElMessage.success('Phân công nhân viên kinh doanh thành công');
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi phân công nhân viên");
+    ElMessage.error(err.message || 'Lỗi khi phân công nhân viên');
   } finally {
     loading.close();
   }
@@ -763,33 +698,33 @@ const handleAssignSalesperson = async (val: string | null) => {
 
 const goToWorkshopCalendar = () => {
   dialogVisible.value = false;
-  router.push("/factory/workshop/appointments");
+  router.push('/factory/workshop/appointments');
 };
 
 const bookingForm = ref({
-  customerName: "",
-  phone: "",
-  email: "",
-  time: "09:00",
-  date: "",
-  type: "TestDrive",
-  content: "",
-  status: "Pending",
-  location: "",
+  customerName: '',
+  phone: '',
+  email: '',
+  time: '09:00',
+  date: '',
+  type: 'TestDrive',
+  content: '',
+  status: 'Pending',
+  location: '',
 });
 
 const typeOptions = [
-  { value: "TestDrive", label: "Lái thử" },
-  { value: "Consulting", label: "Tư vấn" },
-  { value: "RepairService", label: "Sửa chữa" },
-  { value: "WarrantyService", label: "Bảo hành" },
+  { value: 'TestDrive', label: 'Lái thử' },
+  { value: 'Consulting', label: 'Tư vấn' },
+  { value: 'RepairService', label: 'Sửa chữa' },
+  { value: 'WarrantyService', label: 'Bảo hành' },
 ];
 
 const bookings = ref<any[]>([]);
 
 const calendarMonthLabel = computed(() => {
   const d = currentDate.value;
-  return `Tháng ${String(d.getMonth() + 1).padStart(2, "0")} / ${d.getFullYear()}`;
+  return `Tháng ${String(d.getMonth() + 1).padStart(2, '0')} / ${d.getFullYear()}`;
 });
 
 const prevMonth = () => {
@@ -804,15 +739,15 @@ const nextMonth = () => {
   currentDate.value = d;
 };
 
-const isToday = (day: string) => day === new Date().toISOString().split("T")[0];
+const isToday = (day: string) => day === new Date().toISOString().split('T')[0];
 
 const fetchBookings = async () => {
   try {
     const res = await BookingApi.getList();
     bookings.value = (res || []).map((b: Booking) => {
       const dt = new Date(b.preferredDate);
-      const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
-      const timeStr = `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
+      const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+      const timeStr = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
       return {
         ...b,
         customerName: b.fullName,
@@ -822,22 +757,22 @@ const fetchBookings = async () => {
         date: dateStr,
         type: b.bookingType,
         typeLabel:
-          b.bookingType === "TestDrive"
-            ? "Lái thử"
-            : b.bookingType === "Consulting"
-              ? "Tư vấn"
-              : b.bookingType === "RepairService"
-                ? "Sửa chữa"
-                : b.bookingType === "WarrantyService"
-                  ? "Bảo hành"
-                  : b.bookingType === "Maintenance"
-                    ? "Bảo trì"
-                    : "Tư vấn",
-        content: b.note || "",
+          b.bookingType === 'TestDrive'
+            ? 'Lái thử'
+            : b.bookingType === 'Consulting'
+              ? 'Tư vấn'
+              : b.bookingType === 'RepairService'
+                ? 'Sửa chữa'
+                : b.bookingType === 'WarrantyService'
+                  ? 'Bảo hành'
+                  : b.bookingType === 'Maintenance'
+                    ? 'Bảo trì'
+                    : 'Tư vấn',
+        content: b.note || '',
       };
     });
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi tải danh sách đặt lịch");
+    ElMessage.error(err.message || 'Lỗi khi tải danh sách đặt lịch');
   }
 };
 
@@ -850,12 +785,8 @@ const loadTechnicianList = async () => {
     const items = (res as any).items || (res as any).records || [];
     technicianList.value = items
       .filter((e: any) => {
-        const pos = (e.positionName || e.position || "").toLowerCase();
-        return (
-          pos.includes("kỹ thuật") ||
-          pos.includes("thợ") ||
-          pos.includes("technician")
-        );
+        const pos = (e.positionName || e.position || '').toLowerCase();
+        return pos.includes('kỹ thuật') || pos.includes('thợ') || pos.includes('technician');
       })
       .map((e: any) => ({
         id: e.id,
@@ -876,40 +807,37 @@ const PENDING_PAGE_SIZE = 10;
 const pendingPage = ref(1);
 
 const pendingBookings = computed(() =>
-  bookings.value
-    .filter((b) => b.status === "Pending")
-    .sort((a, b) => a.time.localeCompare(b.time)),
+  bookings.value.filter((b) => b.status === 'Pending').sort((a, b) => a.time.localeCompare(b.time))
 );
 const pendingBookingsPaged = computed(() => {
   const start = (pendingPage.value - 1) * PENDING_PAGE_SIZE;
   return pendingBookings.value.slice(start, start + PENDING_PAGE_SIZE);
 });
 const pendingTotalPages = computed(() =>
-  Math.max(1, Math.ceil(pendingBookings.value.length / PENDING_PAGE_SIZE)),
+  Math.max(1, Math.ceil(pendingBookings.value.length / PENDING_PAGE_SIZE))
 );
 const isEditing = computed(() => !!editingBookingId.value);
 
-const getBookings = (day: string) =>
-  bookings.value.filter((b) => b.date === day);
+const getBookings = (day: string) => bookings.value.filter((b) => b.date === day);
 
 const getBookingPillClass = (booking: any) => {
-  if (booking.status === "Pending") return "pill-pending";
-  if (booking.type === "TestDrive") return "pill-testdrive";
-  if (booking.type === "RepairService") return "pill-repair";
-  if (booking.type === "WarrantyService") return "pill-warranty";
-  return "pill-default";
+  if (booking.status === 'Pending') return 'pill-pending';
+  if (booking.type === 'TestDrive') return 'pill-testdrive';
+  if (booking.type === 'RepairService') return 'pill-repair';
+  if (booking.type === 'WarrantyService') return 'pill-warranty';
+  return 'pill-default';
 };
 
 const getBookingClasses = (booking: any) => {
-  if (booking.status === "Pending")
-    return "bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20 dark:border-amber-800 dark:text-amber-300";
-  if (booking.type === "TestDrive")
-    return "bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/20 dark:border-blue-800 dark:text-blue-300";
-  if (booking.type === "RepairService")
-    return "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20 dark:border-orange-800 dark:text-orange-300";
-  if (booking.type === "WarrantyService")
-    return "bg-purple-50 border-purple-200 text-purple-600 dark:bg-purple-950/20 dark:border-purple-800 dark:text-purple-300";
-  return "bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300";
+  if (booking.status === 'Pending')
+    return 'bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/20 dark:border-amber-800 dark:text-amber-300';
+  if (booking.type === 'TestDrive')
+    return 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/20 dark:border-blue-800 dark:text-blue-300';
+  if (booking.type === 'RepairService')
+    return 'bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/20 dark:border-orange-800 dark:text-orange-300';
+  if (booking.type === 'WarrantyService')
+    return 'bg-purple-50 border-purple-200 text-purple-600 dark:bg-purple-950/20 dark:border-purple-800 dark:text-purple-300';
+  return 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300';
 };
 
 const handleCellClick = (day: string) => {
@@ -919,18 +847,18 @@ const handleCellClick = (day: string) => {
 
 const openNewBookingFormForSelectedDay = () => {
   dayListDialogVisible.value = false;
-  dialogTitle.value = "Đặt lịch mới";
+  dialogTitle.value = 'Đặt lịch mới';
   editingBookingId.value = null;
   bookingForm.value = {
-    customerName: "",
-    phone: "",
-    email: "",
-    time: "09:00",
+    customerName: '',
+    phone: '',
+    email: '',
+    time: '09:00',
     date: selectedDay.value,
-    type: "TestDrive",
-    content: "",
-    status: "Pending",
-    location: "",
+    type: 'TestDrive',
+    content: '',
+    status: 'Pending',
+    location: '',
   };
   dialogVisible.value = true;
 };
@@ -941,21 +869,20 @@ const viewBookingFromDayList = (booking: any) => {
 };
 
 const getBookingBadgeClass = (booking: any) => {
-  if (booking.type === "TestDrive")
-    return "bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400";
-  if (booking.type === "RepairService")
-    return "bg-orange-50 text-orange-600 dark:bg-orange-950/20 dark:text-orange-400";
-  if (booking.type === "WarrantyService")
-    return "bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400";
-  return "bg-slate-50 text-slate-600 dark:bg-slate-950/20 dark:text-slate-400";
+  if (booking.type === 'TestDrive')
+    return 'bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400';
+  if (booking.type === 'RepairService')
+    return 'bg-orange-50 text-orange-600 dark:bg-orange-950/20 dark:text-orange-400';
+  if (booking.type === 'WarrantyService')
+    return 'bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400';
+  return 'bg-slate-50 text-slate-600 dark:bg-slate-950/20 dark:text-slate-400';
 };
 
-const handleCreateNew = () =>
-  handleCellClick(new Date().toISOString().split("T")[0]);
+const handleCreateNew = () => handleCellClick(new Date().toISOString().split('T')[0]);
 
 const handleBookingClick = async (booking: any) => {
   activeBooking.value = booking;
-  dialogTitle.value = "Chi tiết lịch hẹn";
+  dialogTitle.value = 'Chi tiết lịch hẹn';
   editingBookingId.value = booking.id;
   bookingForm.value = { ...booking };
   dialogVisible.value = true;
@@ -968,9 +895,7 @@ const handleBookingClick = async (booking: any) => {
     try {
       const res = await fetchGetLeadList();
       const leads = (
-        Array.isArray(res)
-          ? res
-          : ((res as any).items ?? (res as any).records ?? [])
+        Array.isArray(res) ? res : ((res as any).items ?? (res as any).records ?? [])
       ) as any[];
       const exactLead = leads.find((l: any) => l.phoneNumber === bookingPhone);
       if (exactLead) {
@@ -980,7 +905,7 @@ const handleBookingClick = async (booking: any) => {
         };
       }
     } catch (err) {
-      console.error("Lỗi khi truy vấn Lead liên kết:", err);
+      console.error('Lỗi khi truy vấn Lead liên kết:', err);
     }
   }
 };
@@ -989,87 +914,74 @@ const confirmBooking = async (booking: any) => {
   if (!booking) return;
   const loading = ElLoading.service({
     lock: true,
-    text: "Đang xác nhận & gửi thông báo...",
-    background: "rgba(0,0,0,0.7)",
+    text: 'Đang xác nhận & gửi thông báo...',
+    background: 'rgba(0,0,0,0.7)',
   });
   try {
     await BookingApi.confirm(booking.id);
-    ElMessage.success(
-      `Đã xác nhận và gửi thông báo tới ${booking.customerName}`,
-    );
+    ElMessage.success(`Đã xác nhận và gửi thông báo tới ${booking.customerName}`);
     await fetchBookings();
     dialogVisible.value = false;
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi xác nhận");
+    ElMessage.error(err.message || 'Lỗi khi xác nhận');
   } finally {
     loading.close();
   }
 };
 
 const handleSaveBooking = async () => {
-  if (!bookingForm.value.customerName)
-    return ElMessage.warning("Vui lòng nhập tên khách hàng.");
-  if (!bookingForm.value.phone)
-    return ElMessage.warning("Vui lòng nhập số điện thoại.");
-  if (!bookingForm.value.date)
-    return ElMessage.warning("Vui lòng chọn ngày hẹn.");
+  if (!bookingForm.value.customerName) return ElMessage.warning('Vui lòng nhập tên khách hàng.');
+  if (!bookingForm.value.phone) return ElMessage.warning('Vui lòng nhập số điện thoại.');
+  if (!bookingForm.value.date) return ElMessage.warning('Vui lòng chọn ngày hẹn.');
 
   // Check overlap on frontend
   const hasOverlap = bookings.value.some(
     (b) =>
       b.date === bookingForm.value.date &&
       b.time === bookingForm.value.time &&
-      b.status !== "Cancelled" &&
-      b.id !== editingBookingId.value,
+      b.status !== 'Cancelled' &&
+      b.id !== editingBookingId.value
   );
   if (hasOverlap) {
-    return ElMessage.error(
-      "Thời gian đặt lịch này đã bị trùng với lịch hẹn khác.",
-    );
+    return ElMessage.error('Thời gian đặt lịch này đã bị trùng với lịch hẹn khác.');
   }
 
   if (isEditing.value) {
-    if (!isAdmin.value)
-      return ElMessage.warning("Chỉ Admin mới được chỉnh sửa.");
+    if (!isAdmin.value) return ElMessage.warning('Chỉ Admin mới được chỉnh sửa.');
     try {
-      const dt = new Date(
-        `${bookingForm.value.date}T${bookingForm.value.time}`,
-      );
+      const dt = new Date(`${bookingForm.value.date}T${bookingForm.value.time}`);
       await BookingApi.update(editingBookingId.value!, {
         id: editingBookingId.value!,
         fullName: bookingForm.value.customerName,
         phoneNumber: bookingForm.value.phone,
-        email: bookingForm.value.email || "",
+        email: bookingForm.value.email || '',
         preferredDate: dt.toISOString(),
         note: bookingForm.value.content,
         bookingType: bookingForm.value.type,
-        location: "Showroom",
+        location: 'Showroom',
         status: bookingForm.value.status,
       });
-      ElMessage.success("Cập nhật thành công");
+      ElMessage.success('Cập nhật thành công');
       await fetchBookings();
       dialogVisible.value = false;
     } catch (err: any) {
-      ElMessage.error(err.message || "Lỗi cập nhật");
+      ElMessage.error(err.message || 'Lỗi cập nhật');
     }
     return;
   }
 
-  const workshopTypes = ["RepairService", "WarrantyService"];
-  const typeLabel =
-    typeOptions.find((t) => t.value === bookingForm.value.type)?.label ?? "mới";
+  const workshopTypes = ['RepairService', 'WarrantyService'];
+  const typeLabel = typeOptions.find((t) => t.value === bookingForm.value.type)?.label ?? 'mới';
 
   try {
     await BookingApi.create({
       fullName: bookingForm.value.customerName,
       phoneNumber: bookingForm.value.phone,
-      email: bookingForm.value.email || "",
-      preferredDate: new Date(
-        `${bookingForm.value.date}T${bookingForm.value.time}`,
-      ).toISOString(),
+      email: bookingForm.value.email || '',
+      preferredDate: new Date(`${bookingForm.value.date}T${bookingForm.value.time}`).toISOString(),
       note: bookingForm.value.content,
       bookingType: bookingForm.value.type,
-      location: "Showroom",
+      location: 'Showroom',
     });
 
     if (workshopTypes.includes(bookingForm.value.type)) {
@@ -1080,7 +992,7 @@ const handleSaveBooking = async () => {
           email: bookingForm.value.email || undefined,
           serviceType: bookingForm.value.type,
           preferredDate: new Date(
-            `${bookingForm.value.date}T${bookingForm.value.time}`,
+            `${bookingForm.value.date}T${bookingForm.value.time}`
           ).toISOString(),
           notes: bookingForm.value.content,
         });
@@ -1093,24 +1005,24 @@ const handleSaveBooking = async () => {
     await fetchBookings();
     dialogVisible.value = false;
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi tạo lịch hẹn");
+    ElMessage.error(err.message || 'Lỗi tạo lịch hẹn');
   }
 };
 
 const handleDeleteBooking = async () => {
-  if (!isAdmin.value) return ElMessage.warning("Chỉ Admin mới được hủy lịch.");
+  if (!isAdmin.value) return ElMessage.warning('Chỉ Admin mới được hủy lịch.');
   try {
-    await ElMessageBox.confirm("Hủy lịch hẹn này?", "Xác nhận", {
-      confirmButtonText: "Đồng ý",
-      cancelButtonText: "Bỏ",
-      type: "warning",
+    await ElMessageBox.confirm('Hủy lịch hẹn này?', 'Xác nhận', {
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Bỏ',
+      type: 'warning',
     });
     await BookingApi.delete(editingBookingId.value!);
-    ElMessage.success("Đã hủy lịch");
+    ElMessage.success('Đã hủy lịch');
     await fetchBookings();
     dialogVisible.value = false;
   } catch (err: any) {
-    if (err !== "cancel") ElMessage.error(err.message || "Lỗi hủy lịch");
+    if (err !== 'cancel') ElMessage.error(err.message || 'Lỗi hủy lịch');
   }
 };
 </script>
@@ -1371,15 +1283,11 @@ const handleDeleteBooking = async () => {
   box-shadow: none !important;
 }
 
-:global(
-  html.dark .customer-booking-page .compact-select .el-select__placeholder
-) {
+:global(html.dark .customer-booking-page .compact-select .el-select__placeholder) {
   color: #64748b !important;
 }
 
-:global(
-  html.dark .customer-booking-page .compact-select .el-select__selected-item
-) {
+:global(html.dark .customer-booking-page .compact-select .el-select__selected-item) {
   color: #f8fafc !important;
 }
 

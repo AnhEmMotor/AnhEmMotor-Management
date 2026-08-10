@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface AuditLogItem {
   id: number;
@@ -22,22 +22,16 @@ export const AuditTrailApi = {
     });
     return rawLogs.map((l: any) => {
       const changes: any[] = [];
-      if (
-        l.oldStatusId !== l.newStatusId &&
-        (l.oldStatusId !== null || l.newStatusId !== null)
-      ) {
+      if (l.oldStatusId !== l.newStatusId && (l.oldStatusId !== null || l.newStatusId !== null)) {
         changes.push({
-          field: "Trạng thái",
+          field: 'Trạng thái',
           oldValue: l.oldStatusId,
           newValue: l.newStatusId,
         });
       }
-      if (
-        l.oldNotes !== l.newNotes &&
-        (l.oldNotes !== null || l.newNotes !== null)
-      ) {
+      if (l.oldNotes !== l.newNotes && (l.oldNotes !== null || l.newNotes !== null)) {
         changes.push({
-          field: "Ghi chú",
+          field: 'Ghi chú',
           oldValue: l.oldNotes,
           newValue: l.newNotes,
         });
@@ -45,28 +39,28 @@ export const AuditTrailApi = {
 
       const infoLogs = l.infoLogs?.map((il: any) => {
         const isCreate =
-          il.action?.toLowerCase() === "create" ||
-          il.action?.toLowerCase() === "add" ||
-          il.action?.toLowerCase() === "thêm mới";
+          il.action?.toLowerCase() === 'create' ||
+          il.action?.toLowerCase() === 'add' ||
+          il.action?.toLowerCase() === 'thêm mới';
         const isDelete =
-          il.action?.toLowerCase() === "delete" ||
-          il.action?.toLowerCase() === "remove" ||
-          il.action?.toLowerCase() === "xoá" ||
-          il.action?.toLowerCase() === "xóa";
+          il.action?.toLowerCase() === 'delete' ||
+          il.action?.toLowerCase() === 'remove' ||
+          il.action?.toLowerCase() === 'xoá' ||
+          il.action?.toLowerCase() === 'xóa';
 
-        let quantity = "";
+        let quantity = '';
         if (isCreate) quantity = `+${il.newQuantity}`;
-        else if (isDelete) quantity = "";
+        else if (isDelete) quantity = '';
         else {
-          const oldQ = il.oldQuantity ?? "?";
+          const oldQ = il.oldQuantity ?? '?';
           quantity = `${oldQ} ➔ ${il.newQuantity}`;
         }
 
-        let price = "";
+        let price = '';
         if (isCreate) price = `+${il.newPrice}`;
-        else if (isDelete) price = "";
+        else if (isDelete) price = '';
         else {
-          const oldP = il.oldPrice ?? "?";
+          const oldP = il.oldPrice ?? '?';
           price = `${oldP} ➔ ${il.newPrice}`;
         }
 
@@ -81,21 +75,21 @@ export const AuditTrailApi = {
 
       const vehicleLogs = l.vehicleLogs?.map((vl: any) => {
         const isCreate =
-          vl.action?.toLowerCase() === "create" ||
-          vl.action?.toLowerCase() === "add" ||
-          vl.action?.toLowerCase() === "thêm mới";
+          vl.action?.toLowerCase() === 'create' ||
+          vl.action?.toLowerCase() === 'add' ||
+          vl.action?.toLowerCase() === 'thêm mới';
         const isDelete =
-          vl.action?.toLowerCase() === "delete" ||
-          vl.action?.toLowerCase() === "remove" ||
-          vl.action?.toLowerCase() === "xoá" ||
-          vl.action?.toLowerCase() === "xóa";
+          vl.action?.toLowerCase() === 'delete' ||
+          vl.action?.toLowerCase() === 'remove' ||
+          vl.action?.toLowerCase() === 'xoá' ||
+          vl.action?.toLowerCase() === 'xóa';
 
-        let vin = "";
+        let vin = '';
         if (isCreate) vin = vl.newVinNumber;
         else if (isDelete) vin = vl.oldVinNumber;
         else vin = `${vl.oldVinNumber} ➔ ${vl.newVinNumber}`;
 
-        let engine = "";
+        let engine = '';
         if (isCreate) engine = vl.newEngineNumber;
         else if (isDelete) engine = vl.oldEngineNumber;
         else engine = `${vl.oldEngineNumber} ➔ ${vl.newEngineNumber}`;
@@ -133,22 +127,16 @@ export const AuditTrailApi = {
     });
     return rawLogs.map((l: any) => {
       const changes: any[] = [];
-      if (
-        l.oldAmount !== l.newAmount &&
-        (l.oldAmount !== null || l.newAmount !== null)
-      ) {
+      if (l.oldAmount !== l.newAmount && (l.oldAmount !== null || l.newAmount !== null)) {
         changes.push({
-          field: "Số tiền",
+          field: 'Số tiền',
           oldValue: l.oldAmount,
           newValue: l.newAmount,
         });
       }
-      if (
-        l.oldNotes !== l.newNotes &&
-        (l.oldNotes !== null || l.newNotes !== null)
-      ) {
+      if (l.oldNotes !== l.newNotes && (l.oldNotes !== null || l.newNotes !== null)) {
         changes.push({
-          field: "Ghi chú",
+          field: 'Ghi chú',
           oldValue: l.oldNotes,
           newValue: l.newNotes,
         });
@@ -158,7 +146,7 @@ export const AuditTrailApi = {
         (l.oldPaymentDate !== null || l.newPaymentDate !== null)
       ) {
         changes.push({
-          field: "Ngày thanh toán",
+          field: 'Ngày thanh toán',
           oldValue: l.oldPaymentDate,
           newValue: l.newPaymentDate,
         });
@@ -181,14 +169,14 @@ export const AuditTrailApi = {
       const changes: any[] = [];
       if (l.oldStatusId !== l.newStatusId) {
         changes.push({
-          field: "Trạng thái",
+          field: 'Trạng thái',
           oldValue: l.oldStatusId,
           newValue: l.newStatusId,
         });
       }
       if (l.oldNotes !== l.newNotes) {
         changes.push({
-          field: "Ghi chú",
+          field: 'Ghi chú',
           oldValue: l.oldNotes,
           newValue: l.newNotes,
         });
@@ -196,21 +184,21 @@ export const AuditTrailApi = {
 
       const itemChanges = l.itemLogs?.map((il: any) => {
         const isCreate =
-          il.action?.toLowerCase() === "create" ||
-          il.action?.toLowerCase() === "add" ||
-          il.action?.toLowerCase() === "thêm mới";
+          il.action?.toLowerCase() === 'create' ||
+          il.action?.toLowerCase() === 'add' ||
+          il.action?.toLowerCase() === 'thêm mới';
         const isDelete =
-          il.action?.toLowerCase() === "delete" ||
-          il.action?.toLowerCase() === "remove" ||
-          il.action?.toLowerCase() === "xoá" ||
-          il.action?.toLowerCase() === "xóa";
+          il.action?.toLowerCase() === 'delete' ||
+          il.action?.toLowerCase() === 'remove' ||
+          il.action?.toLowerCase() === 'xoá' ||
+          il.action?.toLowerCase() === 'xóa';
 
-        let quantity = "";
+        let quantity = '';
         if (isCreate) quantity = `+${il.newQuantity}`;
-        else if (isDelete) quantity = "";
+        else if (isDelete) quantity = '';
         else quantity = `${il.oldQuantity} ➔ ${il.newQuantity}`;
 
-        let productVariant = "";
+        let productVariant = '';
         if (isCreate) productVariant = il.newProductVariantName;
         else if (isDelete) productVariant = il.oldProductVariantName;
         else
@@ -219,21 +207,21 @@ export const AuditTrailApi = {
               ? il.newProductVariantName
               : `${il.oldProductVariantName} ➔ ${il.newProductVariantName}`;
 
-        let supplierName = "";
-        if (isCreate) supplierName = il.newSupplierName || "";
-        else if (isDelete) supplierName = il.oldSupplierName || "";
+        let supplierName = '';
+        if (isCreate) supplierName = il.newSupplierName || '';
+        else if (isDelete) supplierName = il.oldSupplierName || '';
         else
           supplierName =
             il.oldSupplierName === il.newSupplierName
-              ? il.newSupplierName || ""
-              : `${il.oldSupplierName || ""} ➔ ${il.newSupplierName || ""}`;
+              ? il.newSupplierName || ''
+              : `${il.oldSupplierName || ''} ➔ ${il.newSupplierName || ''}`;
 
         const formatPrice = (p: number | undefined | null) => {
-          if (p === null || p === undefined) return "";
-          return p.toLocaleString("vi-VN");
+          if (p === null || p === undefined) return '';
+          return p.toLocaleString('vi-VN');
         };
 
-        let price = "";
+        let price = '';
         if (isCreate) price = formatPrice(il.newUnitPrice);
         else if (isDelete) price = formatPrice(il.oldUnitPrice);
         else {

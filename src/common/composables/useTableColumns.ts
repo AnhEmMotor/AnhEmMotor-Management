@@ -1,16 +1,15 @@
-import { ref, computed, watch } from "vue";
-import { $t } from "@/i18n";
-import type { ColumnOption } from "@/types/component";
+import { ref, computed, watch } from 'vue';
+import { $t } from '@/i18n';
+import type { ColumnOption } from '@/types/component';
 
 const SPECIAL_COLUMNS: Record<string, { prop: string; label: string }> = {
-  selection: { prop: "__selection__", label: $t("table.column.selection") },
-  expand: { prop: "__expand__", label: $t("table.column.expand") },
-  index: { prop: "__index__", label: $t("table.column.index") },
+  selection: { prop: '__selection__', label: $t('table.column.selection') },
+  expand: { prop: '__expand__', label: $t('table.column.expand') },
+  index: { prop: '__index__', label: $t('table.column.index') },
 };
 
 export const getColumnKey = <T>(col: ColumnOption<T>) =>
-  SPECIAL_COLUMNS[col.type as keyof typeof SPECIAL_COLUMNS]?.prop ??
-  (col.prop as string);
+  SPECIAL_COLUMNS[col.type as keyof typeof SPECIAL_COLUMNS]?.prop ?? (col.prop as string);
 
 export const getColumnVisibility = <T>(col: ColumnOption<T>): boolean => {
   if (col.visible !== undefined) {
@@ -38,10 +37,7 @@ export const getColumnChecks = <T>(columns: ColumnOption<T>[]) =>
   });
 
 export interface DynamicColumnConfig<T = any> {
-  addColumn: (
-    column: ColumnOption<T> | ColumnOption<T>[],
-    index?: number,
-  ) => void;
+  addColumn: (column: ColumnOption<T> | ColumnOption<T>[], index?: number) => void;
 
   removeColumn: (prop: string | string[]) => void;
 
@@ -49,12 +45,10 @@ export interface DynamicColumnConfig<T = any> {
 
   updateColumn: (
     prop: string | Array<{ prop: string; updates: Partial<ColumnOption<T>> }>,
-    updates?: Partial<ColumnOption<T>>,
+    updates?: Partial<ColumnOption<T>>
   ) => void;
 
-  batchUpdateColumns: (
-    updates: Array<{ prop: string; updates: Partial<ColumnOption<T>> }>,
-  ) => void;
+  batchUpdateColumns: (updates: Array<{ prop: string; updates: Partial<ColumnOption<T>> }>) => void;
 
   reorderColumns: (fromIndex: number, toIndex: number) => void;
 
@@ -66,30 +60,23 @@ export interface DynamicColumnConfig<T = any> {
 }
 
 export function useTableColumns<T = any>(
-  columnsFactory: () => ColumnOption<T>[],
+  columnsFactory: () => ColumnOption<T>[]
 ): {
   columns: any;
   columnChecks: any;
 } & DynamicColumnConfig<T> {
   const dynamicColumns = ref<ColumnOption<T>[]>(columnsFactory());
-  const columnChecks = ref<ColumnOption<T>[]>(
-    getColumnChecks(dynamicColumns.value),
-  );
+  const columnChecks = ref<ColumnOption<T>[]>(getColumnChecks(dynamicColumns.value));
 
   watch(
     dynamicColumns,
     (newCols) => {
       const visibilityMap = new Map(
-        columnChecks.value.map((c) => [
-          getColumnKey(c),
-          getColumnVisibility(c),
-        ]),
+        columnChecks.value.map((c) => [getColumnKey(c), getColumnVisibility(c)])
       );
       const newChecks = getColumnChecks(newCols).map((c) => {
         const key = getColumnKey(c);
-        const visibility = visibilityMap.has(key)
-          ? visibilityMap.get(key)
-          : getColumnVisibility(c);
+        const visibility = visibilityMap.has(key) ? visibilityMap.get(key) : getColumnVisibility(c);
         return {
           ...c,
           checked: visibility,
@@ -98,22 +85,18 @@ export function useTableColumns<T = any>(
       });
       columnChecks.value = newChecks;
     },
-    { deep: true },
+    { deep: true }
   );
 
   const columns = computed(() => {
-    const colMap = new Map(
-      dynamicColumns.value.map((c) => [getColumnKey(c), c]),
-    );
+    const colMap = new Map(dynamicColumns.value.map((c) => [getColumnKey(c), c]));
     return columnChecks.value
       .filter((c) => getColumnVisibility(c))
       .map((c) => colMap.get(getColumnKey(c)))
       .filter(Boolean) as ColumnOption<T>[];
   });
 
-  const setDynamicColumns = (
-    updater: (cols: ColumnOption<T>[]) => void | ColumnOption<T>[],
-  ) => {
+  const setDynamicColumns = (updater: (cols: ColumnOption<T>[]) => void | ColumnOption<T>[]) => {
     const copy = [...dynamicColumns.value];
     const result = updater(copy);
     dynamicColumns.value = Array.isArray(result) ? result : copy;
@@ -128,9 +111,7 @@ export function useTableColumns<T = any>(
         const next = [...cols];
         const columnsToAdd = Array.isArray(column) ? column : [column];
         const insertIndex =
-          typeof index === "number" && index >= 0 && index <= next.length
-            ? index
-            : next.length;
+          typeof index === 'number' && index >= 0 && index <= next.length ? index : next.length;
 
         next.splice(insertIndex, 0, ...columnsToAdd);
         return next;
@@ -144,7 +125,7 @@ export function useTableColumns<T = any>(
 
     updateColumn: (
       prop: string | Array<{ prop: string; updates: Partial<ColumnOption<T>> }>,
-      updates?: Partial<ColumnOption<T>>,
+      updates?: Partial<ColumnOption<T>>
     ) => {
       if (Array.isArray(prop)) {
         setDynamicColumns((cols) => {
@@ -157,9 +138,7 @@ export function useTableColumns<T = any>(
         });
       } else if (updates) {
         setDynamicColumns((cols) =>
-          cols.map((c) =>
-            getColumnKey(c) === prop ? { ...c, ...updates } : c,
-          ),
+          cols.map((c) => (getColumnKey(c) === prop ? { ...c, ...updates } : c))
         );
       }
     },
@@ -216,8 +195,7 @@ export function useTableColumns<T = any>(
         return next;
       }),
 
-    getColumnConfig: (prop: string) =>
-      dynamicColumns.value.find((c) => getColumnKey(c) === prop),
+    getColumnConfig: (prop: string) => dynamicColumns.value.find((c) => getColumnKey(c) === prop),
 
     getAllColumns: () => [...dynamicColumns.value],
   };

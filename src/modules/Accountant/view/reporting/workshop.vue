@@ -13,11 +13,7 @@
             v-model:end-date="periodEnd"
             @update:modelValue="onPeriodChange"
           />
-          <ElButton
-            type="primary"
-            :disabled="loading"
-            @click="exportWorkshopExcel"
-          >
+          <ElButton type="primary" :disabled="loading" @click="exportWorkshopExcel">
             <ArtSvgIcon icon="ri:file-excel-2-line" />
             Xuất Excel
           </ElButton>
@@ -52,9 +48,7 @@
         :count="kpi.overdueCount"
         description="Cần ưu tiên kiểm tra"
         icon="ri:alarm-warning-line"
-        :icon-style="
-          kpi.overdueCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'
-        "
+        :icon-style="kpi.overdueCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
       />
     </div>
 
@@ -84,24 +78,16 @@
         <ElTableColumn prop="technicianName" label="Thợ phụ trách" />
         <ElTableColumn prop="status" label="Trạng thái" width="140">
           <template #default="{ row }">
-            <ElTag
-              :type="statusType(row.status)"
-              size="small"
-              effect="light"
-              round
-              >{{ row.status }}</ElTag
-            >
+            <ElTag :type="statusType(row.status)" size="small" effect="light" round>{{
+              row.status
+            }}</ElTag>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="startedAt" label="Bắt đầu" width="120">
-          <template #default="{ row }">{{
-            formatDate(row.startedAt)
-          }}</template>
+          <template #default="{ row }">{{ formatDate(row.startedAt) }}</template>
         </ElTableColumn>
         <ElTableColumn prop="laborFee" label="Tiền công" width="120">
-          <template #default="{ row }">{{
-            formatCurrency(row.laborFee)
-          }}</template>
+          <template #default="{ row }">{{ formatCurrency(row.laborFee) }}</template>
         </ElTableColumn>
       </ElTable>
 
@@ -120,18 +106,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { statisticsApi } from "@/api/operations";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
+import { computed, onMounted, ref } from 'vue';
+import { statisticsApi } from '@/api/operations';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtBarChart from '@/components/core/charts/art-bar-chart/index.vue';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref('');
+const periodEnd = ref('');
 
 const loading = ref(false);
 const kpi = ref({
@@ -141,8 +127,8 @@ const kpi = ref({
   overdueCount: 0,
 });
 const chartData = ref([
-  { name: "Doanh thu xưởng", data: [] as number[] },
-  { name: "Doanh thu bán xe", data: [] as number[] },
+  { name: 'Doanh thu xưởng', data: [] as number[] },
+  { name: 'Doanh thu bán xe', data: [] as number[] },
 ]);
 const chartXAxisData = ref<string[]>([]);
 const repairOrders = ref<
@@ -175,34 +161,34 @@ function exportWorkshopExcel() {
     fileName: `Bao_cao_xuong_${new Date().toISOString().slice(0, 10)}`,
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
-            "Phiếu đang sửa": kpi.value.inProgressCount,
-            "Thời gian hoàn thành TB (giờ)": kpi.value.avgCompletionHours,
-            "Doanh thu xưởng": kpi.value.monthlyRevenue,
-            "Phiếu quá hạn": kpi.value.overdueCount,
+            'Phiếu đang sửa': kpi.value.inProgressCount,
+            'Thời gian hoàn thành TB (giờ)': kpi.value.avgCompletionHours,
+            'Doanh thu xưởng': kpi.value.monthlyRevenue,
+            'Phiếu quá hạn': kpi.value.overdueCount,
           },
         ],
       },
       {
-        name: "Phiếu sửa chữa",
+        name: 'Phiếu sửa chữa',
         rows: repairOrders.value.map((item) => ({
-          "Mã phiếu": item.orderCode,
-          "Khách hàng": item.customerName,
-          "Thông tin xe": item.vehicleInfo,
-          "Kỹ thuật viên": item.technicianName,
-          "Trạng thái": item.status,
-          "Ngày bắt đầu": item.startedAt,
-          "Tiền công": item.laborFee,
+          'Mã phiếu': item.orderCode,
+          'Khách hàng': item.customerName,
+          'Thông tin xe': item.vehicleInfo,
+          'Kỹ thuật viên': item.technicianName,
+          'Trạng thái': item.status,
+          'Ngày bắt đầu': item.startedAt,
+          'Tiền công': item.laborFee,
         })),
       },
       {
-        name: "So sánh doanh thu",
+        name: 'So sánh doanh thu',
         rows: chartXAxisData.value.map((month, index) => ({
           Tháng: month,
-          "Doanh thu xưởng": chartData.value[0]?.data[index] ?? 0,
-          "Doanh thu bán xe": chartData.value[1]?.data[index] ?? 0,
+          'Doanh thu xưởng': chartData.value[0]?.data[index] ?? 0,
+          'Doanh thu bán xe': chartData.value[1]?.data[index] ?? 0,
         })),
       },
     ],
@@ -213,9 +199,9 @@ async function loadData() {
   loading.value = true;
   try {
     const data = await statisticsApi.getWorkshopOverview(
-      currentPeriod.value === "custom" ? undefined : currentPeriod.value,
+      currentPeriod.value === 'custom' ? undefined : currentPeriod.value,
       periodStart.value,
-      periodEnd.value,
+      periodEnd.value
     );
     kpi.value = data.kpi;
     repairOrders.value = data.repairOrders;
@@ -224,11 +210,11 @@ async function loadData() {
       chartXAxisData.value = data.revenueComparisonChart.map((x) => x.month);
       chartData.value = [
         {
-          name: "Doanh thu xưởng",
+          name: 'Doanh thu xưởng',
           data: data.revenueComparisonChart.map((x) => x.workshopRevenue),
         },
         {
-          name: "Doanh thu bán xe",
+          name: 'Doanh thu bán xe',
           data: data.revenueComparisonChart.map((x) => x.retailRevenue),
         },
       ];
@@ -244,39 +230,34 @@ async function loadData() {
     repairOrders.value = [];
     chartXAxisData.value = [];
     chartData.value = [
-      { name: "Doanh thu xưởng", data: [] },
-      { name: "Doanh thu bán xe", data: [] },
+      { name: 'Doanh thu xưởng', data: [] },
+      { name: 'Doanh thu bán xe', data: [] },
     ];
   } finally {
     loading.value = false;
   }
 }
 
-function statusType(
-  status: string,
-): "primary" | "success" | "info" | "danger" | "warning" {
-  const map: Record<
-    string,
-    "primary" | "success" | "info" | "danger" | "warning"
-  > = {
-    "Đang sửa": "warning",
-    "Chờ phụ tùng": "info",
-    "Sẵn sàng bàn giao": "success",
-    "Đã bàn giao": "success",
+function statusType(status: string): 'primary' | 'success' | 'info' | 'danger' | 'warning' {
+  const map: Record<string, 'primary' | 'success' | 'info' | 'danger' | 'warning'> = {
+    'Đang sửa': 'warning',
+    'Chờ phụ tùng': 'info',
+    'Sẵn sàng bàn giao': 'success',
+    'Đã bàn giao': 'success',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
 function formatDate(iso: string) {
-  if (!iso) return "-";
-  return new Date(iso).toLocaleDateString("vi-VN");
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('vi-VN');
 }
 
 onMounted(() => {

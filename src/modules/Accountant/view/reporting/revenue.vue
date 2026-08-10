@@ -13,11 +13,7 @@
             v-model:end-date="periodEnd"
             @update:modelValue="onPeriodChange"
           />
-          <ElButton
-            type="primary"
-            :disabled="loading"
-            @click="exportRevenueExcel"
-          >
+          <ElButton type="primary" :disabled="loading" @click="exportRevenueExcel">
             <ArtSvgIcon icon="ri:file-excel-2-line" />
             Xuất Excel
           </ElButton>
@@ -32,9 +28,7 @@
         :description="`${data.summary.revenueChangePercentage >= 0 ? 'Tăng' : 'Giảm'} ${Math.abs(data.summary.revenueChangePercentage).toFixed(1)}%`"
         icon="ri:money-dollar-circle-line"
         :icon-style="
-          data.summary.revenueChangePercentage < 0
-            ? 'bg-report-red-dark'
-            : 'bg-report-red'
+          data.summary.revenueChangePercentage < 0 ? 'bg-report-red-dark' : 'bg-report-red'
         "
       />
       <ArtStatsCard
@@ -86,10 +80,7 @@
       >
         <ElTableColumn type="expand">
           <template #default="{ row }">
-            <div
-              v-if="detailMap[row.reportDay]?.loading"
-              class="reporting-table__expand-loading"
-            >
+            <div v-if="detailMap[row.reportDay]?.loading" class="reporting-table__expand-loading">
               Đang tải chi tiết...
             </div>
             <ElTable
@@ -99,77 +90,38 @@
               empty-text="Không có chi tiết"
               :show-header="true"
             >
-              <ElTableColumn
-                prop="productName"
-                label="Sản phẩm"
-                min-width="220"
-              />
-              <ElTableColumn
-                prop="employeeName"
-                label="Nhân viên bán"
-                min-width="160"
-              />
-              <ElTableColumn
-                prop="quantity"
-                label="Số lượng"
-                min-width="100"
-                align="right"
-              />
-              <ElTableColumn
-                prop="revenue"
-                label="Doanh thu"
-                min-width="160"
-                align="right"
-              >
-                <template #default="{ row }">{{
-                  formatCurrency(row.revenue)
-                }}</template>
+              <ElTableColumn prop="productName" label="Sản phẩm" min-width="220" />
+              <ElTableColumn prop="employeeName" label="Nhân viên bán" min-width="160" />
+              <ElTableColumn prop="quantity" label="Số lượng" min-width="100" align="right" />
+              <ElTableColumn prop="revenue" label="Doanh thu" min-width="160" align="right">
+                <template #default="{ row }">{{ formatCurrency(row.revenue) }}</template>
               </ElTableColumn>
             </ElTable>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="reportDay" label="Ngày" min-width="140" />
-        <ElTableColumn
-          prop="totalRevenue"
-          label="Doanh thu"
-          min-width="160"
-          align="right"
-        >
-          <template #default="{ row }">{{
-            formatCurrency(row.totalRevenue)
-          }}</template>
+        <ElTableColumn prop="totalRevenue" label="Doanh thu" min-width="160" align="right">
+          <template #default="{ row }">{{ formatCurrency(row.totalRevenue) }}</template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="totalProfit"
-          label="Lợi nhuận"
-          min-width="160"
-          align="right"
-        >
-          <template #default="{ row }">{{
-            formatCurrency(row.totalProfit)
-          }}</template>
+        <ElTableColumn prop="totalProfit" label="Lợi nhuận" min-width="160" align="right">
+          <template #default="{ row }">{{ formatCurrency(row.totalProfit) }}</template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="orderCount"
-          label="Số đơn"
-          min-width="110"
-          align="right"
-        />
+        <ElTableColumn prop="orderCount" label="Số đơn" min-width="110" align="right" />
       </ElTable>
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import * as echarts from "echarts";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import { statisticsApi } from "@/api/operations";
-import type * as Statistical from "@/types/api/statistical";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import ReportPeriodSwitcher from "./ReportPeriodSwitcher.vue";
+import { onMounted, onUnmounted, ref } from 'vue';
+import * as echarts from 'echarts';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import { statisticsApi } from '@/api/operations';
+import type * as Statistical from '@/types/api/statistical';
+import ReportPageHeader from './ReportPageHeader.vue';
+import ReportPeriodSwitcher from './ReportPeriodSwitcher.vue';
 
 const trendChartRef = ref<HTMLElement | null>(null);
 const topProductChartRef = ref<HTMLElement | null>(null);
@@ -177,14 +129,14 @@ const paymentChartRef = ref<HTMLElement | null>(null);
 let trendChart: echarts.ECharts | null = null;
 let topProductChart: echarts.ECharts | null = null;
 let paymentChart: echarts.ECharts | null = null;
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const chartTextColor = '#aeb0bd';
+const chartAxisLineColor = 'rgba(255, 255, 255, 0.16)';
+const chartGridLineColor = 'rgba(255, 255, 255, 0.1)';
 
 const loading = ref(false);
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref('');
+const periodEnd = ref('');
 
 const data = ref<Statistical.AdminRevenueAnalysisResponse>({
   summary: {} as Statistical.DashboardStatsResponse,
@@ -214,9 +166,9 @@ async function onExpandChange(row: Statistical.DailyRevenueTableResponse) {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
@@ -226,13 +178,10 @@ function onPeriodChange() {
 
 async function load() {
   try {
-    data.value = await statisticsApi.getRevenueAnalysis(
-      periodStart.value,
-      periodEnd.value,
-    );
+    data.value = await statisticsApi.getRevenueAnalysis(periodStart.value, periodEnd.value);
     renderCharts();
   } catch (e) {
-    console.error("Failed to load revenue analysis:", e);
+    console.error('Failed to load revenue analysis:', e);
   }
 }
 
@@ -240,34 +189,34 @@ function renderCharts() {
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
     trendChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis" },
-      legend: { data: ["Doanh thu"], textStyle: { color: chartTextColor } },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['Doanh thu'], textStyle: { color: chartTextColor } },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: data.value.revenueTrend.map((r) => r.reportDay),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: { color: chartTextColor },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       series: [
         {
-          name: "Doanh thu",
-          type: "line",
+          name: 'Doanh thu',
+          type: 'line',
           smooth: true,
           data: data.value.revenueTrend.map((r) => r.totalRevenue),
-          itemStyle: { color: "#e84a4a" },
-          lineStyle: { color: "#e84a4a" },
+          itemStyle: { color: '#e84a4a' },
+          lineStyle: { color: '#e84a4a' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(232, 74, 74, 0.32)" },
-              { offset: 1, color: "rgba(232, 74, 74, 0)" },
+              { offset: 0, color: 'rgba(232, 74, 74, 0.32)' },
+              { offset: 1, color: 'rgba(232, 74, 74, 0)' },
             ]),
           },
         },
@@ -275,30 +224,29 @@ function renderCharts() {
     });
   }
   if (topProductChartRef.value) {
-    if (!topProductChart)
-      topProductChart = echarts.init(topProductChartRef.value);
+    if (!topProductChart) topProductChart = echarts.init(topProductChartRef.value);
     const top = data.value.topProductsByRevenue.slice(0, 8);
     topProductChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: { color: chartTextColor },
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
-        type: "category",
+        type: 'category',
         data: top.map((r) => r.productName).reverse(),
         axisLabel: { color: chartTextColor },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: top.map((r) => r.revenue).reverse(),
-          itemStyle: { color: "#e84a4a" },
+          itemStyle: { color: '#e84a4a' },
         },
       ],
     });
@@ -306,17 +254,17 @@ function renderCharts() {
   if (paymentChartRef.value) {
     if (!paymentChart) paymentChart = echarts.init(paymentChartRef.value);
     paymentChart.setOption({
-      backgroundColor: "transparent",
-      color: ["#e84a4a", "#ff6b6b", "#f97316", "#22c55e", "#3b82f6", "#a855f7"],
+      backgroundColor: 'transparent',
+      color: ['#e84a4a', '#ff6b6b', '#f97316', '#22c55e', '#3b82f6', '#a855f7'],
       textStyle: { color: chartTextColor },
-      tooltip: { trigger: "item" },
+      tooltip: { trigger: 'item' },
       legend: { bottom: 0, textStyle: { color: chartTextColor } },
       series: [
         {
-          type: "pie",
-          radius: ["40%", "70%"],
+          type: 'pie',
+          radius: ['40%', '70%'],
           data: data.value.paymentMethodDistribution.map((d) => ({
-            name: d.methodName || "Khác",
+            name: d.methodName || 'Khác',
             value: d.value,
           })),
         },
@@ -326,13 +274,13 @@ function renderCharts() {
 }
 
 function exportRevenueExcel() {
-  const start = periodStart.value || "N/A";
-  const end = periodEnd.value || "N/A";
+  const start = periodStart.value || 'N/A';
+  const end = periodEnd.value || 'N/A';
   exportReportWorkbook({
     fileName: `Bao_cao_ban_hang_${start}_${end}`,
     sheets: [
       {
-        name: "Doanh thu theo ngay",
+        name: 'Doanh thu theo ngay',
         rows: (data.value.dailyTableData || []).map((d: any) => ({
           Ngay: d.reportDay,
           Doanh_thu: d.totalRevenue,
@@ -341,7 +289,7 @@ function exportRevenueExcel() {
         })),
       },
       {
-        name: "Xu huong doanh thu",
+        name: 'Xu huong doanh thu',
         rows: (data.value.revenueTrend || []).map((r: any) => ({
           Ngay: r.reportDay,
           Doanh_thu: r.totalRevenue,
@@ -358,10 +306,10 @@ function handleResize() {
 }
 onMounted(() => {
   load();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   trendChart?.dispose();
   topProductChart?.dispose();
   paymentChart?.dispose();

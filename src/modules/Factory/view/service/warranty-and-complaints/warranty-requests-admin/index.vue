@@ -3,7 +3,7 @@
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
         <h1 class="text-2xl font-bold">
-          {{ $t("menus.service.warrantyAndComplaints.warrantyRequests") }}
+          {{ $t('menus.service.warrantyAndComplaints.warrantyRequests') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
           Danh sách yêu cầu bảo hành kỹ thuật. Chọn 1 hồ sơ để xem chi tiết.
@@ -19,21 +19,14 @@
         <ElTableColumn prop="statusText" label="Trạng thái" min-width="200" />
         <ElTableColumn label="Thao tác" min-width="140">
           <template #default="scope">
-            <ElButton
-              size="small"
-              type="primary"
-              @click="openDetail(scope.row.id)"
-            >
+            <ElButton size="small" type="primary" @click="openDetail(scope.row.id)">
               Xem chi tiết
             </ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
 
-      <div
-        v-if="!loading && rows.length === 0"
-        class="mt-4 text-sm text-slate-500"
-      >
+      <div v-if="!loading && rows.length === 0" class="mt-4 text-sm text-slate-500">
         Chưa có dữ liệu.
       </div>
     </div>
@@ -41,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
@@ -57,13 +50,11 @@ type Row = {
 };
 
 const rows = ref<Row[]>([]);
-import { WarrantyClaimApi } from "@/api/service/warranty-claim.api";
-import { ElMessage } from "element-plus";
+import { WarrantyClaimApi } from '@/api/service/warranty-claim.api';
+import { ElMessage } from 'element-plus';
 
 function openDetail(id: number) {
-  router
-    .push({ name: "ServiceWarrantyClaimDetail", params: { id } })
-    .catch(() => null);
+  router.push({ name: 'ServiceWarrantyClaimDetail', params: { id } }).catch(() => null);
 }
 
 async function load() {
@@ -72,7 +63,7 @@ async function load() {
     const res = await WarrantyClaimApi.getList();
     rows.value = res.items || [];
   } catch (err: any) {
-    ElMessage.error(err?.message || "Lỗi khi tải danh sách");
+    ElMessage.error(err?.message || 'Lỗi khi tải danh sách');
     rows.value = [];
   } finally {
     loading.value = false;

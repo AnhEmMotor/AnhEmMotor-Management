@@ -18,9 +18,7 @@
       >
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="font-bold text-gray-800 text-sm"
-              >Cơ cấu công nợ theo nhà cung cấp</span
-            >
+            <span class="font-bold text-gray-800 text-sm">Cơ cấu công nợ theo nhà cung cấp</span>
           </div>
         </template>
         <div class="w-full flex items-center justify-center min-h-[200px]">
@@ -33,9 +31,7 @@
       <template #header>
         <div class="flex items-center gap-4 justify-between">
           <div class="flex items-center gap-4">
-            <h4 class="m-0 font-bold text-gray-800 text-lg">
-              Quản lý Công nợ nhà cung cấp
-            </h4>
+            <h4 class="m-0 font-bold text-gray-800 text-lg">Quản lý Công nợ nhà cung cấp</h4>
           </div>
           <div class="flex gap-2">
             <ElDatePicker
@@ -68,11 +64,7 @@
         </div>
       </template>
 
-      <ArtTable
-        :data="supplierDebts"
-        :columns="supplierColumns"
-        v-loading="loading"
-      >
+      <ArtTable :data="supplierDebts" :columns="supplierColumns" v-loading="loading">
         <template #totalDebt="{ row }">
           <span class="font-bold text-red-500">
             {{ formatCurrency(row.totalDebt) }}
@@ -89,12 +81,7 @@
             >
               Thanh toán
             </ElButton>
-            <ElButton
-              type="primary"
-              size="small"
-              link
-              @click="openPaymentLogs(row)"
-            >
+            <ElButton type="primary" size="small" link @click="openPaymentLogs(row)">
               Lịch sử thanh toán
             </ElButton>
           </div>
@@ -129,8 +116,7 @@
             }}</span>
           </div>
           <div class="text-xs text-gray-500 mt-2">
-            Hệ thống sẽ tự động cấn trừ số tiền thanh toán vào các đơn nợ từ cũ
-            nhất đến mới nhất.
+            Hệ thống sẽ tự động cấn trừ số tiền thanh toán vào các đơn nợ từ cũ nhất đến mới nhất.
           </div>
         </div>
         <ElForm label-position="top">
@@ -162,9 +148,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="paymentFormVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="paying" @click="submitPayment"
-            >Xác nhận</ElButton
-          >
+          <ElButton type="primary" :loading="paying" @click="submitPayment">Xác nhận</ElButton>
         </div>
       </template>
     </ElDialog>
@@ -180,28 +164,22 @@
         <ElTable :data="paymentLogs" border stripe style="width: 100%">
           <ElTableColumn label="Thời gian" width="160" align="center">
             <template #default="{ row }">
-              {{ new Date(row.paymentDate).toLocaleString("vi-VN") }}
+              {{ new Date(row.paymentDate).toLocaleString('vi-VN') }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Người trả" min-width="150">
             <template #default="{ row }">
-              {{
-                row.createdBy?.fullName || row.createdBy?.userName || "Hệ thống"
-              }}
+              {{ row.createdBy?.fullName || row.createdBy?.userName || 'Hệ thống' }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Số tiền trả" width="150" align="right">
             <template #default="{ row }">
-              <span class="text-success font-bold">{{
-                formatCurrency(row.amountPaid)
-              }}</span>
+              <span class="text-success font-bold">{{ formatCurrency(row.amountPaid) }}</span>
             </template>
           </ElTableColumn>
           <ElTableColumn label="Dư nợ còn lại" width="150" align="right">
             <template #default="{ row }">
-              <span class="text-danger">{{
-                formatCurrency(row.remainingDebt)
-              }}</span>
+              <span class="text-danger">{{ formatCurrency(row.remainingDebt) }}</span>
             </template>
           </ElTableColumn>
           <ElTableColumn label="Hình ảnh" width="120" align="center">
@@ -243,7 +221,7 @@
         <ElTable :data="missingProofsData" border stripe style="width: 100%">
           <ElTableColumn label="Thời gian" width="160" align="center">
             <template #default="{ row }">
-              {{ new Date(row.paymentDate).toLocaleString("vi-VN") }}
+              {{ new Date(row.paymentDate).toLocaleString('vi-VN') }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Nhà cung cấp" min-width="150">
@@ -253,26 +231,17 @@
           </ElTableColumn>
           <ElTableColumn label="Người trả" min-width="150">
             <template #default="{ row }">
-              {{
-                row.createdBy?.fullName || row.createdBy?.userName || "Hệ thống"
-              }}
+              {{ row.createdBy?.fullName || row.createdBy?.userName || 'Hệ thống' }}
             </template>
           </ElTableColumn>
           <ElTableColumn label="Số tiền trả" width="150" align="right">
             <template #default="{ row }">
-              <span class="text-success font-bold">{{
-                formatCurrency(row.amountPaid)
-              }}</span>
+              <span class="text-success font-bold">{{ formatCurrency(row.amountPaid) }}</span>
             </template>
           </ElTableColumn>
           <ElTableColumn label="Thao tác" width="120" align="center">
             <template #default="{ row }">
-              <ElButton
-                type="success"
-                size="small"
-                link
-                @click="viewProofImages(row)"
-              >
+              <ElButton type="success" size="small" link @click="viewProofImages(row)">
                 Thêm ảnh
               </ElButton>
             </template>
@@ -343,10 +312,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="imageViewerVisible = false">Hủy</ElButton>
-          <ElButton
-            type="primary"
-            :loading="savingImages"
-            @click="saveProofImages"
+          <ElButton type="primary" :loading="savingImages" @click="saveProofImages"
             >Lưu thay đổi</ElButton
           >
         </div>
@@ -356,13 +322,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
-import { Refresh, Plus } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { DebtApi } from "@/api/supplier";
-import * as echarts from "echarts";
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { Refresh, Plus } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { DebtApi } from '@/api/supplier';
+import * as echarts from 'echarts';
 
-defineOptions({ name: "InventoryDebt" });
+defineOptions({ name: 'InventoryDebt' });
 
 // const activeTab = ref("suppliers");
 
@@ -377,26 +343,26 @@ const onDateFilterChange = () => {
 };
 
 const supplierColumns = [
-  { label: "Nhà cung cấp", prop: "name", minWidth: 200 },
+  { label: 'Nhà cung cấp', prop: 'name', minWidth: 200 },
   {
-    label: "Số điện thoại",
-    prop: "phone",
+    label: 'Số điện thoại',
+    prop: 'phone',
     width: 150,
-    align: "right",
+    align: 'right',
   },
   {
-    label: "Còn nợ",
-    prop: "totalDebt",
+    label: 'Còn nợ',
+    prop: 'totalDebt',
     width: 180,
     useSlot: true,
-    align: "right",
+    align: 'right',
   },
   {
-    label: "Thao tác",
-    prop: "operation",
+    label: 'Thao tác',
+    prop: 'operation',
     width: 240,
     useSlot: true,
-    align: "center",
+    align: 'center',
   },
 ];
 
@@ -425,14 +391,14 @@ const fetchSupplierDebts = async () => {
 
     totalSuppliersDebt.value = supplierDebts.value.reduce(
       (acc, curr) => acc + (curr.totalDebt || 0),
-      0,
+      0
     );
     nextTick(() => {
       updateChart();
     });
   } catch (err) {
     console.error(err);
-    ElMessage.error("Không thể tải danh sách công nợ");
+    ElMessage.error('Không thể tải danh sách công nợ');
   } finally {
     loading.value = false;
   }
@@ -443,16 +409,16 @@ const exportSupplierDebtExcel = async () => {
   try {
     const blob = await DebtApi.exportExcel();
     const url = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "Cong_no_nha_cung_cap.xlsx");
+    link.setAttribute('download', 'Cong_no_nha_cung_cap.xlsx');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error(error);
-    ElMessage.error("Không thể xuất công nợ nhà cung cấp");
+    ElMessage.error('Không thể xuất công nợ nhà cung cấp');
   } finally {
     exporting.value = false;
   }
@@ -490,14 +456,14 @@ const submitPayment = async () => {
     await DebtApi.paySupplierDebt(
       selectedSupplierToPay.value.id,
       paymentAmount.value,
-      proofUrls.length > 0 ? proofUrls : undefined,
+      proofUrls.length > 0 ? proofUrls : undefined
     );
-    ElMessage.success("Thanh toán công nợ thành công!");
+    ElMessage.success('Thanh toán công nợ thành công!');
     paymentFormVisible.value = false;
     fetchSupplierDebts();
   } catch (err: any) {
     console.error(err);
-    ElMessage.error(err.response?.data?.Message || "Thanh toán thất bại");
+    ElMessage.error(err.response?.data?.Message || 'Thanh toán thất bại');
   } finally {
     paying.value = false;
   }
@@ -521,20 +487,20 @@ const openPaymentLogs = async (supplier: any) => {
     }
   } catch (err: any) {
     console.error(err);
-    ElMessage.error("Không thể lấy lịch sử thanh toán");
+    ElMessage.error('Không thể lấy lịch sử thanh toán');
   } finally {
     logsLoading.value = false;
   }
 };
 
-const formatCurrency = (val: number) => val?.toLocaleString() + " VNĐ";
+const formatCurrency = (val: number) => val?.toLocaleString() + ' VNĐ';
 const formatCurrencyInput = (value: string | number) => {
-  if (!value) return "";
-  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (!value) return '';
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 const parseCurrencyInput = (value: string) => {
-  if (!value) return "0";
-  return value.replace(/\$\s?|(,*)/g, "");
+  if (!value) return '0';
+  return value.replace(/\$\s?|(,*)/g, '');
 };
 
 const loading = ref(false);
@@ -581,7 +547,7 @@ const mpFetch = async () => {
       mpTotal.value = 0;
     }
   } catch (err) {
-    ElMessage.error("Không thể lấy dữ liệu thiếu ảnh minh chứng");
+    ElMessage.error('Không thể lấy dữ liệu thiếu ảnh minh chứng');
   } finally {
     missingProofsLoading.value = false;
   }
@@ -608,7 +574,7 @@ const viewProofImages = async (row: any) => {
         currentImageUrls.value = urls;
       }
     } catch (e) {
-      console.error("Failed to load image URLs", e);
+      console.error('Failed to load image URLs', e);
     }
   }
 };
@@ -636,7 +602,7 @@ const saveProofImages = async () => {
     }
 
     await DebtApi.updateProofImages(selectedDebtLogId.value, proofUrls);
-    ElMessage.success("Cập nhật ảnh minh chứng thành công!");
+    ElMessage.success('Cập nhật ảnh minh chứng thành công!');
     imageViewerVisible.value = false;
 
     // Refresh current views
@@ -649,7 +615,7 @@ const saveProofImages = async () => {
     }
   } catch (err: any) {
     console.error(err);
-    ElMessage.error(err.response?.data?.Message || "Cập nhật thất bại");
+    ElMessage.error(err.response?.data?.Message || 'Cập nhật thất bại');
   } finally {
     savingImages.value = false;
   }
@@ -673,44 +639,44 @@ const updateChart = () => {
 
   debtChart.setOption({
     tooltip: {
-      trigger: "item",
-      formatter: "{b}: <b>{c} VNĐ</b> ({d}%)",
+      trigger: 'item',
+      formatter: '{b}: <b>{c} VNĐ</b> ({d}%)',
     },
     legend: {
-      orient: "vertical",
-      left: "5%",
-      top: "center",
+      orient: 'vertical',
+      left: '5%',
+      top: 'center',
       textStyle: {
         fontSize: 13,
-        color: "#4b5563",
+        color: '#4b5563',
       },
       itemWidth: 10,
       itemHeight: 10,
       formatter: (name: string) => {
-        return name.length > 25 ? name.substring(0, 25) + "..." : name;
+        return name.length > 25 ? name.substring(0, 25) + '...' : name;
       },
     },
     series: [
       {
-        name: "Công nợ",
-        type: "pie",
-        radius: ["40%", "75%"],
-        center: ["65%", "50%"],
+        name: 'Công nợ',
+        type: 'pie',
+        radius: ['40%', '75%'],
+        center: ['65%', '50%'],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 6,
-          borderColor: "#fff",
+          borderColor: '#fff',
           borderWidth: 2,
         },
         label: {
           show: false,
-          position: "center",
+          position: 'center',
         },
         emphasis: {
           label: {
             show: true,
             fontSize: 14,
-            fontWeight: "bold",
+            fontWeight: 'bold',
           },
         },
         labelLine: {
@@ -720,16 +686,16 @@ const updateChart = () => {
       },
     ],
     color: [
-      "#3b82f6",
-      "#22c55e",
-      "#f59e0b",
-      "#ef4444",
-      "#8b5cf6",
-      "#06b6d4",
-      "#ec4899",
-      "#14b8a6",
-      "#f97316",
-      "#6366f1",
+      '#3b82f6',
+      '#22c55e',
+      '#f59e0b',
+      '#ef4444',
+      '#8b5cf6',
+      '#06b6d4',
+      '#ec4899',
+      '#14b8a6',
+      '#f97316',
+      '#6366f1',
     ],
   });
 };
@@ -740,11 +706,11 @@ const handleResize = () => {
 
 onMounted(() => {
   fetchSupplierDebts();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   debtChart?.dispose();
 });
 </script>

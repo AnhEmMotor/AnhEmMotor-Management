@@ -2,10 +2,10 @@
   <div class="resp-page page-content mb-5">
     <div class="mb-15 text-center">
       <h1 class="my-4 text-2xl font-semibold leading-tight">
-        {{ $t("admin.t92") }}
+        {{ $t('admin.t92') }}
       </h1>
       <p class="m-0 text-base leading-relaxed text-g-700">
-        {{ $t("admin.t93") }}
+        {{ $t('admin.t93') }}
       </p>
     </div>
 
@@ -17,9 +17,9 @@
               {{ messageCount }}
             </div>
             <div class="text-sm font-medium text-gray-900 mb-1">
-              {{ $t("admin.t94") }}
+              {{ $t('admin.t94') }}
             </div>
-            <div class="text-xs text-gray-500">{{ $t("admin.t95") }}</div>
+            <div class="text-xs text-gray-500">{{ $t('admin.t95') }}</div>
           </div>
         </ElCard>
       </ElCol>
@@ -27,12 +27,12 @@
         <ElCard class="h-full border-0" :body-style="{ padding: '20px' }">
           <div class="text-center">
             <ElTag :type="connectionTagType" size="large" class="mb-2">
-              {{ wsClient?.connectionStatusText || "Chưaliềntiếp" }}
+              {{ wsClient?.connectionStatusText || 'Chưaliềntiếp' }}
             </ElTag>
             <div class="text-sm font-medium text-gray-900">
-              {{ $t("admin.t96") }}
+              {{ $t('admin.t96') }}
             </div>
-            <div class="text-xs text-gray-500">{{ $t("admin.t97") }}</div>
+            <div class="text-xs text-gray-500">{{ $t('admin.t97') }}</div>
           </div>
         </ElCard>
       </ElCol>
@@ -43,9 +43,9 @@
               {{ reconnectCount }}
             </div>
             <div class="text-sm font-medium text-gray-900 mb-1">
-              {{ $t("admin.t98") }}
+              {{ $t('admin.t98') }}
             </div>
-            <div class="text-xs text-gray-500">{{ $t("admin.t99") }}</div>
+            <div class="text-xs text-gray-500">{{ $t('admin.t99') }}</div>
           </div>
         </ElCard>
       </ElCol>
@@ -56,29 +56,21 @@
         <ElCard class="h-full border-0">
           <template #header>
             <div class="flex items-center justify-between">
-              <span class="text-base font-bold">{{ $t("admin.t100") }}</span>
+              <span class="text-base font-bold">{{ $t('admin.t100') }}</span>
               <ElTag :type="connectionTagType" size="large">
-                {{ wsClient?.connectionStatusText || "Chưaliềntiếp" }}
+                {{ wsClient?.connectionStatusText || 'Chưaliềntiếp' }}
               </ElTag>
             </div>
           </template>
 
           <ElForm :model="connectForm" label-width="100px" class="max-w-md">
             <ElFormItem label="phụcvụthiết bịDiaChi">
-              <ElInput
-                v-model="connectForm.url"
-                placeholder="ws://localhost:8080/ws"
-                clearable
-              />
+              <ElInput v-model="connectForm.url" placeholder="ws://localhost:8080/ws" clearable />
             </ElFormItem>
             <ElFormItem label="liềntiếpvịmục">
               <ElSpace>
-                <ElCheckbox v-model="connectForm.autoReconnect"
-                  >từđộngtrùngliền</ElCheckbox
-                >
-                <ElCheckbox v-model="connectForm.heartbeat"
-                  >tâmnhảyđo</ElCheckbox
-                >
+                <ElCheckbox v-model="connectForm.autoReconnect">từđộngtrùngliền</ElCheckbox>
+                <ElCheckbox v-model="connectForm.heartbeat">tâmnhảyđo</ElCheckbox>
               </ElSpace>
             </ElFormItem>
             <ElFormItem>
@@ -89,18 +81,12 @@
                   :loading="isConnecting"
                   :disabled="isConnected"
                 >
-                  {{ isConnecting ? "liềntiếptrong..." : "liềntiếp" }}
+                  {{ isConnecting ? 'liềntiếptrong...' : 'liềntiếp' }}
                 </ElButton>
-                <ElButton
-                  type="danger"
-                  @click="handleDisconnect"
-                  :disabled="!isConnected"
-                >
+                <ElButton type="danger" @click="handleDisconnect" :disabled="!isConnected">
                   đoánmởliềntiếp
                 </ElButton>
-                <ElButton @click="handleReconnect" :disabled="isConnecting"
-                  >trùngliền</ElButton
-                >
+                <ElButton @click="handleReconnect" :disabled="isConnecting">trùngliền</ElButton>
               </ElSpace>
             </ElFormItem>
           </ElForm>
@@ -152,24 +138,15 @@
           <template #header>
             <div class="flex items-center justify-between">
               <span class="text-base font-bold">tiếpBộTinNhan</span>
-              <ElButton size="small" @click="clearMessages"
-                >xóakhôngGhi chép</ElButton
-              >
+              <ElButton size="small" @click="clearMessages">xóakhôngGhi chép</ElButton>
             </div>
           </template>
 
           <div class="message-container">
-            <div
-              v-for="(message, index) in messageList"
-              :key="index"
-              class="message-item"
-            >
+            <div v-for="(message, index) in messageList" :key="index" class="message-item">
               <div class="message-header">
-                <ElTag
-                  size="small"
-                  :type="message.type === 'received' ? 'success' : 'info'"
-                >
-                  {{ message.type === "received" ? "tiếpBộ" : "phátgửi" }}
+                <ElTag size="small" :type="message.type === 'received' ? 'success' : 'info'">
+                  {{ message.type === 'received' ? 'tiếpBộ' : 'phátgửi' }}
                 </ElTag>
                 <span class="message-time">{{ message.time }}</span>
               </div>
@@ -204,29 +181,23 @@
         >
           <template #title>
             <div class="flex items-start gap-2">
-              <span class="text-xs opacity-70 whitespace-nowrap">{{
-                log.time
-              }}</span>
+              <span class="text-xs opacity-70 whitespace-nowrap">{{ log.time }}</span>
               <span class="flex-1">{{ log.message }}</span>
             </div>
           </template>
         </ElAlert>
 
-        <ElEmpty
-          v-if="logList.length === 0"
-          description="TạmvôNhatKyGhi chép"
-          :image-size="100"
-        />
+        <ElEmpty v-if="logList.length === 0" description="TạmvôNhatKyGhi chép" :image-size="100" />
       </div>
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import WebSocketClient from "@/common/utils/socket";
-import { ElMessage } from "element-plus";
+import WebSocketClient from '@/common/utils/socket';
+import { ElMessage } from 'element-plus';
 
-defineOptions({ name: "WidgetsSocketChat" });
+defineOptions({ name: 'WidgetsSocketChat' });
 
 const wsClient = ref<WebSocketClient | null>(null);
 
@@ -239,19 +210,19 @@ let stopWatchConnection: (() => void) | null = null;
 let stopWatchStatus: (() => void) | null = null;
 
 const connectForm = ref({
-  url: "ws://localhost:8080/ws",
+  url: 'ws://localhost:8080/ws',
   autoReconnect: true,
   heartbeat: true,
 });
 
 const messageForm = ref({
-  type: "text",
-  content: "",
+  type: 'text',
+  content: '',
 });
 
 const messageList = ref<
   Array<{
-    type: "sent" | "received";
+    type: 'sent' | 'received';
     content: string;
     time: string;
   }>
@@ -259,22 +230,19 @@ const messageList = ref<
 
 const logList = ref<
   Array<{
-    type: "info" | "success" | "warning" | "error";
+    type: 'info' | 'success' | 'warning' | 'error';
     message: string;
     time: string;
   }>
 >([]);
 
 const connectionTagType = computed(() => {
-  if (isConnecting.value) return "warning";
-  if (isConnected.value) return "success";
-  return "danger";
+  if (isConnecting.value) return 'warning';
+  if (isConnected.value) return 'success';
+  return 'danger';
 });
 
-const addLog = (
-  type: "info" | "success" | "warning" | "error",
-  message: string,
-) => {
+const addLog = (type: 'info' | 'success' | 'warning' | 'error', message: string) => {
   logList.value.unshift({
     type,
     message,
@@ -286,7 +254,7 @@ const addLog = (
   }
 };
 
-const addMessage = (type: "sent" | "received", content: string) => {
+const addMessage = (type: 'sent' | 'received', content: string) => {
   messageList.value.unshift({
     type,
     content,
@@ -300,8 +268,8 @@ const addMessage = (type: "sent" | "received", content: string) => {
 
 const handleSocketMessage = (event: MessageEvent) => {
   messageCount.value++;
-  addMessage("received", event.data);
-  addLog("success", `BộđếnTinNhan: ${event.data}`);
+  addMessage('received', event.data);
+  addLog('success', `BộđếnTinNhan: ${event.data}`);
 };
 
 const handleConnect = () => {
@@ -319,7 +287,7 @@ const handleConnect = () => {
   }
 
   isConnecting.value = true;
-  addLog("info", `Bắt đầuliềntiếpđến ${connectForm.value.url}`);
+  addLog('info', `Bắt đầuliềntiếpđến ${connectForm.value.url}`);
 
   try {
     wsClient.value = WebSocketClient.getInstance({
@@ -339,37 +307,34 @@ const handleConnect = () => {
         isConnecting.value = false;
 
         if (connected) {
-          addLog("success", "WebSocketliềntiếpThanhCong");
+          addLog('success', 'WebSocketliềntiếpThanhCong');
           reconnectCount.value = 0;
         }
       },
-      { immediate: true },
+      { immediate: true }
     );
 
     stopWatchStatus = watch(
       () => wsClient.value?.connectionStatusText,
       (status) => {
-        if (status && status.includes("trùngliềntrong")) {
+        if (status && status.includes('trùngliềntrong')) {
           reconnectCount.value++;
-          addLog(
-            "warning",
-            `từđộngtrùngliềntrong (thứ${reconnectCount.value}lần)`,
-          );
+          addLog('warning', `từđộngtrùngliềntrong (thứ${reconnectCount.value}lần)`);
         }
-      },
+      }
     );
   } catch (error) {
     isConnecting.value = false;
     const errorMessage = error instanceof Error ? error.message : String(error);
-    addLog("error", `liềntiếpThatBai: ${errorMessage}`);
-    ElMessage.error("liềntiếpThatBai，Vui lòngTìmphụcvụthiết bịDiaChi");
+    addLog('error', `liềntiếpThatBai: ${errorMessage}`);
+    ElMessage.error('liềntiếpThatBai，Vui lòngTìmphụcvụthiết bịDiaChi');
   }
 };
 
 const handleDisconnect = () => {
   if (wsClient.value) {
     wsClient.value.close();
-    addLog("info", "tayđộngđoánmởWebSocketliềntiếp");
+    addLog('info', 'tayđộngđoánmởWebSocketliềntiếp');
   }
 
   if (stopWatchConnection) {
@@ -394,40 +359,40 @@ const handleReconnect = () => {
 
 const handleSendMessage = () => {
   if (!isConnected.value || !wsClient.value) {
-    ElMessage.warning("Vui lòngxâylậpWebSocketliềntiếp");
+    ElMessage.warning('Vui lòngxâylậpWebSocketliềntiếp');
     return;
   }
 
   let message = messageForm.value.content;
 
   switch (messageForm.value.type) {
-    case "json":
+    case 'json':
       try {
         JSON.parse(message);
       } catch {
-        ElMessage.error("Vui lòng nhậpcóhiệucủaJSONcáchkiểuDữ liệu");
+        ElMessage.error('Vui lòng nhậpcóhiệucủaJSONcáchkiểuDữ liệu');
         return;
       }
       break;
-    case "ping":
-      message = "ping";
+    case 'ping':
+      message = 'ping';
       break;
   }
 
   try {
     wsClient.value.send(message);
-    addMessage("sent", message);
-    addLog("info", `phátgửiTinNhan: ${message}`);
-    ElMessage.success("TinNhanphátgửiThanhCong");
+    addMessage('sent', message);
+    addLog('info', `phátgửiTinNhan: ${message}`);
+    ElMessage.success('TinNhanphátgửiThanhCong');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    addLog("error", `phátgửiThatBai: ${errorMessage}`);
-    ElMessage.error("phátgửiTinNhanThatBai");
+    addLog('error', `phátgửiThatBai: ${errorMessage}`);
+    ElMessage.error('phátgửiTinNhanThatBai');
   }
 };
 
 const clearMessageForm = () => {
-  messageForm.value.content = "";
+  messageForm.value.content = '';
 };
 
 const clearMessages = () => {
@@ -443,9 +408,9 @@ onUnmounted(() => {
 });
 
 onMounted(() => {
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener('visibilitychange', () => {
     if (document.hidden && isConnected.value) {
-      addLog("info", "trangmặtẨn，Duy trìliềntiếp");
+      addLog('info', 'trangmặtẨn，Duy trìliềntiếp');
     }
   });
 });

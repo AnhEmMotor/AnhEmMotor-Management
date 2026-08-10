@@ -1,4 +1,4 @@
-﻿import request from "@/common/utils/http";
+﻿import request from '@/common/utils/http';
 
 export interface InventoryIndexResponse {
   totalProducts: number;
@@ -10,7 +10,7 @@ export interface InventoryIndexResponse {
 export const inventoryApi = {
   getIndex() {
     return request.get<InventoryIndexResponse>({
-      url: "/api/v1/statistics/warehouse-report",
+      url: '/api/v1/statistics/warehouse-report',
     });
   },
 };

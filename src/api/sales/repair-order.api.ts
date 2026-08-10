@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface RepairOrderDetail {
   id?: number;
@@ -11,7 +11,7 @@ export interface RepairOrderDetail {
   count: number;
   price: number;
   laborCost: number;
-  type: "Service" | "Part";
+  type: 'Service' | 'Part';
   notes?: string;
 }
 
@@ -112,10 +112,9 @@ export interface CompleteRepairOrderPayload {
 
 export const RepairOrderApi = {
   getList(params: any) {
-    // Support both { Page, PageSize } (direct) and { current, size } (paginator) formats
     const { current, size, Page, PageSize, ...rest } = params;
     return request.get<RepairOrderList>({
-      url: "/api/v1/RepairOrders",
+      url: '/api/v1/RepairOrders',
       params: {
         Page: Page ?? current ?? 1,
         PageSize: PageSize ?? size ?? 10,
@@ -134,7 +133,7 @@ export const RepairOrderApi = {
 
   create(data: CreateRepairOrderPayload) {
     return request.post<number>({
-      url: "/api/v1/RepairOrders",
+      url: '/api/v1/RepairOrders',
       data,
     });
   },
@@ -148,7 +147,7 @@ export const RepairOrderApi = {
 
   issueParts(data: IssuePartsPayload) {
     return request.post<boolean>({
-      url: "/api/v1/RepairOrders/issue-parts",
+      url: '/api/v1/RepairOrders/issue-parts',
       data,
     });
   },
@@ -162,7 +161,7 @@ export const RepairOrderApi = {
 
   complete(data: CompleteRepairOrderPayload) {
     return request.post<boolean>({
-      url: "/api/v1/RepairOrders/complete",
+      url: '/api/v1/RepairOrders/complete',
       data,
     });
   },

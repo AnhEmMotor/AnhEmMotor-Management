@@ -3,9 +3,9 @@ import type {
   RolesDirective,
   RippleDirective,
   HighlightDirective,
-} from "@/directives";
+} from '@/directives';
 
-declare module "vue" {
+declare module 'vue' {
   export interface GlobalDirectives {
     vAuth: AuthDirective;
     vRoles: RolesDirective;

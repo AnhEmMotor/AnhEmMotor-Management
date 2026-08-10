@@ -3,12 +3,8 @@
     v-if="showWorkTab"
     class="box-border flex-b w-full px-5 mb-3 select-none max-sm:px-[15px]"
     :class="[
-      tabStyle === 'tab-card'
-        ? 'py-1 border-b border-[var(--art-card-border)]'
-        : '',
-      tabStyle === 'tab-google'
-        ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]'
-        : '',
+      tabStyle === 'tab-card' ? 'py-1 border-b border-[var(--art-card-border)]' : '',
+      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : '',
     ]"
   >
     <div class="w-full overflow-hidden" ref="scrollRef">
@@ -24,12 +20,8 @@
         <li
           class="art-card-xs inline-flex flex-cc h-8 mr-1.5 text-xs c-p hover:text-theme group"
           :class="[
-            item.path === activeTab
-              ? 'activ-tab !text-theme'
-              : 'text-g-600 dark:text-g-800',
-            tabStyle === 'tab-google'
-              ? 'google-tab relative !h-8 !leading-8 !border-none'
-              : '',
+            item.path === activeTab ? 'activ-tab !text-theme' : 'text-g-600 dark:text-g-800',
+            tabStyle === 'tab-google' ? 'google-tab relative !h-8 !leading-8 !border-none' : '',
           ]"
           :style="{
             padding: item.fixedTab ? '0 10px' : '0 8px 0 12px',
@@ -57,10 +49,7 @@
             class="inline-flex flex-cc relative ml-0.5 p-1 rounded-full tad-200 hover:bg-g-200"
             @click.stop="closeWorktab('current', item.path)"
           >
-            <ArtSvgIcon
-              icon="ri:close-large-fill"
-              class="text-[10px] text-g-600"
-            />
+            <ArtSvgIcon icon="ri:close-large-fill" class="text-[10px] text-g-600" />
           </span>
           <div
             v-if="tabStyle === 'tab-google'"
@@ -79,10 +68,7 @@
         }"
         @click="(e: MouseEvent) => showMenu(e, activeTab)"
       >
-        <ArtSvgIcon
-          icon="iconamoon:arrow-down-2-thin"
-          class="text-2xl text-g-700"
-        />
+        <ArtSvgIcon icon="iconamoon:arrow-down-2-thin" class="text-2xl text-g-700" />
       </div>
     </div>
 
@@ -97,20 +83,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, nextTick, onUnmounted } from "vue";
-import { LocationQueryRaw, useRoute, useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { storeToRefs } from "pinia";
+import { computed, onMounted, ref, watch, nextTick, onUnmounted } from 'vue';
+import { LocationQueryRaw, useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
 
-import { useWorktabStore } from "@/application/store/worktab";
-import { useUserStore } from "@/application/store/user";
-import { formatMenuTitle } from "@/common/utils/router";
-import { useSettingStore } from "@/application/store/setting";
-import { MenuItemType } from "../../others/art-menu-right/index.vue";
-import { useCommon } from "@/common/composables/useCommon";
-import { WorkTab } from "@/types";
+import { useWorktabStore } from '@/application/store/worktab';
+import { useUserStore } from '@/application/store/user';
+import { formatMenuTitle } from '@/common/utils/router';
+import { useSettingStore } from '@/application/store/setting';
+import { MenuItemType } from '../../others/art-menu-right/index.vue';
+import { useCommon } from '@/common/composables/useCommon';
+import { WorkTab } from '@/types';
 
-defineOptions({ name: "ArtWorkTab" });
+defineOptions({ name: 'ArtWorkTab' });
 
 interface ScrollState {
   translateX: number;
@@ -122,7 +108,7 @@ interface TouchState {
   currentX: number;
 }
 
-type TabCloseType = "current" | "left" | "right" | "other" | "all";
+type TabCloseType = 'current' | 'left' | 'right' | 'other' | 'all';
 
 const { t } = useI18n();
 const store = useWorktabStore();
@@ -139,7 +125,7 @@ const menuRef = ref();
 
 const scrollState = ref<ScrollState>({
   translateX: 0,
-  transition: "",
+  transition: '',
 });
 
 const touchState = ref<TouchState>({
@@ -147,19 +133,15 @@ const touchState = ref<TouchState>({
   currentX: 0,
 });
 
-const clickedPath = ref("");
+const clickedPath = ref('');
 
 const list = computed(() => store.opened);
 const activeTab = computed(() => currentRoute.value.path);
-const activeTabIndex = computed(() =>
-  list.value.findIndex((tab) => tab.path === activeTab.value),
-);
+const activeTabIndex = computed(() => list.value.findIndex((tab) => tab.path === activeTab.value));
 
 const useContextMenu = () => {
   const getClickedTabInfo = () => {
-    const clickedIndex = list.value.findIndex(
-      (tab) => tab.path === clickedPath.value,
-    );
+    const clickedIndex = list.value.findIndex((tab) => tab.path === clickedPath.value);
     const currentTab = list.value[clickedIndex];
 
     return {
@@ -177,59 +159,53 @@ const useContextMenu = () => {
     const otherTabs = list.value.filter((_, index) => index !== clickedIndex);
 
     return {
-      areAllLeftTabsFixed:
-        leftTabs.length > 0 && leftTabs.every((tab) => tab.fixedTab),
-      areAllRightTabsFixed:
-        rightTabs.length > 0 && rightTabs.every((tab) => tab.fixedTab),
-      areAllOtherTabsFixed:
-        otherTabs.length > 0 && otherTabs.every((tab) => tab.fixedTab),
+      areAllLeftTabsFixed: leftTabs.length > 0 && leftTabs.every((tab) => tab.fixedTab),
+      areAllRightTabsFixed: rightTabs.length > 0 && rightTabs.every((tab) => tab.fixedTab),
+      areAllOtherTabsFixed: otherTabs.length > 0 && otherTabs.every((tab) => tab.fixedTab),
       areAllTabsFixed: list.value.every((tab) => tab.fixedTab),
     };
   };
 
   const menuItems = computed(() => {
-    const { clickedIndex, currentTab, isLastTab, isOneTab, isCurrentTab } =
-      getClickedTabInfo();
+    const { clickedIndex, currentTab, isLastTab, isOneTab, isCurrentTab } = getClickedTabInfo();
     const fixedStatus = checkTabsFixedStatus(clickedIndex);
 
     return [
       {
-        key: "refresh",
-        label: t("worktab.btn.refresh"),
-        icon: "ri:refresh-line",
+        key: 'refresh',
+        label: t('worktab.btn.refresh'),
+        icon: 'ri:refresh-line',
         disabled: !isCurrentTab,
       },
       {
-        key: "fixed",
-        label: currentTab?.fixedTab
-          ? t("worktab.btn.unfixed")
-          : t("worktab.btn.fixed"),
-        icon: "ri:pushpin-2-line",
+        key: 'fixed',
+        label: currentTab?.fixedTab ? t('worktab.btn.unfixed') : t('worktab.btn.fixed'),
+        icon: 'ri:pushpin-2-line',
         disabled: false,
         showLine: true,
       },
       {
-        key: "left",
-        label: t("worktab.btn.closeLeft"),
-        icon: "ri:arrow-left-s-line",
+        key: 'left',
+        label: t('worktab.btn.closeLeft'),
+        icon: 'ri:arrow-left-s-line',
         disabled: clickedIndex === 0 || fixedStatus.areAllLeftTabsFixed,
       },
       {
-        key: "right",
-        label: t("worktab.btn.closeRight"),
-        icon: "ri:arrow-right-s-line",
+        key: 'right',
+        label: t('worktab.btn.closeRight'),
+        icon: 'ri:arrow-right-s-line',
         disabled: isLastTab || fixedStatus.areAllRightTabsFixed,
       },
       {
-        key: "other",
-        label: t("worktab.btn.closeOther"),
-        icon: "ri:close-fill",
+        key: 'other',
+        label: t('worktab.btn.closeOther'),
+        icon: 'ri:close-fill',
         disabled: isOneTab || fixedStatus.areAllOtherTabsFixed,
       },
       {
-        key: "all",
-        label: t("worktab.btn.closeAll"),
-        icon: "ri:close-circle-line",
+        key: 'all',
+        label: t('worktab.btn.closeAll'),
+        icon: 'ri:close-circle-line',
         disabled: isOneTab || fixedStatus.areAllTabsFixed,
       },
     ];
@@ -240,10 +216,9 @@ const useContextMenu = () => {
 
 const useScrolling = () => {
   const setTransition = () => {
-    scrollState.value.transition =
-      "transform 0.5s cubic-bezier(0.15, 0, 0.15, 1)";
+    scrollState.value.transition = 'transform 0.5s cubic-bezier(0.15, 0, 0.15, 1)';
     setTimeout(() => {
-      scrollState.value.transition = "";
+      scrollState.value.transition = '';
     }, 250);
   };
 
@@ -278,12 +253,10 @@ const useScrolling = () => {
     const positions = calculateScrollPosition();
     if (!positions) return;
 
-    const { scrollWidth, ulWidth, offsetLeft, curTabRight, targetLeft } =
-      positions;
+    const { scrollWidth, ulWidth, offsetLeft, curTabRight, targetLeft } = positions;
 
     if (
-      (offsetLeft > Math.abs(scrollState.value.translateX) &&
-        curTabRight <= scrollWidth) ||
+      (offsetLeft > Math.abs(scrollState.value.translateX) && curTabRight <= scrollWidth) ||
       (scrollState.value.translateX < targetLeft && targetLeft < 0)
     ) {
       return;
@@ -291,10 +264,7 @@ const useScrolling = () => {
 
     requestAnimationFrame(() => {
       if (curTabRight > scrollWidth) {
-        scrollState.value.translateX = Math.max(
-          targetLeft - 6,
-          scrollWidth - ulWidth,
-        );
+        scrollState.value.translateX = Math.max(targetLeft - 6, scrollWidth - ulWidth);
       } else if (offsetLeft < Math.abs(scrollState.value.translateX)) {
         scrollState.value.translateX = -offsetLeft;
       }
@@ -309,8 +279,7 @@ const useScrolling = () => {
     const curTabLeft = offsetLeft + clientWidth;
 
     requestAnimationFrame(() => {
-      scrollState.value.translateX =
-        curTabLeft > scrollWidth ? scrollWidth - ulWidth : 0;
+      scrollState.value.translateX = curTabLeft > scrollWidth ? scrollWidth - ulWidth : 0;
     });
   };
 
@@ -333,14 +302,11 @@ const useEventHandlers = () => {
 
     const xMax = 0;
     const xMin = scrollRef.value.offsetWidth - tabsRef.value.offsetWidth;
-    const delta =
-      Math.abs(event.deltaX) > Math.abs(event.deltaY)
-        ? event.deltaX
-        : event.deltaY;
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
 
     scrollState.value.translateX = Math.min(
       Math.max(scrollState.value.translateX - delta, xMin),
-      xMax,
+      xMax
     );
   };
 
@@ -357,7 +323,7 @@ const useEventHandlers = () => {
 
     scrollState.value.translateX = Math.min(
       Math.max(scrollState.value.translateX + deltaX, xMin),
-      0,
+      0
     );
     touchState.value.startX = touchState.value.currentX;
   };
@@ -368,16 +334,16 @@ const useEventHandlers = () => {
 
   const setupEventListeners = () => {
     if (tabsRef.value) {
-      tabsRef.value.addEventListener("wheel", handleWheelScroll, {
+      tabsRef.value.addEventListener('wheel', handleWheelScroll, {
         passive: false,
       });
-      tabsRef.value.addEventListener("touchstart", handleTouchStart, {
+      tabsRef.value.addEventListener('touchstart', handleTouchStart, {
         passive: true,
       });
-      tabsRef.value.addEventListener("touchmove", handleTouchMove, {
+      tabsRef.value.addEventListener('touchmove', handleTouchMove, {
         passive: true,
       });
-      tabsRef.value.addEventListener("touchend", handleTouchEnd, {
+      tabsRef.value.addEventListener('touchend', handleTouchEnd, {
         passive: true,
       });
     }
@@ -385,10 +351,10 @@ const useEventHandlers = () => {
 
   const cleanupEventListeners = () => {
     if (tabsRef.value) {
-      tabsRef.value.removeEventListener("wheel", handleWheelScroll);
-      tabsRef.value.removeEventListener("touchstart", handleTouchStart);
-      tabsRef.value.removeEventListener("touchmove", handleTouchMove);
-      tabsRef.value.removeEventListener("touchend", handleTouchEnd);
+      tabsRef.value.removeEventListener('wheel', handleWheelScroll);
+      tabsRef.value.removeEventListener('touchstart', handleTouchStart);
+      tabsRef.value.removeEventListener('touchmove', handleTouchMove);
+      tabsRef.value.removeEventListener('touchend', handleTouchEnd);
     }
   };
 
@@ -408,7 +374,7 @@ const useTabOperations = (adjustPositionAfterClose: () => void) => {
   };
 
   const closeWorktab = (type: TabCloseType, tabPath: string) => {
-    const path = typeof tabPath === "string" ? tabPath : route.path;
+    const path = typeof tabPath === 'string' ? tabPath : route.path;
 
     const closeActions = {
       current: () => store.removeTab(path),
@@ -426,7 +392,7 @@ const useTabOperations = (adjustPositionAfterClose: () => void) => {
   };
 
   const showMenu = (e: MouseEvent, path?: string) => {
-    clickedPath.value = path || "";
+    clickedPath.value = path || '';
     menuRef.value?.show(e);
     e.preventDefault();
     e.stopPropagation();
@@ -435,22 +401,18 @@ const useTabOperations = (adjustPositionAfterClose: () => void) => {
   const handleSelect = (item: MenuItemType) => {
     const { key } = item;
 
-    if (key === "refresh") {
+    if (key === 'refresh') {
       useCommon().refresh();
       return;
     }
 
-    if (key === "fixed") {
+    if (key === 'fixed') {
       useWorktabStore().toggleFixedTab(clickedPath.value);
       return;
     }
 
-    const activeIndex = list.value.findIndex(
-      (tab) => tab.path === activeTab.value,
-    );
-    const clickedIndex = list.value.findIndex(
-      (tab) => tab.path === clickedPath.value,
-    );
+    const activeIndex = list.value.findIndex((tab) => tab.path === activeTab.value);
+    const clickedIndex = list.value.findIndex((tab) => tab.path === clickedPath.value);
 
     const navigationRules = {
       left: activeIndex < clickedIndex,
@@ -477,11 +439,9 @@ const useTabOperations = (adjustPositionAfterClose: () => void) => {
 
 const { menuItems } = useContextMenu();
 const { setTransition, autoPositionTab } = useScrolling();
-const { setupEventListeners, cleanupEventListeners, adjustPositionAfterClose } =
-  useEventHandlers();
-const { clickTab, closeWorktab, showMenu, handleSelect } = useTabOperations(
-  adjustPositionAfterClose,
-);
+const { setupEventListeners, cleanupEventListeners, adjustPositionAfterClose } = useEventHandlers();
+const { clickTab, closeWorktab, showMenu, handleSelect } =
+  useTabOperations(adjustPositionAfterClose);
 
 onMounted(() => {
   setupEventListeners();
@@ -497,7 +457,7 @@ watch(
   () => {
     setTransition();
     autoPositionTab();
-  },
+  }
 );
 
 watch(
@@ -507,7 +467,7 @@ watch(
     nextTick(() => {
       autoPositionTab();
     });
-  },
+  }
 );
 </script>
 
@@ -526,7 +486,7 @@ watch(
   bottom: 0;
   width: 20px;
   height: 20px;
-  content: "";
+  content: '';
   border-radius: 50%;
   box-shadow: 0 0 0 30px var(--el-color-primary-light-9);
 }
@@ -580,7 +540,7 @@ watch(
   bottom: 0;
   width: 20px;
   height: 20px;
-  content: "";
+  content: '';
   border-radius: 50%;
   box-shadow: 0 0 0 30px transparent;
 }

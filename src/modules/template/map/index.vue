@@ -1,16 +1,13 @@
 <template>
-  <div
-    class="resp-page page-content mb-5"
-    element-loading-:text="$t('admin.t220')"
-  >
+  <div class="resp-page page-content mb-5" element-loading-:text="$t('admin.t220')">
     <ArtMapChart />
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "TemplateMap" });
+defineOptions({ name: 'TemplateMap' });
 
 const ArtMapChart = defineAsyncComponent(
-  () => import("@/components/core/charts/art-map-chart/index.vue"),
+  () => import('@/components/core/charts/art-map-chart/index.vue')
 );
 </script>

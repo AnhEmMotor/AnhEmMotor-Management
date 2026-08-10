@@ -3,7 +3,7 @@
     <section class="payroll-hero" aria-labelledby="payroll-page-title">
       <div>
         <span class="payroll-hero__eyebrow">Quản trị nhân sự</span>
-        <h1 id="payroll-page-title">{{ $t("menus.hr.payroll") }}</h1>
+        <h1 id="payroll-page-title">{{ $t('menus.hr.payroll') }}</h1>
         <p>Tổng hợp lương cơ bản và hoa hồng theo từng kỳ chi trả.</p>
       </div>
       <div class="payroll-hero__actions">
@@ -15,11 +15,7 @@
           <ArtSvgIcon icon="ri:refresh-line" />
           Tải lại
         </ElButton>
-        <ElButton
-          type="primary"
-          :disabled="loading"
-          @click="exportPayrollExcel"
-        >
+        <ElButton type="primary" :disabled="loading" @click="exportPayrollExcel">
           <ArtSvgIcon icon="ri:file-excel-2-line" />
           Xuất Excel
         </ElButton>
@@ -108,18 +104,14 @@
               :icon="Check"
               @click="handleApproveAll"
             >
-              {{ isAdmin ? "Duyệt chi tất cả" : "Gửi duyệt tất cả" }}
+              {{ isAdmin ? 'Duyệt chi tất cả' : 'Gửi duyệt tất cả' }}
             </ElButton>
             <ElTag type="info" effect="plain" round>
               {{ selectedMonthYear.month }}/{{ selectedMonthYear.year }}
             </ElTag>
           </div>
         </div>
-        <ArtTableHeader
-          v-model:columns="columnChecks"
-          :loading="loading"
-          @refresh="loadData"
-        />
+        <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData" />
 
         <ArtTable
           ref="tableRef"
@@ -133,16 +125,14 @@
           <template #fullName="{ row }">
             <div class="payroll-employee-cell">
               <span class="payroll-employee-cell__avatar">
-                {{ (row.fullName || "?").charAt(0).toUpperCase() }}
+                {{ (row.fullName || '?').charAt(0).toUpperCase() }}
               </span>
-              <span>{{ row.fullName || "-" }}</span>
+              <span>{{ row.fullName || '-' }}</span>
             </div>
           </template>
 
           <template #baseSalary="{ row }">
-            <span class="payroll-money">{{
-              formatCurrency(row.baseSalary)
-            }}</span>
+            <span class="payroll-money">{{ formatCurrency(row.baseSalary) }}</span>
           </template>
 
           <template #pendingCommission="{ row }">
@@ -187,7 +177,7 @@
                 type="primary"
                 @click="handleApprove(row)"
               >
-                {{ isAdmin ? "Duyệt chi" : "Gửi duyệt" }}
+                {{ isAdmin ? 'Duyệt chi' : 'Gửi duyệt' }}
               </ElButton>
               <span v-else class="payroll-action-cell__settled">
                 <ArtSvgIcon icon="ri:checkbox-circle-line" />
@@ -202,12 +192,12 @@
 </template>
 
 <script setup lang="ts">
-import { Check } from "@element-plus/icons-vue";
-import { ref, computed, onMounted } from "vue";
-import type { ColumnOption } from "@/types/component";
-import { usePayroll } from "./composables/usePayroll";
+import { Check } from '@element-plus/icons-vue';
+import { ref, computed, onMounted } from 'vue';
+import type { ColumnOption } from '@/types/component';
+import { usePayroll } from './composables/usePayroll';
 
-defineOptions({ name: "HRPayroll" });
+defineOptions({ name: 'HRPayroll' });
 
 const {
   loading,
@@ -230,24 +220,24 @@ const {
 
 const searchItems = computed(() => [
   {
-    key: "month",
-    label: "Kỳ lương",
-    type: "date",
+    key: 'month',
+    label: 'Kỳ lương',
+    type: 'date',
     props: {
-      type: "month",
-      placeholder: "Chọn tháng & năm",
-      format: "MM/YYYY",
-      valueFormat: "YYYY-MM",
+      type: 'month',
+      placeholder: 'Chọn tháng & năm',
+      format: 'MM/YYYY',
+      valueFormat: 'YYYY-MM',
       clearable: false,
-      style: { width: "100%" },
+      style: { width: '100%' },
     },
   },
   {
-    key: "employeeName",
-    label: "Nhân viên",
-    type: "select",
+    key: 'employeeName',
+    label: 'Nhân viên',
+    type: 'select',
     props: {
-      placeholder: "Tất cả nhân viên",
+      placeholder: 'Tất cả nhân viên',
       clearable: true,
       filterable: true,
       options: allPayrollData.value.map((item) => ({
@@ -259,50 +249,50 @@ const searchItems = computed(() => [
 ]);
 
 const columns = ref<ColumnOption[]>([
-  { label: "Nhân viên", prop: "fullName", minWidth: 180, useSlot: true },
-  { label: "Chức vụ", prop: "jobTitle", width: 140 },
+  { label: 'Nhân viên', prop: 'fullName', minWidth: 180, useSlot: true },
+  { label: 'Chức vụ', prop: 'jobTitle', width: 140 },
   {
-    label: "Lương cơ bản",
-    prop: "baseSalary",
+    label: 'Lương cơ bản',
+    prop: 'baseSalary',
     width: 140,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Hoa hồng chờ duyệt",
-    prop: "pendingCommission",
+    label: 'Hoa hồng chờ duyệt',
+    prop: 'pendingCommission',
     width: 160,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Hoa hồng chờ chi",
-    prop: "confirmedCommission",
+    label: 'Hoa hồng chờ chi',
+    prop: 'confirmedCommission',
     width: 160,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Thực nhận",
-    prop: "totalNetPayable",
+    label: 'Thực nhận',
+    prop: 'totalNetPayable',
     width: 160,
-    align: "right",
+    align: 'right',
     useSlot: true,
   },
   {
-    label: "Thao tác",
-    prop: "operation",
+    label: 'Thao tác',
+    prop: 'operation',
     width: 180,
-    align: "center",
+    align: 'center',
     useSlot: true,
   },
 ]);
 const columnChecks = columns;
 
 const formatCurrency = (value: number | null | undefined) =>
-  new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value || 0);
 
 onMounted(() => {
@@ -345,12 +335,8 @@ onMounted(() => {
   right: 0;
   left: 0;
   height: 3px;
-  content: "";
-  background: linear-gradient(
-    90deg,
-    var(--payroll-red),
-    var(--payroll-red-dark)
-  );
+  content: '';
+  background: linear-gradient(90deg, var(--payroll-red), var(--payroll-red-dark));
 }
 
 .payroll-hero::after {
@@ -360,7 +346,7 @@ onMounted(() => {
   width: 230px;
   height: 230px;
   pointer-events: none;
-  content: "";
+  content: '';
   background: radial-gradient(circle, var(--payroll-red-soft), transparent 68%);
 }
 

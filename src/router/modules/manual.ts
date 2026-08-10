@@ -1,23 +1,23 @@
-import { AppRouteRecord } from "@/types/router";
+import { AppRouteRecord } from '@/types/router';
 
 export const manualRoutes: AppRouteRecord[] = [
   {
-    name: "Manual",
-    path: "/manual",
-    redirect: "/manual/index",
-    component: "/index/index",
+    name: 'Manual',
+    path: '/manual',
+    redirect: '/manual/index',
+    component: '/index/index',
     meta: {
-      title: "HDSD Phần Mềm",
-      icon: "ri:book-open-line",
+      title: 'HDSD Phần Mềm',
+      icon: 'ri:book-open-line',
     },
     children: [
       {
-        path: "index",
-        name: "ManualIndex",
-        component: "/manual/index",
+        path: 'index',
+        name: 'ManualIndex',
+        component: '/manual/index',
         meta: {
-          title: "Hướng dẫn sử dụng",
-          icon: "ri:file-list-3-line",
+          title: 'Hướng dẫn sử dụng',
+          icon: 'ri:file-list-3-line',
         },
       },
     ],

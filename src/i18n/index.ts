@@ -1,7 +1,7 @@
-import { createI18n } from "vue-i18n";
-import messages from "@/i18n/package";
-import { langList } from "@/common/utils/langList";
-import { getSystemStorage } from "@/common/utils/storage";
+import { createI18n } from 'vue-i18n';
+import messages from '@/i18n/package';
+import { langList } from '@/common/utils/langList';
+import { getSystemStorage } from '@/common/utils/storage';
 
 const langListArr: string[] = langList.map((lang) => lang.category);
 
@@ -15,28 +15,26 @@ const resolveStoredLanguage = (): string => {
       }
     }
 
-    const userStr = localStorage.getItem("user");
+    const userStr = localStorage.getItem('user');
     if (userStr) {
       const user = JSON.parse(userStr);
       if (user.language && langListArr.includes(user.language)) {
         return user.language;
       }
     }
-  } catch {
-    // ignore parse errors, fall through to default
-  }
-  return "vi";
+  } catch {}
+  return 'vi';
 };
 
 export function setLocale(lang: string): void {
   if (!langListArr.includes(lang)) return;
   i18n.global.locale.value = lang as any;
-  localStorage.setItem("app-lang", lang);
+  localStorage.setItem('app-lang', lang);
 }
 
 const i18n = createI18n({
   locale: resolveStoredLanguage(),
-  fallbackLocale: "vi",
+  fallbackLocale: 'vi',
   legacy: false,
   globalInjection: true,
   allowComposition: true,

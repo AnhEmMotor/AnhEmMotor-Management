@@ -10,9 +10,7 @@
               <span class="font-bold text-gray-800"
                 >Danh sách yêu cầu ({{ filteredRequests.length }})</span
               >
-              <ElTag type="info" size="small"
-                >{{ pendingCount }} chờ duyệt</ElTag
-              >
+              <ElTag type="info" size="small">{{ pendingCount }} chờ duyệt</ElTag>
             </div>
           </template>
 
@@ -61,7 +59,7 @@
                     size="small"
                     effect="plain"
                   >
-                    {{ req.type === "return" ? "Trả hàng" : "Hủy đơn" }}
+                    {{ req.type === 'return' ? 'Trả hàng' : 'Hủy đơn' }}
                   </ElTag>
                 </div>
                 <ElTag :type="getStatusTagType(req.status)" size="small">
@@ -70,9 +68,7 @@
               </div>
               <div class="text-xs text-gray-600 mb-1">
                 Vận đơn:
-                <span class="font-medium">{{
-                  req.originalTrackingNumber
-                }}</span>
+                <span class="font-medium">{{ req.originalTrackingNumber }}</span>
               </div>
               <div class="text-xs text-gray-600 mb-1">
                 Khách: <span class="font-medium">{{ req.customerName }}</span>
@@ -81,9 +77,7 @@
                 {{ req.reason }}
               </div>
               <div class="flex items-center justify-between mt-2">
-                <span class="text-xs text-gray-400">{{
-                  formatDateTime(req.createdAt)
-                }}</span>
+                <span class="text-xs text-gray-400">{{ formatDateTime(req.createdAt) }}</span>
               </div>
             </div>
 
@@ -123,21 +117,15 @@
           <div class="info-item">
             <span class="text-xs text-gray-500">Loại yêu cầu</span>
             <div>
-              <ElTag
-                :type="selectedRequest.type === 'return' ? 'danger' : 'warning'"
-                size="small"
-              >
-                {{ selectedRequest.type === "return" ? "Trả hàng" : "Hủy đơn" }}
+              <ElTag :type="selectedRequest.type === 'return' ? 'danger' : 'warning'" size="small">
+                {{ selectedRequest.type === 'return' ? 'Trả hàng' : 'Hủy đơn' }}
               </ElTag>
             </div>
           </div>
           <div class="info-item">
             <span class="text-xs text-gray-500">Trạng thái</span>
             <div>
-              <ElTag
-                :type="getStatusTagType(selectedRequest.status)"
-                size="small"
-              >
+              <ElTag :type="getStatusTagType(selectedRequest.status)" size="small">
                 {{ getStatusLabel(selectedRequest.status) }}
               </ElTag>
             </div>
@@ -185,21 +173,15 @@
           <div class="bg-gray-50 p-3 rounded space-y-1">
             <div v-if="selectedRequest.boxCondition" class="text-sm">
               <span class="text-gray-600">Tình trạng hộp:</span>
-              <span class="font-medium ml-2">{{
-                selectedRequest.boxCondition
-              }}</span>
+              <span class="font-medium ml-2">{{ selectedRequest.boxCondition }}</span>
             </div>
             <div v-if="selectedRequest.productCondition" class="text-sm">
               <span class="text-gray-600">Tình trạng sản phẩm:</span>
-              <span class="font-medium ml-2">{{
-                selectedRequest.productCondition
-              }}</span>
+              <span class="font-medium ml-2">{{ selectedRequest.productCondition }}</span>
             </div>
             <div v-if="selectedRequest.returnInternalNote" class="text-sm">
               <span class="text-gray-600">Ghi chú nội bộ:</span>
-              <span class="font-medium ml-2">{{
-                selectedRequest.returnInternalNote
-              }}</span>
+              <span class="font-medium ml-2">{{ selectedRequest.returnInternalNote }}</span>
             </div>
             <div v-if="selectedRequest.returnAction" class="text-sm">
               <span class="text-gray-600">Kết quả duyệt:</span>
@@ -212,10 +194,7 @@
 
         <!-- Rejection Reason (shown when rejected) -->
         <div
-          v-if="
-            selectedRequest.status === 'rejected' &&
-            selectedRequest.rejectionReason
-          "
+          v-if="selectedRequest.status === 'rejected' && selectedRequest.rejectionReason"
           class="rejection-section mb-4"
         >
           <h4 class="font-bold text-gray-700 mb-2">Lý do từ chối</h4>
@@ -227,12 +206,7 @@
         <!-- Original Order Products -->
         <div class="products-section mb-4">
           <h4 class="font-bold text-gray-700 mb-2">Sản phẩm liên quan</h4>
-          <ElTable
-            :data="selectedRequest.items"
-            border
-            size="small"
-            max-height="200"
-          >
+          <ElTable :data="selectedRequest.items" border size="small" max-height="200">
             <ElTableColumn label="Tên sản phẩm" min-width="180">
               <template #default="{ row }">
                 {{ row.productName }}
@@ -253,49 +227,26 @@
 
         <!-- Action Buttons -->
         <div class="mt-4 flex flex-col gap-2 border-t pt-4">
-          <div
-            v-if="selectedRequest.status === 'pending'"
-            class="flex justify-end gap-2"
-          >
+          <div v-if="selectedRequest.status === 'pending'" class="flex justify-end gap-2">
             <template v-if="selectedRequest.type === 'cancel'">
-              <ElButton @click="handleReject" :loading="actionLoading">
-                Từ chối
-              </ElButton>
-              <ElButton
-                type="primary"
-                @click="handleDecision"
-                :loading="actionLoading"
-              >
+              <ElButton @click="handleReject" :loading="actionLoading"> Từ chối </ElButton>
+              <ElButton type="primary" @click="handleDecision" :loading="actionLoading">
                 Duyệt hoàn tiền
               </ElButton>
             </template>
-            <ElTag v-else type="warning" size="large">
-              Đang chờ kho tiếp nhận và kiểm tra
-            </ElTag>
+            <ElTag v-else type="warning" size="large"> Đang chờ kho tiếp nhận và kiểm tra </ElTag>
           </div>
 
-          <div
-            v-else-if="selectedRequest.status === 'inspecting'"
-            class="flex justify-end gap-2"
-          >
-            <ElButton @click="handleReject" :loading="actionLoading">
-              Từ chối
-            </ElButton>
-            <ElButton
-              type="primary"
-              :loading="actionLoading"
-              @click="handleDecision"
-            >
+          <div v-else-if="selectedRequest.status === 'inspecting'" class="flex justify-end gap-2">
+            <ElButton @click="handleReject" :loading="actionLoading"> Từ chối </ElButton>
+            <ElButton type="primary" :loading="actionLoading" @click="handleDecision">
               Duyệt hoàn tiền
             </ElButton>
           </div>
 
-          <div
-            v-else
-            class="text-sm text-gray-500 flex items-center justify-end w-full"
-          >
+          <div v-else class="text-sm text-gray-500 flex items-center justify-end w-full">
             Đã cập nhật quyết định lúc
-            {{ formatDateTime(selectedRequest.inspectedAt) || "---" }}
+            {{ formatDateTime(selectedRequest.inspectedAt) || '---' }}
           </div>
         </div>
       </div>
@@ -329,11 +280,7 @@
     </ElDialog>
 
     <!-- Evidence Preview Dialog -->
-    <ElDialog
-      v-model="previewDialog.visible"
-      :title="previewDialog.title"
-      width="600px"
-    >
+    <ElDialog v-model="previewDialog.visible" :title="previewDialog.title" width="600px">
       <img
         v-if="previewDialog.type === 'image'"
         :src="previewDialog.url"
@@ -349,26 +296,21 @@
 </template>
 
 <script setup lang="ts">
-import type { ReturnOrderDto } from "@/domain/logistics/returns.types";
-import { computed, onMounted, reactive, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Search } from "@element-plus/icons-vue";
-import {
-  getReturns,
-  getReturnDetail,
-  inspectReturn,
-  rejectReturn,
-} from "@/api/logistics/returns";
+import type { ReturnOrderDto } from '@/domain/logistics/returns.types';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Search } from '@element-plus/icons-vue';
+import { getReturns, getReturnDetail, inspectReturn, rejectReturn } from '@/api/logistics/returns';
 
-defineOptions({ name: "SalesReturns" });
+defineOptions({ name: 'SalesReturns' });
 
 // ==================== TYPES ====================
 interface ReturnItem {
   id: number;
   rmaCode: string;
   originalTrackingNumber: string;
-  type: "return" | "cancel";
-  status: "pending" | "inspecting" | "completed" | "rejected";
+  type: 'return' | 'cancel';
+  status: 'pending' | 'inspecting' | 'completed' | 'rejected';
   customerName: string;
   carrier: string;
   reason: string;
@@ -392,22 +334,20 @@ interface ReturnItem {
 // ==================== STATE ====================
 const requests = ref<ReturnItem[]>([]);
 const selectedRequest = ref<ReturnItem | null>(null);
-const searchQuery = ref("");
-const filterStatus = ref<
-  "pending" | "inspecting" | "completed" | "rejected" | ""
->("");
+const searchQuery = ref('');
+const filterStatus = ref<'pending' | 'inspecting' | 'completed' | 'rejected' | ''>('');
 const actionLoading = ref(false);
 const loading = ref(false);
 const detailDialogVisible = ref(false);
 const rejectDialog = reactive({
   visible: false,
-  reason: "",
+  reason: '',
 });
 const previewDialog = reactive({
   visible: false,
-  url: "",
-  title: "",
-  type: "image" as "image" | "video",
+  url: '',
+  title: '',
+  type: 'image' as 'image' | 'video',
 });
 
 // ==================== FETCH ====================
@@ -417,7 +357,7 @@ async function fetchData() {
     const res = await getReturns(filterStatus.value || undefined);
     requests.value = res.map((r) => ({
       id: r.id,
-      rmaCode: `RMA-${String(r.id).padStart(3, "0")}`,
+      rmaCode: `RMA-${String(r.id).padStart(3, '0')}`,
       originalTrackingNumber: r.originalTrackingNumber,
       type: inferType(r),
       status: r.status,
@@ -428,22 +368,18 @@ async function fetchData() {
       createdAt: r.createdAt,
     }));
   } catch (error) {
-    console.error("Failed to fetch returns:", error);
-    ElMessage.error("Không thể tải danh sách yêu cầu");
+    console.error('Failed to fetch returns:', error);
+    ElMessage.error('Không thể tải danh sách yêu cầu');
   } finally {
     loading.value = false;
   }
 }
 
-function inferType(r: { reason: string }): "return" | "cancel" {
-  const reason = (r.reason || "").toLowerCase();
-  if (
-    reason.includes("hủy") ||
-    reason.includes("huy") ||
-    reason.includes("cancel")
-  )
-    return "cancel";
-  return "return";
+function inferType(r: { reason: string }): 'return' | 'cancel' {
+  const reason = (r.reason || '').toLowerCase();
+  if (reason.includes('hủy') || reason.includes('huy') || reason.includes('cancel'))
+    return 'cancel';
+  return 'return';
 }
 
 // ==================== COMPUTED ====================
@@ -455,75 +391,71 @@ const filteredRequests = computed(() => {
       (r) =>
         r.rmaCode.toLowerCase().includes(q) ||
         r.originalTrackingNumber.toLowerCase().includes(q) ||
-        r.customerName.toLowerCase().includes(q),
+        r.customerName.toLowerCase().includes(q)
     );
   }
   return result;
 });
 
-const pendingCount = computed(
-  () => requests.value.filter((r) => r.status === "pending").length,
-);
+const pendingCount = computed(() => requests.value.filter((r) => r.status === 'pending').length);
 
 // ==================== METHODS ====================
 function formatDateTime(dateStr?: string): string {
-  if (!dateStr) return "---";
+  if (!dateStr) return '---';
   const d = new Date(dateStr);
-  return d.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return d.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 function getStatusLabel(status: string): string {
   switch (status) {
-    case "pending":
-      return "Chờ duyệt";
-    case "inspecting":
-      return "Đang kiểm định";
-    case "completed":
-      return "Đã duyệt hoàn tiền";
-    case "rejected":
-      return "Đã từ chối";
+    case 'pending':
+      return 'Chờ duyệt';
+    case 'inspecting':
+      return 'Đang kiểm định';
+    case 'completed':
+      return 'Đã duyệt hoàn tiền';
+    case 'rejected':
+      return 'Đã từ chối';
     default:
       return status;
   }
 }
 
-function getStatusTagType(
-  status: string,
-): "info" | "warning" | "success" | "danger" {
+function getStatusTagType(status: string): 'info' | 'warning' | 'success' | 'danger' {
   switch (status) {
-    case "pending":
-      return "info";
-    case "inspecting":
-      return "warning";
-    case "completed":
-      return "success";
-    case "rejected":
-      return "danger";
+    case 'pending':
+      return 'info';
+    case 'inspecting':
+      return 'warning';
+    case 'completed':
+      return 'success';
+    case 'rejected':
+      return 'danger';
     default:
-      return "info";
+      return 'info';
   }
 }
 
 function getActionLabel(action?: string): string {
   switch (action) {
-    case "refund":
-      return "Đã duyệt hoàn tiền";
-    case "rejected":
-      return "Đã từ chối";
+    case 'refund':
+      return 'Đã duyệt hoàn tiền';
+    case 'rejected':
+      return 'Đã từ chối';
     default:
-      return action || "---";
+      return action || '---';
   }
 }
 
 function getRequestItemClass(req: ReturnItem): string {
-  const base = "request-item";
-  if (req.type === "return") {
+  const base = 'request-item';
+  if (req.type === 'return') {
     return `${base} request-item--return`;
   }
   return `${base} request-item--cancel`;
@@ -534,7 +466,7 @@ async function selectRequest(req: ReturnItem) {
     const detail = await getReturnDetail(req.id);
     selectedRequest.value = {
       id: detail.id,
-      rmaCode: `RMA-${String(detail.id).padStart(3, "0")}`,
+      rmaCode: `RMA-${String(detail.id).padStart(3, '0')}`,
       originalTrackingNumber: detail.originalTrackingNumber,
       type: inferType(detail),
       status: detail.status,
@@ -559,8 +491,8 @@ async function selectRequest(req: ReturnItem) {
     };
     detailDialogVisible.value = true;
   } catch (error) {
-    console.error("Failed to fetch return detail:", error);
-    ElMessage.error("Không thể tải chi tiết yêu cầu");
+    console.error('Failed to fetch return detail:', error);
+    ElMessage.error('Không thể tải chi tiết yêu cầu');
   }
 }
 
@@ -568,14 +500,10 @@ function handleSearch() {
   // Filter is reactive via computed
 }
 
-function previewEvidence(evidence: {
-  url: string;
-  label: string;
-  type: string;
-}) {
+function previewEvidence(evidence: { url: string; label: string; type: string }) {
   previewDialog.url = evidence.url;
   previewDialog.title = evidence.label;
-  previewDialog.type = evidence.type as "image" | "video";
+  previewDialog.type = evidence.type as 'image' | 'video';
   previewDialog.visible = true;
 }
 
@@ -583,12 +511,12 @@ function previewEvidence(evidence: {
 function handleReject() {
   if (!selectedRequest.value) return;
   rejectDialog.visible = true;
-  rejectDialog.reason = "";
+  rejectDialog.reason = '';
 }
 
 async function confirmReject() {
   if (!rejectDialog.reason.trim()) {
-    ElMessage.warning("Vui lòng nhập lý do từ chối");
+    ElMessage.warning('Vui lòng nhập lý do từ chối');
     return;
   }
   if (!selectedRequest.value) return;
@@ -596,19 +524,19 @@ async function confirmReject() {
     actionLoading.value = true;
     await ElMessageBox.confirm(
       `Xác nhận từ chối yêu cầu ${selectedRequest.value.rmaCode}?`,
-      "Xác nhận",
-      { type: "warning" },
+      'Xác nhận',
+      { type: 'warning' }
     );
     await rejectReturn(selectedRequest.value.id, rejectDialog.reason.trim());
-    selectedRequest.value.status = "rejected";
+    selectedRequest.value.status = 'rejected';
     selectedRequest.value.rejectionReason = rejectDialog.reason;
     rejectDialog.visible = false;
-    ElMessage.success("Đã từ chối yêu cầu");
+    ElMessage.success('Đã từ chối yêu cầu');
     await fetchData();
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Từ chối thất bại");
+      ElMessage.error('Từ chối thất bại');
     }
   } finally {
     actionLoading.value = false;
@@ -622,32 +550,32 @@ async function handleDecision() {
     actionLoading.value = true;
     await ElMessageBox.confirm(
       `Duyệt hoàn tiền cho yêu cầu ${selectedRequest.value.rmaCode}? Kết quả duyệt sẽ được ghi nhận để thông báo đến khách hàng.`,
-      "Xác nhận duyệt hoàn tiền",
+      'Xác nhận duyệt hoàn tiền',
       {
-        type: "success",
-        confirmButtonText: "Duyệt hoàn tiền",
-        cancelButtonText: "Hủy",
-      },
+        type: 'success',
+        confirmButtonText: 'Duyệt hoàn tiền',
+        cancelButtonText: 'Hủy',
+      }
     );
 
     await inspectReturn(selectedRequest.value.id, {
-      action: "refund",
-      boxCondition: selectedRequest.value.boxCondition || "",
-      productCondition: selectedRequest.value.productCondition || "",
-      returnProofImage: selectedRequest.value.returnProofImage || "",
-      returnInternalNote: selectedRequest.value.returnInternalNote || "",
+      action: 'refund',
+      boxCondition: selectedRequest.value.boxCondition || '',
+      productCondition: selectedRequest.value.productCondition || '',
+      returnProofImage: selectedRequest.value.returnProofImage || '',
+      returnInternalNote: selectedRequest.value.returnInternalNote || '',
       refundAmount: selectedRequest.value.refundAmount,
       returnShippingCost: selectedRequest.value.returnShippingCost,
     });
 
-    selectedRequest.value.status = "completed";
-    selectedRequest.value.returnAction = "refund";
-    ElMessage.success("Đã duyệt hoàn tiền");
+    selectedRequest.value.status = 'completed';
+    selectedRequest.value.returnAction = 'refund';
+    ElMessage.success('Đã duyệt hoàn tiền');
     await fetchData();
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Xử lý thất bại");
+      ElMessage.error('Xử lý thất bại');
     }
   } finally {
     actionLoading.value = false;

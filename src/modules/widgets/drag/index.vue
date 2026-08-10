@@ -3,7 +3,7 @@
     <ElRow>
       <ElCard class="w-75 mr-5 mb-7.5">
         <template #header>
-          <span class="text-base font-bold">{{ $t("admin.t239") }}</span>
+          <span class="text-base font-bold">{{ $t('admin.t239') }}</span>
         </template>
         <template #default>
           <VueDraggable ref="el" v-model="userList">
@@ -24,12 +24,7 @@
         </template>
         <template #default>
           <VueDraggable v-model="userList" target=".sort-target" :scroll="true">
-            <TransitionGroup
-              type="transition"
-              tag="ul"
-              name="fade"
-              class="sort-target"
-            >
+            <TransitionGroup type="transition" tag="ul" name="fade" class="sort-target">
               <li
                 v-for="item in userList"
                 :key="item.name"
@@ -62,12 +57,7 @@
         <span class="text-base font-bold">địnhnguyêntốKéo thảxếpthứ</span>
       </template>
       <template #default>
-        <VueDraggable
-          target="tbody"
-          handle=".handle"
-          v-model="userList"
-          :animation="150"
-        >
+        <VueDraggable target="tbody" handle=".handle" v-model="userList" :animation="150">
           <ArtTable :data="userList">
             <ElTableColumn label="Họ tên" prop="name" />
             <ElTableColumn label="VaiTro" prop="role" />
@@ -82,15 +72,15 @@
 </template>
 
 <script setup lang="ts">
-import { VueDraggable } from "vue-draggable-plus";
+import { VueDraggable } from 'vue-draggable-plus';
 
-defineOptions({ name: "TemplateDrag" });
+defineOptions({ name: 'TemplateDrag' });
 
 const userList = ref([
-  { name: "cháungộkhông", role: "đấuchiếnthắngphật" },
-  { name: "lợntámgiới", role: "tịnhđànkhiến" },
-  { name: "cáttăng", role: "vàngthânlahán" },
-  { name: "đườngtăng", role: "chiênđàncôngđứcphật" },
+  { name: 'cháungộkhông', role: 'đấuchiếnthắngphật' },
+  { name: 'lợntámgiới', role: 'tịnhđànkhiến' },
+  { name: 'cáttăng', role: 'vàngthânlahán' },
+  { name: 'đườngtăng', role: 'chiênđàncôngđứcphật' },
 ]);
 </script>
 

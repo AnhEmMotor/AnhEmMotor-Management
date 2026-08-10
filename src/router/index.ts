@@ -1,9 +1,9 @@
-import type { App } from "vue";
-import { createRouter, createWebHistory } from "vue-router";
-import { staticRoutes } from "./routes/staticRoutes";
-import { configureNProgress } from "@/common/utils/router";
-import { setupBeforeEachGuard } from "./guards/beforeEach";
-import { setupAfterEachGuard } from "./guards/afterEach";
+import type { App } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { staticRoutes } from './routes/staticRoutes';
+import { configureNProgress } from '@/common/utils/router';
+import { setupBeforeEachGuard } from './guards/beforeEach';
+import { setupAfterEachGuard } from './guards/afterEach';
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,4 +17,4 @@ export function initRouter(app: App<Element>): void {
   app.use(router);
 }
 
-export const HOME_PAGE_PATH = "";
+export const HOME_PAGE_PATH = '';

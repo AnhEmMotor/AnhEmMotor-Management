@@ -1,23 +1,16 @@
-import { computed } from "vue";
-import { storeToRefs } from "pinia";
-import { useSettingStore } from "@/application/store/setting";
-import { headerBarConfig } from "@/config/modules/headerBar";
-import { HeaderBarFeatureConfig } from "@/types";
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useSettingStore } from '@/application/store/setting';
+import { headerBarConfig } from '@/config/modules/headerBar';
+import { HeaderBarFeatureConfig } from '@/types';
 
 export function useHeaderBar() {
   const settingStore = useSettingStore();
 
-  const headerBarConfigRef = computed<HeaderBarFeatureConfig>(
-    () => headerBarConfig,
-  );
+  const headerBarConfigRef = computed<HeaderBarFeatureConfig>(() => headerBarConfig);
 
-  const {
-    showMenuButton,
-    showFastEnter,
-    showRefreshButton,
-    showCrumbs,
-    showLanguage,
-  } = storeToRefs(settingStore);
+  const { showMenuButton, showFastEnter, showRefreshButton, showCrumbs, showLanguage } =
+    storeToRefs(settingStore);
 
   const isFeatureEnabled = (feature: keyof HeaderBarFeatureConfig): boolean => {
     return headerBarConfigRef.value[feature]?.enabled ?? false;
@@ -28,51 +21,51 @@ export function useHeaderBar() {
   };
 
   const shouldShowMenuButton = computed(() => {
-    return isFeatureEnabled("menuButton") && showMenuButton.value;
+    return isFeatureEnabled('menuButton') && showMenuButton.value;
   });
 
   const shouldShowRefreshButton = computed(() => {
-    return isFeatureEnabled("refreshButton") && showRefreshButton.value;
+    return isFeatureEnabled('refreshButton') && showRefreshButton.value;
   });
 
   const shouldShowFastEnter = computed(() => {
-    return isFeatureEnabled("fastEnter") && showFastEnter.value;
+    return isFeatureEnabled('fastEnter') && showFastEnter.value;
   });
 
   const shouldShowBreadcrumb = computed(() => {
-    return isFeatureEnabled("breadcrumb") && showCrumbs.value;
+    return isFeatureEnabled('breadcrumb') && showCrumbs.value;
   });
 
   const shouldShowGlobalSearch = computed(() => {
-    return isFeatureEnabled("globalSearch");
+    return isFeatureEnabled('globalSearch');
   });
 
   const shouldShowFullscreen = computed(() => {
-    return isFeatureEnabled("fullscreen");
+    return isFeatureEnabled('fullscreen');
   });
 
   const shouldShowNotification = computed(() => {
-    return isFeatureEnabled("notification");
+    return isFeatureEnabled('notification');
   });
 
   const shouldShowChat = computed(() => {
-    return isFeatureEnabled("chat");
+    return isFeatureEnabled('chat');
   });
 
   const shouldShowLanguage = computed(() => {
-    return isFeatureEnabled("language") && showLanguage.value;
+    return isFeatureEnabled('language') && showLanguage.value;
   });
 
   const shouldShowSettings = computed(() => {
-    return isFeatureEnabled("settings");
+    return isFeatureEnabled('settings');
   });
 
   const shouldShowThemeToggle = computed(() => {
-    return isFeatureEnabled("themeToggle");
+    return isFeatureEnabled('themeToggle');
   });
 
   const fastEnterMinWidth = computed(() => {
-    const config = getFeatureConfig("fastEnter");
+    const config = getFeatureConfig('fastEnter');
     return (config as any)?.minWidth || 1200;
   });
 
@@ -86,15 +79,13 @@ export function useHeaderBar() {
 
   const getEnabledFeatures = (): (keyof HeaderBarFeatureConfig)[] => {
     return Object.keys(headerBarConfigRef.value).filter(
-      (key) =>
-        headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled,
+      (key) => headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled
     ) as (keyof HeaderBarFeatureConfig)[];
   };
 
   const getDisabledFeatures = (): (keyof HeaderBarFeatureConfig)[] => {
     return Object.keys(headerBarConfigRef.value).filter(
-      (key) =>
-        !headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled,
+      (key) => !headerBarConfigRef.value[key as keyof HeaderBarFeatureConfig]?.enabled
     ) as (keyof HeaderBarFeatureConfig)[];
   };
 

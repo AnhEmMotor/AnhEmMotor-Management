@@ -2,9 +2,7 @@
   <div class="resp-page marketing-dashboard p-6">
     <!-- Bộ Điều Hướng Chu Kỳ (Header) -->
     <div class="flex justify-between items-center mb-6">
-      <h1
-        class="text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2"
-      >
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
         <span>📢</span> Tổng quan tiếp thị & chăm sóc khách hàng
       </h1>
       <div class="flex justify-end gap-2 items-center">
@@ -64,13 +62,9 @@
           <div class="mt-4 flex items-center justify-between">
             <span
               class="text-sm font-medium flex items-center gap-1"
-              :class="
-                summary.leadsVsPrevPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
+              :class="summary.leadsVsPrevPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
             >
-              {{ summary.leadsVsPrevPercentage >= 0 ? "▲ +" : "▼ "
+              {{ summary.leadsVsPrevPercentage >= 0 ? '▲ +' : '▼ '
               }}{{ Math.abs(summary.leadsVsPrevPercentage) }}%
             </span>
             <span class="text-xs text-gray-400">so với kỳ trước</span>
@@ -99,9 +93,7 @@
             >
               Cần chăm sóc gấp
             </span>
-            <span class="text-xs text-gray-400"
-              >Chiếm {{ summary.newLeadsRatio }}%</span
-            >
+            <span class="text-xs text-gray-400">Chiếm {{ summary.newLeadsRatio }}%</span>
           </div>
         </div>
       </ElCol>
@@ -122,17 +114,13 @@
             </div>
           </div>
           <div class="mt-4">
-            <div
-              class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden"
-            >
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
               <div
                 class="bg-green-500 h-1.5 rounded-full transition-all duration-500"
                 :style="{ width: summary.conversionRate + '%' }"
               ></div>
             </div>
-            <div class="text-right text-xs text-gray-400 mt-1">
-              Đã giao / Chốt thành công
-            </div>
+            <div class="text-right text-xs text-gray-400 mt-1">Đã giao / Chốt thành công</div>
           </div>
         </div>
       </ElCol>
@@ -155,13 +143,9 @@
           <div class="mt-4 flex items-center justify-between">
             <span
               class="text-sm font-medium flex items-center gap-1"
-              :class="
-                summary.bookingsVsPrevPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
+              :class="summary.bookingsVsPrevPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
             >
-              {{ summary.bookingsVsPrevPercentage >= 0 ? "▲ +" : "▼ "
+              {{ summary.bookingsVsPrevPercentage >= 0 ? '▲ +' : '▼ '
               }}{{ Math.abs(summary.bookingsVsPrevPercentage) }}%
             </span>
             <span class="text-xs text-gray-400">so với kỳ trước</span>
@@ -229,10 +213,7 @@
               🏆 Bảng xếp hạng Hiệu suất Nhân viên kinh doanh
             </h3>
 
-            <div
-              v-if="staffPerformanceList.length === 0"
-              class="text-center py-10 text-gray-400"
-            >
+            <div v-if="staffPerformanceList.length === 0" class="text-center py-10 text-gray-400">
               Không có dữ liệu nhân viên trong kỳ này.
             </div>
 
@@ -256,13 +237,7 @@
                 <div class="flex-1 mx-2">
                   <ElProgress
                     :percentage="staff.rate"
-                    :color="
-                      staff.rate >= 50
-                        ? '#67c23a'
-                        : staff.rate >= 20
-                          ? '#409eff'
-                          : '#f56c6c'
-                    "
+                    :color="staff.rate >= 50 ? '#67c23a' : staff.rate >= 20 ? '#409eff' : '#f56c6c'"
                     :show-text="false"
                     :stroke-width="8"
                   />
@@ -291,38 +266,26 @@
       class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"
     >
       <div class="flex justify-between items-center mb-4">
-        <h3
-          class="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-1"
-        >
+        <h3 class="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-1">
           📅 Lịch hẹn đăng ký lái thử mới nhất
         </h3>
-        <ElButton type="primary" link @click="goToBookings"
-          >Xem lịch đầy đủ</ElButton
-        >
+        <ElButton type="primary" link @click="goToBookings">Xem lịch đầy đủ</ElButton>
       </div>
 
       <ElTable :data="recentBookings" style="width: 100%" v-loading="loading">
         <ElTableColumn prop="fullName" label="Khách hàng" min-width="140" />
         <ElTableColumn prop="phoneNumber" label="Số điện thoại" width="130" />
         <ElTableColumn prop="email" label="Email" min-width="160" />
-        <ElTableColumn
-          prop="interestedVehicle"
-          label="Dòng xe quan tâm"
-          min-width="150"
-        />
+        <ElTableColumn prop="interestedVehicle" label="Dòng xe quan tâm" min-width="150" />
         <ElTableColumn prop="preferredDate" label="Ngày hẹn" width="160">
           <template #default="scope">
             <span>{{ formatDateTime(scope.row.preferredDate) }}</span>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="assignedToName"
-          label="Sales phụ trách"
-          min-width="140"
-        >
+        <ElTableColumn prop="assignedToName" label="Sales phụ trách" min-width="140">
           <template #default="scope">
             <span class="text-gray-600 dark:text-gray-300 font-medium">
-              {{ scope.row.assignedToName || "Chưa phân công" }}
+              {{ scope.row.assignedToName || 'Chưa phân công' }}
             </span>
           </template>
         </ElTableColumn>
@@ -339,14 +302,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import * as echarts from "echarts";
-import { ElMessage } from "element-plus";
-import { fetchGetLeadList, Lead } from "@/api/customer/lead.api";
-import { BookingApi, Booking } from "@/api/sales";
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import * as echarts from 'echarts';
+import { ElMessage } from 'element-plus';
+import { fetchGetLeadList, Lead } from '@/api/customer/lead.api';
+import { BookingApi, Booking } from '@/api/sales';
 
-defineOptions({ name: "MarketingDashboard" });
+defineOptions({ name: 'MarketingDashboard' });
 
 const router = useRouter();
 
@@ -356,9 +319,9 @@ const rawLeads = ref<Lead[]>([]);
 const rawBookings = ref<Booking[]>([]);
 
 // Lọc thời gian
-const currentPeriod = ref("month");
-const customStart = ref("");
-const customEnd = ref("");
+const currentPeriod = ref('month');
+const customStart = ref('');
+const customEnd = ref('');
 
 // Refs biểu đồ Echarts
 const trendChartRef = ref<HTMLDivElement | null>(null);
@@ -372,9 +335,9 @@ let sourceChart: echarts.ECharts | null = null;
 // Chuyển chế độ lọc thời gian
 const setPeriod = (period: string) => {
   currentPeriod.value = period;
-  if (period !== "custom") {
-    customStart.value = "";
-    customEnd.value = "";
+  if (period !== 'custom') {
+    customStart.value = '';
+    customEnd.value = '';
   }
 };
 
@@ -386,7 +349,7 @@ const dateRanges = computed(() => {
   let prevStart = new Date();
   let prevEnd = new Date();
 
-  if (currentPeriod.value === "today") {
+  if (currentPeriod.value === 'today') {
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
 
@@ -394,13 +357,13 @@ const dateRanges = computed(() => {
     prevStart.setHours(0, 0, 0, 0);
     prevEnd.setDate(now.getDate() - 1);
     prevEnd.setHours(23, 59, 59, 999);
-  } else if (currentPeriod.value === "month") {
+  } else if (currentPeriod.value === 'month') {
     start = new Date(now.getFullYear(), now.getMonth(), 1);
     end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
     prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     prevEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
-  } else if (currentPeriod.value === "year") {
+  } else if (currentPeriod.value === 'year') {
     start = new Date(now.getFullYear(), 0, 1);
     end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
 
@@ -466,34 +429,28 @@ const summary = computed(() => {
         : 0
       : Math.round(((curLeads - prevLeads) / prevLeads) * 100);
 
-  const newLeads = filteredLeads.value.filter((l) => l.status === "New").length;
-  const newLeadsRatio =
-    curLeads === 0 ? 0 : Math.round((newLeads / curLeads) * 100);
+  const newLeads = filteredLeads.value.filter((l) => l.status === 'New').length;
+  const newLeadsRatio = curLeads === 0 ? 0 : Math.round((newLeads / curLeads) * 100);
 
   // Tính tỷ lệ chuyển đổi: status Delivered, Closed, Won, Official
   const wonLeads = filteredLeads.value.filter((l) =>
-    ["Delivered", "Closed", "Won", "Official"].includes(l.status),
+    ['Delivered', 'Closed', 'Won', 'Official'].includes(l.status)
   ).length;
-  const conversionRate =
-    curLeads === 0 ? 0 : Math.round((wonLeads / curLeads) * 100);
+  const conversionRate = curLeads === 0 ? 0 : Math.round((wonLeads / curLeads) * 100);
 
   // Lịch đặt lái thử
   const curTestDriveBookings = filteredBookings.value.filter(
-    (b) => b.bookingType === "TestDrive",
+    (b) => b.bookingType === 'TestDrive'
   ).length;
   const prevTestDriveBookings = prevFilteredBookings.value.filter(
-    (b) => b.bookingType === "TestDrive",
+    (b) => b.bookingType === 'TestDrive'
   ).length;
   const bookingsVsPrevPercentage =
     prevTestDriveBookings === 0
       ? curTestDriveBookings > 0
         ? 100
         : 0
-      : Math.round(
-          ((curTestDriveBookings - prevTestDriveBookings) /
-            prevTestDriveBookings) *
-            100,
-        );
+      : Math.round(((curTestDriveBookings - prevTestDriveBookings) / prevTestDriveBookings) * 100);
 
   return {
     totalLeads: curLeads,
@@ -509,11 +466,7 @@ const summary = computed(() => {
 // Lịch hẹn mới nhận (Recent 5 bookings)
 const recentBookings = computed(() => {
   return [...filteredBookings.value]
-    .sort(
-      (a, b) =>
-        new Date(b.preferredDate).getTime() -
-        new Date(a.preferredDate).getTime(),
-    )
+    .sort((a, b) => new Date(b.preferredDate).getTime() - new Date(a.preferredDate).getTime())
     .slice(0, 5);
 });
 
@@ -521,19 +474,10 @@ const recentBookings = computed(() => {
 const staffPerformanceList = computed(() => {
   const staffMap: { [key: string]: { total: number; won: number } } = {};
   filteredLeads.value.forEach((l) => {
-    const rep = l.assignedToName || "Chưa phân công";
+    const rep = l.assignedToName || 'Chưa phân công';
     if (!staffMap[rep]) staffMap[rep] = { total: 0, won: 0 };
     staffMap[rep].total++;
-    if (
-      [
-        "Deposited",
-        "Paperwork",
-        "Delivered",
-        "Closed",
-        "Won",
-        "Official",
-      ].includes(l.status)
-    ) {
+    if (['Deposited', 'Paperwork', 'Delivered', 'Closed', 'Won', 'Official'].includes(l.status)) {
       staffMap[rep].won++;
     }
   });
@@ -550,41 +494,41 @@ const staffPerformanceList = computed(() => {
 
 // Định dạng dữ liệu thời gian hiển thị
 const formatDateTime = (val?: string) => {
-  if (!val) return "-";
+  if (!val) return '-';
   const d = new Date(val);
-  const dStr = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-  const tStr = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const dStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  const tStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   return `${dStr} ${tStr}`;
 };
 
 const getBookingStatusLabel = (status?: string) => {
   switch (status) {
-    case "Pending":
-      return "Chờ xử lý";
-    case "Confirmed":
-      return "Đã xác nhận";
-    case "Cancelled":
-      return "Đã hủy";
+    case 'Pending':
+      return 'Chờ xử lý';
+    case 'Confirmed':
+      return 'Đã xác nhận';
+    case 'Cancelled':
+      return 'Đã hủy';
     default:
-      return status || "Chờ xử lý";
+      return status || 'Chờ xử lý';
   }
 };
 
 const getBookingStatusType = (status?: string) => {
   switch (status) {
-    case "Pending":
-      return "warning";
-    case "Confirmed":
-      return "success";
-    case "Cancelled":
-      return "danger";
+    case 'Pending':
+      return 'warning';
+    case 'Confirmed':
+      return 'success';
+    case 'Cancelled':
+      return 'danger';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const goToBookings = () => {
-  router.push("/Marketing/booking");
+  router.push('/Marketing/booking');
 };
 
 // Gọi API nạp dữ liệu
@@ -592,14 +536,12 @@ const loadData = async () => {
   loading.value = true;
   try {
     const leadRes = await fetchGetLeadList({ PageSize: 5000 });
-    rawLeads.value = Array.isArray(leadRes)
-      ? leadRes
-      : (leadRes.items ?? leadRes.records ?? []);
+    rawLeads.value = Array.isArray(leadRes) ? leadRes : (leadRes.items ?? leadRes.records ?? []);
 
     const bookingRes = await BookingApi.getList();
     rawBookings.value = bookingRes || [];
   } catch (err: any) {
-    ElMessage.error("Lỗi khi tải dữ liệu thống kê Marketing");
+    ElMessage.error('Lỗi khi tải dữ liệu thống kê Marketing');
   } finally {
     loading.value = false;
   }
@@ -607,9 +549,9 @@ const loadData = async () => {
 
 // Hàm vẽ/Cập nhật các biểu đồ ECharts
 const initCharts = () => {
-  const isDark = document.documentElement.classList.contains("dark");
-  const textColor = isDark ? "#e3e3e8" : "#323251";
-  const lineColor = isDark ? "#333" : "#f2f4f5";
+  const isDark = document.documentElement.classList.contains('dark');
+  const textColor = isDark ? '#e3e3e8' : '#323251';
+  const lineColor = isDark ? '#333' : '#f2f4f5';
 
   // 1. Biểu đồ Xu hướng (Line)
   if (trendChartRef.value) {
@@ -622,18 +564,18 @@ const initCharts = () => {
 
     // Điền ngày vào mảng để vẽ trục X liên tục
     while (start <= range.end) {
-      const dateStr = start.toISOString().split("T")[0];
+      const dateStr = start.toISOString().split('T')[0];
       dateMap[dateStr] = { leads: 0, bookings: 0 };
       start.setDate(start.getDate() + 1);
     }
 
     filteredLeads.value.forEach((l) => {
-      const dateStr = l.createdAt.split("T")[0];
+      const dateStr = l.createdAt.split('T')[0];
       if (dateMap[dateStr]) dateMap[dateStr].leads++;
     });
 
     filteredBookings.value.forEach((b) => {
-      const dateStr = b.preferredDate.split("T")[0];
+      const dateStr = b.preferredDate.split('T')[0];
       if (dateMap[dateStr]) dateMap[dateStr].bookings++;
     });
 
@@ -642,22 +584,22 @@ const initCharts = () => {
     const bookingCounts = dates.map((d) => dateMap[d].bookings);
 
     trendChart.setOption({
-      tooltip: { trigger: "axis" },
+      tooltip: { trigger: 'axis' },
       legend: {
         top: 0,
-        left: "center",
-        data: ["Khách hàng mới (Leads)", "Lịch hẹn lái thử"],
+        left: 'center',
+        data: ['Khách hàng mới (Leads)', 'Lịch hẹn lái thử'],
         textStyle: { color: textColor },
       },
       grid: {
-        left: "3%",
-        right: "4%",
-        top: "12%",
-        bottom: "5%",
+        left: '3%',
+        right: '4%',
+        top: '12%',
+        bottom: '5%',
         containLabel: true,
       },
       xAxis: {
-        type: "category",
+        type: 'category',
         boundaryGap: false,
         data: dates.map((d) => d.substring(5)),
         axisLabel: {
@@ -666,34 +608,34 @@ const initCharts = () => {
         },
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: { color: textColor },
         splitLine: { lineStyle: { color: lineColor } },
       },
       series: [
         {
-          name: "Khách hàng mới (Leads)",
-          type: "line",
+          name: 'Khách hàng mới (Leads)',
+          type: 'line',
           smooth: true,
           data: leadCounts,
-          itemStyle: { color: "#3b82f6" },
+          itemStyle: { color: '#3b82f6' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(59, 130, 246, 0.4)" },
-              { offset: 1, color: "rgba(59, 130, 246, 0)" },
+              { offset: 0, color: 'rgba(59, 130, 246, 0.4)' },
+              { offset: 1, color: 'rgba(59, 130, 246, 0)' },
             ]),
           },
         },
         {
-          name: "Lịch hẹn lái thử",
-          type: "line",
+          name: 'Lịch hẹn lái thử',
+          type: 'line',
           smooth: true,
           data: bookingCounts,
-          itemStyle: { color: "#a855f7" },
+          itemStyle: { color: '#a855f7' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(168, 85, 247, 0.4)" },
-              { offset: 1, color: "rgba(168, 85, 247, 0)" },
+              { offset: 0, color: 'rgba(168, 85, 247, 0.4)' },
+              { offset: 1, color: 'rgba(168, 85, 247, 0)' },
             ]),
           },
         },
@@ -707,45 +649,36 @@ const initCharts = () => {
 
     const totalLeads = filteredLeads.value.length;
     const contactedLeads = filteredLeads.value.filter((l) =>
-      ["Consulting", "Contacted", "Potential", "TestDriving"].includes(
-        l.status,
-      ),
+      ['Consulting', 'Contacted', 'Potential', 'TestDriving'].includes(l.status)
     ).length;
     const testDriveLeads = filteredLeads.value.filter((l) =>
-      ["TestDriving"].includes(l.status),
+      ['TestDriving'].includes(l.status)
     ).length;
     const wonLeads = filteredLeads.value.filter((l) =>
-      [
-        "Deposited",
-        "Paperwork",
-        "Delivered",
-        "Closed",
-        "Won",
-        "Official",
-      ].includes(l.status),
+      ['Deposited', 'Paperwork', 'Delivered', 'Closed', 'Won', 'Official'].includes(l.status)
     ).length;
 
     funnelChart.setOption({
-      tooltip: { trigger: "item", formatter: "{b} : {c} ({d}%)" },
+      tooltip: { trigger: 'item', formatter: '{b} : {c} ({d}%)' },
       legend: { show: false },
       series: [
         {
-          name: "Phễu chuyển đổi",
-          type: "funnel",
-          left: "10%",
-          right: "10%",
-          top: "10%",
-          bottom: "10%",
-          width: "80%",
+          name: 'Phễu chuyển đổi',
+          type: 'funnel',
+          left: '10%',
+          right: '10%',
+          top: '10%',
+          bottom: '10%',
+          width: '80%',
           min: 0,
           max: totalLeads || 10,
-          minSize: "0%",
-          maxSize: "100%",
-          sort: "descending",
+          minSize: '0%',
+          maxSize: '100%',
+          sort: 'descending',
           gap: 2,
-          label: { show: true, position: "inside" },
+          label: { show: true, position: 'inside' },
           labelLine: { show: false },
-          itemStyle: { borderColor: "#fff", borderWidth: 1 },
+          itemStyle: { borderColor: '#fff', borderWidth: 1 },
           data: [
             { value: totalLeads, name: `Tổng số Leads: ${totalLeads}` },
             {
@@ -769,22 +702,22 @@ const initCharts = () => {
 
     const sourceMap: { [key: string]: number } = {};
     filteredLeads.value.forEach((l) => {
-      const src = l.source || "Nguồn khác";
+      const src = l.source || 'Nguồn khác';
       sourceMap[src] = (sourceMap[src] || 0) + 1;
     });
 
     const translateSource = (src: string) => {
       switch (src) {
-        case "WebStore":
-          return "Website trực tuyến";
-        case "Facebook":
-          return "Mạng xã hội (Facebook)";
-        case "Ads":
-          return "Quảng cáo trực tuyến";
-        case "Walk-in":
-          return "Khách vãng lai";
-        case "Referral":
-          return "Người giới thiệu";
+        case 'WebStore':
+          return 'Website trực tuyến';
+        case 'Facebook':
+          return 'Mạng xã hội (Facebook)';
+        case 'Ads':
+          return 'Quảng cáo trực tuyến';
+        case 'Walk-in':
+          return 'Khách vãng lai';
+        case 'Referral':
+          return 'Người giới thiệu';
         default:
           return src;
       }
@@ -796,33 +729,30 @@ const initCharts = () => {
     }));
 
     sourceChart.setOption({
-      tooltip: { trigger: "item", formatter: "{b} : {c} Leads ({d}%)" },
-      legend: { bottom: "0", left: "center", textStyle: { color: textColor } },
+      tooltip: { trigger: 'item', formatter: '{b} : {c} Leads ({d}%)' },
+      legend: { bottom: '0', left: 'center', textStyle: { color: textColor } },
       series: [
         {
-          name: "Nguồn khách hàng",
-          type: "pie",
-          radius: ["40%", "70%"],
+          name: 'Nguồn khách hàng',
+          type: 'pie',
+          radius: ['40%', '70%'],
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 10,
-            borderColor: isDark ? "#161618" : "#fff",
+            borderColor: isDark ? '#161618' : '#fff',
             borderWidth: 2,
           },
-          label: { show: false, position: "center" },
+          label: { show: false, position: 'center' },
           emphasis: {
             label: {
               show: true,
               fontSize: 16,
-              fontWeight: "bold",
+              fontWeight: 'bold',
               color: textColor,
             },
           },
           labelLine: { show: false },
-          data:
-            pieData.length > 0
-              ? pieData
-              : [{ name: "Không có dữ liệu", value: 0 }],
+          data: pieData.length > 0 ? pieData : [{ name: 'Không có dữ liệu', value: 0 }],
         },
       ],
     });
@@ -844,11 +774,11 @@ const handleResize = () => {
 onMounted(async () => {
   await loadData();
   initCharts();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   trendChart?.dispose();
   funnelChart?.dispose();
   sourceChart?.dispose();

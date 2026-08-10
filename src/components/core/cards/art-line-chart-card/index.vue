@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="art-card relative overflow-hidden"
-    :style="{ height: `${height}rem` }"
-  >
+  <div class="art-card relative overflow-hidden" :style="{ height: `${height}rem` }">
     <div class="mb-2.5 flex-b items-start p-5">
       <div>
         <p class="text-2xl font-medium leading-none">
@@ -17,7 +14,7 @@
           isMiniChart ? 'absolute bottom-5' : '',
         ]"
       >
-        {{ percentage > 0 ? "+" : "" }}{{ percentage }}%
+        {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
       </div>
       <div v-if="date" class="absolute bottom-5 right-5 text-xs text-g-500">
         {{ date }}
@@ -26,22 +23,18 @@
     <div
       ref="chartRef"
       class="absolute bottom-0 left-0 right-0 box-border w-full"
-      :class="
-        isMiniChart
-          ? '!absolute !top-5 !right-5 !bottom-auto !left-auto !h-15 !w-4/10'
-          : ''
-      "
+      :class="isMiniChart ? '!absolute !top-5 !right-5 !bottom-auto !left-auto !h-15 !w-4/10' : ''"
       :style="{ height: isMiniChart ? '60px' : `calc(${height}rem - 5rem)` }"
     ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { graphic, type EChartsOption } from "@/plugins/echarts";
-import { getCssVar, hexToRgba } from "@/common/utils/ui";
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
+import { graphic, type EChartsOption } from '@/plugins/echarts';
+import { getCssVar, hexToRgba } from '@/common/utils/ui';
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
 
-defineOptions({ name: "ArtLineChartCard" });
+defineOptions({ name: 'ArtLineChartCard' });
 
 interface Props {
   value: number;
@@ -71,16 +64,10 @@ const { chartRef } = useChartComponent({
   props: {
     height: `${props.height}rem`,
     loading: false,
-    isEmpty:
-      !props.chartData?.length || props.chartData.every((val) => val === 0),
+    isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0),
   },
-  checkEmpty: () =>
-    !props.chartData?.length || props.chartData.every((val) => val === 0),
-  watchSources: [
-    () => props.chartData,
-    () => props.color,
-    () => props.showAreaColor,
-  ],
+  checkEmpty: () => !props.chartData?.length || props.chartData.every((val) => val === 0),
+  watchSources: [() => props.chartData, () => props.color, () => props.showAreaColor],
   generateOptions: (): EChartsOption => {
     const computedColor = props.color || useChartOps().themeColor;
 
@@ -92,18 +79,18 @@ const { chartRef } = useChartComponent({
         left: 0,
       },
       xAxis: {
-        type: "category",
+        type: 'category',
         show: false,
         boundaryGap: false,
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         show: false,
       },
       series: [
         {
           data: props.chartData,
-          type: "line",
+          type: 'line',
           smooth: true,
           showSymbol: false,
           lineStyle: {
@@ -117,13 +104,13 @@ const { chartRef } = useChartComponent({
                     offset: 0,
                     color: props.color
                       ? hexToRgba(props.color, 0.2).rgba
-                      : hexToRgba(getCssVar("--el-color-primary"), 0.2).rgba,
+                      : hexToRgba(getCssVar('--el-color-primary'), 0.2).rgba,
                   },
                   {
                     offset: 1,
                     color: props.color
                       ? hexToRgba(props.color, 0.01).rgba
-                      : hexToRgba(getCssVar("--el-color-primary"), 0.01).rgba,
+                      : hexToRgba(getCssVar('--el-color-primary'), 0.01).rgba,
                   },
                 ]),
               }

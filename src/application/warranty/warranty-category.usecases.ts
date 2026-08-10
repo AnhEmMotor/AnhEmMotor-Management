@@ -1,7 +1,7 @@
 import type {
   WarrantyTerm,
   WarrantyTermStatisticsResponse,
-} from "@/domain/warranty/warranty-category.types";
+} from '@/domain/warranty/warranty-category.types';
 
 export interface GetWarrantyTermsUseCase {
   execute(params: {

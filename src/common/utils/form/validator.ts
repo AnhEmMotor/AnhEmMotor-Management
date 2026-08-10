@@ -1,18 +1,18 @@
 export enum PasswordStrength {
-  WEAK = "nhược",
-  MEDIUM = "trong",
-  STRONG = "cường",
+  WEAK = 'nhược',
+  MEDIUM = 'trong',
+  STRONG = 'cường',
 }
 
 export function trimSpaces(value: string): string {
-  if (typeof value !== "string") {
-    return "";
+  if (typeof value !== 'string') {
+    return '';
   }
   return value.trim();
 }
 
 export function validatePhone(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -21,16 +21,16 @@ export function validatePhone(value: string): boolean {
 }
 
 export function validateTelPhone(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
   const telRegex = /^0\d{2,3}-?\d{7,8}$/;
-  return telRegex.test(value.trim().replace(/\s+/g, ""));
+  return telRegex.test(value.trim().replace(/\s+/g, ''));
 }
 
 export function validateAccount(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -39,7 +39,7 @@ export function validateAccount(value: string): boolean {
 }
 
 export function validatePassword(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -56,7 +56,7 @@ export function validatePassword(value: string): boolean {
 }
 
 export function validateStrongPassword(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -69,21 +69,13 @@ export function validateStrongPassword(value: string): boolean {
   const hasUpperCase = /[A-Z]/.test(trimmedValue);
   const hasLowerCase = /[a-z]/.test(trimmedValue);
   const hasNumber = /\d/.test(trimmedValue);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(
-    trimmedValue,
-  );
+  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(trimmedValue);
 
   return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
 }
 
-/**
- * LấyMật khẩucườngđộ
- * @param value Mật khẩuChuỗi
- * @returns Quay lạiMật khẩucườngđộ：nhược、trong、cường
- * @description yếu：thuầnDữtự/thuầntựmẹ/thuầnđặcthùtựký；trong：hailoạitổhợp；mạnh：baloạihoặclấytrêntổhợp
- */
 export function getPasswordStrength(value: string): PasswordStrength {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return PasswordStrength.WEAK;
   }
 
@@ -96,16 +88,9 @@ export function getPasswordStrength(value: string): PasswordStrength {
   const hasUpperCase = /[A-Z]/.test(trimmedValue);
   const hasLowerCase = /[a-z]/.test(trimmedValue);
   const hasNumber = /\d/.test(trimmedValue);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(
-    trimmedValue,
-  );
+  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(trimmedValue);
 
-  const typeCount = [
-    hasUpperCase,
-    hasLowerCase,
-    hasNumber,
-    hasSpecialChar,
-  ].filter(Boolean).length;
+  const typeCount = [hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar].filter(Boolean).length;
 
   if (typeCount >= 3) {
     return PasswordStrength.STRONG;
@@ -117,19 +102,18 @@ export function getPasswordStrength(value: string): PasswordStrength {
 }
 
 export function validateIPv4Address(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
   const trimmedValue = value.trim();
-  const ipRegex =
-    /^((25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
+  const ipRegex = /^((25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
 
   if (!ipRegex.test(trimmedValue)) {
     return false;
   }
 
-  const segments = trimmedValue.split(".");
+  const segments = trimmedValue.split('.');
   return segments.every((segment) => {
     const num = parseInt(segment, 10);
     return num >= 0 && num <= 255;
@@ -137,7 +121,7 @@ export function validateIPv4Address(value: string): boolean {
 }
 
 export function validateEmail(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -149,13 +133,8 @@ export function validateEmail(value: string): boolean {
   return emailRegex.test(trimmedValue) && trimmedValue.length <= 254;
 }
 
-/**
- * nghiệmtínhURLDiaChi
- * @param value URLChuỗi
- * @returns Quay lạinghiệmtínhKetQua，truebảngthịcáchkiểuđúngChính
- */
 export function validateURL(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -168,7 +147,7 @@ export function validateURL(value: string): boolean {
 }
 
 export function validateChineseIDCard(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
@@ -182,7 +161,7 @@ export function validateChineseIDCard(value: string): boolean {
   }
 
   const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
-  const checkCodes = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"];
+  const checkCodes = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
 
   let sum = 0;
   for (let i = 0; i < 17; i++) {
@@ -194,11 +173,11 @@ export function validateChineseIDCard(value: string): boolean {
 }
 
 export function validateBankCard(value: string): boolean {
-  if (!value || typeof value !== "string") {
+  if (!value || typeof value !== 'string') {
     return false;
   }
 
-  const trimmedValue = value.trim().replace(/\s+/g, "");
+  const trimmedValue = value.trim().replace(/\s+/g, '');
 
   if (!/^\d{13,19}$/.test(trimmedValue)) {
     return false;

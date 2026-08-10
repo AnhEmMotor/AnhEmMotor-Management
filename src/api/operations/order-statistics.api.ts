@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface HourlyOrderData {
   hour: string;
@@ -26,7 +26,7 @@ export interface OrderStatisticsResponse {
 export const orderStatisticsApi = {
   getStatistics() {
     return request.get<OrderStatisticsResponse>({
-      url: "/api/v1/statistics/order-statistics",
+      url: '/api/v1/statistics/order-statistics',
     });
   },
 };

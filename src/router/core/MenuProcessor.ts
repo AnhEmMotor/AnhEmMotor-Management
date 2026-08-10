@@ -1,10 +1,10 @@
-import type { AppRouteRecord } from "@/types/router";
-import { useUserStore } from "@/application/store/user";
-import { useAppMode } from "@/common/composables/useAppMode";
-import { fetchGetMenuList } from "@/api/auth";
-import { asyncRoutes } from "../routes/asyncRoutes";
-import { RoutesAlias } from "../routesAlias";
-import { formatMenuTitle } from "@/common/utils";
+import type { AppRouteRecord } from '@/types/router';
+import { useUserStore } from '@/application/store/user';
+import { useAppMode } from '@/common/composables/useAppMode';
+import { fetchGetMenuList } from '@/api/auth';
+import { asyncRoutes } from '../routes/asyncRoutes';
+import { RoutesAlias } from '../routesAlias';
+import { formatMenuTitle } from '@/common/utils';
 
 export class MenuProcessor {
   async getMenuList(): Promise<AppRouteRecord[]> {
@@ -29,11 +29,7 @@ export class MenuProcessor {
 
     let menuList = [...asyncRoutes];
 
-    menuList = this.filterMenuByPermissionsAndRoles(
-      menuList,
-      permissions,
-      roles,
-    );
+    menuList = this.filterMenuByPermissionsAndRoles(menuList, permissions, roles);
 
     return this.filterEmptyMenus(menuList);
   }
@@ -46,51 +42,42 @@ export class MenuProcessor {
   private filterMenuByPermissionsAndRoles(
     menu: AppRouteRecord[],
     permissions: string[],
-    roles: string[],
+    roles: string[]
   ): AppRouteRecord[] {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles;
       const hasRolePermission =
-        roles.length === 0 ||
-        !itemRoles ||
-        itemRoles.some((role) => roles?.includes(role));
+        roles.length === 0 || !itemRoles || itemRoles.some((role) => roles?.includes(role));
 
       const itemPermissions = item.meta?.permissions as string[] | undefined;
       const itemPermission = item.meta?.permission as string | undefined;
 
       let hasGranularPermission = true;
       if (itemPermissions && Array.isArray(itemPermissions)) {
-        hasGranularPermission = itemPermissions.some((p) =>
-          permissions.includes(p),
-        );
+        hasGranularPermission = itemPermissions.some((p) => permissions.includes(p));
       } else if (itemPermission) {
         hasGranularPermission = permissions.includes(itemPermission);
       }
 
       let filteredChildren: AppRouteRecord[] | undefined;
       if (item.children?.length) {
-        filteredChildren = this.filterMenuByPermissionsAndRoles(
-          item.children,
-          permissions,
-          roles,
-        );
+        filteredChildren = this.filterMenuByPermissionsAndRoles(item.children, permissions, roles);
       }
 
-      const hasVisibleChildren =
-        filteredChildren && filteredChildren.length > 0;
+      const hasVisibleChildren = filteredChildren && filteredChildren.length > 0;
 
       if (hasRolePermission && (hasGranularPermission || hasVisibleChildren)) {
         const filteredItem = { ...item };
 
-        if (filteredItem.name === "Dashboard") {
+        if (filteredItem.name === 'Dashboard') {
           const hasStatsPerm =
-            permissions.includes("Permissions.Statistical.View") ||
-            permissions.includes("Permissions.Admin.DashboardManagement.View");
+            permissions.includes('Permissions.Statistical.View') ||
+            permissions.includes('Permissions.Admin.DashboardManagement.View');
           if (!hasStatsPerm) {
             if (!filteredItem.meta) {
               filteredItem.meta = {} as any;
             }
-            filteredItem.meta.title = "menus.dashboard.console";
+            filteredItem.meta.title = 'menus.dashboard.console';
             if (filteredChildren) {
               filteredChildren = filteredChildren.map((c) => {
                 const newChild = { ...c };
@@ -132,20 +119,14 @@ export class MenuProcessor {
           return true;
         }
 
-        if (
-          item.component &&
-          item.component !== "" &&
-          item.component !== RoutesAlias.Layout
-        ) {
+        if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
           return true;
         }
 
-        // Chỉ giữ lại nếu có children thực sự (không rỗng)
         if (item.children && item.children.length > 0) {
           return true;
         }
 
-        // Luôn giữ lại route được đánh dấu isHide (dù không có component/children)
         if (item.meta?.isHide) {
           return true;
         }
@@ -158,12 +139,9 @@ export class MenuProcessor {
     return Array.isArray(menuList) && menuList.length > 0;
   }
 
-  private normalizeMenuPaths(
-    menuList: AppRouteRecord[],
-    parentPath = "",
-  ): AppRouteRecord[] {
+  private normalizeMenuPaths(menuList: AppRouteRecord[], parentPath = ''): AppRouteRecord[] {
     return menuList.map((item) => {
-      const fullPath = this.buildFullPath(item.path || "", parentPath);
+      const fullPath = this.buildFullPath(item.path || '', parentPath);
 
       const children = item.children?.length
         ? this.normalizeMenuPaths(item.children, fullPath)
@@ -180,9 +158,7 @@ export class MenuProcessor {
     });
   }
 
-  private resolveDefaultRedirect(
-    children?: AppRouteRecord[],
-  ): string | undefined {
+  private resolveDefaultRedirect(children?: AppRouteRecord[]): string | undefined {
     if (!children?.length) {
       return undefined;
     }
@@ -204,11 +180,11 @@ export class MenuProcessor {
   private isNavigableRoute(route: AppRouteRecord): boolean {
     return Boolean(
       route.path &&
-      route.path !== "/" &&
+      route.path !== '/' &&
       !route.meta?.link &&
       route.meta?.isIframe !== true &&
       route.component &&
-      route.component !== "",
+      route.component !== ''
     );
   }
 
@@ -216,14 +192,14 @@ export class MenuProcessor {
     menuList.forEach((route) => {
       if (!route.children?.length) return;
 
-      const parentName = String(route.name || route.path || "ChưabáoRouting");
+      const parentName = String(route.name || route.path || 'ChưabáoRouting');
 
       route.children.forEach((child) => {
-        const childPath = child.path || "";
+        const childPath = child.path || '';
 
         if (this.isValidAbsolutePath(childPath)) return;
 
-        if (childPath.startsWith("/")) {
+        if (childPath.startsWith('/')) {
           this.logPathError(child, childPath, parentName, level);
         }
       });
@@ -234,9 +210,9 @@ export class MenuProcessor {
 
   private isValidAbsolutePath(path: string): boolean {
     return (
-      path.startsWith("http://") ||
-      path.startsWith("https://") ||
-      path.startsWith("/outside/iframe/")
+      path.startsWith('http://') ||
+      path.startsWith('https://') ||
+      path.startsWith('/outside/iframe/')
     );
   }
 
@@ -244,36 +220,27 @@ export class MenuProcessor {
     route: AppRouteRecord,
     path: string,
     parentName: string,
-    level: number,
+    level: number
   ): void {
-    const routeName = String(route.name || path || "ChưabáoRouting");
+    const routeName = String(route.name || path || 'ChưabáoRouting');
     const menuTitle = route.meta?.title || routeName;
-    const suggestedPath = path.split("/").pop() || path.slice(1);
-
-    // [Disabled] RoutingCauHinhLoi log suppressed
-    // console.error(
-    //   `[RoutingCauHinhLoi] Menu "${formatMenuTitle(menuTitle)}" (name: ${routeName}, path: ${path}) CauHinhLoi\n` +
-    //     ` ViTri: ${parentName} > ${routeName}\n` +
-    //     ` hoi_de: ${level + 1}cap_Menu_cua path Khong_nang_lay / mo_dau\n` +
-    //     ` khi_truoc_CauHinh: path: "${path}"\n` +
-    //     ` ung_nen_sua_vi: path: "${suggestedPath}"`,
-    // );
+    const suggestedPath = path.split('/').pop() || path.slice(1);
   }
 
   private buildFullPath(path: string, parentPath: string): string {
-    if (!path) return "";
+    if (!path) return '';
 
-    if (path.startsWith("http://") || path.startsWith("https://")) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
       return path;
     }
 
-    if (path.startsWith("/")) {
+    if (path.startsWith('/')) {
       return path;
     }
 
     if (parentPath) {
-      const cleanParent = parentPath.replace(/\/$/, "");
-      const cleanChild = path.replace(/^\//, "");
+      const cleanParent = parentPath.replace(/\/$/, '');
+      const cleanChild = path.replace(/^\//, '');
       return `${cleanParent}/${cleanChild}`;
     }
 

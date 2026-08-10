@@ -3,20 +3,20 @@
     <ElCard class="art-card-xs">
       <template #header>
         <div class="flex-wrap gap-3 flex-cb">
-          <h3 class="m-0">{{ $t("admin.t101") }}</h3>
+          <h3 class="m-0">{{ $t('admin.t101') }}</h3>
           <div class="flex flex-wrap gap-2">
-            <ElTag type="success" effect="light">{{ $t("admin.t102") }}</ElTag>
-            <ElTag type="primary" effect="light">{{ $t("admin.t103") }}</ElTag>
-            <ElTag type="warning" effect="light">{{ $t("admin.t104") }}</ElTag>
-            <ElTag type="info" effect="light">{{ $t("admin.t105") }}</ElTag>
+            <ElTag type="success" effect="light">{{ $t('admin.t102') }}</ElTag>
+            <ElTag type="primary" effect="light">{{ $t('admin.t103') }}</ElTag>
+            <ElTag type="warning" effect="light">{{ $t('admin.t104') }}</ElTag>
+            <ElTag type="info" effect="light">{{ $t('admin.t105') }}</ElTag>
           </div>
         </div>
       </template>
       <div>
         <p class="m-0 mb-4 leading-[1.6] text-g-700">
-          tậpthànhTìm kiếm、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển
-          thịẨn、Kéo thảxếpthứ、BảngKiểu dángkhốngchế、đồng thờitrongđặt
-          useTable tổhợpkiểuHàm，gợicungcườngđạicủatổhợpkiểu API，tậpthànhDữ
+          tậpthànhTìm kiếm、Làm mới、Toàn màn hình、Kích thướckhốngchế、cộtHiển thịẨn、Kéo
+          thảxếpthứ、BảngKiểu dángkhốngchế、đồng thờitrongđặt useTable
+          tổhợpkiểuHàm，gợicungcườngđạicủatổhợpkiểu API，tậpthànhDữ
           liệuLấy、trínăngCache（LRUpháp）、 đaloạiLàm mớisáchlượcbằngCốt
           lõicôngnăng，toànmặtgợilênBảngmởpháthiệusuất。
         </p>
@@ -31,35 +31,21 @@
                 </div>
                 <div class="flex-cb">
                   <span class="font-medium text-g-700">Cacheđiềusố：</span>
-                  <span class="font-semibold text-theme">{{
-                    cacheInfo.total
-                  }}</span>
+                  <span class="font-semibold text-theme">{{ cacheInfo.total }}</span>
                 </div>
                 <div class="flex-cb">
                   <span class="font-medium text-g-700">CacheKích thước：</span>
-                  <span class="font-semibold text-theme">{{
-                    cacheInfo.size
-                  }}</span>
+                  <span class="font-semibold text-theme">{{ cacheInfo.size }}</span>
                 </div>
                 <div class="flex-cb">
-                  <span class="font-medium text-g-700"
-                    >mệnhtrongThongTin：</span
-                  >
-                  <span class="font-semibold text-theme">{{
-                    cacheInfo.hitRate
-                  }}</span>
+                  <span class="font-medium text-g-700">mệnhtrongThongTin：</span>
+                  <span class="font-semibold text-theme">{{ cacheInfo.hitRate }}</span>
                 </div>
 
                 <div class="flex gap-2 mt-2">
-                  <ElButton size="small" @click="handleClearCache"
-                    >xóakhôngCache</ElButton
-                  >
-                  <ElButton size="small" @click="handleCleanExpiredCache"
-                    >xóalýquakỳCache</ElButton
-                  >
-                  <ElButton size="small" @click="handleTestCache"
-                    >đothửCache</ElButton
-                  >
+                  <ElButton size="small" @click="handleClearCache">xóakhôngCache</ElButton>
+                  <ElButton size="small" @click="handleCleanExpiredCache">xóalýquakỳCache</ElButton>
+                  <ElButton size="small" @click="handleTestCache">đothửCache</ElButton>
                   <ElButton size="small" @click="forceRefreshCacheInfo"
                     >Làm mớiCacheThongTin</ElButton
                   >
@@ -69,10 +55,7 @@
             <ElCollapseItem name="logs" title="CacheNhatKy">
               <div class="flex flex-col gap-2">
                 <div class="max-h-50 overflow-y-auto">
-                  <div
-                    v-if="cacheDebugLogs.length === 0"
-                    class="p-5 text-center"
-                  >
+                  <div v-if="cacheDebugLogs.length === 0" class="p-5 text-center">
                     <ElEmpty description="TạmvôCacheNhatKy" :image-size="60" />
                   </div>
                   <div v-else class="flex flex-col gap-1">
@@ -81,12 +64,9 @@
                       :key="index"
                       class="p-1.5 px-2 text-xs leading-[1.4] bg-g-200 border-l-1 border-g-400 rounded"
                       :class="{
-                        'bg-[rgba(103,194,58,0.1)] !border-l-success':
-                          log.includes('✅'),
-                        'bg-[rgba(64,158,255,0.1)] !border-l-theme':
-                          log.includes('🎯'),
-                        'bg-[rgba(245,108,108,0.1)] !border-l-danger':
-                          log.includes('❌'),
+                        'bg-[rgba(103,194,58,0.1)] !border-l-success': log.includes('✅'),
+                        'bg-[rgba(64,158,255,0.1)] !border-l-theme': log.includes('🎯'),
+                        'bg-[rgba(245,108,108,0.1)] !border-l-danger': log.includes('❌'),
                       }"
                     >
                       {{ log }}
@@ -94,40 +74,32 @@
                   </div>
                 </div>
                 <div class="flex gap-2 mt-2">
-                  <ElButton size="small" @click="cacheDebugLogs = []"
-                    >xóakhôngNhatKy</ElButton
-                  >
+                  <ElButton size="small" @click="cacheDebugLogs = []">xóakhôngNhatKy</ElButton>
                 </div>
               </div>
             </ElCollapseItem>
             <ElCollapseItem name="request" title="Vui lòngcầuTrạng thái">
               <div class="flex flex-col gap-2">
                 <div class="flex-cb">
-                  <span class="font-medium text-g-700"
-                    >LoadingTrạng thái：</span
-                  >
+                  <span class="font-medium text-g-700">LoadingTrạng thái：</span>
                   <ElTag :type="loading ? 'warning' : 'success'">
-                    {{ loading ? "Đang tải" : "khôngnhàn" }}
+                    {{ loading ? 'Đang tải' : 'khôngnhàn' }}
                   </ElTag>
                 </div>
                 <div class="flex-cb">
-                  <span class="font-medium text-g-700"
-                    >Dữ liệuTrạng thái：</span
-                  >
+                  <span class="font-medium text-g-700">Dữ liệuTrạng thái：</span>
                   <ElTag :type="hasData ? 'success' : 'info'">
-                    {{ hasData ? `${data.length} điềuDữ liệu` : "vôDữ liệu" }}
+                    {{ hasData ? `${data.length} điềuDữ liệu` : 'vôDữ liệu' }}
                   </ElTag>
                 </div>
                 <div class="flex-cb">
                   <span class="font-medium text-g-700">LỗiTrạng thái：</span>
                   <ElTag :type="error ? 'danger' : 'success'">
-                    {{ error ? "cóLỗi" : "Bình thường" }}
+                    {{ error ? 'cóLỗi' : 'Bình thường' }}
                   </ElTag>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <span class="font-medium text-g-700"
-                    >khitrướcVui lòngcầuTham số：</span
-                  >
+                  <span class="font-medium text-g-700">khitrướcVui lòngcầuTham số：</span>
                   <ElText
                     tag="pre"
                     class="max-h-50 p-2 overflow-y-auto text-xs bg-g-200 border border-g-400 rounded-md"
@@ -135,12 +107,8 @@
                   >
                 </div>
                 <div class="flex gap-2 mt-2">
-                  <ElButton size="small" @click="handleCancelRequest"
-                    >HủyVui lòngcầu</ElButton
-                  >
-                  <ElButton size="small" @click="handleClearData"
-                    >xóakhôngDữ liệu</ElButton
-                  >
+                  <ElButton size="small" @click="handleCancelRequest">HủyVui lòngcầu</ElButton>
+                  <ElButton size="small" @click="handleClearData">xóakhôngDữ liệu</ElButton>
                 </div>
               </div>
             </ElCollapseItem>
@@ -148,13 +116,9 @@
         </div>
 
         <div class="flex flex-wrap gap-4 mt-4">
-          <ElSwitch
-            v-model="showDebugPanel"
-            active-text="điềuthửBảng (Panel)"
-          />
+          <ElSwitch v-model="showDebugPanel" active-text="điềuthửBảng (Panel)" />
           <ElText type="info" size="small">
-            💡 CachecôngnăngĐãBật，Có thểthông quađiềuthửBảng
-            (Panel)XemChiTietThongTin
+            💡 CachecôngnăngĐãBật，Có thểthông quađiềuthửBảng (Panel)XemChiTietThongTin
           </ElText>
         </div>
       </div>
@@ -216,25 +180,16 @@
               style="margin: 0 12px"
             />
 
-            <ElButton @click="handleClearData" plain v-ripple>
-              xóakhôngDữ liệu
-            </ElButton>
+            <ElButton @click="handleClearData" plain v-ripple> xóakhôngDữ liệu </ElButton>
 
-            <ElButton
-              @click="handleBatchDelete"
-              :disabled="selectedRows.length === 0"
-              v-ripple
-            >
+            <ElButton @click="handleBatchDelete" :disabled="selectedRows.length === 0" v-ripple>
               <ElIcon>
                 <Delete />
               </ElIcon>
               lôlượngXóa ({{ selectedRows.length }})
             </ElButton>
 
-            <ElDropdown
-              @command="handleColumnCommand"
-              style="margin-left: 10px"
-            >
+            <ElDropdown @command="handleColumnCommand" style="margin-left: 10px">
               <ElButton type="primary" plain>
                 Hoạt độngCập nhậtBảngcột
                 <ElIcon class="el-icon--right">
@@ -243,9 +198,7 @@
               </ElButton>
               <template #dropdown>
                 <ElDropdownMenu>
-                  <ElDropdownItem command="addColumn"
-                    >Thêm mớicột（GhiChucột）</ElDropdownItem
-                  >
+                  <ElDropdownItem command="addColumn">Thêm mớicột（GhiChucột）</ElDropdownItem>
                   <ElDropdownItem command="batchAddColumns"
                     >lôlượngThêm mới（GhiChu、Tag）</ElDropdownItem
                   >
@@ -253,12 +206,9 @@
                     >Chuyển đổicột（Số điện thoại）</ElDropdownItem
                   >
                   <ElDropdownItem command="batchToggleColumns"
-                    >lôlượngChuyển đổi（GioiTinh、Số điện
-                    thoại）</ElDropdownItem
+                    >lôlượngChuyển đổi（GioiTinh、Số điện thoại）</ElDropdownItem
                   >
-                  <ElDropdownItem command="removeColumn"
-                    >Xóacột（Trạng tháicột）</ElDropdownItem
-                  >
+                  <ElDropdownItem command="removeColumn">Xóacột（Trạng tháicột）</ElDropdownItem>
                   <ElDropdownItem command="batchRemoveColumns"
                     >lôlượngXóa（Trạng thái、Đánh giá）</ElDropdownItem
                   >
@@ -300,9 +250,7 @@
           <div class="flex gap-3 user-info">
             <ElAvatar :src="row.avatar" :size="40" />
             <div class="flex-1 min-w-0">
-              <p
-                class="m-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap"
-              >
+              <p class="m-0 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
                 {{ row.userName }}
               </p>
               <p
@@ -399,15 +347,10 @@
         <div class="p-4 bg-g-200 border-full-d rounded-lg">
           <h5 class="m-0 mb-4 text-sm font-semibold">SuKienLắng nghediễnthị</h5>
           <div class="flex flex-wrap gap-2 mb-3 last:mb-0">
-            <ElButton
-              @click="toggleEventDemo"
-              :type="eventDemoEnabled ? 'success' : 'primary'"
-            >
-              {{ eventDemoEnabled ? "đóngđóng" : "mởbật" }}SuKienLắng nghe
+            <ElButton @click="toggleEventDemo" :type="eventDemoEnabled ? 'success' : 'primary'">
+              {{ eventDemoEnabled ? 'đóngđóng' : 'mởbật' }}SuKienLắng nghe
             </ElButton>
-            <ElButton @click="clearEventLogs" v-if="eventDemoEnabled"
-              >xóakhôngNhatKy</ElButton
-            >
+            <ElButton @click="clearEventLogs" v-if="eventDemoEnabled">xóakhôngNhatKy</ElButton>
           </div>
           <div
             v-if="eventDemoEnabled && eventLogs.length > 0"
@@ -423,9 +366,7 @@
                 :key="index"
                 class="flex-c gap-2 p-1.5 px-2 text-xs bg-g-300 border-l-1 border-g-400 rounded"
               >
-                <ElTag :type="getEventType(log.type)" size="small">{{
-                  log.type
-                }}</ElTag>
+                <ElTag :type="getEventType(log.type)" size="small">{{ log.type }}</ElTag>
                 <span class="flex-1 text-g-700">{{ log.message }}</span>
                 <span class="text-xs text-g-600">{{ log.time }}</span>
               </div>
@@ -449,9 +390,7 @@
           <h5 class="m-0 mb-4 text-sm font-semibold">Tùy chỉnhcôngnăng</h5>
           <div class="flex flex-wrap gap-2 mb-3 last:mb-0">
             <ElButton @click="handleScrollToTop">CuộnđếnPhía trên</ElButton>
-            <ElButton @click="handleScrollToPosition"
-              >CuộnđếnđịnhViTri</ElButton
-            >
+            <ElButton @click="handleScrollToPosition">CuộnđếnđịnhViTri</ElButton>
             <ElButton @click="handleToggleSelection">Chuyển đổitoànvị</ElButton>
             <ElButton @click="handleGetTableInfo">LấyBảngThongTin</ElButton>
           </div>
@@ -500,8 +439,8 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, computed, watch, nextTick } from "vue";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, computed, watch, nextTick } from 'vue';
 import {
   Plus,
   Delete,
@@ -510,17 +449,14 @@ import {
   Refresh,
   QuestionFilled,
   ArrowDown,
-} from "@element-plus/icons-vue";
-import { ElMessageBox } from "element-plus";
-import {
-  useTable,
-  CacheInvalidationStrategy,
-} from "@/common/composables/useTable";
-import { fetchGetUserList } from "@/api/auth";
-import { ACCOUNT_TABLE_DATA } from "@/mock/temp/formData";
-import { getColumnKey } from "@/common/composables/useTableColumns";
+} from '@element-plus/icons-vue';
+import { ElMessageBox } from 'element-plus';
+import { useTable, CacheInvalidationStrategy } from '@/common/composables/useTable';
+import { fetchGetUserList } from '@/api/auth';
+import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData';
+import { getColumnKey } from '@/common/composables/useTableColumns';
 
-defineOptions({ name: "AdvancedTableDemo" });
+defineOptions({ name: 'AdvancedTableDemo' });
 
 type UserListItem = Api.SystemManage.UserListItem;
 
@@ -529,132 +465,128 @@ const selectedRows = ref<UserListItem[]>([]);
 const tableRef = ref();
 
 const showDebugPanel = ref(false);
-const debugActiveNames = ref(["cache", "request", "logs"]);
+const debugActiveNames = ref(['cache', 'request', 'logs']);
 
 const cacheDebugLogs = ref<string[]>([]);
 const requestParams = ref<any>({
   current: 1,
   size: 20,
-  name: "",
-  phone: "",
-  status: "",
-  department: "",
+  name: '',
+  phone: '',
+  status: '',
+  department: '',
   daterange: undefined,
 });
 
 const cacheKeys = ref<string[]>([]);
 
-const phoneSearch = ref("");
+const phoneSearch = ref('');
 
 const eventDemoEnabled = ref(false);
-const eventLogs = ref<Array<{ type: string; message: string; time: string }>>(
-  [],
-);
+const eventLogs = ref<Array<{ type: string; message: string; time: string }>>([]);
 
 const tableConfig = ref({
-  height: "100%",
+  height: '100%',
   fixedHeight: false,
 });
 
 const computedTableHeight = computed(() => {
-  return tableConfig.value.fixedHeight ? "500px" : "";
+  return tableConfig.value.fixedHeight ? '500px' : '';
 });
 
 const searchBarRef = ref();
 
 const rules = {
-  name: [
-    { required: true, message: "Vui lòng nhậpTên người dùng", trigger: "blur" },
-  ],
+  name: [{ required: true, message: 'Vui lòng nhậpTên người dùng', trigger: 'blur' }],
   phone: [
-    { required: true, message: "Vui lòng nhậpSố điện thoại", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhậpSố điện thoại', trigger: 'blur' },
     {
       pattern: /^1[3456789]\d{9}$/,
-      message: "Vui lòng nhậpđúngChínhcủaSố điện thoại",
-      trigger: "blur",
+      message: 'Vui lòng nhậpđúngChínhcủaSố điện thoại',
+      trigger: 'blur',
     },
   ],
 };
 
 const searchFormState = ref({
-  name: "",
-  phone: "",
-  status: "1",
-  department: "",
-  daterange: ["2025-01-01", "2025-02-10"],
+  name: '',
+  phone: '',
+  status: '1',
+  department: '',
+  daterange: ['2025-01-01', '2025-02-10'],
 });
 
 const USER_STATUS_CONFIG = {
-  "1": { type: "success" as const, text: "tạiđường" },
-  "2": { type: "info" as const, text: "Ngoạiđường" },
-  "3": { type: "warning" as const, text: "Bất thường" },
-  "4": { type: "danger" as const, text: "tâmtác" },
+  '1': { type: 'success' as const, text: 'tạiđường' },
+  '2': { type: 'info' as const, text: 'Ngoạiđường' },
+  '3': { type: 'warning' as const, text: 'Bất thường' },
+  '4': { type: 'danger' as const, text: 'tâmtác' },
 } as const;
 
 const searchItems = computed(() => [
   {
-    key: "name",
-    label: "Tên người dùng",
-    type: "input",
+    key: 'name',
+    label: 'Tên người dùng',
+    type: 'input',
     props: {
-      placeholder: "Vui lòng nhậpTên người dùng",
+      placeholder: 'Vui lòng nhậpTên người dùng',
     },
   },
   {
-    key: "phone",
-    label: "Số điện thoại",
-    type: "input",
+    key: 'phone',
+    label: 'Số điện thoại',
+    type: 'input',
     props: {
-      placeholder: "Vui lòng nhậpSố điện thoại",
-      maxlength: "11",
+      placeholder: 'Vui lòng nhậpSố điện thoại',
+      maxlength: '11',
     },
   },
   {
-    key: "status",
-    label: "Trạng thái",
-    type: "select",
+    key: 'status',
+    label: 'Trạng thái',
+    type: 'select',
     options: [
-      { label: "toànbộ", value: "" },
-      { label: "tạiđường", value: "1" },
-      { label: "Ngoạiđường", value: "2" },
-      { label: "Bất thường", value: "3" },
-      { label: "tâmtác", value: "4" },
+      { label: 'toànbộ', value: '' },
+      { label: 'tạiđường', value: '1' },
+      { label: 'Ngoạiđường', value: '2' },
+      { label: 'Bất thường', value: '3' },
+      { label: 'tâmtác', value: '4' },
     ],
   },
   {
-    key: "department",
-    label: "bộcửa",
-    type: "select",
+    key: 'department',
+    label: 'bộcửa',
+    type: 'select',
     options: [
-      { label: "toànbộ", value: "" },
-      { label: "kỹthuậtbộ", value: "kỹthuậtbộ" },
-      { label: "sinhsản phẩmbộ", value: "sinhsản phẩmbộ" },
-      { label: "vậndoanhbộ", value: "vậndoanhbộ" },
-      { label: "thịtrườngbộ", value: "thịtrườngbộ" },
-      { label: "thiếtkếbộ", value: "thiếtkếbộ" },
+      { label: 'toànbộ', value: '' },
+      { label: 'kỹthuậtbộ', value: 'kỹthuậtbộ' },
+      { label: 'sinhsản phẩmbộ', value: 'sinhsản phẩmbộ' },
+      { label: 'vậndoanhbộ', value: 'vậndoanhbộ' },
+      { label: 'thịtrườngbộ', value: 'thịtrườngbộ' },
+      { label: 'thiếtkếbộ', value: 'thiếtkếbộ' },
     ],
   },
   {
-    key: "daterange",
-    label: "Ngàyphạmvi",
-    type: "daterange",
+    key: 'daterange',
+    label: 'Ngàyphạmvi',
+    type: 'daterange',
     props: {
-      type: "daterange",
-      startPlaceholder: "Bắt đầuNgày",
-      endPlaceholder: "KếtthúcNgày",
-      valueFormat: "YYYY-MM-DD",
+      type: 'daterange',
+      startPlaceholder: 'Bắt đầuNgày',
+      endPlaceholder: 'KếtthúcNgày',
+      valueFormat: 'YYYY-MM-DD',
     },
   },
 ]);
 
 const exportColumns = computed(() => ({
-  userName: { title: "Tên người dùng", width: 15 },
-  userEmail: { title: "Email", width: 20 },
-  userPhone: { title: "Số điện thoại", width: 15 },
-  userGender: { title: "GioiTinh", width: 10 },
-  department: { title: "bộcửa", width: 15 },
+  userName: { title: 'Tên người dùng', width: 15 },
+  userEmail: { title: 'Email', width: 20 },
+  userPhone: { title: 'Số điện thoại', width: 15 },
+  userGender: { title: 'GioiTinh', width: 10 },
+  department: { title: 'bộcửa', width: 15 },
   status: {
-    title: "Trạng thái",
+    title: 'Trạng thái',
     width: 10,
     formatter: (value: string) => getUserStatusConfig(value).text,
   },
@@ -663,17 +595,15 @@ const exportColumns = computed(() => ({
 const getUserStatusConfig = (status: string) => {
   return (
     USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
-      type: "info" as const,
-      text: "Chưabáo",
+      type: 'info' as const,
+      text: 'Chưabáo',
     }
   );
 };
 
 const buildSearchParams = (params: typeof searchFormState.value) => {
   const { daterange, ...filtersParams } = params;
-  const [startTime, endTime] = Array.isArray(daterange)
-    ? daterange
-    : [null, null];
+  const [startTime, endTime] = Array.isArray(daterange) ? daterange : [null, null];
 
   return {
     ...filtersParams,
@@ -728,10 +658,8 @@ const {
   core: {
     apiFn: (params) => {
       const requestKey = JSON.stringify(params);
-      console.log("🚀 API Vui lòngcầuTham số:", params);
-      addCacheLog(
-        `🚀 API Vui lòngcầu: current=${params.current}, size=${params.size}`,
-      );
+      console.log('🚀 API Vui lòngcầuTham số:', params);
+      addCacheLog(`🚀 API Vui lòngcầu: current=${params.current}, size=${params.size}`);
       addCacheLog(`🔑 Vui lòngcầuphím: ${requestKey.substring(0, 100)}...`);
 
       updateCacheKeys(requestKey);
@@ -744,56 +672,56 @@ const {
       ...searchFormState.value,
     },
 
-    excludeParams: ["daterange"],
+    excludeParams: ['daterange'],
 
     immediate: true,
     columnsFactory: () => [
-      { type: "selection", width: 50 },
+      { type: 'selection', width: 50 },
 
-      { type: "globalIndex", width: 60, label: "thứsố" },
+      { type: 'globalIndex', width: 60, label: 'thứsố' },
       {
-        prop: "avatar",
-        label: "NguoiDungThongTin",
+        prop: 'avatar',
+        label: 'NguoiDungThongTin',
         minWidth: 200,
         useSlot: true,
         useHeaderSlot: true,
         sortable: false,
       },
       {
-        prop: "userGender",
-        label: "GioiTinh",
+        prop: 'userGender',
+        label: 'GioiTinh',
         sortable: true,
-        formatter: (row) => row.userGender || "Chưabáo",
+        formatter: (row) => row.userGender || 'Chưabáo',
       },
       {
-        prop: "userPhone",
-        label: "Số điện thoại",
+        prop: 'userPhone',
+        label: 'Số điện thoại',
         useHeaderSlot: true,
         sortable: true,
       },
       {
-        prop: "department",
-        label: "bộcửa",
+        prop: 'department',
+        label: 'bộcửa',
         sortable: true,
       },
       {
-        prop: "score",
-        label: "Đánh giá",
+        prop: 'score',
+        label: 'Đánh giá',
         useSlot: true,
         sortable: true,
       },
       {
-        prop: "status",
-        label: "Trạng thái",
+        prop: 'status',
+        label: 'Trạng thái',
         useSlot: true,
         sortable: true,
       },
       {
-        prop: "operation",
-        label: "HanhDong",
+        prop: 'operation',
+        label: 'HanhDong',
         width: 190,
         useSlot: true,
-        fixed: "right",
+        fixed: 'right',
       },
     ],
   },
@@ -805,15 +733,11 @@ const {
       return records.map((item, index: number) => ({
         ...item,
         avatar: ACCOUNT_TABLE_DATA[index % ACCOUNT_TABLE_DATA.length].avatar,
-        department: [
-          "kỹthuậtbộ",
-          "sinhsản phẩmbộ",
-          "vậndoanhbộ",
-          "thịtrườngbộ",
-          "thiếtkếbộ",
-        ][Math.floor(Math.random() * 5)],
+        department: ['kỹthuậtbộ', 'sinhsản phẩmbộ', 'vậndoanhbộ', 'thịtrườngbộ', 'thiếtkếbộ'][
+          Math.floor(Math.random() * 5)
+        ],
         score: Math.floor(Math.random() * 5) + 1,
-        status: ["1", "2", "3", "4"][Math.floor(Math.random() * 4)],
+        status: ['1', '2', '3', '4'][Math.floor(Math.random() * 4)],
       }));
     },
   },
@@ -827,65 +751,62 @@ const {
 
   hooks: {
     onSuccess: (data, response) => {
-      console.log("📊 ứngChiTiet:", response);
+      console.log('📊 ứngChiTiet:', response);
       addCacheLog(`✅ mạnglạcVui lòngcầuThanhCong: ${data.length} điềuDữ liệu`);
       addCacheLog(
-        `📝 ứngThongTin: total=${response.total}, current=${response.current}, size=${response.size}`,
+        `📝 ứngThongTin: total=${response.total}, current=${response.current}, size=${response.size}`
       );
     },
     onError: (error) => {
-      console.error("❌ Dữ liệuLoadingThatBai:", error);
+      console.error('❌ Dữ liệuLoadingThatBai:', error);
       addCacheLog(`❌ Có lỗi từ hệ thống: ${error.message}`);
       ElMessage.error(error.message);
     },
     onCacheHit: (data, response) => {
-      console.log("🎯 Cachemệnhtrong:", data.length, "điều");
-      console.log("🔑 Cacheđếnnguồn:", response);
+      console.log('🎯 Cachemệnhtrong:', data.length, 'điều');
+      console.log('🔑 Cacheđếnnguồn:', response);
       addCacheLog(
-        `🎯 Cachemệnhtrong: ${data.length} điềuDữ liệu (current=${response.current}, size=${response.size})`,
+        `🎯 Cachemệnhtrong: ${data.length} điềuDữ liệu (current=${response.current}, size=${response.size})`
       );
-      ElMessage.info("Dữ liệuđếntừCache");
+      ElMessage.info('Dữ liệuđếntừCache');
     },
     resetFormCallback: () => {
-      console.log("🔄 FormĐãĐặt lại");
-      addCacheLog("🔄 FormĐãĐặt lại");
+      console.log('🔄 FormĐãĐặt lại');
+      addCacheLog('🔄 FormĐãĐặt lại');
     },
   },
 
   debug: {
     enableLog: true,
-    logLevel: "info",
+    logLevel: 'info',
   },
 });
 
 const handleSelectionChange = (selection: UserListItem[]) => {
   selectedRows.value = selection;
-  console.log("Chọnbiếnhơn:", selection);
+  console.log('Chọnbiếnhơn:', selection);
 };
 
 const handleRowClick = (row: UserListItem) => {
-  console.log("dòngNhấn:", row);
-  logEvent("dòngNhấn", `NhấnrồiNguoiDung: ${row.userName}`);
+  console.log('dòngNhấn:', row);
+  logEvent('dòngNhấn', `NhấnrồiNguoiDung: ${row.userName}`);
 };
 
 const handleHeaderClick = (column: { label: string; property: string }) => {
-  console.log("bảngđầuNhấn:", column);
-  logEvent("bảngđầuNhấn", `Nhấnrồi ${column.label} Danh sáchđầu`);
+  console.log('bảngđầuNhấn:', column);
+  logEvent('bảngđầuNhấn', `Nhấnrồi ${column.label} Danh sáchđầu`);
 };
 
 interface SortInfo {
   prop: string;
-  order: "ascending" | "descending" | null;
+  order: 'ascending' | 'descending' | null;
 }
 
 const handleSortChange = (sortInfo: SortInfo) => {
-  console.log("xếpthứSuKien:", sortInfo);
-  console.log("xếpthứchữđoạn:", sortInfo.prop);
-  console.log("xếpthứphươnghướng:", sortInfo.order);
-  logEvent(
-    "xếpthứbiếnhơn",
-    `chữđoạn: ${sortInfo.prop}, phươnghướng: ${sortInfo.order}`,
-  );
+  console.log('xếpthứSuKien:', sortInfo);
+  console.log('xếpthứchữđoạn:', sortInfo.prop);
+  console.log('xếpthứphươnghướng:', sortInfo.order);
+  logEvent('xếpthứbiếnhơn', `chữđoạn: ${sortInfo.prop}, phươnghướng: ${sortInfo.order}`);
 };
 
 const logEvent = (type: string, message: string) => {
@@ -899,37 +820,32 @@ const logEvent = (type: string, message: string) => {
   }
 };
 
-const getEventType = (
-  type: string,
-): "primary" | "success" | "warning" | "info" | "danger" => {
-  const typeMap: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    dòngNhấn: "primary",
-    dòngđôichuột: "success",
-    dòngphảiphím: "warning",
-    đơnnguyêncáchNhấn: "info",
-    đơnnguyêncáchđôichuột: "success",
-    bảngđầuNhấn: "primary",
-    Chọnbiếnhơn: "warning",
-    xếpthứbiếnhơn: "success",
+const getEventType = (type: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  const typeMap: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    dòngNhấn: 'primary',
+    dòngđôichuột: 'success',
+    dòngphảiphím: 'warning',
+    đơnnguyêncáchNhấn: 'info',
+    đơnnguyêncáchđôichuột: 'success',
+    bảngđầuNhấn: 'primary',
+    Chọnbiếnhơn: 'warning',
+    xếpthứbiếnhơn: 'success',
   };
-  return typeMap[type] || "info";
+  return typeMap[type] || 'info';
 };
 
 const toggleEventDemo = () => {
   eventDemoEnabled.value = !eventDemoEnabled.value;
   if (eventDemoEnabled.value) {
-    ElMessage.success("SuKienLắng ngheĐãmởbật，Vui lòngvớiBảngnộpXemHiệu quả");
+    ElMessage.success('SuKienLắng ngheĐãmởbật，Vui lòngvớiBảngnộpXemHiệu quả');
   } else {
-    ElMessage.info("SuKienLắng ngheĐãđóngđóng");
+    ElMessage.info('SuKienLắng ngheĐãđóngđóng');
   }
 };
 
 const clearEventLogs = () => {
   eventLogs.value = [];
-  ElMessage.info("SuKienNhatKyĐãxóakhông");
+  ElMessage.info('SuKienNhatKyĐãxóakhông');
 };
 
 const handleScrollToTop = () => {
@@ -943,10 +859,10 @@ const handleScrollToPosition = () => {
 const handleToggleSelection = () => {
   if (selectedRows.value.length === 0) {
     tableRef.value?.elTableRef.toggleAllSelection();
-    ElMessage.info("Đãtoànvị");
+    ElMessage.info('Đãtoànvị');
   } else {
     tableRef.value?.elTableRef.clearSelection();
-    ElMessage.info("ĐãHủytoànvị");
+    ElMessage.info('ĐãHủytoànvị');
   }
 };
 
@@ -960,22 +876,20 @@ const handleGetTableInfo = () => {
     totalCount: pagination.total,
   };
 
-  console.log("BảngThongTin:", info);
-  ElMessage.info(
-    `BảngThongTinĐãnhậprađếnBảng tổng quan，khitrước ${info.dataCount} điềuDữ liệu`,
-  );
+  console.log('BảngThongTin:', info);
+  ElMessage.info(`BảngThongTinĐãnhậprađếnBảng tổng quan，khitrước ${info.dataCount} điềuDữ liệu`);
 };
 
 const handleSearch = async () => {
   await searchBarRef.value.validate();
 
-  console.log("Tìm kiếmTham số:", searchFormState.value);
+  console.log('Tìm kiếmTham số:', searchFormState.value);
   replaceSearchParams(buildSearchParams(searchFormState.value));
   getData();
 };
 
 const handleReset = () => {
-  addCacheLog("🔄 Đặt lạiTìm kiếm");
+  addCacheLog('🔄 Đặt lạiTìm kiếm');
 
   resetSearchParams();
 };
@@ -989,12 +903,12 @@ const handlePhoneSearch = (value: string) => {
 };
 
 const handleRefresh = () => {
-  addCacheLog("🔄 tayđộngLàm mới");
+  addCacheLog('🔄 tayđộngLàm mới');
   refreshData();
 };
 
 const handleAdd = () => {
-  ElMessage.success("Thêm mớiNguoiDungThanhCong");
+  ElMessage.success('Thêm mớiNguoiDungThanhCong');
   refreshCreate();
 };
 
@@ -1007,22 +921,18 @@ const handleEdit = (row: UserListItem) => {
 
 const handleDelete = async (row: UserListItem) => {
   try {
-    await ElMessageBox.confirm(
-      `Xác địnhcầnXóaNguoiDung ${row.userName} không？`,
-      "CanhBao",
-      {
-        confirmButtonText: "Xác định",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
+    await ElMessageBox.confirm(`Xác địnhcầnXóaNguoiDung ${row.userName} không？`, 'CanhBao', {
+      confirmButtonText: 'Xác định',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    });
 
-    ElMessage.success("XóaThanhCong");
+    ElMessage.success('XóaThanhCong');
     setTimeout(() => {
       refreshRemove();
     }, 1000);
   } catch {
-    ElMessage.info("ĐãHủyXóa");
+    ElMessage.info('ĐãHủyXóa');
   }
 };
 
@@ -1034,23 +944,21 @@ const handleBatchDelete = async () => {
   try {
     await ElMessageBox.confirm(
       `Xác địnhcầnXóavịtrongcủa ${selectedRows.value.length} chiếcNguoiDungkhông？`,
-      "CanhBao",
+      'CanhBao',
       {
-        confirmButtonText: "Xác định",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xác định',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     );
 
-    ElMessage.success(
-      `lôlượngXóa ${selectedRows.value.length} chiếcNguoiDungThanhCong`,
-    );
+    ElMessage.success(`lôlượngXóa ${selectedRows.value.length} chiếcNguoiDungThanhCong`);
     selectedRows.value = [];
     setTimeout(() => {
       refreshRemove();
     }, 1000);
   } catch {
-    ElMessage.info("ĐãHủyXóa");
+    ElMessage.info('ĐãHủyXóa');
   }
 };
 
@@ -1068,10 +976,10 @@ const handleImportError = (error: Error) => {
 };
 
 const handleClearCache = () => {
-  clearCache(CacheInvalidationStrategy.CLEAR_ALL, "tayđộngxóakhông");
+  clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'tayđộngxóakhông');
   cacheKeys.value = [];
-  addCacheLog("🗑️ tayđộngxóakhôngnêncóCache");
-  ElMessage.success("CacheĐãxóakhông");
+  addCacheLog('🗑️ tayđộngxóakhôngnêncóCache');
+  ElMessage.success('CacheĐãxóakhông');
 };
 
 const handleCleanExpiredCache = () => {
@@ -1082,28 +990,28 @@ const handleCleanExpiredCache = () => {
 
 const handleCancelRequest = () => {
   cancelRequest();
-  addCacheLog("❌ HủykhitrướcVui lòngcầu");
-  ElMessage.info("Vui lòngcầuĐãHủy");
+  addCacheLog('❌ HủykhitrướcVui lòngcầu');
+  ElMessage.info('Vui lòngcầuĐãHủy');
 };
 
 const handleClearData = () => {
   clearData();
-  addCacheLog("🗑️ xóakhôngnêncóDữ liệu");
-  ElMessage.info("Dữ liệuĐãxóakhông");
+  addCacheLog('🗑️ xóakhôngnêncóDữ liệu');
+  ElMessage.info('Dữ liệuĐãxóakhông');
 };
 
 const handleTestCache = () => {
   const testPages = [1, 2, 3, 2, 1];
 
-  ElMessage.info("Bắt đầuCacheđonghiệm...");
-  addCacheLog("🧪 Bắt đầuCacheđothử");
+  ElMessage.info('Bắt đầuCacheđonghiệm...');
+  addCacheLog('🧪 Bắt đầuCacheđothử');
 
   let index = 0;
   const testInterval = setInterval(() => {
     if (index >= testPages.length) {
       clearInterval(testInterval);
-      addCacheLog("✅ Cacheđothửhoànthành");
-      ElMessage.success("Cacheđothửhoànthành！quansátCachethốngkếcủabiếnhóa");
+      addCacheLog('✅ Cacheđothửhoànthành');
+      ElMessage.success('Cacheđothửhoànthành！quansátCachethốngkếcủabiếnhóa');
       return;
     }
 
@@ -1125,14 +1033,11 @@ const addCacheLog = (message: string): void => {
   }
 };
 
-const updateCacheKeys = (
-  key: string,
-  operation: "add" | "remove" = "add",
-): void => {
-  if (operation === "add" && !cacheKeys.value.includes(key)) {
+const updateCacheKeys = (key: string, operation: 'add' | 'remove' = 'add'): void => {
+  if (operation === 'add' && !cacheKeys.value.includes(key)) {
     cacheKeys.value.push(key);
     addCacheLog(`Thêm mớiCachephím: ${getCacheKeySummary(key)}`);
-  } else if (operation === "remove") {
+  } else if (operation === 'remove') {
     const index = cacheKeys.value.indexOf(key);
     if (index > -1) {
       cacheKeys.value.splice(index, 1);
@@ -1144,9 +1049,9 @@ const updateCacheKeys = (
 const getCacheKeySummary = (key: string): string => {
   try {
     const params = JSON.parse(key);
-    return `trangmã: ${params.current || 1}, Kích thước: ${params.size || 20}${params.name ? ", danhtên: " + params.name : ""}${params.status ? ", Trạng thái: " + params.status : ""}`;
+    return `trangmã: ${params.current || 1}, Kích thước: ${params.size || 20}${params.name ? ', danhtên: ' + params.name : ''}${params.status ? ', Trạng thái: ' + params.status : ''}`;
   } catch {
-    return "vôhiệucủaCachephím";
+    return 'vôhiệucủaCachephím';
   }
 };
 
@@ -1159,7 +1064,7 @@ const forceRefreshCacheInfo = (): void => {
   }
 
   nextTick(() => {
-    console.log("khitrướcCachethốngkế:", cacheInfo.value);
+    console.log('khitrướcCachethốngkế:', cacheInfo.value);
   });
 };
 
@@ -1172,131 +1077,124 @@ watch(
       size,
     };
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true }
 );
 
 const handleColumnCommand = (command: string): void => {
   switch (command) {
-    case "addColumn": {
+    case 'addColumn': {
       addColumn?.({
-        prop: "remark",
-        label: "GhiChu",
+        prop: 'remark',
+        label: 'GhiChu',
         width: 150,
-        formatter: () => h("span", { style: "color: #999" }, "TạmvôGhiChu"),
+        formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu'),
       });
       ElMessage.success('ĐãThêm mới"GhiChu"cột');
       break;
     }
 
-    case "batchAddColumns": {
+    case 'batchAddColumns': {
       addColumn?.(
         [
           {
-            prop: "remark",
-            label: "GhiChu",
+            prop: 'remark',
+            label: 'GhiChu',
             width: 150,
-            formatter: () => h("span", { style: "color: #999" }, "TạmvôGhiChu"),
+            formatter: () => h('span', { style: 'color: #999' }, 'TạmvôGhiChu'),
           },
           {
-            prop: "tags",
-            label: "Tag",
+            prop: 'tags',
+            label: 'Tag',
             width: 120,
-            formatter: () =>
-              h("span", { style: "color: #67c23a" }, "NguoiDung mới"),
+            formatter: () => h('span', { style: 'color: #67c23a' }, 'NguoiDung mới'),
           },
         ],
-        5,
+        5
       );
       ElMessage.success('ĐãlôlượngThêm mới"GhiChu"và"Tag"cột');
       break;
     }
 
-    case "toggleColumn": {
-      if (getColumnConfig?.("userPhone")) {
-        toggleColumn?.("userPhone");
-        ElMessage.success("ĐãChuyển đổiSố điện thoạicộtHiển thịTrạng thái");
+    case 'toggleColumn': {
+      if (getColumnConfig?.('userPhone')) {
+        toggleColumn?.('userPhone');
+        ElMessage.success('ĐãChuyển đổiSố điện thoạicộtHiển thịTrạng thái');
       }
       break;
     }
 
-    case "batchToggleColumns": {
-      toggleColumn?.(["userGender", "userPhone"]);
-      ElMessage.success(
-        "ĐãlôlượngChuyển đổiGioiTinhvàSố điện thoạicộtHiển thịTrạng thái",
-      );
+    case 'batchToggleColumns': {
+      toggleColumn?.(['userGender', 'userPhone']);
+      ElMessage.success('ĐãlôlượngChuyển đổiGioiTinhvàSố điện thoạicộtHiển thịTrạng thái');
       break;
     }
 
-    case "removeColumn": {
-      removeColumn?.("status");
-      ElMessage.success("ĐãXóaTrạng tháicột");
+    case 'removeColumn': {
+      removeColumn?.('status');
+      ElMessage.success('ĐãXóaTrạng tháicột');
       break;
     }
 
-    case "batchRemoveColumns": {
-      removeColumn?.(["status", "score"]);
-      ElMessage.success("ĐãlôlượngXóaTrạng tháivàĐánh giácột");
+    case 'batchRemoveColumns': {
+      removeColumn?.(['status', 'score']);
+      ElMessage.success('ĐãlôlượngXóaTrạng tháivàĐánh giácột');
       break;
     }
 
-    case "updateColumn": {
-      updateColumn?.("userPhone", {
-        label: "liênhệđiệnlời",
+    case 'updateColumn': {
+      updateColumn?.('userPhone', {
+        label: 'liênhệđiệnlời',
         width: 140,
       });
       ElMessage.success('Số điện thoạicộtĐãCập nhậtvì"liênhệđiệnlời"');
       break;
     }
 
-    case "batchUpdateColumns": {
+    case 'batchUpdateColumns': {
       updateColumn?.([
         {
-          prop: "userGender",
+          prop: 'userGender',
           updates: {
             width: 200,
-            label: "GioiTinh-ĐãCập nhật",
+            label: 'GioiTinh-ĐãCập nhật',
             sortable: false,
           },
         },
         {
-          prop: "userPhone",
+          prop: 'userPhone',
           updates: {
             width: 200,
-            label: "Số điện thoại-ĐãCập nhật",
+            label: 'Số điện thoại-ĐãCập nhật',
             sortable: false,
           },
         },
       ]);
-      ElMessage.success("ĐãlôlượngCập nhậtGioiTinhvàSố điện thoạicột");
+      ElMessage.success('ĐãlôlượngCập nhậtGioiTinhvàSố điện thoạicột');
       break;
     }
 
-    case "reorderColumns": {
+    case 'reorderColumns': {
       const allCols = getAllColumns?.();
       if (allCols) {
-        const genderIndex = allCols.findIndex(
-          (col) => getColumnKey(col) === "userGender",
-        );
-        const phoneIndex = allCols.findIndex(
-          (col) => getColumnKey(col) === "userPhone",
-        );
+        const genderIndex = allCols.findIndex((col) => getColumnKey(col) === 'userGender');
+        const phoneIndex = allCols.findIndex((col) => getColumnKey(col) === 'userPhone');
 
         if (genderIndex !== -1 && phoneIndex !== -1) {
           reorderColumns?.(genderIndex, phoneIndex);
-          ElMessage.success("ĐãnộpđổiGioiTinhvàSố điện thoạicộtViTri");
+          ElMessage.success('ĐãnộpđổiGioiTinhvàSố điện thoạicộtViTri');
         }
       }
       break;
     }
 
-    case "resetColumns": {
+    case 'resetColumns': {
       resetColumns?.();
-      ElMessage.success("ĐãĐặt lạinêncócộtCauHinh");
+      ElMessage.success('ĐãĐặt lạinêncócộtCauHinh');
       break;
     }
 
     default:
-      console.warn("ChưabáocủacộtCauHinhmệnhlệnh:", command);
+      console.warn('ChưabáocủacộtCauHinhmệnhlệnh:', command);
   }
 };
 </script>

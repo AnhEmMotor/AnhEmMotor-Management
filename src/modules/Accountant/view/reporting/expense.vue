@@ -39,35 +39,19 @@
       <ElTableColumn prop="name" label="Tên khoản chi" min-width="220" />
       <ElTableColumn prop="category" label="Phân loại" min-width="150">
         <template #default="{ row }">
-          <ElTag
-            :type="row.category === 0 ? 'danger' : 'warning'"
-            effect="light"
-            round
-          >
-            {{ row.category === 0 ? "Chi phí cố định" : "Chi phí biến đổi" }}
+          <ElTag :type="row.category === 0 ? 'danger' : 'warning'" effect="light" round>
+            {{ row.category === 0 ? 'Chi phí cố định' : 'Chi phí biến đổi' }}
           </ElTag>
         </template>
       </ElTableColumn>
-      <ElTableColumn
-        prop="amount"
-        label="Số tiền (VNĐ)"
-        min-width="150"
-        align="right"
-      >
+      <ElTableColumn prop="amount" label="Số tiền (VNĐ)" min-width="150" align="right">
         <template #default="{ row }">{{ formatCurrency(row.amount) }}</template>
       </ElTableColumn>
       <ElTableColumn prop="note" label="Ghi chú" min-width="220" />
       <ElTableColumn label="Hành động" width="120" align="center">
         <template #default="{ row }">
-          <ElButton type="primary" link @click="editExpense(row as Expense)"
-            >Sửa</ElButton
-          >
-          <ElButton
-            type="danger"
-            link
-            @click="deleteExpense((row as Expense).id)"
-            >Xóa</ElButton
-          >
+          <ElButton type="primary" link @click="editExpense(row as Expense)">Sửa</ElButton>
+          <ElButton type="danger" link @click="deleteExpense((row as Expense).id)">Xóa</ElButton>
         </template>
       </ElTableColumn>
     </ElTable>
@@ -105,15 +89,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { ElMessageBox } from "element-plus";
-import { Search, Plus } from "@element-plus/icons-vue";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import { ElMessage } from "element-plus";
-import { AnalyticsService } from "@/services/analytics.service";
-import type { Expense } from "@/services/analytics.types";
-import ExpenseForm from "./expense-form.vue";
+import { computed, ref, onMounted } from 'vue';
+import { ElMessageBox } from 'element-plus';
+import { Search, Plus } from '@element-plus/icons-vue';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import { ElMessage } from 'element-plus';
+import { AnalyticsService } from '@/services/analytics.service';
+import type { Expense } from '@/services/analytics.types';
+import ExpenseForm from './expense-form.vue';
 
 type ExpenseFormData = {
   name: string;
@@ -129,7 +113,7 @@ const props = withDefaults(
     loading?: boolean;
     totalCount?: number;
   }>(),
-  { loading: false, totalCount: 0 },
+  { loading: false, totalCount: 0 }
 );
 
 const emit = defineEmits<{
@@ -140,14 +124,14 @@ const emit = defineEmits<{
   refresh: [];
 }>();
 
-const searchInput = ref("");
+const searchInput = ref('');
 const currentPage = ref(1);
 const pageSize = ref(20);
 const localTotalCount = ref(0);
 
 const localExpenses = ref<Expense[]>([]);
 const isFormVisible = ref(false);
-const formMode = ref<"create" | "edit">("create");
+const formMode = ref<'create' | 'edit'>('create');
 const editingId = ref<number | undefined>(undefined);
 const editingData = ref<Partial<Expense>>({});
 
@@ -161,7 +145,7 @@ const paginatedTotal = computed(() => {
 });
 
 const dialogTitle = computed(() =>
-  formMode.value === "edit" ? "Cập nhật khoản chi" : "Ghi nhận khoản chi",
+  formMode.value === 'edit' ? 'Cập nhật khoản chi' : 'Ghi nhận khoản chi'
 );
 
 function isControlledMode() {
@@ -169,7 +153,7 @@ function isControlledMode() {
 }
 
 function buildFilters(keyword?: string): string | undefined {
-  if (!keyword || keyword.trim() === "") return undefined;
+  if (!keyword || keyword.trim() === '') return undefined;
   return `Name@=${keyword.trim()}`;
 }
 
@@ -181,7 +165,7 @@ async function fetchExpenses() {
       page: currentPage.value,
       pageSize: pageSize.value,
       filters: buildFilters(keyword),
-      sorts: "ExpenseDate desc",
+      sorts: 'ExpenseDate desc',
     });
     localExpenses.value = result.items;
     localTotalCount.value = result.totalCount;
@@ -197,10 +181,10 @@ function onSearch() {
 
 function openCreateForm() {
   if (isControlledMode()) {
-    emit("add");
+    emit('add');
     return;
   }
-  formMode.value = "create";
+  formMode.value = 'create';
   editingId.value = undefined;
   editingData.value = {};
   isFormVisible.value = true;
@@ -208,10 +192,10 @@ function openCreateForm() {
 
 function editExpense(row: Expense) {
   if (isControlledMode()) {
-    emit("edit", row);
+    emit('edit', row);
     return;
   }
-  formMode.value = "edit";
+  formMode.value = 'edit';
   editingId.value = row.id;
   editingData.value = {
     name: row.name,
@@ -229,9 +213,7 @@ function closeForm() {
   editingData.value = {};
 }
 
-async function handleFormSubmit(
-  formData: ExpenseFormData & { editId?: number },
-) {
+async function handleFormSubmit(formData: ExpenseFormData & { editId?: number }) {
   try {
     if (formData.editId) {
       await AnalyticsService.updateExpense(formData.editId, formData);
@@ -241,25 +223,21 @@ async function handleFormSubmit(
     await fetchExpenses();
     closeForm();
   } catch {
-    ElMessage.error("Không thể lưu khoản chi. Vui lòng thử lại.");
+    ElMessage.error('Không thể lưu khoản chi. Vui lòng thử lại.');
   }
 }
 
 async function deleteExpense(id: number) {
   if (isControlledMode()) {
-    emit("delete", id);
+    emit('delete', id);
     return;
   }
   try {
-    await ElMessageBox.confirm(
-      "Bạn có chắc chắn muốn xóa khoản chi này?",
-      "Xác nhận xóa",
-      {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
+    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa khoản chi này?', 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    });
   } catch {
     return;
   }
@@ -269,17 +247,17 @@ async function deleteExpense(id: number) {
 
 function exportExpenseExcel() {
   exportReportWorkbook({
-    fileName: "Bao_cao_khoan_chi",
+    fileName: 'Bao_cao_khoan_chi',
     sheets: [
       {
-        name: "Danh sách khoan chi",
+        name: 'Danh sách khoan chi',
         rows: tableExpenses.value.map((e: any) => ({
           ID: e.id,
           Ngay_ghi_nhan: e.expenseDate,
           Ten_khoan_chi: e.name,
-          Phan_loai: e.category === 0 ? "Cố định" : "Biến đổi",
+          Phan_loai: e.category === 0 ? 'Cố định' : 'Biến đổi',
           So_tien: e.amount,
-          Ghi_chú: e.note || "",
+          Ghi_chú: e.note || '',
         })),
       },
     ],
@@ -287,18 +265,18 @@ function exportExpenseExcel() {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
 function formatDate(dateStr: string) {
-  if (!dateStr) return "";
+  if (!dateStr) return '';
   const d = new Date(dateStr);
-  return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
     .toString()
-    .padStart(2, "0")}/${d.getFullYear()}`;
+    .padStart(2, '0')}/${d.getFullYear()}`;
 }
 
 onMounted(fetchExpenses);

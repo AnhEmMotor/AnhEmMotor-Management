@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface LoyaltyMember {
   id: number;
@@ -24,7 +24,7 @@ export interface LoyaltyMemberPaginatedResponse {
 
 export function fetchGetLoyaltyMembers(params?: LoyaltyMemberListParams) {
   return request.get<LoyaltyMember[] | LoyaltyMemberPaginatedResponse>({
-    url: "/api/v1/Loyalty/members",
+    url: '/api/v1/Loyalty/members',
     params,
   });
 }

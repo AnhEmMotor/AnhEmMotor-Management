@@ -6,12 +6,7 @@
       icon="ri:truck-line"
     >
       <template #actions>
-        <ElButton
-          type="primary"
-          v-ripple
-          class="supplier-create-button"
-          @click="handleAdd"
-        >
+        <ElButton type="primary" v-ripple class="supplier-create-button" @click="handleAdd">
           <ElIcon><Plus /></ElIcon>
           Tạo hợp đồng mới
         </ElButton>
@@ -51,9 +46,7 @@
       />
     </div>
 
-    <ElCard
-      class="reporting-card supplier-filter-card supplier-filter-card--compact"
-    >
+    <ElCard class="reporting-card supplier-filter-card supplier-filter-card--compact">
       <ArtSearchBar
         v-model="searchForm"
         :items="searchItems"
@@ -67,11 +60,7 @@
     </ElCard>
 
     <ElCard class="reporting-card supplier-table-card art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="loadData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData">
         <template #left>
           <div class="supplier-table-heading">
             <span>Danh sách hợp đồng</span>
@@ -90,7 +79,7 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #supplierName="{ row }">
-          <span>{{ row.supplierName || "-" }}</span>
+          <span>{{ row.supplierName || '-' }}</span>
         </template>
         <template #contractValue="{ row }">
           <span class="font-medium">{{
@@ -105,8 +94,8 @@
         <template #discountRate="{ row }">
           <span>{{
             (row as SupplierContractDto).discountRate
-              ? (row as SupplierContractDto).discountRate + "%"
-              : "-"
+              ? (row as SupplierContractDto).discountRate + '%'
+              : '-'
           }}</span>
         </template>
         <template #status="{ row }">
@@ -118,7 +107,7 @@
           {{ formatDate(row.effectiveDate) }}
         </template>
         <template #expirationDate="{ row }">
-          {{ row.expirationDate ? formatDate(row.expirationDate) : "-" }}
+          {{ row.expirationDate ? formatDate(row.expirationDate) : '-' }}
         </template>
         <template #operation="{ row }">
           <div class="supplier-operation-cell">
@@ -186,10 +175,7 @@
               </ElSelect>
             </ElFormItem>
             <ElFormItem label="Số hợp đồng" prop="contractNumber">
-              <ElInput
-                v-model="formData.contractNumber"
-                placeholder="VD: HD-2024-001"
-              />
+              <ElInput v-model="formData.contractNumber" placeholder="VD: HD-2024-001" />
             </ElFormItem>
             <div class="grid grid-cols-2 gap-4">
               <ElFormItem label="Ngày hiệu lực" prop="effectiveDate">
@@ -234,9 +220,7 @@
 
           <el-col :span="12">
             <div class="border-l pl-4">
-              <div class="font-bold text-sm mb-3 text-gray-600">
-                Hạn mức Tín dụng & Thanh toán
-              </div>
+              <div class="font-bold text-sm mb-3 text-gray-600">Hạn mức Tín dụng & Thanh toán</div>
               <ElFormItem label="Hạn mức công nợ tối đa">
                 <ElInputNumber
                   v-model="formData.creditLimit"
@@ -257,16 +241,10 @@
                 />
               </ElFormItem>
               <ElFormItem label="Ngân hàng">
-                <ElInput
-                  v-model="formData.bankName"
-                  placeholder="Tên ngân hàng"
-                />
+                <ElInput v-model="formData.bankName" placeholder="Tên ngân hàng" />
               </ElFormItem>
               <ElFormItem label="Số tài khoản">
-                <ElInput
-                  v-model="formData.bankAccountNumber"
-                  placeholder="Số tài khoản"
-                />
+                <ElInput v-model="formData.bankAccountNumber" placeholder="Số tài khoản" />
               </ElFormItem>
             </div>
           </el-col>
@@ -308,12 +286,7 @@
         <div class="mb-4">
           <div class="flex justify-between items-center mb-2">
             <span class="font-bold text-sm">Bảng giá nhập sỉ (SKU)</span>
-            <ElButton
-              v-if="!isFormLocked"
-              type="primary"
-              size="small"
-              @click="handleAddSkuItem"
-            >
+            <ElButton v-if="!isFormLocked" type="primary" size="small" @click="handleAddSkuItem">
               <ElIcon><Plus /></ElIcon> Thêm SKU
             </ElButton>
           </div>
@@ -326,12 +299,7 @@
             empty-text="Chưa có SKU nào"
           >
             <ElTableColumn type="index" label="#" width="50" align="center" />
-            <ElTableColumn
-              prop="productVariantId"
-              label="Mã SKU"
-              width="120"
-              align="center"
-            >
+            <ElTableColumn prop="productVariantId" label="Mã SKU" width="120" align="center">
               <template #default="{ row }">
                 <ElInput
                   v-model="row.skuCode"
@@ -343,7 +311,7 @@
             </ElTableColumn>
             <ElTableColumn label="Tên sản phẩm" min-width="180">
               <template #default="{ row }">
-                <span>{{ row.productName || "-" }}</span>
+                <span>{{ row.productName || '-' }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Giá nhập sỉ" width="150" align="right">
@@ -372,22 +340,12 @@
             </ElTableColumn>
             <ElTableColumn label="Danh mục" width="150">
               <template #default="{ row }">
-                <span>{{ row.category || "-" }}</span>
+                <span>{{ row.category || '-' }}</span>
               </template>
             </ElTableColumn>
-            <ElTableColumn
-              label="Thao tác"
-              width="80"
-              align="center"
-              v-if="!isFormLocked"
-            >
+            <ElTableColumn label="Thao tác" width="80" align="center" v-if="!isFormLocked">
               <template #default="{ $index }">
-                <ElButton
-                  type="danger"
-                  size="small"
-                  text
-                  @click="handleRemoveSkuItem($index)"
-                >
+                <ElButton type="danger" size="small" text @click="handleRemoveSkuItem($index)">
                   Xóa
                 </ElButton>
               </template>
@@ -414,43 +372,27 @@
             accept=".pdf,.jpg,.jpeg,.png"
           >
             <div v-if="contractFilePreviewUrl" class="contract-upload-preview">
-              <img
-                :src="contractFilePreviewUrl"
-                alt="Xem trước file hợp đồng"
-              />
+              <img :src="contractFilePreviewUrl" alt="Xem trước file hợp đồng" />
               <span class="preview-hint">Bấm để đổi file hợp đồng</span>
             </div>
             <template v-else>
               <ElIcon class="el-icon--upload"><UploadFilled /></ElIcon>
-              <div class="el-upload__text">
-                Kéo thả file hoặc <em>bấm vào đây</em> để tải lên
-              </div>
+              <div class="el-upload__text">Kéo thả file hoặc <em>bấm vào đây</em> để tải lên</div>
             </template>
             <template #tip>
-              <div class="el-upload__tip">
-                Hỗ trợ PDF, JPG, PNG (tối đa 10MB)
-              </div>
+              <div class="el-upload__tip">Hỗ trợ PDF, JPG, PNG (tối đa 10MB)</div>
             </template>
           </ElUpload>
-          <div
-            v-if="contractFilePreviewUrl && !isFormLocked"
-            class="contract-upload-filebar"
-          >
+          <div v-if="contractFilePreviewUrl && !isFormLocked" class="contract-upload-filebar">
             <span class="truncate">{{ contractFileName }}</span>
-            <ElButton link type="danger" @click.stop="clearContractFile"
-              >Xóa</ElButton
-            >
+            <ElButton link type="danger" @click.stop="clearContractFile">Xóa</ElButton>
           </div>
           <div
             v-else-if="contractFileName && !contractFilePreviewUrl"
             class="contract-upload-filebar"
           >
             <span class="truncate">{{ contractFileName }}</span>
-            <ElButton
-              v-if="!isFormLocked"
-              link
-              type="danger"
-              @click.stop="clearContractFile"
+            <ElButton v-if="!isFormLocked" link type="danger" @click.stop="clearContractFile"
               >Xóa</ElButton
             >
           </div>
@@ -478,20 +420,11 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton
-            v-if="isFormLocked"
-            type="warning"
-            @click="handleCreateAddendum"
-          >
+          <ElButton v-if="isFormLocked" type="warning" @click="handleCreateAddendum">
             Tạo phụ lục (để chỉnh sửa)
           </ElButton>
-          <ElButton
-            v-else
-            type="primary"
-            :loading="submitting"
-            @click="submitForm"
-          >
-            {{ formData.id ? "Cập nhật" : "Tạo mới" }}
+          <ElButton v-else type="primary" :loading="submitting" @click="submitForm">
+            {{ formData.id ? 'Cập nhật' : 'Tạo mới' }}
           </ElButton>
         </div>
       </template>
@@ -500,16 +433,16 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, UploadFilled } from "@element-plus/icons-vue";
-import { ref, reactive, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
-import type { ColumnOption } from "@/types/component";
-import ReportPageHeader from "@/views/analytics-reporting/components/ReportPageHeader.vue";
+import { Plus, UploadFilled } from '@element-plus/icons-vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus';
+import type { ColumnOption } from '@/types/component';
+import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue';
 import type {
   SupplierContractDto,
   SupplierContractSkuItem,
-} from "@/domain/supplier/contract.types";
+} from '@/domain/supplier/contract.types';
 
 interface SupplierContractForm {
   id?: string;
@@ -531,9 +464,9 @@ interface SupplierContractForm {
   contractFilePath?: string;
 }
 
-import { createSupplierContractUseCases } from "@/infrastructure/supplier/usecasesFactory";
+import { createSupplierContractUseCases } from '@/infrastructure/supplier/usecasesFactory';
 
-defineOptions({ name: "SupplierContract" });
+defineOptions({ name: 'SupplierContract' });
 
 const usecases = createSupplierContractUseCases();
 
@@ -541,7 +474,7 @@ const router = useRouter();
 
 const loading = ref(false);
 const dialogVisible = ref(false);
-const dialogTitle = ref("Tạo hợp đồng mới");
+const dialogTitle = ref('Tạo hợp đồng mới');
 const submitting = ref(false);
 const formRef = ref<FormInstance>();
 const tableRef = ref();
@@ -559,30 +492,30 @@ const stats = reactive({
 const pagination = reactive({ current: 1, size: 10, total: 0 });
 const data = ref<SupplierContractDto[]>([]);
 const fileList = ref<any[]>([]);
-const contractFilePreviewUrl = ref("");
-const contractFileName = ref("");
+const contractFilePreviewUrl = ref('');
+const contractFileName = ref('');
 
 const formData = ref<SupplierContractForm>({
-  contractNumber: "",
-  effectiveDate: "",
-  expirationDate: "",
+  contractNumber: '',
+  effectiveDate: '',
+  expirationDate: '',
   contractValue: 0,
-  status: "Draft",
-  terms: "",
-  note: "",
+  status: 'Draft',
+  terms: '',
+  note: '',
   supplierId: undefined,
   creditLimit: undefined,
   paymentWindowDays: undefined,
-  bankName: "",
-  bankAccountNumber: "",
+  bankName: '',
+  bankAccountNumber: '',
   minimumVolumePerMonth: undefined,
   discountRate: undefined,
   contractItems: [],
 });
 
 const searchForm = ref({
-  name: "",
-  contractNumber: "",
+  name: '',
+  contractNumber: '',
   status: [] as string[],
   effectiveDateRange: [] as string[],
   expirationDateRange: [] as string[],
@@ -590,161 +523,157 @@ const searchForm = ref({
 
 const searchItems = ref([
   {
-    key: "name",
-    label: "Tên nhà cung cấp",
-    type: "input",
+    key: 'name',
+    label: 'Tên nhà cung cấp',
+    type: 'input',
     props: {
-      placeholder: "Nhập tên nhà cung cấp",
+      placeholder: 'Nhập tên nhà cung cấp',
       clearable: true,
     },
   },
   {
-    key: "contractNumber",
-    label: "Số hợp đồng",
-    type: "input",
+    key: 'contractNumber',
+    label: 'Số hợp đồng',
+    type: 'input',
     props: {
-      placeholder: "Nhập số hợp đồng",
+      placeholder: 'Nhập số hợp đồng',
       clearable: true,
     },
   },
   {
-    key: "status",
-    label: "Trạng thái",
-    type: "select",
+    key: 'status',
+    label: 'Trạng thái',
+    type: 'select',
     props: {
       options: [
-        { label: "Nháp", value: "Draft" },
-        { label: "Chờ phê duyệt", value: "PendingApproval" },
-        { label: "Đang hiệu lực", value: "Active" },
-        { label: "Đã hết hạn", value: "Expired" },
-        { label: "Đã thanh lý", value: "Terminated" },
-        { label: "Đã hoàn thành", value: "Completed" },
+        { label: 'Nháp', value: 'Draft' },
+        { label: 'Chờ phê duyệt', value: 'PendingApproval' },
+        { label: 'Đang hiệu lực', value: 'Active' },
+        { label: 'Đã hết hạn', value: 'Expired' },
+        { label: 'Đã thanh lý', value: 'Terminated' },
+        { label: 'Đã hoàn thành', value: 'Completed' },
       ],
       multiple: true,
       collapseTags: true,
-      placeholder: "Chọn trạng thái...",
+      placeholder: 'Chọn trạng thái...',
     },
   },
   {
-    key: "effectiveDateRange",
-    label: "Ngày hiệu lực",
-    type: "daterange",
+    key: 'effectiveDateRange',
+    label: 'Ngày hiệu lực',
+    type: 'daterange',
     props: {
-      startPlaceholder: "Từ ngày",
-      endPlaceholder: "Đến ngày",
-      valueFormat: "YYYY-MM-DD",
+      startPlaceholder: 'Từ ngày',
+      endPlaceholder: 'Đến ngày',
+      valueFormat: 'YYYY-MM-DD',
       clearable: true,
     },
   },
   {
-    key: "expirationDateRange",
-    label: "Ngày hết hạn",
-    type: "daterange",
+    key: 'expirationDateRange',
+    label: 'Ngày hết hạn',
+    type: 'daterange',
     props: {
-      startPlaceholder: "Từ ngày",
-      endPlaceholder: "Đến ngày",
-      valueFormat: "YYYY-MM-DD",
+      startPlaceholder: 'Từ ngày',
+      endPlaceholder: 'Đến ngày',
+      valueFormat: 'YYYY-MM-DD',
       clearable: true,
     },
   },
 ]);
 
 const columns = ref<ColumnOption[]>([
-  { label: "Nhà cung cấp", prop: "supplierName", minWidth: 160 },
-  { label: "Số hợp đồng", prop: "contractNumber", minWidth: 150 },
-  { label: "Giá trị", prop: "contractValue", width: 130, align: "right" },
-  { label: "Hạn mức nợ", prop: "creditLimit", width: 130, align: "right" },
-  { label: "Chiết khấu", prop: "discountRate", width: 100, align: "center" },
-  { label: "Trạng thái", prop: "status", width: 130, align: "center" },
+  { label: 'Nhà cung cấp', prop: 'supplierName', minWidth: 160 },
+  { label: 'Số hợp đồng', prop: 'contractNumber', minWidth: 150 },
+  { label: 'Giá trị', prop: 'contractValue', width: 130, align: 'right' },
+  { label: 'Hạn mức nợ', prop: 'creditLimit', width: 130, align: 'right' },
+  { label: 'Chiết khấu', prop: 'discountRate', width: 100, align: 'center' },
+  { label: 'Trạng thái', prop: 'status', width: 130, align: 'center' },
   {
-    label: "Ngày hiệu lực",
-    prop: "effectiveDate",
+    label: 'Ngày hiệu lực',
+    prop: 'effectiveDate',
     width: 120,
-    align: "center",
+    align: 'center',
   },
   {
-    label: "Ngày hết hạn",
-    prop: "expirationDate",
+    label: 'Ngày hết hạn',
+    prop: 'expirationDate',
     width: 120,
-    align: "center",
+    align: 'center',
   },
   {
-    label: "Thao tác",
-    prop: "operation",
+    label: 'Thao tác',
+    prop: 'operation',
     width: 180,
-    fixed: "right" as const,
-    align: "center",
+    fixed: 'right' as const,
+    align: 'center',
   },
 ]);
 const columnChecks = columns;
 
 const isFormLocked = computed(() => {
-  return formData.value.status === "Active";
+  return formData.value.status === 'Active';
 });
 
 const formRules = {
-  contractNumber: [
-    { required: true, message: "Vui lòng nhập số hợp đồng", trigger: "blur" },
-  ],
+  contractNumber: [{ required: true, message: 'Vui lòng nhập số hợp đồng', trigger: 'blur' }],
   effectiveDate: [
     {
       required: true,
-      message: "Vui lòng chọn ngày hiệu lực",
-      trigger: "change",
+      message: 'Vui lòng chọn ngày hiệu lực',
+      trigger: 'change',
     },
   ],
   contractValue: [
     {
       required: true,
-      message: "Vui lòng nhập giá trị hợp đồng",
-      trigger: "blur",
+      message: 'Vui lòng nhập giá trị hợp đồng',
+      trigger: 'blur',
     },
   ],
-  status: [
-    { required: true, message: "Vui lòng chọn trạng thái", trigger: "change" },
-  ],
+  status: [{ required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change' }],
 };
 
 const getStatusType = (status: string) => {
   switch (status) {
-    case "Active":
-      return "success";
-    case "PendingApproval":
-      return "warning";
-    case "Expired":
-      return "danger";
-    case "Terminated":
-      return "info";
-    case "Completed":
-      return "success";
+    case 'Active':
+      return 'success';
+    case 'PendingApproval':
+      return 'warning';
+    case 'Expired':
+      return 'danger';
+    case 'Terminated':
+      return 'info';
+    case 'Completed':
+      return 'success';
     default:
-      return "info";
+      return 'info';
   }
 };
 
 const getStatusLabel = (status: string) => {
   const map: Record<string, string> = {
-    Draft: "Nháp",
-    PendingApproval: "Chờ phê duyệt",
-    Active: "Đang hiệu lực",
-    Expired: "Đã hết hạn",
-    Terminated: "Đã thanh lý",
-    Completed: "Đã hoàn thành",
+    Draft: 'Nháp',
+    PendingApproval: 'Chờ phê duyệt',
+    Active: 'Đang hiệu lực',
+    Expired: 'Đã hết hạn',
+    Terminated: 'Đã thanh lý',
+    Completed: 'Đã hoàn thành',
   };
   return map[status] || status;
 };
 
 const formatCurrency = (value: number) => {
-  if (!value && value !== 0) return "-";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (!value && value !== 0) return '-';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const formatDate = (dateString?: string) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString("vi-VN");
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('vi-VN');
 };
 
 const searchSuppliers = async (query: string) => {
@@ -756,7 +685,7 @@ const searchSuppliers = async (query: string) => {
   try {
     const res = await usecases.getSuppliersForSelect.execute();
     supplierOptions.value = res.filter((s: any) =>
-      s.name.toLowerCase().includes(query.toLowerCase()),
+      s.name.toLowerCase().includes(query.toLowerCase())
     );
   } catch {
     supplierOptions.value = [];
@@ -770,18 +699,15 @@ const isImageFile = (fileName: string) => {
 };
 
 const revokeContractFilePreview = () => {
-  if (
-    contractFilePreviewUrl.value &&
-    contractFilePreviewUrl.value.startsWith("blob:")
-  ) {
+  if (contractFilePreviewUrl.value && contractFilePreviewUrl.value.startsWith('blob:')) {
     URL.revokeObjectURL(contractFilePreviewUrl.value);
   }
-  contractFilePreviewUrl.value = "";
+  contractFilePreviewUrl.value = '';
 };
 
 const clearContractFile = () => {
   revokeContractFilePreview();
-  contractFileName.value = "";
+  contractFileName.value = '';
   fileList.value = [];
   formData.value.contractFilePath = undefined;
 };
@@ -790,19 +716,17 @@ const customUploadRequest = async (options: any) => {
   try {
     revokeContractFilePreview();
     const url = URL.createObjectURL(options.file);
-    fileList.value = [
-      { name: options.file.name, url, response: "ok", isTemp: true },
-    ];
+    fileList.value = [{ name: options.file.name, url, response: 'ok', isTemp: true }];
     formData.value.contractFilePath = url;
     contractFileName.value = options.file.name;
     if (isImageFile(options.file.name)) {
       contractFilePreviewUrl.value = url;
     } else {
-      contractFilePreviewUrl.value = "";
+      contractFilePreviewUrl.value = '';
     }
     options.onSuccess?.({});
   } catch {
-    ElMessage.error("Tải lên thất bại");
+    ElMessage.error('Tải lên thất bại');
     options.onError?.({});
   }
 };
@@ -816,7 +740,7 @@ const loadStats = async () => {
     stats.expiredContracts = res.expiredContracts || 0;
     stats.expiringContracts = res.expiringContracts || 0;
   } catch (error) {
-    console.error("Failed to load stats:", error);
+    console.error('Failed to load stats:', error);
   }
 };
 
@@ -824,43 +748,32 @@ const loadData = async () => {
   loading.value = true;
   try {
     const filters: string[] = [];
-    if (searchForm.value.name)
-      filters.push(`Supplier.Name@=${searchForm.value.name}`);
+    if (searchForm.value.name) filters.push(`Supplier.Name@=${searchForm.value.name}`);
     if (searchForm.value.contractNumber)
       filters.push(`ContractNumber@=${searchForm.value.contractNumber}`);
     if (searchForm.value.status.length > 0)
-      filters.push(`Status==${searchForm.value.status.join("|")}`);
-    if (
-      searchForm.value.effectiveDateRange &&
-      searchForm.value.effectiveDateRange.length === 2
-    ) {
+      filters.push(`Status==${searchForm.value.status.join('|')}`);
+    if (searchForm.value.effectiveDateRange && searchForm.value.effectiveDateRange.length === 2) {
       filters.push(`EffectiveDate>=${searchForm.value.effectiveDateRange[0]}`);
       filters.push(`EffectiveDate<=${searchForm.value.effectiveDateRange[1]}`);
     }
-    if (
-      searchForm.value.expirationDateRange &&
-      searchForm.value.expirationDateRange.length === 2
-    ) {
-      filters.push(
-        `ExpirationDate>=${searchForm.value.expirationDateRange[0]}`,
-      );
-      filters.push(
-        `ExpirationDate<=${searchForm.value.expirationDateRange[1]}`,
-      );
+    if (searchForm.value.expirationDateRange && searchForm.value.expirationDateRange.length === 2) {
+      filters.push(`ExpirationDate>=${searchForm.value.expirationDateRange[0]}`);
+      filters.push(`ExpirationDate<=${searchForm.value.expirationDateRange[1]}`);
     }
 
     const params: any = {
       current: pagination.current,
       size: pagination.size,
-      Filters: filters.join(",") || undefined,
-      Sorts: "EffectiveDate desc",
+      Filters: filters.join(',') || undefined,
+      Sorts: 'EffectiveDate desc',
     };
     const res = await usecases.getContracts.execute(params);
     data.value = res.items || [];
     pagination.total = res.totalCount || 0;
   } catch (error) {
-    console.error("Failed to load contracts:", error);
-    ElMessage.error("Không thể tải danh sách hợp đồng");
+    console.error('Failed to load contracts:', error);
+    ElMessage.error('Không thể tải danh sách hợp đồng');
   } finally {
     loading.value = false;
   }
@@ -868,8 +781,8 @@ const loadData = async () => {
 
 const handleReset = () => {
   searchForm.value = {
-    name: "",
-    contractNumber: "",
+    name: '',
+    contractNumber: '',
     status: [],
     effectiveDateRange: [],
     expirationDateRange: [],
@@ -879,32 +792,32 @@ const handleReset = () => {
 };
 
 const handleAdd = () => {
-  dialogTitle.value = "Tạo hợp đồng mới";
+  dialogTitle.value = 'Tạo hợp đồng mới';
   formData.value = {
-    contractNumber: "",
-    effectiveDate: "",
-    expirationDate: "",
+    contractNumber: '',
+    effectiveDate: '',
+    expirationDate: '',
     contractValue: 0,
-    status: "Draft",
-    terms: "",
-    note: "",
+    status: 'Draft',
+    terms: '',
+    note: '',
     supplierId: undefined,
     creditLimit: undefined,
     paymentWindowDays: undefined,
-    bankName: "",
-    bankAccountNumber: "",
+    bankName: '',
+    bankAccountNumber: '',
     minimumVolumePerMonth: undefined,
     discountRate: undefined,
     contractItems: [],
   };
   fileList.value = [];
   revokeContractFilePreview();
-  contractFileName.value = "";
+  contractFileName.value = '';
   dialogVisible.value = true;
 };
 
 const handleEdit = (row: SupplierContractDto) => {
-  dialogTitle.value = "Cập nhật hợp đồng";
+  dialogTitle.value = 'Cập nhật hợp đồng';
   const skuItems: SupplierContractSkuItem[] =
     (row as any).skuPriceList?.map((item: any) => ({
       ...item,
@@ -922,42 +835,39 @@ const handleEdit = (row: SupplierContractDto) => {
   };
   revokeContractFilePreview();
   if (row.contractFilePath) {
-    fileList.value = [
-      { name: "contract-file", url: row.contractFilePath, response: "ok" },
-    ];
-    contractFileName.value =
-      row.contractFilePath.split("/").pop() || "contract-file";
+    fileList.value = [{ name: 'contract-file', url: row.contractFilePath, response: 'ok' }];
+    contractFileName.value = row.contractFilePath.split('/').pop() || 'contract-file';
     if (isImageFile(row.contractFilePath)) {
       contractFilePreviewUrl.value = row.contractFilePath;
     } else {
-      contractFilePreviewUrl.value = "";
+      contractFilePreviewUrl.value = '';
     }
   } else {
     fileList.value = [];
-    contractFileName.value = "";
+    contractFileName.value = '';
   }
   dialogVisible.value = true;
 };
 
 const handleView = (row: SupplierContractDto) => {
-  router.push({ name: "SupplierContractPreview", params: { id: row.id } });
+  router.push({ name: 'SupplierContractPreview', params: { id: row.id } });
 };
 
 const handleDelete = async (row: SupplierContractDto) => {
   try {
     await ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa hợp đồng "${row.contractNumber}"?`,
-      "Xác nhận xóa",
-      { confirmButtonText: "Xóa", cancelButtonText: "Hủy", type: "warning" },
+      'Xác nhận xóa',
+      { confirmButtonText: 'Xóa', cancelButtonText: 'Hủy', type: 'warning' }
     );
     await usecases.delete.execute(row.id);
-    ElMessage.success("Xóa thành công");
+    ElMessage.success('Xóa thành công');
     loadData();
     loadStats();
   } catch (error) {
-    if (error !== "cancel") {
-      console.error("Failed to delete:", error);
-      ElMessage.error("Không thể xóa hợp đồng");
+    if (error !== 'cancel') {
+      console.error('Failed to delete:', error);
+      ElMessage.error('Không thể xóa hợp đồng');
     }
   }
 };
@@ -967,9 +877,9 @@ const handleAddSkuItem = () => {
   items.push({
     productVariantId: 0,
     wholesalePrice: 0,
-    skuCode: "",
-    productName: "",
-    category: "",
+    skuCode: '',
+    productName: '',
+    category: '',
     moq: 1,
   } as any);
 };
@@ -980,7 +890,7 @@ const handleRemoveSkuItem = (index: number) => {
 };
 
 const handleCreateAddendum = () => {
-  ElMessage.info("Tính năng tạo phụ lục đang được phát triển.");
+  ElMessage.info('Tính năng tạo phụ lục đang được phát triển.');
 };
 
 const submitForm = async () => {
@@ -1003,17 +913,17 @@ const submitForm = async () => {
 
       if (formData.value.id) {
         await usecases.update.execute(formData.value.id, payload);
-        ElMessage.success("Cập nhật thành công");
+        ElMessage.success('Cập nhật thành công');
       } else {
         await usecases.create.execute(payload);
-        ElMessage.success("Tạo mới thành công");
+        ElMessage.success('Tạo mới thành công');
       }
       dialogVisible.value = false;
       loadData();
       loadStats();
     } catch (error) {
-      console.error("Failed to save:", error);
-      ElMessage.error("Không thể lưu hợp đồng");
+      console.error('Failed to save:', error);
+      ElMessage.error('Không thể lưu hợp đồng');
     } finally {
       submitting.value = false;
     }

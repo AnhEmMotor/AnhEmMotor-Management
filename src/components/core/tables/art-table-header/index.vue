@@ -11,10 +11,7 @@
         @click="search"
         :class="showSearchBar ? 'active bg-theme! hover:bg-theme/80!' : ''"
       >
-        <ArtSvgIcon
-          icon="ri:search-line"
-          :class="showSearchBar ? 'text-white' : 'text-g-700'"
-        />
+        <ArtSvgIcon icon="ri:search-line" :class="showSearchBar ? 'text-white' : 'text-g-700'" />
       </div>
       <div
         v-if="shouldShow('refresh')"
@@ -51,23 +48,11 @@
         </template>
       </ElDropdown>
 
-      <div
-        v-if="shouldShow('fullscreen')"
-        class="button"
-        @click="toggleFullScreen"
-      >
-        <ArtSvgIcon
-          :icon="
-            isFullScreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-line'
-          "
-        />
+      <div v-if="shouldShow('fullscreen')" class="button" @click="toggleFullScreen">
+        <ArtSvgIcon :icon="isFullScreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-line'" />
       </div>
 
-      <ElPopover
-        v-if="shouldShow('columns')"
-        placement="bottom"
-        trigger="click"
-      >
+      <ElPopover v-if="shouldShow('columns')" placement="bottom" trigger="click">
         <template #reference>
           <div class="button">
             <ArtSvgIcon icon="ri:align-right" />
@@ -90,9 +75,7 @@
               >
                 <div
                   class="drag-icon mr-2 h-4.5 flex-cc text-g-500"
-                  :class="
-                    item.fixed ? 'cursor-default text-g-300' : 'cursor-move'
-                  "
+                  :class="item.fixed ? 'cursor-default text-g-300' : 'cursor-move'"
                 >
                   <ArtSvgIcon
                     :icon="item.fixed ? 'ri:unpin-line' : 'ri:drag-move-2-fill'"
@@ -101,14 +84,11 @@
                 </div>
                 <ElCheckbox
                   :model-value="getColumnVisibility(item)"
-                  @update:model-value="
-                    (val) => updateColumnVisibility(item, val)
-                  "
+                  @update:model-value="(val) => updateColumnVisibility(item, val)"
                   :disabled="item.disabled"
                   class="flex-1 min-w-0 [&_.el-checkbox__label]:overflow-hidden [&_.el-checkbox__label]:text-ellipsis [&_.el-checkbox__label]:whitespace-nowrap"
                   >{{
-                    item.label ||
-                    (item.type === "selection" ? t("table.selection") : "")
+                    item.label || (item.type === 'selection' ? t('table.selection') : '')
                   }}</ElCheckbox
                 >
               </div>
@@ -117,11 +97,7 @@
         </div>
       </ElPopover>
 
-      <ElPopover
-        v-if="shouldShow('settings')"
-        placement="bottom"
-        trigger="click"
-      >
+      <ElPopover v-if="shouldShow('settings')" placement="bottom" trigger="click">
         <template #reference>
           <div class="button">
             <ArtSvgIcon icon="ri:settings-line" />
@@ -129,17 +105,14 @@
         </template>
         <div>
           <ElCheckbox v-if="showZebra" v-model="isZebra" :value="true">{{
-            t("table.zebra")
+            t('table.zebra')
           }}</ElCheckbox>
           <ElCheckbox v-if="showBorder" v-model="isBorder" :value="true">{{
-            t("table.border")
+            t('table.border')
           }}</ElCheckbox>
-          <ElCheckbox
-            v-if="showHeaderBackground"
-            v-model="isHeaderBackground"
-            :value="true"
-            >{{ t("table.headerBackground") }}</ElCheckbox
-          >
+          <ElCheckbox v-if="showHeaderBackground" v-model="isHeaderBackground" :value="true">{{
+            t('table.headerBackground')
+          }}</ElCheckbox>
         </div>
       </ElPopover>
       <ElTooltip v-if="shouldShow('guide')" content="Hướng dẫn" placement="top">
@@ -153,16 +126,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
-import { storeToRefs } from "pinia";
-import { TableSizeEnum } from "@/common/enums/formEnum";
-import { useTableStore } from "@/application/store/table";
-import { VueDraggable } from "vue-draggable-plus";
-import { useI18n } from "vue-i18n";
-import type { ColumnOption } from "@/types/component";
-import { ElScrollbar } from "element-plus";
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { TableSizeEnum } from '@/common/enums/formEnum';
+import { useTableStore } from '@/application/store/table';
+import { VueDraggable } from 'vue-draggable-plus';
+import { useI18n } from 'vue-i18n';
+import type { ColumnOption } from '@/types/component';
+import { ElScrollbar } from 'element-plus';
 
-defineOptions({ name: "ArtTableHeader" });
+defineOptions({ name: 'ArtTableHeader' });
 
 const { t } = useI18n();
 
@@ -186,21 +159,21 @@ const props = withDefaults(defineProps<Props>(), {
   showZebra: true,
   showBorder: true,
   showHeaderBackground: true,
-  fullClass: "art-page-view",
-  layout: "search,refresh,size,fullscreen,columns,settings",
+  fullClass: 'art-page-view',
+  layout: 'search,refresh,size,fullscreen,columns,settings',
   showSearchBar: undefined,
 });
 
-const columns = defineModel<ColumnOption[]>("columns", {
+const columns = defineModel<ColumnOption[]>('columns', {
   required: false,
   default: () => [],
 });
 
 const emit = defineEmits<{
-  (e: "refresh"): void;
-  (e: "search"): void;
-  (e: "update:showSearchBar", value: boolean): void;
-  (e: "guide"): void;
+  (e: 'refresh'): void;
+  (e: 'search'): void;
+  (e: 'update:showSearchBar', value: boolean): void;
+  (e: 'guide'): void;
 }>();
 
 const getColumnVisibility = (col: ColumnOption): boolean => {
@@ -210,27 +183,23 @@ const getColumnVisibility = (col: ColumnOption): boolean => {
   return col.checked ?? true;
 };
 
-const updateColumnVisibility = (
-  col: ColumnOption,
-  value: boolean | string | number,
-): void => {
+const updateColumnVisibility = (col: ColumnOption, value: boolean | string | number): void => {
   const boolValue = !!value;
   col.checked = boolValue;
   col.visible = boolValue;
 };
 
 const tableSizeOptions = [
-  { value: TableSizeEnum.SMALL, label: t("table.sizeOptions.small") },
-  { value: TableSizeEnum.DEFAULT, label: t("table.sizeOptions.default") },
-  { value: TableSizeEnum.LARGE, label: t("table.sizeOptions.large") },
+  { value: TableSizeEnum.SMALL, label: t('table.sizeOptions.small') },
+  { value: TableSizeEnum.DEFAULT, label: t('table.sizeOptions.default') },
+  { value: TableSizeEnum.LARGE, label: t('table.sizeOptions.large') },
 ];
 
 const tableStore = useTableStore();
-const { tableSize, isZebra, isBorder, isHeaderBackground } =
-  storeToRefs(tableStore);
+const { tableSize, isZebra, isBorder, isHeaderBackground } = storeToRefs(tableStore);
 
 const layoutItems = computed(() => {
-  return props.layout.split(",").map((item) => item.trim());
+  return props.layout.split(',').map((item) => item.trim());
 });
 
 const shouldShow = (componentName: string) => {
@@ -240,20 +209,20 @@ const shouldShow = (componentName: string) => {
 const checkColumnMove = (event: any) => {
   const toElement = event.related as HTMLElement;
 
-  if (toElement && toElement.classList.contains("fixed-column")) {
+  if (toElement && toElement.classList.contains('fixed-column')) {
     return false;
   }
   return true;
 };
 
 const search = () => {
-  emit("update:showSearchBar", !props.showSearchBar);
-  emit("search");
+  emit('update:showSearchBar', !props.showSearchBar);
+  emit('search');
 };
 
 const refresh = () => {
   isManualRefresh.value = true;
-  emit("refresh");
+  emit('refresh');
 };
 
 const handleTableSizeChange = (command: TableSizeEnum) => {
@@ -264,7 +233,7 @@ const isManualRefresh = ref(false);
 
 const isFullScreen = ref(false);
 
-const originalOverflow = ref("");
+const originalOverflow = ref('');
 
 const toggleFullScreen = () => {
   const el = document.querySelector(`.${props.fullClass}`);
@@ -274,34 +243,34 @@ const toggleFullScreen = () => {
 
   if (isFullScreen.value) {
     originalOverflow.value = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    el.classList.add("el-full-screen");
+    document.body.style.overflow = 'hidden';
+    el.classList.add('el-full-screen');
     tableStore.setIsFullScreen(true);
   } else {
     document.body.style.overflow = originalOverflow.value;
-    el.classList.remove("el-full-screen");
+    el.classList.remove('el-full-screen');
     tableStore.setIsFullScreen(false);
   }
 };
 
 const handleEscapeKey = (e: KeyboardEvent) => {
-  if (e.key === "Escape" && isFullScreen.value) {
+  if (e.key === 'Escape' && isFullScreen.value) {
     toggleFullScreen();
   }
 };
 
 onMounted(() => {
-  document.addEventListener("keydown", handleEscapeKey);
+  document.addEventListener('keydown', handleEscapeKey);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleEscapeKey);
+  document.removeEventListener('keydown', handleEscapeKey);
 
   if (isFullScreen.value) {
     document.body.style.overflow = originalOverflow.value;
     const el = document.querySelector(`.${props.fullClass}`);
     if (el) {
-      el.classList.remove("el-full-screen");
+      el.classList.remove('el-full-screen');
     }
   }
 });

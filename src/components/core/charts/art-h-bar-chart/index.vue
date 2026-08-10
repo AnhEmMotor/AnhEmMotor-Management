@@ -8,12 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import { getCssVar } from "@/common/utils/ui";
-import { graphic, type EChartsOption } from "@/plugins/echarts";
-import type { BarChartProps, BarDataItem } from "@/types/component/chart";
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import { getCssVar } from '@/common/utils/ui';
+import { graphic, type EChartsOption } from '@/plugins/echarts';
+import type { BarChartProps, BarDataItem } from '@/types/component/chart';
 
-defineOptions({ name: "ArtHBarChart" });
+defineOptions({ name: 'ArtHBarChart' });
 
 const props = withDefaults(defineProps<BarChartProps>(), {
   height: useChartOps().chartHeight,
@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<BarChartProps>(), {
 
   data: () => [0, 0, 0, 0, 0, 0, 0],
   xAxisData: () => [],
-  barWidth: "36%",
+  barWidth: '36%',
   stack: false,
 
   showAxisLabel: true,
@@ -32,15 +32,15 @@ const props = withDefaults(defineProps<BarChartProps>(), {
 
   showTooltip: true,
   showLegend: false,
-  legendPosition: "bottom",
+  legendPosition: 'bottom',
 });
 
 const isMultipleData = computed(() => {
   return (
     Array.isArray(props.data) &&
     props.data.length > 0 &&
-    typeof props.data[0] === "object" &&
-    "name" in props.data[0]
+    typeof props.data[0] === 'object' &&
+    'name' in props.data[0]
   );
 });
 
@@ -54,11 +54,11 @@ const getColor = (customColor?: string, index?: number) => {
   return new graphic.LinearGradient(0, 0, 1, 0, [
     {
       offset: 0,
-      color: getCssVar("--el-color-primary"),
+      color: getCssVar('--el-color-primary'),
     },
     {
       offset: 1,
-      color: getCssVar("--el-color-primary-light-4"),
+      color: getCssVar('--el-color-primary-light-4'),
     },
   ]);
 };
@@ -77,10 +77,10 @@ const createGradientColor = (color: string) => {
 };
 
 const getBaseItemStyle = (
-  color: string | InstanceType<typeof graphic.LinearGradient> | undefined,
+  color: string | InstanceType<typeof graphic.LinearGradient> | undefined
 ) => ({
   borderRadius: 4,
-  color: typeof color === "string" ? createGradientColor(color) : color,
+  color: typeof color === 'string' ? createGradientColor(color) : color,
 });
 
 const createSeriesItem = (config: {
@@ -95,7 +95,7 @@ const createSeriesItem = (config: {
   return {
     name: config.name,
     data: config.data,
-    type: "bar" as const,
+    type: 'bar' as const,
     stack: config.stack,
     itemStyle: getBaseItemStyle(config.color),
     barWidth: config.barWidth || props.barWidth,
@@ -115,18 +115,16 @@ const {
 } = useChartComponent({
   props,
   checkEmpty: () => {
-    if (Array.isArray(props.data) && typeof props.data[0] === "number") {
+    if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
       const singleData = props.data as number[];
       return !singleData.length || singleData.every((val) => val === 0);
     }
 
-    if (Array.isArray(props.data) && typeof props.data[0] === "object") {
+    if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
       const multiData = props.data as BarDataItem[];
       return (
         !multiData.length ||
-        multiData.every(
-          (item) => !item.data?.length || item.data.every((val) => val === 0),
-        )
+        multiData.every((item) => !item.data?.length || item.data.every((val) => val === 0))
       );
     }
 
@@ -135,25 +133,21 @@ const {
   watchSources: [() => props.data, () => props.xAxisData, () => props.colors],
   generateOptions: (): EChartsOption => {
     const options: EChartsOption = {
-      grid: getGridWithLegend(
-        props.showLegend && isMultipleData.value,
-        props.legendPosition,
-        {
-          top: 15,
-          right: 0,
-          left: 0,
-        },
-      ),
+      grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
+        top: 15,
+        right: 0,
+        left: 0,
+      }),
       tooltip: props.showTooltip ? getTooltipStyle() : undefined,
       xAxis: {
-        type: "value",
+        type: 'value',
         axisTick: getAxisTickStyle(),
         axisLine: getAxisLineStyle(props.showAxisLine),
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
         splitLine: getSplitLineStyle(props.showSplitLine),
       },
       yAxis: {
-        type: "category",
+        type: 'category',
         data: props.xAxisData,
         axisTick: getAxisTickStyle(),
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
@@ -175,7 +169,7 @@ const {
           data: item.data,
           color: computedColor,
           barWidth: item.barWidth,
-          stack: props.stack ? item.stack || "total" : undefined,
+          stack: props.stack ? item.stack || 'total' : undefined,
         });
       });
     } else {

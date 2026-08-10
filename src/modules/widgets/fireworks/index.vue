@@ -2,36 +2,21 @@
   <div class="resp-page page-content">
     <div class="mb-5">
       <ElSpace wrap>
-        <ElButton
-          :disabled="isLaunching"
-          v-ripple
-          @click="handleSingleLaunch"
-          >{{ $t("admin.t240") }}</ElButton
-        >
-        <ElButton
-          :disabled="isLaunching"
-          v-ripple
-          @click="handleImageLaunch(bp)"
-          >{{ $t("admin.t241") }}</ElButton
-        >
-        <ElButton
-          :disabled="isLaunching"
-          v-ripple
-          @click="handleMultipleLaunch('')"
-          >{{ $t("admin.t242") }}</ElButton
-        >
-        <ElButton
-          :disabled="isLaunching"
-          v-ripple
-          @click="handleImageLaunch(sd)"
-          >{{ $t("admin.t243") }}</ElButton
-        >
-        <ElButton
-          :disabled="isLaunching"
-          v-ripple
-          @click="handleMultipleLaunch(sd)"
-          >{{ $t("admin.t244") }}</ElButton
-        >
+        <ElButton :disabled="isLaunching" v-ripple @click="handleSingleLaunch">{{
+          $t('admin.t240')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(bp)">{{
+          $t('admin.t241')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch('')">{{
+          $t('admin.t242')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleImageLaunch(sd)">{{
+          $t('admin.t243')
+        }}</ElButton>
+        <ElButton :disabled="isLaunching" v-ripple @click="handleMultipleLaunch(sd)">{{
+          $t('admin.t244')
+        }}</ElButton>
       </ElSpace>
     </div>
 
@@ -42,28 +27,20 @@
       border
       style="margin-top: 50px"
     >
-      <ElDescriptionsItem :label="$t('admin.t250')">{{
-        $t("admin.t245")
-      }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t251')">{{
-        $t("admin.t246")
-      }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t252')">{{
-        $t("admin.t247")
-      }}</ElDescriptionsItem>
-      <ElDescriptionsItem :label="$t('admin.t253')">{{
-        $t("admin.t248")
-      }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t250')">{{ $t('admin.t245') }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t251')">{{ $t('admin.t246') }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t252')">{{ $t('admin.t247') }}</ElDescriptionsItem>
+      <ElDescriptionsItem :label="$t('admin.t253')">{{ $t('admin.t248') }}</ElDescriptionsItem>
     </ElDescriptions>
   </div>
 </template>
 
 <script setup lang="ts">
-import { mittBus } from "@/common/utils/sys";
-import bp from "@imgs/ceremony/hb.png";
-import sd from "@imgs/ceremony/sd.png";
+import { mittBus } from '@/common/utils/sys';
+import bp from '@imgs/ceremony/hb.png';
+import sd from '@imgs/ceremony/sd.png';
 
-defineOptions({ name: "WidgetsFireworks" });
+defineOptions({ name: 'WidgetsFireworks' });
 
 const timerRef = ref<ReturnType<typeof setInterval> | null>(null);
 const isLaunching = ref(false);
@@ -78,7 +55,7 @@ const triggerFireworks = (count: number, src: string) => {
 
   let fired = 0;
   timerRef.value = setInterval(() => {
-    mittBus.emit("triggerFireworks", src);
+    mittBus.emit('triggerFireworks', src);
     fired++;
 
     if (fired >= count) {
@@ -90,7 +67,7 @@ const triggerFireworks = (count: number, src: string) => {
 };
 
 const handleSingleLaunch = () => {
-  mittBus.emit("triggerFireworks");
+  mittBus.emit('triggerFireworks');
 };
 
 const handleMultipleLaunch = (src: string) => {
@@ -98,7 +75,7 @@ const handleMultipleLaunch = (src: string) => {
 };
 
 const handleImageLaunch = (src: string) => {
-  mittBus.emit("triggerFireworks", src);
+  mittBus.emit('triggerFireworks', src);
 };
 
 onUnmounted(() => {

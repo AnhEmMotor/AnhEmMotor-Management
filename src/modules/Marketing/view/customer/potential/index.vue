@@ -9,9 +9,7 @@
       </h2>
     </div>
 
-    <div
-      class="resp-stats-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-    >
+    <div class="resp-stats-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <ArtStatsCard
         title="Tổng khách tiềm năng"
         :count="pagination.total"
@@ -22,10 +20,7 @@
       <ArtStatsCard
         title="Đang chăm sóc"
         :count="
-          data.filter(
-            (i) =>
-              i.status !== 'New' && i.status !== 'Lost' && i.status !== 'Won',
-          ).length
+          data.filter((i) => i.status !== 'New' && i.status !== 'Lost' && i.status !== 'Won').length
         "
         description="Khối lượng công việc của Sale"
         icon="ri:customer-service-2-line"
@@ -84,9 +79,7 @@
 
           <div class="flex flex-1 items-center p-5 gap-6">
             <div class="priority-column flex-shrink-0 relative">
-              <div v-if="isNeglected(lead)" class="neglected-ribbon">
-                Chăm sóc chậm
-              </div>
+              <div v-if="isNeglected(lead)" class="neglected-ribbon">Chăm sóc chậm</div>
               <div class="flex flex-col items-center gap-1.5">
                 <div
                   class="priority-badge flex flex-col items-center justify-center text-white font-bold"
@@ -121,15 +114,11 @@
                   {{ lead.fullName.charAt(0) }}
                 </ElAvatar>
                 <div class="flex flex-col gap-1">
-                  <h4
-                    class="m-0 text-gray-900 dark:text-white font-extrabold text-lg line-clamp-1"
-                  >
+                  <h4 class="m-0 text-gray-900 dark:text-white font-extrabold text-lg line-clamp-1">
                     {{ lead.fullName }}
                   </h4>
                   <div class="flex items-center gap-2">
-                    <span
-                      class="text-sm text-gray-500 dark:text-slate-400 font-bold"
-                    >
+                    <span class="text-sm text-gray-500 dark:text-slate-400 font-bold">
                       {{ lead.phoneNumber }}
                     </span>
                     <div class="flex gap-1.5 ml-1">
@@ -158,7 +147,7 @@
                   <span
                     class="text-base font-bold text-gray-700 dark:text-slate-200 truncate flex-1 min-w-0"
                     :title="lead.interestedVehicle || 'Chưa xác định'"
-                    >{{ lead.interestedVehicle || "Chưa xác định" }}</span
+                    >{{ lead.interestedVehicle || 'Chưa xác định' }}</span
                   >
                   <ElTag
                     v-if="lead.interestedVehicle"
@@ -172,16 +161,12 @@
                 </div>
                 <div class="flex items-center gap-1.5 text-xs">
                   <ArtSvgIcon icon="ri:megaphone-line" class="text-red-500" />
-                  <span class="font-bold text-gray-800 dark:text-slate-200"
-                    >Mega Sale 2024</span
-                  >
+                  <span class="font-bold text-gray-800 dark:text-slate-200">Mega Sale 2024</span>
                 </div>
               </div>
             </div>
 
-            <div
-              class="status-column w-44 px-4 flex flex-col items-center justify-center"
-            >
+            <div class="status-column w-44 px-4 flex flex-col items-center justify-center">
               <ElTag
                 :type="getStatusType(lead.status)"
                 class="status-tag-premium w-full"
@@ -213,9 +198,7 @@
                   size="small"
                   class="sale-select"
                   :class="{ 'is-unassigned': !lead.assignedToId }"
-                  :placeholder="
-                    !lead.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'
-                  "
+                  :placeholder="!lead.assignedToId ? 'CHƯA BÀN GIAO' : 'Giao Sale...'"
                 >
                   <ElOption
                     v-for="sale in salesList"
@@ -265,19 +248,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useLeadTable } from "@/modules/Marketing/logic/useLeadTable";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/vi";
+import { ref } from 'vue';
+import { useLeadTable } from '@/modules/Marketing/logic/useLeadTable';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/vi';
 
 dayjs.extend(relativeTime);
-dayjs.locale("vi");
+dayjs.locale('vi');
 
-defineOptions({ name: "CustomerPotential" });
+defineOptions({ name: 'CustomerPotential' });
 
-import { fetchDeleteLead } from "@/api/customer";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { fetchDeleteLead } from '@/api/customer';
+import { ElMessageBox, ElMessage } from 'element-plus';
 
 const {
   data,
@@ -298,20 +281,20 @@ const {
 const handleDelete = (lead: any) => {
   ElMessageBox.confirm(
     `Bạn có chắc chắn muốn xóa khách hàng tiềm năng ${lead.fullName}? Dữ liệu này không thể khôi phục.`,
-    "Cảnh báo xóa dữ liệu",
+    'Cảnh báo xóa dữ liệu',
     {
-      confirmButtonText: "XÓA NGAY",
-      cancelButtonText: "HỦY",
-      type: "warning",
-      confirmButtonClass: "el-button--danger",
-    },
+      confirmButtonText: 'XÓA NGAY',
+      cancelButtonText: 'HỦY',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger',
+    }
   ).then(async () => {
     try {
       await fetchDeleteLead(lead.id);
-      ElMessage.success("Đã xóa khách hàng tiềm năng thành công");
+      ElMessage.success('Đã xóa khách hàng tiềm năng thành công');
       await refreshData();
     } catch {
-      ElMessage.error("Lỗi khi xóa khách hàng tiềm năng. Vui lòng thử lại.");
+      ElMessage.error('Lỗi khi xóa khách hàng tiềm năng. Vui lòng thử lại.');
     }
   });
 };
@@ -319,7 +302,7 @@ const handleDelete = (lead: any) => {
 const searchModel = ref({});
 
 const getWaitTime = (date: string) => {
-  const diff = dayjs().diff(dayjs(date), "minute");
+  const diff = dayjs().diff(dayjs(date), 'minute');
   if (diff < 60) return `${diff} phút`;
   const hours = Math.floor(diff / 60);
   const mins = diff % 60;
@@ -328,56 +311,55 @@ const getWaitTime = (date: string) => {
 
 const isCriticalWait = (lead: any) => {
   const priority = getPriority(lead);
-  const diffInMinutes = dayjs().diff(dayjs(lead.createdAt), "minute");
+  const diffInMinutes = dayjs().diff(dayjs(lead.createdAt), 'minute');
   return priority.level === 3 && diffInMinutes > 60;
 };
 
 const searchItems = [
   {
-    key: "fullName",
-    label: "Tìm kiếm nhanh",
-    type: "input",
-    props: { placeholder: "Họ tên, SĐT...", clearable: true },
+    key: 'fullName',
+    label: 'Tìm kiếm nhanh',
+    type: 'input',
+    props: { placeholder: 'Họ tên, SĐT...', clearable: true },
   },
   {
-    key: "source",
-    label: "Nguồn khách",
-    type: "select",
+    key: 'source',
+    label: 'Nguồn khách',
+    type: 'select',
     props: {
-      placeholder: "Chọn nguồn...",
+      placeholder: 'Chọn nguồn...',
       clearable: true,
       options: [
-        { label: "Facebook", value: "Facebook" },
-        { label: "Website", value: "Website" },
+        { label: 'Facebook', value: 'Facebook' },
+        { label: 'Website', value: 'Website' },
       ],
     },
   },
 ];
 
 const getStatusType = (status: string) => {
-  if (status === "New") return "info";
-  if (status === "TestDrive") return "primary";
-  return "success";
+  if (status === 'New') return 'info';
+  if (status === 'TestDrive') return 'primary';
+  return 'success';
 };
 
 const getStatusLabel = (status: string) => {
-  if (status === "New") return "Mới đăng ký";
-  if (status === "TestDrive") return "Đang lái thử";
-  return "Đang tư vấn";
+  if (status === 'New') return 'Mới đăng ký';
+  if (status === 'TestDrive') return 'Đang lái thử';
+  return 'Đang tư vấn';
 };
 
 const getFunnelStep = (status: string) => {
-  if (status === "New") return "Tiếp cận";
-  return "Cân nhắc";
+  if (status === 'New') return 'Tiếp cận';
+  return 'Cân nhắc';
 };
 
 const getVehicleBrandType = (v: string) =>
-  v.toLowerCase().includes("honda") ? "danger" : "primary";
-const getBrand = (v: string) =>
-  v.toLowerCase().includes("honda") ? "Honda" : "Hãng khác";
+  v.toLowerCase().includes('honda') ? 'danger' : 'primary';
+const getBrand = (v: string) => (v.toLowerCase().includes('honda') ? 'Honda' : 'Hãng khác');
 const isNeglected = (lead: any) =>
-  dayjs().diff(dayjs(lead.createdAt), "hour") > 24 && lead.status === "New";
-const isToday = (date: string) => dayjs(date).isSame(dayjs(), "day");
+  dayjs().diff(dayjs(lead.createdAt), 'hour') > 24 && lead.status === 'New';
+const isToday = (date: string) => dayjs(date).isSame(dayjs(), 'day');
 </script>
 
 <style lang="scss" scoped>

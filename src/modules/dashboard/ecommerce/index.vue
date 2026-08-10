@@ -51,9 +51,7 @@
           ]"
         >
           <div>
-            <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
+            <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">
               DOANH THU THỰC TẾ
             </div>
             <div class="text-3xl font-bold text-gray-800">
@@ -63,13 +61,9 @@
           <div class="mt-4">
             <div
               class="text-sm font-medium"
-              :class="
-                summary.revenueVsYesterdayPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
+              :class="summary.revenueVsYesterdayPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
             >
-              {{ summary.revenueVsYesterdayPercentage >= 0 ? "▲ +" : "▼ "
+              {{ summary.revenueVsYesterdayPercentage >= 0 ? '▲ +' : '▼ '
               }}{{ summary.revenueVsYesterdayPercentage }}% so với hôm qua
             </div>
             <div class="text-sm text-gray-500 mt-1">
@@ -82,19 +76,12 @@
                 class="bg-blue-600 h-2 rounded-full transition-all duration-500"
                 :style="{
                   width:
-                    Math.min(
-                      (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                      100,
-                    ) + '%',
+                    Math.min((summary.totalRevenue / (summary.dailyTarget || 1)) * 100, 100) + '%',
                 }"
               ></div>
             </div>
             <div class="text-right text-xs font-bold text-gray-600 mt-1">
-              {{
-                Math.round(
-                  (summary.totalRevenue / (summary.dailyTarget || 1)) * 100,
-                )
-              }}%
+              {{ Math.round((summary.totalRevenue / (summary.dailyTarget || 1)) * 100) }}%
             </div>
             <div
               v-if="summary.isRevenueAlert"
@@ -108,13 +95,9 @@
 
       <!-- Card 2: Lợi nhuận ròng -->
       <ElCol :sm="24" :md="12" :lg="6">
-        <div
-          class="art-card p-5 h-full border-l-4 border-green-500 flex flex-col justify-between"
-        >
+        <div class="art-card p-5 h-full border-l-4 border-green-500 flex flex-col justify-between">
           <div>
-            <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
+            <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">
               LỢI NHUẬN RÒNG
             </div>
             <div class="text-3xl font-bold text-gray-800">
@@ -127,13 +110,9 @@
             </div>
             <div
               class="text-sm font-medium mt-1"
-              :class="
-                summary.profitVsYesterdayPercentage >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              "
+              :class="summary.profitVsYesterdayPercentage >= 0 ? 'text-green-600' : 'text-red-600'"
             >
-              {{ summary.profitVsYesterdayPercentage >= 0 ? "▲ +" : "▼ "
+              {{ summary.profitVsYesterdayPercentage >= 0 ? '▲ +' : '▼ '
               }}{{ summary.profitVsYesterdayPercentage }}% so với hôm qua
             </div>
           </div>
@@ -145,15 +124,11 @@
         <div
           :class="[
             'art-card p-5 h-full border-l-4 flex flex-col justify-between',
-            summary.isPendingAlert
-              ? 'border-yellow-500 bg-yellow-50'
-              : 'border-orange-500',
+            summary.isPendingAlert ? 'border-yellow-500 bg-yellow-50' : 'border-orange-500',
           ]"
         >
           <div>
-            <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
+            <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">
               TIỀN ĐANG TREO
             </div>
             <div class="text-3xl font-bold text-gray-800">
@@ -185,13 +160,9 @@
 
       <!-- Card 4: Cần xử lý -->
       <ElCol :sm="24" :md="12" :lg="6">
-        <div
-          class="art-card p-5 h-full border-l-4 border-gray-500 flex flex-col justify-between"
-        >
+        <div class="art-card p-5 h-full border-l-4 border-gray-500 flex flex-col justify-between">
           <div>
-            <div
-              class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2"
-            >
+            <div class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">
               CẦN XỬ LÝ
             </div>
           </div>
@@ -230,9 +201,7 @@
                 <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                 <span class="text-sm text-gray-700">Lịch hẹn bỏ lỡ</span>
               </div>
-              <span class="font-bold">{{
-                summary.missedAppointmentsCount
-              }}</span>
+              <span class="font-bold">{{ summary.missedAppointmentsCount }}</span>
             </div>
           </div>
         </div>
@@ -244,9 +213,7 @@
       <ElCol :sm="24" :lg="16">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-4">
-            <h3 class="font-bold text-gray-800">
-              Biểu đồ doanh thu theo chu kỳ
-            </h3>
+            <h3 class="font-bold text-gray-800">Biểu đồ doanh thu theo chu kỳ</h3>
           </div>
           <div ref="revenueChartRef" class="h-64 w-full"></div>
         </div>
@@ -280,19 +247,12 @@
                 <span>Tiến độ tháng</span>
                 <span
                   >{{
-                    Math.round(
-                      (summary.monthAchieved / (summary.monthTarget || 1)) *
-                        100,
-                    )
+                    Math.round((summary.monthAchieved / (summary.monthTarget || 1)) * 100)
                   }}%</span
                 >
               </div>
               <ElProgress
-                :percentage="
-                  Math.round(
-                    (summary.monthAchieved / (summary.monthTarget || 1)) * 100,
-                  )
-                "
+                :percentage="Math.round((summary.monthAchieved / (summary.monthTarget || 1)) * 100)"
                 :show-text="false"
               />
             </div>
@@ -307,21 +267,13 @@
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
-            <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
-            >
+            <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700">
               NGUỒN DOANH THU — Hôm nay
             </h3>
           </div>
           <div class="space-y-5">
-            <div
-              v-for="source in sources"
-              :key="source.name"
-              class="flex items-center gap-4"
-            >
-              <span class="text-sm font-medium w-28 text-gray-700">{{
-                source.name
-              }}</span>
+            <div v-for="source in sources" :key="source.name" class="flex items-center gap-4">
+              <span class="text-sm font-medium w-28 text-gray-700">{{ source.name }}</span>
               <div class="flex-1">
                 <ElProgress
                   :percentage="source.percent"
@@ -331,7 +283,7 @@
                 />
               </div>
               <span class="text-sm font-medium text-gray-800 w-28 text-right">{{
-                formatCurrency(source.amount).replace("₫", "")
+                formatCurrency(source.amount).replace('₫', '')
               }}</span>
             </div>
           </div>
@@ -345,9 +297,7 @@
       <ElCol :sm="24" :lg="12">
         <div class="art-card p-5 h-full">
           <div class="art-card-header mb-6">
-            <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
-            >
+            <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700">
               HIỆU SUẤT SALE — Tháng này
             </h3>
           </div>
@@ -362,11 +312,7 @@
               >
               <div class="flex-1">
                 <ElProgress
-                  :percentage="
-                    Math.round(
-                      (staff.totalSales / (staff.targetSales || 1)) * 100,
-                    )
-                  "
+                  :percentage="Math.round((staff.totalSales / (staff.targetSales || 1)) * 100)"
                   :stroke-width="10"
                   :show-text="false"
                   color="#67c23a"
@@ -375,20 +321,11 @@
               <span class="text-sm text-gray-800 font-medium w-24 text-right">{{
                 formatCurrencyShort(staff.totalSales)
               }}</span>
-              <span
-                class="text-xs font-bold w-24 text-right flex items-center justify-end"
-              >
-                <ElTag
-                  v-if="staff.isTopSeller"
-                  type="success"
-                  size="small"
-                  effect="dark"
+              <span class="text-xs font-bold w-24 text-right flex items-center justify-end">
+                <ElTag v-if="staff.isTopSeller" type="success" size="small" effect="dark"
                   >⭐ Vượt</ElTag
                 >
-                <ElTag
-                  v-else-if="staff.kpiStatus === 'Đạt'"
-                  type="primary"
-                  size="small"
+                <ElTag v-else-if="staff.kpiStatus === 'Đạt'" type="primary" size="small"
                   >✓ Đạt</ElTag
                 >
                 <ElTag v-else type="warning" size="small">⚠️ Cần cố</ElTag>
@@ -397,14 +334,10 @@
           </div>
           <div class="mt-6 pt-4 border-t">
             <div class="flex items-center gap-3">
-              <span class="text-sm font-bold w-32 text-gray-800"
-                >Tổng team:</span
-              >
+              <span class="text-sm font-bold w-32 text-gray-800">Tổng team:</span>
               <div class="flex-1">
                 <ElProgress
-                  :percentage="
-                    Math.round((teamSales / (teamTarget || 1)) * 100)
-                  "
+                  :percentage="Math.round((teamSales / (teamTarget || 1)) * 100)"
                   :stroke-width="14"
                   color="#e6a23c"
                 />
@@ -423,31 +356,20 @@
       <ElCol :span="24">
         <div class="art-card p-5">
           <div class="art-card-header mb-4 flex justify-between items-center">
-            <h3
-              class="font-bold uppercase tracking-wider text-sm text-gray-700"
-            >
+            <h3 class="font-bold uppercase tracking-wider text-sm text-gray-700">
               GIAO DỊCH GẦN NHẤT
             </h3>
             <ElButton type="primary" link>Xem tất cả</ElButton>
           </div>
-          <ElTable
-            :data="transactions"
-            stripe
-            style="width: 100%"
-            :max-height="400"
-          >
+          <ElTable :data="transactions" stripe style="width: 100%" :max-height="400">
             <ElTableColumn prop="timestamp" label="Thời gian" width="120">
               <template #default="scope">
-                <span class="text-gray-500">{{
-                  formatTime(scope.row.timestamp)
-                }}</span>
+                <span class="text-gray-500">{{ formatTime(scope.row.timestamp) }}</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Giao dịch">
               <template #default="scope">
-                <span class="font-medium text-gray-800">{{
-                  scope.row.customerName
-                }}</span>
+                <span class="font-medium text-gray-800">{{ scope.row.customerName }}</span>
                 <span class="text-gray-500 mx-2">—</span>
                 <span class="text-gray-600">{{ scope.row.productName }}</span>
               </template>
@@ -456,17 +378,10 @@
               <template #default="scope">
                 <div
                   class="font-bold flex items-center gap-2"
-                  :class="
-                    scope.row.isRevenue ? 'text-green-600' : 'text-red-600'
-                  "
+                  :class="scope.row.isRevenue ? 'text-green-600' : 'text-red-600'"
                 >
-                  {{ scope.row.isRevenue ? "+" : "-"
-                  }}{{ formatCurrency(scope.row.amount) }}
-                  <span
-                    v-if="scope.row.status === 'Pending'"
-                    title="Tiền đang treo"
-                    >⏳</span
-                  >
+                  {{ scope.row.isRevenue ? '+' : '-' }}{{ formatCurrency(scope.row.amount) }}
+                  <span v-if="scope.row.status === 'Pending'" title="Tiền đang treo">⏳</span>
                   <span
                     v-else-if="scope.row.status === 'Refund'"
                     class="text-red-500"
@@ -480,9 +395,7 @@
           </ElTable>
 
           <div class="mt-4 text-xs text-gray-500 flex gap-6 border-t pt-4">
-            <div class="flex items-center gap-1">
-              <span>⏳</span> Tiền đang treo
-            </div>
+            <div class="flex items-center gap-1"><span>⏳</span> Tiền đang treo</div>
             <div class="flex items-center gap-1">
               <span class="text-red-500">🔴</span> Hoàn tiền / Cần chú ý
             </div>
@@ -490,8 +403,7 @@
               <span class="text-green-600 font-bold">Màu xanh:</span> Thu vào
             </div>
             <div class="flex items-center gap-1">
-              <span class="text-red-600 font-bold">Màu đỏ:</span> Chi ra/Hoàn
-              trả
+              <span class="text-red-600 font-bold">Màu đỏ:</span> Chi ra/Hoàn trả
             </div>
           </div>
         </div>
@@ -501,16 +413,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import * as echarts from "echarts";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { AnalyticsService } from "@/services/analytics.service";
+import { ref, onMounted, computed } from 'vue';
+import * as echarts from 'echarts';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { AnalyticsService } from '@/services/analytics.service';
 import type {
   DashboardSummary,
   StaffPerformance,
   TransactionLog,
-} from "@/services/analytics.types";
-import { useUserStore } from "@/application/store/user";
+} from '@/services/analytics.types';
+import { useUserStore } from '@/application/store/user';
 import {
   ElRow,
   ElCol,
@@ -520,13 +432,13 @@ import {
   ElTable,
   ElTableColumn,
   ElTag,
-} from "element-plus";
+} from 'element-plus';
 
-defineOptions({ name: "Ecommerce" });
+defineOptions({ name: 'Ecommerce' });
 
-const currentPeriod = ref("today");
-const customStart = ref("");
-const customEnd = ref("");
+const currentPeriod = ref('today');
+const customStart = ref('');
+const customEnd = ref('');
 const revenueChartRef = ref<HTMLElement | null>(null);
 
 const summary = ref<DashboardSummary>({
@@ -559,73 +471,71 @@ const summary = ref<DashboardSummary>({
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);
 
-const teamSales = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + curr.totalSales, 0),
-);
+const teamSales = computed(() => topStaff.value.reduce((acc, curr) => acc + curr.totalSales, 0));
 const teamTarget = computed(() =>
-  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales || 1), 0),
+  topStaff.value.reduce((acc, curr) => acc + (curr.targetSales || 1), 0)
 );
 
-import type { RevenueSource } from "@/services/analytics.types";
+import type { RevenueSource } from '@/services/analytics.types';
 const sources = ref<RevenueSource[]>([
-  { name: "Xe máy", percent: 79.5, amount: 68000000 },
-  { name: "Phụ tùng", percent: 14.0, amount: 12000000 },
-  { name: "Phụ kiện", percent: 4.1, amount: 3500000 },
-  { name: "Dịch vụ GTGT", percent: 2.3, amount: 2000000 },
+  { name: 'Xe máy', percent: 79.5, amount: 68000000 },
+  { name: 'Phụ tùng', percent: 14.0, amount: 12000000 },
+  { name: 'Phụ kiện', percent: 4.1, amount: 3500000 },
+  { name: 'Dịch vụ GTGT', percent: 2.3, amount: 2000000 },
 ]);
 
 function getMockTransactions(): TransactionLog[] {
   const now = new Date().getTime();
   return [
     {
-      id: "tx-1",
+      id: 'tx-1',
       timestamp: new Date(now - 1000 * 60 * 5).toISOString(),
-      customerName: "Nguyễn Văn A",
-      productName: "Honda SH 150i",
+      customerName: 'Nguyễn Văn A',
+      productName: 'Honda SH 150i',
       amount: 105000000,
       isRevenue: true,
-      status: "Completed",
-      staffName: "Lê Thị B",
+      status: 'Completed',
+      staffName: 'Lê Thị B',
     },
     {
-      id: "tx-2",
+      id: 'tx-2',
       timestamp: new Date(now - 1000 * 60 * 30).toISOString(),
-      customerName: "Trần Thị C",
-      productName: "Cọc xe Air Blade",
+      customerName: 'Trần Thị C',
+      productName: 'Cọc xe Air Blade',
       amount: 5000000,
       isRevenue: true,
-      status: "Pending",
-      staffName: "Phạm Văn D",
+      status: 'Pending',
+      staffName: 'Phạm Văn D',
     },
     {
-      id: "tx-3",
+      id: 'tx-3',
       timestamp: new Date(now - 1000 * 60 * 60).toISOString(),
-      customerName: "Lê Văn E",
-      productName: "Hoàn cọc xe Vision",
+      customerName: 'Lê Văn E',
+      productName: 'Hoàn cọc xe Vision',
       amount: 2000000,
       isRevenue: false,
-      status: "Refund",
-      staffName: "Nguyễn Thị F",
+      status: 'Refund',
+      staffName: 'Nguyễn Thị F',
     },
     {
-      id: "tx-4",
+      id: 'tx-4',
       timestamp: new Date(now - 1000 * 60 * 120).toISOString(),
-      customerName: "Hoàng Minh G",
-      productName: "Nhớt Castrol Power1",
+      customerName: 'Hoàng Minh G',
+      productName: 'Nhớt Castrol Power1',
       amount: 150000,
       isRevenue: true,
-      status: "Completed",
-      staffName: "Lê Thị B",
+      status: 'Completed',
+      staffName: 'Lê Thị B',
     },
     {
-      id: "tx-5",
+      id: 'tx-5',
       timestamp: new Date(now - 1000 * 60 * 150).toISOString(),
-      customerName: "Phạm Thu H",
-      productName: "Bảo dưỡng định kỳ",
+      customerName: 'Phạm Thu H',
+      productName: 'Bảo dưỡng định kỳ',
       amount: 350000,
       isRevenue: true,
-      status: "Completed",
-      staffName: "Trần Quang I",
+      status: 'Completed',
+      staffName: 'Trần Quang I',
     },
   ] as any as TransactionLog[];
 }
@@ -633,48 +543,48 @@ function getMockTransactions(): TransactionLog[] {
 function getMockStaffPerformance(): StaffPerformance[] {
   return [
     {
-      employeeName: "Nguyễn Văn A",
+      employeeName: 'Nguyễn Văn A',
       totalSales: 150000000,
       targetSales: 100000000,
       isTopSeller: true,
-      kpiStatus: "Vượt KPI",
-      role: "Sales",
+      kpiStatus: 'Vượt KPI',
+      role: 'Sales',
       commissionPaid: 0,
     },
     {
-      employeeName: "Trần Thị B",
+      employeeName: 'Trần Thị B',
       totalSales: 95000000,
       targetSales: 100000000,
       isTopSeller: false,
-      kpiStatus: "Đạt",
-      role: "Sales",
+      kpiStatus: 'Đạt',
+      role: 'Sales',
       commissionPaid: 0,
     },
     {
-      employeeName: "Lê Văn C",
+      employeeName: 'Lê Văn C',
       totalSales: 80000000,
       targetSales: 100000000,
       isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
+      kpiStatus: 'Cần cải thiện',
+      role: 'Sales',
       commissionPaid: 0,
     },
     {
-      employeeName: "Phạm Thị D",
+      employeeName: 'Phạm Thị D',
       totalSales: 45000000,
       targetSales: 100000000,
       isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
+      kpiStatus: 'Cần cải thiện',
+      role: 'Sales',
       commissionPaid: 0,
     },
     {
-      employeeName: "Hoàng Văn E",
+      employeeName: 'Hoàng Văn E',
       totalSales: 30000000,
       targetSales: 100000000,
       isTopSeller: false,
-      kpiStatus: "Cần cải thiện",
-      role: "Sales",
+      kpiStatus: 'Cần cải thiện',
+      role: 'Sales',
       commissionPaid: 0,
     },
   ];
@@ -682,19 +592,17 @@ function getMockStaffPerformance(): StaffPerformance[] {
 
 async function loadData() {
   let start, end;
-  if (currentPeriod.value === "today") {
-    start = new Date().toISOString().split("T")[0];
+  if (currentPeriod.value === 'today') {
+    start = new Date().toISOString().split('T')[0];
     end = start;
-  } else if (currentPeriod.value === "month") {
+  } else if (currentPeriod.value === 'month') {
     start = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
       .toISOString()
-      .split("T")[0];
-    end = new Date().toISOString().split("T")[0];
-  } else if (currentPeriod.value === "year") {
-    start = new Date(new Date().getFullYear(), 0, 1)
-      .toISOString()
-      .split("T")[0];
-    end = new Date().toISOString().split("T")[0];
+      .split('T')[0];
+    end = new Date().toISOString().split('T')[0];
+  } else if (currentPeriod.value === 'year') {
+    start = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    end = new Date().toISOString().split('T')[0];
   } else {
     start = customStart.value;
     end = customEnd.value;
@@ -703,11 +611,7 @@ async function loadData() {
   summary.value = await AnalyticsService.getDashboardSummary(start, end);
   try {
     const apiStaff = await AnalyticsService.getStaffPerformance(start, end);
-    if (
-      apiStaff &&
-      apiStaff.length > 0 &&
-      apiStaff.some((s) => s.totalSales > 0)
-    ) {
+    if (apiStaff && apiStaff.length > 0 && apiStaff.some((s) => s.totalSales > 0)) {
       topStaff.value = apiStaff;
     } else {
       topStaff.value = getMockStaffPerformance();
@@ -740,40 +644,35 @@ function updateChart() {
   const chart = echarts.init(revenueChartRef.value);
 
   const option = {
-    tooltip: { trigger: "axis" },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    tooltip: { trigger: 'axis' },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: {
-      type: "category",
+      type: 'category',
       data:
-        currentPeriod.value === "today"
-          ? ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
-          : currentPeriod.value === "month"
+        currentPeriod.value === 'today'
+          ? ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00']
+          : currentPeriod.value === 'month'
             ? Array.from({ length: 30 }, (_, i) => `${i + 1}`)
-            : ["Q1", "Q2", "Q3", "Q4"],
+            : ['Q1', 'Q2', 'Q3', 'Q4'],
       axisTick: { alignWithLabel: true },
     },
-    yAxis: { type: "value" },
+    yAxis: { type: 'value' },
     series: [
       {
-        name: "Doanh thu",
-        type: "line",
+        name: 'Doanh thu',
+        type: 'line',
         smooth: true,
         data: Array.from(
           {
-            length:
-              currentPeriod.value === "today"
-                ? 7
-                : currentPeriod.value === "month"
-                  ? 30
-                  : 4,
+            length: currentPeriod.value === 'today' ? 7 : currentPeriod.value === 'month' ? 30 : 4,
           },
-          () => Math.floor(Math.random() * 100000000) + 10000000,
+          () => Math.floor(Math.random() * 100000000) + 10000000
         ),
-        itemStyle: { color: "#2563eb" },
+        itemStyle: { color: '#2563eb' },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "rgba(37, 99, 235, 0.3)" },
-            { offset: 1, color: "rgba(37, 99, 235, 0)" },
+            { offset: 0, color: 'rgba(37, 99, 235, 0.3)' },
+            { offset: 1, color: 'rgba(37, 99, 235, 0)' },
           ]),
         },
       },
@@ -784,27 +683,27 @@ function updateChart() {
 }
 
 function formatCurrency(value: number) {
-  if (value == null) return "0đ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (value == null) return '0đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 
 function formatCurrencyShort(value: number) {
   if (value >= 1000000) {
-    return (value / 1000000).toFixed(0) + "tr";
+    return (value / 1000000).toFixed(0) + 'tr';
   }
   if (value >= 1000) {
-    return (value / 1000).toFixed(0) + "k";
+    return (value / 1000).toFixed(0) + 'k';
   }
-  return value + "đ";
+  return value + 'đ';
 }
 
 function formatTime(ts: string) {
-  return new Date(ts).toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(ts).toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -815,11 +714,11 @@ onMounted(() => {
   const userStore = useUserStore();
   const token = userStore.accessToken;
   if (token) {
-    fetchEventSource("/api/analytics/stream/transactions", {
-      method: "GET",
+    fetchEventSource('/api/analytics/stream/transactions', {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "text/event-stream",
+        Accept: 'text/event-stream',
       },
       onmessage(msg) {
         if (!msg.data) return;
@@ -828,11 +727,11 @@ onMounted(() => {
           transactions.value.unshift(newTx);
           if (transactions.value.length > 50) transactions.value.pop();
         } catch (e) {
-          console.error("Failed to parse SSE message:", e);
+          console.error('Failed to parse SSE message:', e);
         }
       },
       onerror() {
-        console.error("SSE connection error for transaction stream");
+        console.error('SSE connection error for transaction stream');
       },
     });
   }

@@ -11,10 +11,7 @@
           <div
             class="size-11 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-cc text-slate-800 dark:text-white shadow-sm"
           >
-            <ArtSvgIcon
-              icon="ri:tools-line"
-              class="text-xl text-blue-500 dark:text-blue-400"
-            />
+            <ArtSvgIcon icon="ri:tools-line" class="text-xl text-blue-500 dark:text-blue-400" />
           </div>
           <div>
             <h1
@@ -25,9 +22,7 @@
             <p
               class="m-0 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-2 flex items-center gap-2"
             >
-              <span
-                class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
-              ></span>
+              <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Hệ thống quản lý dịch vụ bảo trì xe & sửa chữa
             </p>
           </div>
@@ -38,8 +33,7 @@
             @click="goToCreate"
             class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
-            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> + Tiếp
-            nhận xe
+            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> + Tiếp nhận xe
           </button>
         </div>
       </div>
@@ -53,14 +47,10 @@
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
-            <p
-              class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
-            >
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0">
               Đang sửa chữa
             </p>
-            <h3
-              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
-            >
+            <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0">
               {{ stats.inProgress }}
             </h3>
           </div>
@@ -79,14 +69,10 @@
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
-            <p
-              class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
-            >
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0">
               Chờ kiểm định (QC)
             </p>
-            <h3
-              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
-            >
+            <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0">
               {{ stats.qcPending }}
             </h3>
           </div>
@@ -101,14 +87,10 @@
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
-            <p
-              class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
-            >
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0">
               Chờ tiếp nhận / Phân công
             </p>
-            <h3
-              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
-            >
+            <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0">
               {{ stats.pending }}
             </h3>
           </div>
@@ -123,14 +105,10 @@
           class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[24px] shadow-sm flex items-center justify-between"
         >
           <div>
-            <p
-              class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0"
-            >
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider m-0">
               Hoàn thành hôm nay
             </p>
-            <h3
-              class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0"
-            >
+            <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 m-0">
               {{ stats.completedToday }}
             </h3>
           </div>
@@ -160,10 +138,7 @@
                 class="combat-input"
               >
                 <template #prefix>
-                  <ArtSvgIcon
-                    icon="ri:search-line"
-                    class="text-slate-400 text-sm"
-                  />
+                  <ArtSvgIcon icon="ri:search-line" class="text-slate-400 text-sm" />
                 </template>
               </ElInput>
             </div>
@@ -212,10 +187,7 @@
             <p class="text-sm font-medium">Không tìm thấy phiếu sửa chữa nào</p>
           </div>
 
-          <div
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-            v-loading="loading"
-          >
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" v-loading="loading">
             <div
               v-for="row in repairOrders"
               :key="row.id"
@@ -244,16 +216,12 @@
                     <span
                       class="font-mono font-bold text-slate-400 dark:text-slate-500 text-[11px] mt-0.5"
                     >
-                      RO-{{ String(row.id).padStart(5, "0") }}
+                      RO-{{ String(row.id).padStart(5, '0') }}
                     </span>
                   </div>
                 </div>
                 <div class="shrink-0 text-right">
-                  <span
-                    :class="
-                      getStatusBadgeClass(row.status) + ' !w-auto !px-3 !py-1.5'
-                    "
-                  >
+                  <span :class="getStatusBadgeClass(row.status) + ' !w-auto !px-3 !py-1.5'">
                     {{ getStatusText(row.status) }}
                   </span>
                 </div>
@@ -297,10 +265,9 @@
                     >
                       <ArtSvgIcon icon="ri:phone-line" /> Liên hệ
                     </span>
-                    <span
-                      class="font-bold text-slate-700 dark:text-slate-200 text-[13px] mt-1.5"
-                      >{{ row.customerPhone }}</span
-                    >
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-[13px] mt-1.5">{{
+                      row.customerPhone
+                    }}</span>
                   </div>
 
                   <!-- Kỹ thuật viên -->
@@ -310,18 +277,11 @@
                     >
                       <ArtSvgIcon icon="ri:user-settings-line" /> Kỹ thuật viên
                     </span>
-                    <div
-                      class="flex items-center gap-1.5 mt-1.5"
-                      v-if="row.technicianId"
-                    >
+                    <div class="flex items-center gap-1.5 mt-1.5" v-if="row.technicianId">
                       <div
                         class="size-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex-cc font-bold text-[9px] uppercase shadow-inner shrink-0"
                       >
-                        {{
-                          row.technicianName
-                            ? row.technicianName.charAt(0)
-                            : "T"
-                        }}
+                        {{ row.technicianName ? row.technicianName.charAt(0) : 'T' }}
                       </div>
                       <span
                         class="font-bold text-slate-700 dark:text-slate-200 text-[12px] truncate"
@@ -345,10 +305,9 @@
                     >
                       <ArtSvgIcon icon="ri:money-dollar-circle-line" /> Chi phí
                     </span>
-                    <span
-                      class="font-black text-slate-800 dark:text-slate-100 text-[14px] mt-1"
-                      >{{ formatCurrency(row.totalAmount || 0) }}</span
-                    >
+                    <span class="font-black text-slate-800 dark:text-slate-100 text-[14px] mt-1">{{
+                      formatCurrency(row.totalAmount || 0)
+                    }}</span>
                     <span
                       class="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight"
                       v-if="(row.totalAmount || 0) > 0"
@@ -396,9 +355,7 @@
           <div
             class="flex justify-between items-center mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] shadow-sm px-6 py-4"
           >
-            <span
-              class="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase"
-            >
+            <span class="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase">
               Hiển thị {{ repairOrders.length }} / {{ totalCount }} phiếu
             </span>
             <ElPagination
@@ -419,12 +376,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import { RepairOrderApi, RepairOrder } from "@/api/sales";
+import { ref, onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { RepairOrderApi, RepairOrder } from '@/api/sales';
 
-defineOptions({ name: "CustomerWorkshopIndex" });
+defineOptions({ name: 'CustomerWorkshopIndex' });
 
 const router = useRouter();
 const loading = ref(false);
@@ -432,8 +389,8 @@ const repairOrders = ref<RepairOrder[]>([]);
 const totalCount = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
-const searchQuery = ref("");
-const statusFilter = ref("");
+const searchQuery = ref('');
+const statusFilter = ref('');
 
 const stats = reactive({
   inProgress: 0,
@@ -464,8 +421,8 @@ const loadData = async () => {
     const res = await RepairOrderApi.getList({
       current: currentPage.value,
       size: pageSize.value,
-      Filters: filterArray.join(","),
-      Sorts: "createdAt desc",
+      Filters: filterArray.join(','),
+      Sorts: 'createdAt desc',
     });
 
     repairOrders.value = res.items || [];
@@ -474,7 +431,7 @@ const loadData = async () => {
     // Fetch stats (we can query lists with small page size to get counts, or fetch all active)
     await loadStats();
   } catch (err: any) {
-    ElMessage.error(err.message || "Lỗi khi tải danh sách phiếu sửa chữa");
+    ElMessage.error(err.message || 'Lỗi khi tải danh sách phiếu sửa chữa');
   } finally {
     loading.value = false;
   }
@@ -486,17 +443,17 @@ const loadStats = async () => {
     const resPending = await RepairOrderApi.getList({
       current: 1,
       size: 1,
-      Filters: "Status==Pending",
+      Filters: 'Status==Pending',
     });
     const resInProgress = await RepairOrderApi.getList({
       current: 1,
       size: 1,
-      Filters: "Status==InProgress",
+      Filters: 'Status==InProgress',
     });
     const resQc = await RepairOrderApi.getList({
       current: 1,
       size: 1,
-      Filters: "Status==QcPending",
+      Filters: 'Status==QcPending',
     });
 
     // For completed today, we query completed status. For a precise count, it requires date filter,
@@ -504,7 +461,7 @@ const loadStats = async () => {
     const resCompleted = await RepairOrderApi.getList({
       current: 1,
       size: 1,
-      Filters: "Status==Completed",
+      Filters: 'Status==Completed',
     });
 
     stats.pending = resPending.totalCount || 0;
@@ -512,7 +469,7 @@ const loadStats = async () => {
     stats.qcPending = resQc.totalCount || 0;
     stats.completedToday = resCompleted.totalCount || 0;
   } catch (e) {
-    console.error("Failed to load stats", e);
+    console.error('Failed to load stats', e);
   }
 };
 
@@ -548,7 +505,7 @@ const handleCurrentChange = (val: number) => {
 
 // Navigation
 const goToCreate = () => {
-  router.push("/factory/workshop/repair-history/create");
+  router.push('/factory/workshop/repair-history/create');
 };
 
 const goToDetail = (id: number) => {
@@ -557,56 +514,56 @@ const goToDetail = (id: number) => {
 
 // Helper formatting functions
 const formatCurrency = (val: number) => {
-  if (!val) return "0đ";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (!val) return '0đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 };
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return "-";
+  if (!dateStr) return '-';
   const d = new Date(dateStr);
-  return d.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return d.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 const getStatusBadgeClass = (status: string) => {
   const base =
-    "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 ";
+    'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider inline-block text-center w-28 ';
   switch (status) {
-    case "Pending":
-      return base + "bg-purple-50 text-purple-600 border border-purple-200";
-    case "InProgress":
-      return base + "bg-blue-50 text-blue-600 border border-blue-200";
-    case "QcPending":
-      return base + "bg-amber-50 text-amber-600 border border-amber-200";
-    case "Completed":
-      return base + "bg-emerald-50 text-emerald-600 border border-emerald-200";
-    case "Cancelled":
-      return base + "bg-red-50 text-red-600 border border-red-200";
+    case 'Pending':
+      return base + 'bg-purple-50 text-purple-600 border border-purple-200';
+    case 'InProgress':
+      return base + 'bg-blue-50 text-blue-600 border border-blue-200';
+    case 'QcPending':
+      return base + 'bg-amber-50 text-amber-600 border border-amber-200';
+    case 'Completed':
+      return base + 'bg-emerald-50 text-emerald-600 border border-emerald-200';
+    case 'Cancelled':
+      return base + 'bg-red-50 text-red-600 border border-red-200';
     default:
-      return base + "bg-slate-50 text-slate-600 border border-slate-200";
+      return base + 'bg-slate-50 text-slate-600 border border-slate-200';
   }
 };
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case "Pending":
-      return "Chờ tiếp nhận";
-    case "InProgress":
-      return "Đang sửa chữa";
-    case "QcPending":
-      return "Đang QC";
-    case "Completed":
-      return "Đã hoàn thành";
-    case "Cancelled":
-      return "Đã hủy";
+    case 'Pending':
+      return 'Chờ tiếp nhận';
+    case 'InProgress':
+      return 'Đang sửa chữa';
+    case 'QcPending':
+      return 'Đang QC';
+    case 'Completed':
+      return 'Đã hoàn thành';
+    case 'Cancelled':
+      return 'Đã hủy';
     default:
       return status;
   }

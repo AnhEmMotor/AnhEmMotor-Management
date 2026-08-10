@@ -1,28 +1,19 @@
 <template>
-  <div
-    class="resp-page art-card h-82 p-5 mb-5 overflow-hidden max-lg:h-auto max-sm:mb-4"
-  >
+  <div class="resp-page art-card h-82 p-5 mb-5 overflow-hidden max-lg:h-auto max-sm:mb-4">
     <div class="art-card-header pr-0">
       <div class="title">
-        <h4>{{ $t("admin.t40") }}</h4>
-        <p>{{ $t("admin.t41") }}</p>
+        <h4>{{ $t('admin.t40') }}</h4>
+        <p>{{ $t('admin.t41') }}</p>
       </div>
-      <div
-        class="flex-cc h-7.5 min-w-17 border border-g-300 rounded-lg text-g-500 c-p"
-      >
+      <div class="flex-cc h-7.5 min-w-17 border border-g-300 rounded-lg text-g-500 c-p">
         <ArtSvgIcon icon="ri:arrow-up-line" class="text-base mr-1.5" />
-        <span class="text-xs">{{ $t("admin.t42") }}</span>
+        <span class="text-xs">{{ $t('admin.t42') }}</span>
       </div>
     </div>
 
     <div class="mt-2">
       <ElRow :gutter="20">
-        <ElCol
-          :span="6"
-          :xs="24"
-          v-for="(item, index) in salesData"
-          :key="index"
-        >
+        <ElCol :span="6" :xs="24" v-for="(item, index) in salesData" :key="index">
           <div
             class="flex px-5 flex-col justify-center h-55 border border-g-300/85 rounded-xl max-lg:mb-4 max-sm:flex-row max-sm:justify-between max-sm:items-center max-sm:h-40"
           >
@@ -31,23 +22,15 @@
             </div>
 
             <div class="max-sm:ml-4 mt-3.5 max-sm:mt-0 max-sm:text-end">
-              <ArtCountTo
-                class="text-2xl font-medium"
-                :target="item.value"
-                :duration="1500"
-              />
+              <ArtCountTo class="text-2xl font-medium" :target="item.value" :duration="1500" />
               <p class="mt-2 text-base text-g-600 max-sm:mt-1">
                 {{ item.label }}
               </p>
               <small class="text-g-500 mt-1 max-sm:mt-0.5"
-                >{{ $t("admin.t43")
+                >{{ $t('admin.t43')
                 }}<span
                   class="font-medium"
-                  :class="[
-                    item.change.indexOf('+') === -1
-                      ? 'text-danger'
-                      : 'text-success',
-                  ]"
+                  :class="[item.change.indexOf('+') === -1 ? 'text-danger' : 'text-success']"
                   >{{ item.change }}</span
                 >
               </small>
@@ -70,32 +53,32 @@ interface SalesDataItem {
 
 const salesData = ref<SalesDataItem[]>([
   {
-    label: "tổngtácbántrán",
+    label: 'tổngtácbántrán',
     value: 999,
-    change: "+10%",
-    icon: "ri:bar-chart-box-ai-line",
-    class: "bg-theme",
+    change: '+10%',
+    icon: 'ri:bar-chart-box-ai-line',
+    class: 'bg-theme',
   },
   {
-    label: "tổngĐơn hànglượng",
+    label: 'tổngĐơn hànglượng',
     value: 300,
-    change: "+15%",
-    icon: "ri:bar-chart-grouped-line",
-    class: "bg-warning",
+    change: '+15%',
+    icon: 'ri:bar-chart-grouped-line',
+    class: 'bg-warning',
   },
   {
-    label: "sinhsản phẩmtácbánlượng",
+    label: 'sinhsản phẩmtácbánlượng',
     value: 56,
-    change: "-5%",
-    icon: "ri:bar-chart-2-line",
-    class: "bg-error",
+    change: '-5%',
+    icon: 'ri:bar-chart-2-line',
+    class: 'bg-error',
   },
   {
-    label: "mớikháchkhoảnsố",
+    label: 'mớikháchkhoảnsố',
     value: 68,
-    change: "+8%",
-    icon: "ri:user-add-line",
-    class: "bg-success",
+    change: '+8%',
+    icon: 'ri:user-add-line',
+    class: 'bg-success',
   },
 ]);
 </script>

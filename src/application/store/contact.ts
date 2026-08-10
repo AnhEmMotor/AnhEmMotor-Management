@@ -1,30 +1,28 @@
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { ContactApi } from "@/api/customer";
-import { ElMessage } from "element-plus";
-import type { Contact } from "@/types";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { ContactApi } from '@/api/customer';
+import { ElMessage } from 'element-plus';
+import type { Contact } from '@/types';
 
-export const useContactStore = defineStore("contactStore", () => {
+export const useContactStore = defineStore('contactStore', () => {
   const records = ref<Contact.ContactItem[]>([]);
   const totalCount = ref(0);
   const page = ref(1);
   const pageSize = ref(20);
   const loading = ref(false);
-  const errorMessage = ref("");
+  const errorMessage = ref('');
   const activeItem = ref<Contact.ContactItem | null>(null);
-  const contactType = ref<string>("");
-  const status = ref<string>("");
+  const contactType = ref<string>('');
+  const status = ref<string>('');
   const assignedUserId = ref<string | null>(null);
   const unreadBadge = ref(0);
 
   const hasActive = computed(() => activeItem.value !== null);
-  const totalPages = computed(() =>
-    Math.ceil(totalCount.value / pageSize.value),
-  );
+  const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
   const fetchList = async () => {
     loading.value = true;
-    errorMessage.value = "";
+    errorMessage.value = '';
     try {
       const res = await ContactApi.getPaginated({
         contactType: contactType.value || undefined,
@@ -41,7 +39,7 @@ export const useContactStore = defineStore("contactStore", () => {
     } catch {
       records.value = [];
       totalCount.value = 0;
-      errorMessage.value = "Không thể tải dữ liệu liên hệ từ máy chủ";
+      errorMessage.value = 'Không thể tải dữ liệu liên hệ từ máy chủ';
       ElMessage.error(errorMessage.value);
       return false;
     } finally {
@@ -94,10 +92,10 @@ export const useContactStore = defineStore("contactStore", () => {
       if (activeItem.value?.id === id) {
         activeItem.value.status = newStatus;
       }
-      ElMessage.success("Đã cập nhật trạng thái");
+      ElMessage.success('Đã cập nhật trạng thái');
       return true;
     } catch {
-      ElMessage.error("Không thể cập nhật trạng thái trên máy chủ");
+      ElMessage.error('Không thể cập nhật trạng thái trên máy chủ');
       return false;
     }
   };
@@ -106,7 +104,7 @@ export const useContactStore = defineStore("contactStore", () => {
     contactId: number,
     message: string,
     contactItemId: number,
-    contactType: string,
+    contactType: string
   ) => {
     try {
       await ContactApi.reply({
@@ -118,14 +116,12 @@ export const useContactStore = defineStore("contactStore", () => {
       });
       const refreshed = await fetchList();
       if (refreshed) {
-        activeItem.value =
-          records.value.find((record) => record.contactId === contactId) ??
-          null;
-        ElMessage.success("Đã gửi phản hồi");
+        activeItem.value = records.value.find((record) => record.contactId === contactId) ?? null;
+        ElMessage.success('Đã gửi phản hồi');
       }
       return refreshed;
     } catch {
-      ElMessage.error("Không thể gửi phản hồi lên máy chủ");
+      ElMessage.error('Không thể gửi phản hồi lên máy chủ');
       return false;
     }
   };
@@ -138,51 +134,40 @@ export const useContactStore = defineStore("contactStore", () => {
           activeItem.value.contact.internalNote = internalNote;
         }
       }
-      ElMessage.success("Đã lưu ghi chú");
+      ElMessage.success('Đã lưu ghi chú');
       return true;
     } catch {
-      ElMessage.error("Không thể lưu ghi chú lên máy chủ");
+      ElMessage.error('Không thể lưu ghi chú lên máy chủ');
       return false;
     }
   };
 
-  const assignSupportRequest = async (
-    supportRequestId: number,
-    userId: string | null,
-  ) => {
+  const assignSupportRequest = async (supportRequestId: number, userId: string | null) => {
     try {
       await ContactApi.assign(supportRequestId, userId);
       const refreshed = await fetchList();
       if (refreshed) {
-        activeItem.value =
-          records.value.find((record) => record.id === supportRequestId) ??
-          null;
-        ElMessage.success(userId ? "Đã phân công xử lý" : "Đã bỏ phân công");
+        activeItem.value = records.value.find((record) => record.id === supportRequestId) ?? null;
+        ElMessage.success(userId ? 'Đã phân công xử lý' : 'Đã bỏ phân công');
       }
       return refreshed;
     } catch {
-      ElMessage.error("Không thể cập nhật phân công trên máy chủ");
+      ElMessage.error('Không thể cập nhật phân công trên máy chủ');
       return false;
     }
   };
 
-  const rateSupportCustomer = async (
-    supportRequestId: number,
-    rating: number,
-    comment: string,
-  ) => {
+  const rateSupportCustomer = async (supportRequestId: number, rating: number, comment: string) => {
     try {
       await ContactApi.rateCustomer(supportRequestId, { rating, comment });
       const refreshed = await fetchList();
       if (refreshed) {
-        activeItem.value =
-          records.value.find((record) => record.id === supportRequestId) ??
-          null;
-        ElMessage.success("Đã lưu đánh giá khách hàng");
+        activeItem.value = records.value.find((record) => record.id === supportRequestId) ?? null;
+        ElMessage.success('Đã lưu đánh giá khách hàng');
       }
       return refreshed;
     } catch {
-      ElMessage.error("Không thể lưu đánh giá khách hàng");
+      ElMessage.error('Không thể lưu đánh giá khách hàng');
       return false;
     }
   };

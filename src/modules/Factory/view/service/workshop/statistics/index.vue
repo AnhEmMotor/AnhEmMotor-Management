@@ -8,8 +8,7 @@
           Báo Cáo & Thống Kê Xưởng Dịch Vụ
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Xem phân tích chuyên sâu về doanh số, cơ cấu nguồn thu và năng suất
-          hoạt động của xưởng.
+          Xem phân tích chuyên sâu về doanh số, cơ cấu nguồn thu và năng suất hoạt động của xưởng.
         </p>
       </div>
 
@@ -24,12 +23,7 @@
           size="default"
           class="!w-72"
         />
-        <ElButton
-          :icon="Refresh"
-          type="primary"
-          :loading="loading"
-          @click="loadData"
-        >
+        <ElButton :icon="Refresh" type="primary" :loading="loading" @click="loadData">
           Làm mới
         </ElButton>
       </div>
@@ -68,9 +62,7 @@
       <!-- Monthly Sales Comparison Line Chart -->
       <ElCard class="hide-header-border" shadow="hover">
         <template #header>
-          <div class="font-bold text-slate-800">
-            Tình Hình Doanh Thu Theo Tuần
-          </div>
+          <div class="font-bold text-slate-800">Tình Hình Doanh Thu Theo Tuần</div>
         </template>
         <div class="h-80">
           <ArtLineChart
@@ -87,9 +79,7 @@
     <!-- Status Breakdown Bar Chart -->
     <ElCard class="hide-header-border" shadow="hover">
       <template #header>
-        <div class="font-bold text-slate-800">
-          Biểu Đồ Trạng Thái Phiếu Sửa Chữa
-        </div>
+        <div class="font-bold text-slate-800">Biểu Đồ Trạng Thái Phiếu Sửa Chữa</div>
       </template>
       <div class="h-72">
         <ArtBarChart
@@ -104,20 +94,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
-import { DataAnalysis, Refresh } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { statisticsApi } from "@/api/operations";
+import { onMounted, ref, computed } from 'vue';
+import { DataAnalysis, Refresh } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
+import { statisticsApi } from '@/api/operations';
 
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ArtBarChart from "@/components/core/charts/art-bar-chart/index.vue";
-import ArtLineChart from "@/components/core/charts/art-line-chart/index.vue";
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtBarChart from '@/components/core/charts/art-bar-chart/index.vue';
+import ArtLineChart from '@/components/core/charts/art-line-chart/index.vue';
 
 const loading = ref(false);
-const dateRange = ref<[Date, Date]>([
-  new Date(Date.now() - 30 * 24 * 3600 * 1000),
-  new Date(),
-]);
+const dateRange = ref<[Date, Date]>([new Date(Date.now() - 30 * 24 * 3600 * 1000), new Date()]);
 
 const kpiData = ref({
   cumulativeRevenue: 0,
@@ -139,14 +126,14 @@ const revenueTrend = ref<{ dates: string[]; amounts: number[] }>({
 });
 
 const formatVnd = (value: number): string => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const formatHours = (value: number): string => {
-  if (!value) return "0h";
+  if (!value) return '0h';
   return `${value.toFixed(1)}h`;
 };
 
@@ -159,9 +146,7 @@ const loadData = async () => {
   try {
     const fromStr = dateRange.value?.[0]?.toISOString();
     const toStr = dateRange.value?.[1]?.toISOString();
-    const res = await statisticsApi
-      .getWorkshopDashboardOverview(fromStr, toStr)
-      .catch(() => null);
+    const res = await statisticsApi.getWorkshopDashboardOverview(fromStr, toStr).catch(() => null);
 
     const data = res ? (res as any).data || res : null;
     if (!data) {
@@ -183,19 +168,15 @@ const loadData = async () => {
 
     const kpiCards = data.KpiCards || data.kpiCards || {};
     kpiData.value = {
-      cumulativeRevenue:
-        kpiCards.CumulativeRevenue ?? kpiCards.cumulativeRevenue ?? 0,
-      inProgressCount:
-        kpiCards.InProgressCount ?? kpiCards.inProgressCount ?? 0,
-      avgCompletionHours:
-        kpiCards.AvgCompletionHours ?? kpiCards.avgCompletionHours ?? 0,
+      cumulativeRevenue: kpiCards.CumulativeRevenue ?? kpiCards.cumulativeRevenue ?? 0,
+      inProgressCount: kpiCards.InProgressCount ?? kpiCards.inProgressCount ?? 0,
+      avgCompletionHours: kpiCards.AvgCompletionHours ?? kpiCards.avgCompletionHours ?? 0,
     };
 
-    const revenueSources =
-      data.Analytics?.RevenueSources || data.analytics?.revenueSources || [];
+    const revenueSources = data.Analytics?.RevenueSources || data.analytics?.revenueSources || [];
     if (revenueSources.length > 0) {
       revenueTrend.value = {
-        dates: revenueSources.map((r: any) => r.Source || r.source || ""),
+        dates: revenueSources.map((r: any) => r.Source || r.source || ''),
         amounts: revenueSources.map((r: any) => r.Amount ?? r.amount ?? 0),
       };
     } else {
@@ -203,13 +184,10 @@ const loadData = async () => {
     }
 
     const techRankings =
-      data.Productivity?.TechnicianRankings ||
-      data.productivity?.technicianRankings ||
-      [];
+      data.Productivity?.TechnicianRankings || data.productivity?.technicianRankings || [];
     const totalCompleted = techRankings.reduce(
-      (sum: number, t: any) =>
-        sum + (t.CompletedTickets ?? t.completedTickets ?? 0),
-      0,
+      (sum: number, t: any) => sum + (t.CompletedTickets ?? t.completedTickets ?? 0),
+      0
     );
 
     statusCounts.value = {
@@ -220,7 +198,7 @@ const loadData = async () => {
       cancelled: 0,
     };
   } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể tải báo cáo thống kê");
+    ElMessage.error(err?.message || 'Không thể tải báo cáo thống kê');
   } finally {
     loading.value = false;
   }
@@ -228,17 +206,11 @@ const loadData = async () => {
 
 const revenueTrendChartData = computed(() => {
   return {
-    xAxis:
-      revenueTrend.value.dates.length > 0
-        ? revenueTrend.value.dates
-        : ["Chưa có dữ liệu"],
+    xAxis: revenueTrend.value.dates.length > 0 ? revenueTrend.value.dates : ['Chưa có dữ liệu'],
     series: [
       {
-        name: "Doanh thu dịch vụ (VNĐ)",
-        data:
-          revenueTrend.value.amounts.length > 0
-            ? revenueTrend.value.amounts
-            : [0],
+        name: 'Doanh thu dịch vụ (VNĐ)',
+        data: revenueTrend.value.amounts.length > 0 ? revenueTrend.value.amounts : [0],
       },
     ],
   };
@@ -247,35 +219,35 @@ const revenueTrendChartData = computed(() => {
 const statusBarChartData = computed(() => {
   return {
     categories: [
-      "Chờ sửa chữa",
-      "Đang sửa chữa",
-      "Chờ nghiệm thu",
-      "Đã hoàn thành",
-      "Đã hủy phiếu",
+      'Chờ sửa chữa',
+      'Đang sửa chữa',
+      'Chờ nghiệm thu',
+      'Đã hoàn thành',
+      'Đã hủy phiếu',
     ],
     series: [
       {
-        name: "Số lượng phiếu",
+        name: 'Số lượng phiếu',
         data: [
           {
             value: statusCounts.value.pending,
-            itemStyle: { color: "var(--el-color-warning)" },
+            itemStyle: { color: 'var(--el-color-warning)' },
           },
           {
             value: statusCounts.value.inProgress,
-            itemStyle: { color: "var(--el-color-primary)" },
+            itemStyle: { color: 'var(--el-color-primary)' },
           },
           {
             value: statusCounts.value.qcPending,
-            itemStyle: { color: "var(--el-color-info)" },
+            itemStyle: { color: 'var(--el-color-info)' },
           },
           {
             value: statusCounts.value.completed,
-            itemStyle: { color: "var(--el-color-success)" },
+            itemStyle: { color: 'var(--el-color-success)' },
           },
           {
             value: statusCounts.value.cancelled,
-            itemStyle: { color: "var(--el-text-color-placeholder)" },
+            itemStyle: { color: 'var(--el-text-color-placeholder)' },
           },
         ],
       },

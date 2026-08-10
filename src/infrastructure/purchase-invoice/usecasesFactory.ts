@@ -1,4 +1,4 @@
-﻿import type { purchaseInvoiceApiType } from "@/api/purchase-invoice/purchase-invoice.api";
+﻿import type { purchaseInvoiceApiType } from '@/api/purchase-invoice/purchase-invoice.api';
 import {
   CreatePurchaseInvoiceUseCase,
   GetPurchaseInvoiceDetailUseCase,
@@ -6,7 +6,7 @@ import {
   RealCreatePurchaseInvoiceUseCase,
   RealGetPurchaseInvoiceDetailUseCase,
   RealGetPurchaseInvoicesUseCase,
-} from "@/application/purchase-invoice/usecases";
+} from '@/application/purchase-invoice/usecases';
 
 export interface PurchaseInvoiceUseCases {
   getList: GetPurchaseInvoicesUseCase;
@@ -15,7 +15,7 @@ export interface PurchaseInvoiceUseCases {
 }
 
 export function createPurchaseInvoiceUseCases(
-  api: purchaseInvoiceApiType,
+  api: purchaseInvoiceApiType
 ): PurchaseInvoiceUseCases {
   return {
     getList: new RealGetPurchaseInvoicesUseCase(api),

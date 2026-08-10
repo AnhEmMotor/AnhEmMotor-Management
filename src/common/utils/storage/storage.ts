@@ -1,6 +1,6 @@
-import { router } from "@/router";
-import { useUserStore } from "@/application/store/user";
-import { StorageConfig } from "@/common/utils/storage/storage-config";
+import { router } from '@/router';
+import { useUserStore } from '@/application/store/user';
+import { StorageConfig } from '@/common/utils/storage/storage-config';
 
 class StorageCompatibilityManager {
   getSystemVersion(): string | null {
@@ -19,8 +19,7 @@ class StorageCompatibilityManager {
     const currentVersionPattern = StorageConfig.createCurrentVersionPattern();
 
     return storageKeys.some(
-      (key) =>
-        currentVersionPattern.test(key) && localStorage.getItem(key) !== null,
+      (key) => currentVersionPattern.test(key) && localStorage.getItem(key) !== null
     );
   }
 
@@ -29,7 +28,7 @@ class StorageCompatibilityManager {
     const versionPattern = StorageConfig.createVersionPattern();
 
     return storageKeys.some(
-      (key) => versionPattern.test(key) && localStorage.getItem(key) !== null,
+      (key) => versionPattern.test(key) && localStorage.getItem(key) !== null
     );
   }
 
@@ -38,18 +37,18 @@ class StorageCompatibilityManager {
       const systemStorage = this.getSystemStorage();
       return systemStorage || {};
     } catch (error) {
-      console.warn("[Storage] giảiphâncũcáchkiểutồntrữDữ liệuThatBai:", error);
+      console.warn('[Storage] giảiphâncũcáchkiểutồntrữDữ liệuThatBai:', error);
       return {};
     }
   }
 
   private showStorageError(): void {
     ElMessage({
-      type: "error",
+      type: 'error',
       offset: 40,
       duration: 5000,
       message:
-        "HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiĐăng nhậpHeThongkhôiphụckhiếndùng！",
+        'HeThongđođếnquyểnđịaDữ liệuBất thường，Vui lòngtrùngmớiĐăng nhậpHeThongkhôiphụckhiếndùng！',
     });
   }
 
@@ -58,10 +57,10 @@ class StorageCompatibilityManager {
       try {
         localStorage.clear();
         useUserStore().logOut();
-        router.push({ name: "Login" });
-        console.info("[Storage] ĐãThựcdòngHeThongđăngra");
+        router.push({ name: 'Login' });
+        console.info('[Storage] ĐãThựcdòngHeThongđăngra');
       } catch (error) {
-        console.error("[Storage] HeThongđăngraThatBai:", error);
+        console.error('[Storage] HeThongđăngraThatBai:', error);
       }
     }, StorageConfig.LOGOUT_DELAY);
   }
@@ -84,9 +83,7 @@ class StorageCompatibilityManager {
       const legacyData = this.getLegacyStorageData();
       if (Object.keys(legacyData).length === 0) {
         if (requireAuth) {
-          console.warn(
-            "[Storage] ChưapháthiệnnhiệmnàotồntrữDữ liệu，cầncầntrùngmớiĐăng nhập",
-          );
+          console.warn('[Storage] ChưapháthiệnnhiệmnàotồntrữDữ liệu，cầncầntrùngmớiĐăng nhập');
           this.performSystemLogout();
           return false;
         }
@@ -94,10 +91,10 @@ class StorageCompatibilityManager {
         return true;
       }
 
-      console.debug("[Storage] pháthiệncũbảnquyểntồntrữDữ liệu");
+      console.debug('[Storage] pháthiệncũbảnquyểntồntrữDữ liệu');
       return true;
     } catch (error) {
-      console.error("[Storage] tồntrữDữ liệunghiệmtínhThatBai:", error);
+      console.error('[Storage] tồntrữDữ liệunghiệmtínhThatBai:', error);
 
       if (requireAuth) {
         this.handleStorageError();
@@ -129,10 +126,10 @@ class StorageCompatibilityManager {
         return true;
       }
 
-      console.warn("[Storage] tồntrữkiêmdungtínhTìmThatBai");
+      console.warn('[Storage] tồntrữkiêmdungtínhTìmThatBai');
       return false;
     } catch (error) {
-      console.error("[Storage] kiêmdungtínhTìmBất thường:", error);
+      console.error('[Storage] kiêmdungtínhTìmBất thường:', error);
       return false;
     }
   }
@@ -152,8 +149,6 @@ export function validateStorageData(requireAuth: boolean = false): boolean {
   return storageManager.validateStorageData(requireAuth);
 }
 
-export function checkStorageCompatibility(
-  requireAuth: boolean = false,
-): boolean {
+export function checkStorageCompatibility(requireAuth: boolean = false): boolean {
   return storageManager.checkCompatibility(requireAuth);
 }

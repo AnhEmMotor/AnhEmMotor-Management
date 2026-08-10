@@ -4,7 +4,7 @@ export interface ReturnOrderDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: "pending" | "inspecting" | "completed" | "rejected";
+  status: 'pending' | 'inspecting' | 'completed' | 'rejected';
   createdAt: string;
 }
 
@@ -24,7 +24,7 @@ export interface ReturnDetailDto {
   customerName: string;
   carrier: string;
   reason: string;
-  status: "pending" | "inspecting" | "completed" | "rejected";
+  status: 'pending' | 'inspecting' | 'completed' | 'rejected';
   createdAt: string;
   boxCondition?: string;
   productCondition?: string;
@@ -46,7 +46,7 @@ export interface InspectReturnCommand {
   productCondition?: string;
   returnProofImage?: string;
   returnInternalNote?: string;
-  action: "" | "refund";
+  action: '' | 'refund';
   refundAmount?: number;
   returnShippingCost?: number;
 }

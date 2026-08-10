@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface PayrollSummaryResponse {
   employeeId: number;
@@ -11,7 +11,6 @@ export interface PayrollSummaryResponse {
   totalActualReceived: number;
   kpiBonus: number;
   volumeBonus?: number;
-  /** Full salary for the selected month: base salary + eligible commission + volume bonus. */
   totalNetPayable: number;
 }
 
@@ -45,7 +44,7 @@ export const payrollApi = {
   },
   getList(params?: { month?: number; year?: number; status?: string }) {
     return request.get<PayrollListItem[]>({
-      url: "/api/v1/hr/payroll",
+      url: '/api/v1/hr/payroll',
       params,
     });
   },
@@ -61,7 +60,7 @@ export const payrollApi = {
   },
   approveCommissions(employeeId: number | null, month: number, year: number) {
     return request.post<void>({
-      url: "/api/v1/hr/commissions/approve-payroll",
+      url: '/api/v1/hr/commissions/approve-payroll',
       data: { employeeId, month, year },
     });
   },

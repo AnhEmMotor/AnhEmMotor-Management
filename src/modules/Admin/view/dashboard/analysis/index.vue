@@ -39,16 +39,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import RevenueKpi from "./modules/revenue-kpi.vue";
-import RevenueChart from "./modules/revenue-chart.vue";
-import RevenueSources from "./modules/revenue-sources.vue";
-import StaffPerformance from "./modules/staff-performance.vue";
-import RecentTransactions from "./modules/recent-transactions.vue";
+import { ref } from 'vue';
+import RevenueKpi from './modules/revenue-kpi.vue';
+import RevenueChart from './modules/revenue-chart.vue';
+import RevenueSources from './modules/revenue-sources.vue';
+import StaffPerformance from './modules/staff-performance.vue';
+import RecentTransactions from './modules/recent-transactions.vue';
 
-defineOptions({ name: "Analysis" });
+defineOptions({ name: 'Analysis' });
 
-const period = ref("today");
+const period = ref('today');
 </script>
 
 <style scoped>

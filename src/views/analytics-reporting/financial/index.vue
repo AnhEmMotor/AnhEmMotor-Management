@@ -42,9 +42,7 @@
         :count="formatCurrency(pnlData.netProfit)"
         :description="`Biên ròng: ${netMarginLabel}`"
         icon="ri:line-chart-line"
-        :icon-style="
-          pnlData.netProfit >= 0 ? 'bg-report-red' : 'bg-report-gray'
-        "
+        :icon-style="pnlData.netProfit >= 0 ? 'bg-report-red' : 'bg-report-gray'"
       />
     </div>
 
@@ -53,17 +51,13 @@
         <template #header>
           <div class="reporting-page__summary-header">
             <span class="reporting-page__summary-title">Tổng quan nhanh</span>
-            <span class="reporting-page__summary-period">{{
-              periodLabel
-            }}</span>
+            <span class="reporting-page__summary-period">{{ periodLabel }}</span>
           </div>
         </template>
         <div class="reporting-page__summary-grid">
           <div class="reporting-page__summary-row">
             <span class="reporting-muted">Lợi nhuận gộp</span>
-            <strong class="text-report-red-light">{{
-              formatCurrency(pnlData.grossProfit)
-            }}</strong>
+            <strong class="text-report-red-light">{{ formatCurrency(pnlData.grossProfit) }}</strong>
           </div>
           <div class="reporting-page__summary-row">
             <span class="reporting-muted">Biên lợi nhuận gộp</span>
@@ -79,24 +73,16 @@
             <span class="reporting-muted">Số khoản chi đã ghi nhận</span>
             <strong>{{ expenses.length }}</strong>
           </div>
-          <div
-            class="reporting-page__summary-row reporting-page__summary-row--accent"
-          >
+          <div class="reporting-page__summary-row reporting-page__summary-row--accent">
             <span>Lợi nhuận ròng cuối kỳ</span>
-            <strong class="text-report-red">{{
-              formatCurrency(pnlData.netProfit)
-            }}</strong>
+            <strong class="text-report-red">{{ formatCurrency(pnlData.netProfit) }}</strong>
           </div>
         </div>
       </ElCard>
 
       <ElCard class="reporting-card reporting-page__tabs">
         <template #header>
-          <ElTabs
-            v-model="activeTab"
-            @tab-change="onTabChange"
-            class="reporting-page__tabs-nav"
-          >
+          <ElTabs v-model="activeTab" @tab-change="onTabChange" class="reporting-page__tabs-nav">
             <ElTabPane label="Báo cáo P&L" name="pnl" />
             <ElTabPane label="Chi phí vận hành" name="expense" />
           </ElTabs>
@@ -132,16 +118,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { ElMessageBox } from "element-plus";
-import { AnalyticsService } from "@/services/analytics.service";
-import type { PnlReport, Expense } from "@/services/analytics.types";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ReportPageHeader from "../components/ReportPageHeader.vue";
-import ReportPeriodSwitcher from "../components/ReportPeriodSwitcher.vue";
-import PnlReportComponent from "../pnl/index.vue";
-import ExpenseTable from "../expense/index.vue";
-import ExpenseForm from "../expense/expense-form.vue";
+import { computed, ref, onMounted } from 'vue';
+import { ElMessageBox } from 'element-plus';
+import { AnalyticsService } from '@/services/analytics.service';
+import type { PnlReport, Expense } from '@/services/analytics.types';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ReportPageHeader from '../components/ReportPageHeader.vue';
+import ReportPeriodSwitcher from '../components/ReportPeriodSwitcher.vue';
+import PnlReportComponent from '../pnl/index.vue';
+import ExpenseTable from '../expense/index.vue';
+import ExpenseForm from '../expense/expense-form.vue';
 
 type ExpenseFormData = {
   name: string;
@@ -151,13 +137,13 @@ type ExpenseFormData = {
   note?: string;
 };
 
-const activeTab = ref<"pnl" | "expense">("pnl");
-const currentPeriod = ref<"today" | "month" | "year" | "custom">("month");
-const periodStart = ref("");
-const periodEnd = ref("");
+const activeTab = ref<'pnl' | 'expense'>('pnl');
+const currentPeriod = ref<'today' | 'month' | 'year' | 'custom'>('month');
+const periodStart = ref('');
+const periodEnd = ref('');
 const loading = ref(false);
 const pnlData = ref<PnlReport>({
-  period: "",
+  period: '',
   totalRevenue: 0,
   totalCostOfGoodsSold: 0,
   totalOperatingExpenses: 0,
@@ -169,34 +155,30 @@ const expenses = ref<Expense[]>([]);
 const isFormVisible = ref(false);
 
 const grossMarginLabel = computed(() =>
-  formatPercent(pnlData.value.grossProfit, pnlData.value.totalRevenue),
+  formatPercent(pnlData.value.grossProfit, pnlData.value.totalRevenue)
 );
 const netMarginLabel = computed(() =>
-  formatPercent(pnlData.value.netProfit, pnlData.value.totalRevenue),
+  formatPercent(pnlData.value.netProfit, pnlData.value.totalRevenue)
 );
 const periodLabel = computed(() => {
-  if (currentPeriod.value === "today") return "Hôm nay";
-  if (currentPeriod.value === "month") return "Tháng này";
-  if (currentPeriod.value === "year") return "Năm nay";
-  if (
-    currentPeriod.value === "custom" &&
-    periodStart.value &&
-    periodEnd.value
-  ) {
+  if (currentPeriod.value === 'today') return 'Hôm nay';
+  if (currentPeriod.value === 'month') return 'Tháng này';
+  if (currentPeriod.value === 'year') return 'Năm nay';
+  if (currentPeriod.value === 'custom' && periodStart.value && periodEnd.value) {
     return `${periodStart.value} → ${periodEnd.value}`;
   }
-  return pnlData.value.period || "Kỳ hiện tại";
+  return pnlData.value.period || 'Kỳ hiện tại';
 });
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value || 0);
 }
 
 function formatPercent(numerator: number, denominator: number) {
-  if (!denominator) return "0%";
+  if (!denominator) return '0%';
   const pct = (numerator / denominator) * 100;
   return `${pct.toFixed(1)}%`;
 }
@@ -208,7 +190,7 @@ function onPeriodChange() {
 }
 
 async function loadData() {
-  if (activeTab.value === "pnl") {
+  if (activeTab.value === 'pnl') {
     await loadPnlReport();
   } else {
     await loadExpenses();
@@ -216,7 +198,7 @@ async function loadData() {
 }
 
 function onTabChange(tab: string | number) {
-  if (tab === "expense") {
+  if (tab === 'expense') {
     loadExpenses();
   } else {
     loadData();
@@ -226,15 +208,8 @@ function onTabChange(tab: string | number) {
 async function loadPnlReport(month?: number, year?: number) {
   loading.value = true;
   try {
-    const [defaultYear, defaultMonth] = new Date()
-      .toISOString()
-      .slice(0, 7)
-      .split("-")
-      .map(Number);
-    pnlData.value = await AnalyticsService.getPnlReport(
-      month ?? defaultMonth,
-      year ?? defaultYear,
-    );
+    const [defaultYear, defaultMonth] = new Date().toISOString().slice(0, 7).split('-').map(Number);
+    pnlData.value = await AnalyticsService.getPnlReport(month ?? defaultMonth, year ?? defaultYear);
   } finally {
     loading.value = false;
   }
@@ -261,15 +236,11 @@ async function handleAddExpense(formData: ExpenseFormData) {
 
 async function deleteExpense(id: number) {
   try {
-    await ElMessageBox.confirm(
-      "Bạn có chắc chắn muốn xóa khoản chi này?",
-      "Xác nhận xóa",
-      {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    );
+    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa khoản chi này?', 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    });
   } catch {
     return;
   }
@@ -339,11 +310,7 @@ onMounted(() => {
   padding: 12px 16px;
   margin-top: 4px;
   color: var(--art-color);
-  background: linear-gradient(
-    135deg,
-    rgb(232 74 74 / 18%),
-    rgb(255 107 107 / 6%)
-  );
+  background: linear-gradient(135deg, rgb(232 74 74 / 18%), rgb(255 107 107 / 6%));
   border: 1px solid rgb(232 74 74 / 32%);
   border-radius: 12px;
 }

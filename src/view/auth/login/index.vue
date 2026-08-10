@@ -4,9 +4,7 @@
       <source src="@/assets/images/background_1.mp4" type="video/mp4" />
     </video>
     <div class="login-bg-overlay"></div>
-    <div
-      class="login-container relative z-10 flex items-center justify-center min-h-screen"
-    >
+    <div class="login-container relative z-10 flex items-center justify-center min-h-screen">
       <el-card class="login-card max-w-md w-full m-4 border-0" shadow="hover">
         <div class="text-center mb-8">
           <div class="flex justify-center mb-4">
@@ -18,9 +16,7 @@
               <el-icon :size="32" color="white"><UserFilled /></el-icon>
             </div>
           </div>
-          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">
-            Chào mừng trở lại
-          </h2>
+          <h2 class="mt-2 text-3xl font-extrabold title tracking-tight">Chào mừng trở lại</h2>
           <p class="mt-3 text-sm subtitle">Vui lòng đăng nhập vào hệ thống!</p>
         </div>
 
@@ -54,12 +50,7 @@
           </el-form-item>
 
           <div v-if="errorMessage" class="text-center">
-            <el-alert
-              :title="errorMessage"
-              type="error"
-              show-icon
-              :closable="false"
-            />
+            <el-alert :title="errorMessage" type="error" show-icon :closable="false" />
           </div>
 
           <div class="flex items-center justify-between mt-2 mb-6">
@@ -95,9 +86,7 @@
         <div class="mt-8">
           <div class="relative">
             <div class="absolute inset-0 flex items-center">
-              <div
-                class="w-full border-t border-gray-300 dark:border-gray-600"
-              ></div>
+              <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div class="relative flex justify-center text-sm">
               <span
@@ -111,9 +100,7 @@
 
           <div class="mt-6 grid grid-cols-2 gap-3 w-full">
             <div>
-              <div
-                class="relative w-full h-full cursor-pointer overflow-hidden rounded-md"
-              >
+              <div class="relative w-full h-full cursor-pointer overflow-hidden rounded-md">
                 <!-- Nút custom hiển thị cho người dùng -->
                 <el-button class="w-full social-btn google-btn h-full">
                   <template #icon>
@@ -145,10 +132,7 @@
                 </el-button>
 
                 <!-- Nút chính thức của Google (vô hình) phủ lên trên -->
-                <div
-                  class="absolute inset-0 z-10 overflow-hidden"
-                  style="opacity: 0.01"
-                >
+                <div class="absolute inset-0 z-10 overflow-hidden" style="opacity: 0.01">
                   <GoogleLogin
                     v-if="authConfig?.googleClientId"
                     :clientId="authConfig.googleClientId"
@@ -159,10 +143,7 @@
               </div>
             </div>
             <div>
-              <el-button
-                class="w-full social-btn facebook-btn"
-                @click="handleFacebookLogin"
-              >
+              <el-button class="w-full social-btn facebook-btn" @click="handleFacebookLogin">
                 <template #icon>
                   <svg
                     class="w-5 h-5"
@@ -185,48 +166,45 @@
     </div>
 
     <!-- Success Transition Overlay -->
-    <LoadingOverlay
-      :visible="isSuccessTransition"
-      text="Đang khởi tạo không gian làm việc"
-    />
+    <LoadingOverlay :visible="isSuccessTransition" text="Đang khởi tạo không gian làm việc" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { reactive, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { authService } from "@/common/auth";
-import { useUserStore } from "@/application/store/user";
-import { UserFilled, User, Lock } from "@element-plus/icons-vue";
-import LoadingOverlay from "@/view/common/loading-overlay/index.vue";
-import { useOAuth } from "@/hooks/useOAuth";
-import { GoogleLogin } from "vue3-google-login";
+import { Permissions } from '@/domain/constants/permissions';
+import { reactive, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { authService } from '@/common/auth';
+import { useUserStore } from '@/application/store/user';
+import { UserFilled, User, Lock } from '@element-plus/icons-vue';
+import LoadingOverlay from '@/view/common/loading-overlay/index.vue';
+import { useOAuth } from '@/hooks/useOAuth';
+import { GoogleLogin } from 'vue3-google-login';
 
-const REMEMBERED_USER_KEY = "remembered_username";
+const REMEMBERED_USER_KEY = 'remembered_username';
 
 const router = useRouter();
 const userStore = useUserStore();
 const { initOAuth, loginWithFacebookSDK, authConfig } = useOAuth();
 
 const form = reactive({
-  usernameOrEmail: "",
-  password: "",
+  usernameOrEmail: '',
+  password: '',
   rememberMe: false,
 });
 
 const isLoading = ref(false);
 const isSuccessTransition = ref(false);
-const errorMessage = ref("");
+const errorMessage = ref('');
 
 const handleLogin = async () => {
   if (!form.usernameOrEmail || !form.password) {
-    errorMessage.value = "Vui lòng nhập đầy đủ thông tin";
+    errorMessage.value = 'Vui lòng nhập đầy đủ thông tin';
     return;
   }
 
   isLoading.value = true;
-  errorMessage.value = "";
+  errorMessage.value = '';
 
   try {
     const result = await authService.login({
@@ -249,28 +227,27 @@ const handleLogin = async () => {
 
       // Delay navigation to show animation
       setTimeout(() => {
-        router.push("/workspace");
+        router.push('/workspace');
       }, 1500);
     } else {
-      errorMessage.value = "Đăng nhập thất bại. Kiểm tra lại thông tin.";
+      errorMessage.value = 'Đăng nhập thất bại. Kiểm tra lại thông tin.';
       isLoading.value = false;
     }
   } catch (error: any) {
-    errorMessage.value =
-      error.message || "Tên đăng nhập hoặc mật khẩu không đúng";
+    errorMessage.value = error.message || 'Tên đăng nhập hoặc mật khẩu không đúng';
     isLoading.value = false;
   }
 };
 
 const handleGoogleSuccess = async (response: any) => {
   if (!response.credential) {
-    errorMessage.value = "Google login failed: No id_token provided.";
+    errorMessage.value = 'Google login failed: No id_token provided.';
     return;
   }
   try {
     const idToken = response.credential;
     isLoading.value = true;
-    errorMessage.value = "";
+    errorMessage.value = '';
 
     const result = await authService.loginWithGoogle({ idToken });
     if (result.isAuthenticated && result.token) {
@@ -280,13 +257,13 @@ const handleGoogleSuccess = async (response: any) => {
       }
       isSuccessTransition.value = true;
       setTimeout(() => {
-        router.push("/workspace");
+        router.push('/workspace');
       }, 1500);
     } else {
-      errorMessage.value = "Đăng nhập Google thất bại.";
+      errorMessage.value = 'Đăng nhập Google thất bại.';
     }
   } catch (error: any) {
-    errorMessage.value = error.message || "Đăng nhập Google thất bại";
+    errorMessage.value = error.message || 'Đăng nhập Google thất bại';
   } finally {
     isLoading.value = false;
   }
@@ -309,7 +286,7 @@ const handleFacebookLogin = async () => {
   try {
     const accessToken = await loginWithFacebookSDK();
     isLoading.value = true;
-    errorMessage.value = "";
+    errorMessage.value = '';
     const result = await authService.loginWithFacebook({ accessToken });
     if (result.isAuthenticated && result.token) {
       userStore.setLoginStatus(true);
@@ -318,13 +295,13 @@ const handleFacebookLogin = async () => {
       }
       isSuccessTransition.value = true;
       setTimeout(() => {
-        router.push("/workspace");
+        router.push('/workspace');
       }, 1500);
     } else {
-      errorMessage.value = "Đăng nhập Facebook thất bại.";
+      errorMessage.value = 'Đăng nhập Facebook thất bại.';
     }
   } catch (error: any) {
-    errorMessage.value = error.message || "Đăng nhập Facebook thất bại";
+    errorMessage.value = error.message || 'Đăng nhập Facebook thất bại';
   } finally {
     isLoading.value = false;
   }

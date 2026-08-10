@@ -1,4 +1,4 @@
-export type CarrierEnvironment = "sandbox" | "production";
+export type CarrierEnvironment = 'sandbox' | 'production';
 
 export interface CarrierPartnerSummary {
   id: number;
@@ -32,7 +32,6 @@ export interface UpdateCarrierPartnerRequest {
   environment: CarrierEnvironment;
   apiBaseUrl: string;
 
-  // Optional new secrets. If user keeps unchanged, UI sends undefined.
   apiTokenPlain?: string;
   webhookSecretPlain?: string;
 

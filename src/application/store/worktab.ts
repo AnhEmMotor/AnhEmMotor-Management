@@ -1,9 +1,9 @@
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { router } from "@/router";
-import { LocationQueryRaw, Router } from "vue-router";
-import { WorkTab } from "@/types";
-import { useCommon } from "@/common/composables/useCommon";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { router } from '@/router';
+import { LocationQueryRaw, Router } from 'vue-router';
+import { WorkTab } from '@/types';
+import { useCommon } from '@/common/composables/useCommon';
 
 interface WorktabState {
   current: Partial<WorkTab>;
@@ -12,7 +12,7 @@ interface WorktabState {
 }
 
 export const useWorktabStore = defineStore(
-  "worktabStore",
+  'worktabStore',
   () => {
     const current = ref<Partial<WorkTab>>({});
     const opened = ref<WorkTab[]>([]);
@@ -21,9 +21,7 @@ export const useWorktabStore = defineStore(
     const hasOpenedTabs = computed(() => opened.value.length > 0);
     const hasMultipleTabs = computed(() => opened.value.length > 1);
     const currentTabIndex = computed(() =>
-      current.value.path
-        ? opened.value.findIndex((tab) => tab.path === current.value.path)
-        : -1,
+      current.value.path ? opened.value.findIndex((tab) => tab.path === current.value.path) : -1
     );
 
     const findTabIndex = (path: string): number => {
@@ -40,7 +38,7 @@ export const useWorktabStore = defineStore(
 
     const safeRouterPush = (tab: Partial<WorkTab>): void => {
       if (!tab.path) {
-        console.warn("thửthửnhảychuyểnđếnvôhiệuđườngcủaThẻ Tab");
+        console.warn('thửthửnhảychuyểnđếnvôhiệuđườngcủaThẻ Tab');
         return;
       }
 
@@ -50,13 +48,13 @@ export const useWorktabStore = defineStore(
           query: tab.query as LocationQueryRaw,
         });
       } catch (error) {
-        console.error("RoutingnhảychuyểnThatBai:", error);
+        console.error('RoutingnhảychuyểnThatBai:', error);
       }
     };
 
     const openTab = (tab: WorkTab): void => {
       if (!tab.path) {
-        console.warn("thửthửmởmởvôhiệucủaThẻ Tab");
+        console.warn('thửthửmởmởvôhiệucủaThẻ Tab');
         return;
       }
 
@@ -73,9 +71,7 @@ export const useWorktabStore = defineStore(
       }
 
       if (existingIndex === -1) {
-        const insertIndex = tab.fixedTab
-          ? findFixedTabInsertIndex()
-          : opened.value.length;
+        const insertIndex = tab.fixedTab ? findFixedTabInsertIndex() : opened.value.length;
         const newTab = { ...tab };
 
         if (tab.fixedTab) {
@@ -147,10 +143,7 @@ export const useWorktabStore = defineStore(
       }
 
       if (current.value.path === path) {
-        const newIndex =
-          targetIndex >= opened.value.length
-            ? opened.value.length - 1
-            : targetIndex;
+        const newIndex = targetIndex >= opened.value.length ? opened.value.length - 1 : targetIndex;
         current.value = opened.value[newIndex];
         safeRouterPush(current.value);
       }
@@ -161,7 +154,7 @@ export const useWorktabStore = defineStore(
 
       if (targetIndex === -1) {
         console.warn(
-          `thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
+          `thửnghiệmquanđóngtráicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
         );
         return;
       }
@@ -170,14 +163,14 @@ export const useWorktabStore = defineStore(
       const closableLeftTabs = leftTabs.filter(isTabClosable);
 
       if (closableLeftTabs.length === 0) {
-        console.warn("Bên tráikhôngcóCó thểđóngđóngcủaThẻ Tab");
+        console.warn('Bên tráikhôngcóCó thểđóngđóngcủaThẻ Tab');
         return;
       }
 
       markTabsToRemove(closableLeftTabs);
 
       opened.value = opened.value.filter(
-        (tab, index) => index >= targetIndex || !isTabClosable(tab),
+        (tab, index) => index >= targetIndex || !isTabClosable(tab)
       );
 
       const targetTab = getTab(path);
@@ -191,7 +184,7 @@ export const useWorktabStore = defineStore(
 
       if (targetIndex === -1) {
         console.warn(
-          `thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
+          `thửnghiệmquanđóngphảicạnhtiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
         );
         return;
       }
@@ -200,14 +193,14 @@ export const useWorktabStore = defineStore(
       const closableRightTabs = rightTabs.filter(isTabClosable);
 
       if (closableRightTabs.length === 0) {
-        console.warn("Bên phảikhôngcóCó thểđóngđóngcủaThẻ Tab");
+        console.warn('Bên phảikhôngcóCó thểđóngđóngcủaThẻ Tab');
         return;
       }
 
       markTabsToRemove(closableRightTabs);
 
       opened.value = opened.value.filter(
-        (tab, index) => index <= targetIndex || !isTabClosable(tab),
+        (tab, index) => index <= targetIndex || !isTabClosable(tab)
       );
 
       const targetTab = getTab(path);
@@ -221,7 +214,7 @@ export const useWorktabStore = defineStore(
 
       if (!targetTab) {
         console.warn(
-          `thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`,
+          `thửnghiệmquanđóngkháckháctiêunhãntrang，nhưngmụctiêutiêunhãntrangkhôngtồntại: ${path}`
         );
         return;
       }
@@ -230,15 +223,13 @@ export const useWorktabStore = defineStore(
       const closableTabs = otherTabs.filter(isTabClosable);
 
       if (closableTabs.length === 0) {
-        console.warn("khôngcónóanh ấyCó thểđóngđóngcủaThẻ Tab");
+        console.warn('khôngcónóanh ấyCó thểđóngđóngcủaThẻ Tab');
         return;
       }
 
       markTabsToRemove(closableTabs);
 
-      opened.value = opened.value.filter(
-        (tab) => tab.path === path || !isTabClosable(tab),
-      );
+      opened.value = opened.value.filter((tab) => tab.path === path || !isTabClosable(tab));
 
       current.value = targetTab;
     };
@@ -254,16 +245,14 @@ export const useWorktabStore = defineStore(
       });
 
       if (closableTabs.length === 0) {
-        console.warn("khôngcóCó thểđóngđóngcủaThẻ Tab");
+        console.warn('khôngcóCó thểđóngđóngcủaThẻ Tab');
         return;
       }
 
       markTabsToRemove(closableTabs);
 
       opened.value = opened.value.filter((tab) => {
-        return (
-          !isTabClosable(tab) || (!hasFixedTabs && tab.path === homePath.value)
-        );
+        return !isTabClosable(tab) || (!hasFixedTabs && tab.path === homePath.value);
       });
 
       if (!hasOpenedTabs.value) {
@@ -290,9 +279,7 @@ export const useWorktabStore = defineStore(
     const removeKeepAliveExclude = (name: string): void => {
       if (!name) return;
 
-      keepAliveExclude.value = keepAliveExclude.value.filter(
-        (item) => item !== name,
-      );
+      keepAliveExclude.value = keepAliveExclude.value.filter((item) => item !== name);
     };
 
     const markTabsToRemove = (tabs: WorkTab[]): void => {
@@ -307,9 +294,7 @@ export const useWorktabStore = defineStore(
       const targetIndex = findTabIndex(path);
 
       if (targetIndex === -1) {
-        console.warn(
-          `thửnghiệmchuyểnđổikhôngtồntạitiêunhãntrangcủacốđịnhTrạng thái: ${path}`,
-        );
+        console.warn(`thửnghiệmchuyểnđổikhôngtồntạitiêunhãntrangcủacốđịnhTrạng thái: ${path}`);
         return;
       }
 
@@ -320,8 +305,7 @@ export const useWorktabStore = defineStore(
 
       if (tab.fixedTab) {
         const firstNonFixedIndex = opened.value.findIndex((t) => !t.fixedTab);
-        const insertIndex =
-          firstNonFixedIndex === -1 ? opened.value.length : firstNonFixedIndex;
+        const insertIndex = firstNonFixedIndex === -1 ? opened.value.length : firstNonFixedIndex;
         opened.value.splice(insertIndex, 0, tab);
       } else {
         const fixedCount = opened.value.filter((t) => t.fixedTab).length;
@@ -357,20 +341,20 @@ export const useWorktabStore = defineStore(
         const validTabs = opened.value.filter((tab) => isTabRouteValid(tab));
 
         if (validTabs.length !== opened.value.length) {
-          console.warn("pháthiệnvôhiệucủaThẻ TabRouting，Đãtừđộngxóalý");
+          console.warn('pháthiệnvôhiệucủaThẻ TabRouting，Đãtừđộngxóalý');
           opened.value = validTabs;
         }
 
         const isCurrentValid = current.value && isTabRouteValid(current.value);
 
         if (!isCurrentValid && validTabs.length > 0) {
-          console.warn("khitrướckíchsốngTagvôhiệu，ĐãtừđộngChuyển đổi");
+          console.warn('khitrướckíchsốngTagvôhiệu，ĐãtừđộngChuyển đổi');
           current.value = validTabs[0];
         } else if (!isCurrentValid) {
           current.value = {};
         }
       } catch (error) {
-        console.error("nghiệmtínhTổng quan hệ thốngThẻ TabThatBai:", error);
+        console.error('nghiệmtínhTổng quan hệ thốngThẻ TabThatBai:', error);
       }
     };
 
@@ -403,7 +387,7 @@ export const useWorktabStore = defineStore(
     const resetTabTitle = (path: string): void => {
       const tab = getTab(path);
       if (tab) {
-        tab.customTitle = "";
+        tab.customTitle = '';
       }
     };
 
@@ -440,8 +424,8 @@ export const useWorktabStore = defineStore(
   },
   {
     persist: {
-      key: "worktab",
+      key: 'worktab',
       storage: localStorage,
     },
-  },
+  }
 );

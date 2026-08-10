@@ -1,9 +1,6 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
-    <div
-      id="tour-stats"
-      class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4"
-    >
+    <div id="tour-stats" class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
       <ArtStatsCard
         title="Tổng số lượng thương hiệu"
         :count="statistics.totalBrands"
@@ -12,15 +9,9 @@
       />
       <ArtStatsCard
         title="Xuất xứ phổ biến"
-        :count="
-          statistics.popularOrigin
-            ? statistics.popularOrigin + ''
-            : 'Chưa có dữ liệu'
-        "
+        :count="statistics.popularOrigin ? statistics.popularOrigin + '' : 'Chưa có dữ liệu'"
         :description="
-          statistics.popularOriginCount
-            ? `Số lượng: ${statistics.popularOriginCount}`
-            : '0'
+          statistics.popularOriginCount ? `Số lượng: ${statistics.popularOriginCount}` : '0'
         "
         icon="ri:global-line"
         iconStyle="bg-success"
@@ -30,8 +21,7 @@
         :count="statistics.latestUpdatedBrandName || 'Chưa có'"
         :description="
           statistics.latestUpdatedAt
-            ? 'Thời gian cập nhật: ' +
-              formatDateTime(statistics.latestUpdatedAt)
+            ? 'Thời gian cập nhật: ' + formatDateTime(statistics.latestUpdatedAt)
             : 'Chưa có cập nhật mới'
         "
         icon="ri:time-line"
@@ -90,7 +80,7 @@
             >
               <ElButton v-ripple :loading="importing" :disabled="importing">
                 <ElIcon><Upload /></ElIcon>
-                {{ importing ? "Đang nhập..." : "Nhập Excel" }}
+                {{ importing ? 'Đang nhập...' : 'Nhập Excel' }}
                 <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
               </ElButton>
               <template #dropdown>
@@ -125,9 +115,7 @@
               @click="handleCloneMany"
               style="margin-left: 0"
             >
-              <ElIcon><DocumentCopy /></ElIcon> Nhân bản ({{
-                selectedRows.length
-              }})
+              <ElIcon><DocumentCopy /></ElIcon> Nhân bản ({{ selectedRows.length }})
             </ElButton>
             <ElButton
               v-if="selectedRows.length > 0"
@@ -148,9 +136,7 @@
               @click="openRestoreDialog"
               style="margin-left: 0"
             >
-              <ElIcon><RefreshLeft /></ElIcon> Khôi phục ({{
-                statistics.deletedBrandsCount
-              }})
+              <ElIcon><RefreshLeft /></ElIcon> Khôi phục ({{ statistics.deletedBrandsCount }})
             </ElButton>
           </div>
         </template>
@@ -191,13 +177,7 @@
 
         <template #origin="{ row }">
           <div class="flex items-center gap-1">
-            <ElTag
-              v-if="row.origin"
-              size="small"
-              effect="plain"
-              type="info"
-              round
-            >
+            <ElTag v-if="row.origin" size="small" effect="plain" type="info" round>
               {{ row.origin }}
             </ElTag>
             <span v-else class="text-gray-200">-</span>
@@ -221,12 +201,7 @@
       </ArtTable>
     </ElCard>
 
-    <ElDialog
-      v-model="dialogVisible"
-      width="500px"
-      append-to-body
-      destroy-on-close
-    >
+    <ElDialog v-model="dialogVisible" width="500px" append-to-body destroy-on-close>
       <template #header>
         <div class="flex items-center justify-between pr-2">
           <span class="text-lg font-medium">{{ dialogTitle }}</span>
@@ -243,16 +218,10 @@
       </template>
       <ElForm :model="formData" label-width="100px" class="mt-4">
         <ElFormItem label="Tên hiệu" required id="tour-form-name">
-          <ElInput
-            v-model="formData.name"
-            placeholder="Nhập tên thương hiệu..."
-          />
+          <ElInput v-model="formData.name" placeholder="Nhập tên thương hiệu..." />
         </ElFormItem>
         <ElFormItem label="Xuất xứ" id="tour-form-origin">
-          <ElInput
-            v-model="formData.origin"
-            placeholder="Ví dụ: Nhật Bản, Ý..."
-          />
+          <ElInput v-model="formData.origin" placeholder="Ví dụ: Nhật Bản, Ý..." />
         </ElFormItem>
         <ElFormItem label="Logo" id="tour-form-logo">
           <ElUpload
@@ -263,10 +232,7 @@
             :http-request="handleUpload"
           >
             <div v-if="formData.logoUrl" class="relative group">
-              <img
-                :src="formatImageUrl(formData.logoUrl)"
-                class="logo-preview"
-              />
+              <img :src="formatImageUrl(formData.logoUrl)" class="logo-preview" />
               <div
                 class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex-c transition-opacity rounded-lg"
               >
@@ -281,9 +247,7 @@
               <span class="text-xs text-gray-400">Tải ảnh lên</span>
             </div>
           </ElUpload>
-          <div class="mt-1 text-[11px] text-gray-400">
-            Định dạng JPG, PNG. Tối đa 2MB.
-          </div>
+          <div class="mt-1 text-[11px] text-gray-400">Định dạng JPG, PNG. Tối đa 2MB.</div>
         </ElFormItem>
         <ElFormItem label="Mô tả" id="tour-form-desc">
           <ElInput
@@ -297,9 +261,7 @@
       <template #footer>
         <div class="flex justify-end gap-2" id="tour-form-actions">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -314,8 +276,7 @@
         <div class="flex items-center gap-2 text-lg">
           <ElIcon class="text-success text-2xl"><SuccessFilled /></ElIcon>
           <span
-            >Đã nhập thành công
-            <strong>{{ importResultData.successCount }}</strong> dòng.</span
+            >Đã nhập thành công <strong>{{ importResultData.successCount }}</strong> dòng.</span
           >
         </div>
 
@@ -325,26 +286,16 @@
         >
           <ElIcon class="text-2xl"><WarningFilled /></ElIcon>
           <span
-            >Thất bại
-            <strong>{{ importResultData.failedCount }}</strong> dòng.</span
+            >Thất bại <strong>{{ importResultData.failedCount }}</strong> dòng.</span
           >
         </div>
 
-        <div
-          v-if="importResultData.failedCount > 0"
-          class="mt-4 p-4 bg-gray-50 rounded-lg"
-        >
+        <div v-if="importResultData.failedCount > 0" class="mt-4 p-4 bg-gray-50 rounded-lg">
           <p class="mb-3 text-gray-600">
-            Bạn có thể tải xuống danh sách các dòng bị lỗi để kiểm tra và sửa
-            lại:
+            Bạn có thể tải xuống danh sách các dòng bị lỗi để kiểm tra và sửa lại:
           </p>
           <div class="flex gap-3">
-            <ElButton
-              type="primary"
-              plain
-              tag="a"
-              :href="apiUrl + importResultData.errorFileUrl"
-            >
+            <ElButton type="primary" plain tag="a" :href="apiUrl + importResultData.errorFileUrl">
               <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi
             </ElButton>
             <ElButton
@@ -353,8 +304,7 @@
               tag="a"
               :href="apiUrl + importResultData.errorFileWithReasonUrl"
             >
-              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm
-              lý do)
+              <ElIcon class="mr-1"><Download /></ElIcon> Tải danh sách lỗi (kèm lý do)
             </ElButton>
           </div>
         </div>
@@ -391,12 +341,7 @@
       >
         <ElTableColumn type="selection" width="50" align="center" />
         <ElTableColumn prop="name" label="Tên thương hiệu" width="200" />
-        <ElTableColumn
-          prop="description"
-          label="Miêu tả"
-          min-width="250"
-          show-overflow-tooltip
-        />
+        <ElTableColumn prop="description" label="Miêu tả" min-width="250" show-overflow-tooltip />
         <ElTableColumn prop="deletedAt" label="Thời gian xóa" width="160">
           <template #default="{ row }">
             {{ formatDateTime(row.deletedAt) }}
@@ -424,9 +369,9 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { formatImageUrl } from "@/common/utils/image";
-import { ref } from "vue";
+import { Permissions } from '@/domain/constants/permissions';
+import { formatImageUrl } from '@/common/utils/image';
+import { ref } from 'vue';
 import {
   Plus,
   Picture,
@@ -440,16 +385,16 @@ import {
   SuccessFilled,
   WarningFilled,
   Help,
-} from "@element-plus/icons-vue";
-import { useBrandTable } from "@/modules/Warehouse/logic/product/brand/hooks/useBrandTable";
-import { FileApi } from "@/api/operations";
-import { ElMessage } from "element-plus";
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
+} from '@element-plus/icons-vue';
+import { useBrandTable } from '@/modules/Warehouse/logic/product/brand/hooks/useBrandTable';
+import { FileApi } from '@/api/operations';
+import { ElMessage } from 'element-plus';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
-const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || "";
+const apiUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || '';
 
-defineOptions({ name: "ProductBrand" });
+defineOptions({ name: 'ProductBrand' });
 
 const searchForm = ref({});
 
@@ -457,57 +402,57 @@ const startTour = () => {
   const driverObj = driver({
     showProgress: true,
     animate: true,
-    nextBtnText: "Tiếp theo",
-    prevBtnText: "Quay lại",
-    doneBtnText: "Hoàn thành",
+    nextBtnText: 'Tiếp theo',
+    prevBtnText: 'Quay lại',
+    doneBtnText: 'Hoàn thành',
     steps: [
       {
-        element: "#tour-stats",
+        element: '#tour-stats',
         popover: {
-          title: "Thống kê tổng quan",
+          title: 'Thống kê tổng quan',
           description:
-            "Khu vực này hiển thị các thông tin thống kê chung về thương hiệu như tổng số lượng, xuất xứ phổ biến và thời gian cập nhật mới nhất.",
-          side: "bottom",
-          align: "start",
+            'Khu vực này hiển thị các thông tin thống kê chung về thương hiệu như tổng số lượng, xuất xứ phổ biến và thời gian cập nhật mới nhất.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: "#tour-search",
+        element: '#tour-search',
         popover: {
-          title: "Tìm kiếm",
+          title: 'Tìm kiếm',
           description:
-            "Sử dụng thanh tìm kiếm để nhanh chóng lọc các thương hiệu theo tên hoặc xuất xứ.",
-          side: "bottom",
-          align: "start",
+            'Sử dụng thanh tìm kiếm để nhanh chóng lọc các thương hiệu theo tên hoặc xuất xứ.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: "#tour-add-btn",
+        element: '#tour-add-btn',
         popover: {
-          title: "Thêm mới",
-          description: "Nhấn vào đây để tạo một thương hiệu mới trên hệ thống.",
-          side: "bottom",
-          align: "start",
+          title: 'Thêm mới',
+          description: 'Nhấn vào đây để tạo một thương hiệu mới trên hệ thống.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: "#tour-guide-btn",
+        element: '#tour-guide-btn',
         popover: {
-          title: "Hướng dẫn sử dụng",
+          title: 'Hướng dẫn sử dụng',
           description:
-            "Bạn có thể xem lại hướng dẫn này bất cứ lúc nào bằng cách nhấn vào nút này.",
-          side: "bottom",
-          align: "start",
+            'Bạn có thể xem lại hướng dẫn này bất cứ lúc nào bằng cách nhấn vào nút này.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: "#tour-table",
+        element: '#tour-table',
         popover: {
-          title: "Danh sách thương hiệu",
+          title: 'Danh sách thương hiệu',
           description:
-            "Bảng hiển thị chi tiết các thương hiệu. Bạn có thể xem logo, tên, xuất xứ và thực hiện các thao tác sửa/xóa tại đây.",
-          side: "top",
-          align: "start",
+            'Bảng hiển thị chi tiết các thương hiệu. Bạn có thể xem logo, tên, xuất xứ và thực hiện các thao tác sửa/xóa tại đây.',
+          side: 'top',
+          align: 'start',
         },
       },
     ],
@@ -519,54 +464,54 @@ const startDialogTour = () => {
   const driverObj = driver({
     showProgress: true,
     animate: true,
-    nextBtnText: "Tiếp theo",
-    prevBtnText: "Quay lại",
-    doneBtnText: "Hoàn thành",
+    nextBtnText: 'Tiếp theo',
+    prevBtnText: 'Quay lại',
+    doneBtnText: 'Hoàn thành',
     steps: [
       {
-        element: "#tour-form-name",
+        element: '#tour-form-name',
         popover: {
-          title: "Tên thương hiệu",
-          description: "Nhập tên của thương hiệu (bắt buộc).",
-          side: "right",
-          align: "start",
+          title: 'Tên thương hiệu',
+          description: 'Nhập tên của thương hiệu (bắt buộc).',
+          side: 'right',
+          align: 'start',
         },
       },
       {
-        element: "#tour-form-origin",
+        element: '#tour-form-origin',
         popover: {
-          title: "Xuất xứ",
-          description: "Nhập nơi xuất xứ của thương hiệu.",
-          side: "right",
-          align: "start",
+          title: 'Xuất xứ',
+          description: 'Nhập nơi xuất xứ của thương hiệu.',
+          side: 'right',
+          align: 'start',
         },
       },
       {
-        element: "#tour-form-logo",
+        element: '#tour-form-logo',
         popover: {
-          title: "Logo",
+          title: 'Logo',
           description:
-            "Tải lên hình ảnh logo của thương hiệu. Hỗ trợ định dạng JPG, PNG tối đa 2MB.",
-          side: "right",
-          align: "start",
+            'Tải lên hình ảnh logo của thương hiệu. Hỗ trợ định dạng JPG, PNG tối đa 2MB.',
+          side: 'right',
+          align: 'start',
         },
       },
       {
-        element: "#tour-form-desc",
+        element: '#tour-form-desc',
         popover: {
-          title: "Mô tả",
-          description: "Thêm mô tả ngắn gọn về thương hiệu.",
-          side: "right",
-          align: "start",
+          title: 'Mô tả',
+          description: 'Thêm mô tả ngắn gọn về thương hiệu.',
+          side: 'right',
+          align: 'start',
         },
       },
       {
-        element: "#tour-form-actions",
+        element: '#tour-form-actions',
         popover: {
-          title: "Thao tác",
-          description: "Nhấn Xác nhận để lưu thay đổi hoặc Hủy để đóng.",
-          side: "top",
-          align: "end",
+          title: 'Thao tác',
+          description: 'Nhấn Xác nhận để lưu thay đổi hoặc Hủy để đóng.',
+          side: 'top',
+          align: 'end',
         },
       },
     ],
@@ -578,37 +523,35 @@ const startRestoreTour = () => {
   const driverObj = driver({
     showProgress: true,
     animate: true,
-    nextBtnText: "Tiếp theo",
-    prevBtnText: "Quay lại",
-    doneBtnText: "Hoàn thành",
+    nextBtnText: 'Tiếp theo',
+    prevBtnText: 'Quay lại',
+    doneBtnText: 'Hoàn thành',
     steps: [
       {
-        element: "#tour-restore-desc",
+        element: '#tour-restore-desc',
         popover: {
-          title: "Hướng dẫn khôi phục",
-          description: "Danh sách các thương hiệu đã xóa sẽ hiển thị tại đây.",
-          side: "bottom",
-          align: "start",
+          title: 'Hướng dẫn khôi phục',
+          description: 'Danh sách các thương hiệu đã xóa sẽ hiển thị tại đây.',
+          side: 'bottom',
+          align: 'start',
         },
       },
       {
-        element: "#tour-restore-table",
+        element: '#tour-restore-table',
         popover: {
-          title: "Chọn thương hiệu",
-          description:
-            "Tích chọn vào các thương hiệu mà bạn muốn khôi phục lại.",
-          side: "top",
-          align: "start",
+          title: 'Chọn thương hiệu',
+          description: 'Tích chọn vào các thương hiệu mà bạn muốn khôi phục lại.',
+          side: 'top',
+          align: 'start',
         },
       },
       {
-        element: "#tour-restore-actions",
+        element: '#tour-restore-actions',
         popover: {
-          title: "Thực hiện khôi phục",
-          description:
-            'Sau khi chọn, nhấn nút "Khôi phục đã chọn" để hoàn tất.',
-          side: "top",
-          align: "end",
+          title: 'Thực hiện khôi phục',
+          description: 'Sau khi chọn, nhấn nút "Khôi phục đã chọn" để hoàn tất.',
+          side: 'top',
+          align: 'end',
         },
       },
     ],
@@ -662,32 +605,32 @@ const {
 } = useBrandTable();
 
 const formatDateTime = (val: string | null | undefined) => {
-  if (!val) return "Chưa có cập nhật";
-  return new Date(val).toLocaleString("vi-VN");
+  if (!val) return 'Chưa có cập nhật';
+  return new Date(val).toLocaleString('vi-VN');
 };
 
 const handleUpload = async (options: any) => {
   try {
     const res = await FileApi.uploadProductImage(options.file);
     formData.value.logoUrl = res.publicUrl;
-    ElMessage.success("Tải ảnh lên thành công");
+    ElMessage.success('Tải ảnh lên thành công');
   } catch (err: any) {
-    ElMessage.error(err.message || "Tải ảnh thất bại");
+    ElMessage.error(err.message || 'Tải ảnh thất bại');
   }
 };
 
 const searchItems = [
   {
-    key: "name",
-    label: "Tên thương hiệu",
-    type: "input",
-    props: { placeholder: "Ví dụ: Honda, Yamaha..." },
+    key: 'name',
+    label: 'Tên thương hiệu',
+    type: 'input',
+    props: { placeholder: 'Ví dụ: Honda, Yamaha...' },
   },
   {
-    key: "origin",
-    label: "Xuất xứ",
-    type: "input",
-    props: { placeholder: "Ví dụ: Nhật Bản, Ý..." },
+    key: 'origin',
+    label: 'Xuất xứ',
+    type: 'input',
+    props: { placeholder: 'Ví dụ: Nhật Bản, Ý...' },
   },
 ];
 </script>

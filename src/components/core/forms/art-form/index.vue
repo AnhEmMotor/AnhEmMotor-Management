@@ -18,15 +18,10 @@
         >
           <ElFormItem
             :prop="item.key"
-            :label-width="
-              item.label ? item.labelWidth || props.labelWidth : undefined
-            "
+            :label-width="item.label ? item.labelWidth || props.labelWidth : undefined"
           >
             <template #label v-if="item.label">
-              <component
-                v-if="typeof item.label !== 'string'"
-                :is="item.label"
-              />
+              <component v-if="typeof item.label !== 'string'" :is="item.label" />
               <span v-else>{{ item.label }}</span>
             </template>
             <slot :name="item.key" :item="item" :modelValue="modelValue">
@@ -36,9 +31,7 @@
                 @update:model-value="setFieldValue(item.key, $event)"
                 v-bind="getProps(item)"
               >
-                <template
-                  v-if="item.type === 'select' && getProps(item)?.options"
-                >
+                <template v-if="item.type === 'select' && getProps(item)?.options">
                   <ElOption
                     v-for="option in getProps(item).options"
                     v-bind="option"
@@ -46,11 +39,7 @@
                   />
                 </template>
 
-                <template
-                  v-if="
-                    item.type === 'checkboxgroup' && getProps(item)?.options
-                  "
-                >
+                <template v-if="item.type === 'checkboxgroup' && getProps(item)?.options">
                   <ElCheckbox
                     v-for="option in getProps(item).options"
                     v-bind="option"
@@ -58,9 +47,7 @@
                   />
                 </template>
 
-                <template
-                  v-if="item.type === 'radiogroup' && getProps(item)?.options"
-                >
+                <template v-if="item.type === 'radiogroup' && getProps(item)?.options">
                   <ElRadio
                     v-for="option in getProps(item).options"
                     v-bind="option"
@@ -68,37 +55,21 @@
                   />
                 </template>
 
-                <template
-                  v-for="(slotFn, slotName) in getSlots(item)"
-                  :key="slotName"
-                  #[slotName]
-                >
+                <template v-for="(slotFn, slotName) in getSlots(item)" :key="slotName" #[slotName]>
                   <component :is="slotFn" />
                 </template>
               </component>
             </slot>
           </ElFormItem>
         </ElCol>
-        <ElCol
-          :xs="24"
-          :sm="24"
-          :md="span"
-          :lg="span"
-          :xl="span"
-          class="max-w-full flex-1"
-        >
+        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="max-w-full flex-1">
           <div
             class="mb-3 flex-c flex-wrap justify-end md:flex-row md:items-stretch md:gap-2"
             :style="actionButtonsStyle"
           >
             <div class="flex gap-2 md:justify-center">
-              <ElButton
-                v-if="showReset"
-                class="reset-button"
-                @click="handleReset"
-                v-ripple
-              >
-                {{ t("table.form.reset") }}
+              <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
+                {{ t('table.form.reset') }}
               </ElButton>
               <ElButton
                 v-if="showSubmit"
@@ -108,7 +79,7 @@
                 v-ripple
                 :disabled="disabledSubmit"
               >
-                {{ t("table.form.submit") }}
+                {{ t('table.form.submit') }}
               </ElButton>
             </div>
           </div>
@@ -119,9 +90,9 @@
 </template>
 
 <script setup lang="ts">
-import { useWindowSize } from "@vueuse/core";
-import { useI18n } from "vue-i18n";
-import { toRaw, type Component } from "vue";
+import { useWindowSize } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
+import { toRaw, type Component } from 'vue';
 import {
   ElCascader,
   ElCheckbox,
@@ -139,13 +110,10 @@ import {
   ElTimeSelect,
   ElTreeSelect,
   type FormInstance,
-} from "element-plus";
-import {
-  calculateResponsiveSpan,
-  type ResponsiveBreakpoint,
-} from "@/common/utils/form/responsive";
+} from 'element-plus';
+import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@/common/utils/form/responsive';
 
-defineOptions({ name: "ArtForm" });
+defineOptions({ name: 'ArtForm' });
 
 const componentMap = {
   input: ElInput,
@@ -172,7 +140,7 @@ const { width } = useWindowSize();
 const { t } = useI18n();
 const isMobile = computed(() => width.value < 500);
 
-const formInstance = useTemplateRef<FormInstance>("formRef");
+const formInstance = useTemplateRef<FormInstance>('formRef');
 
 export interface FormItem {
   key: string;
@@ -192,7 +160,7 @@ interface FormProps {
   items: FormItem[];
   span?: number;
   gutter?: number;
-  labelPosition?: "left" | "right" | "top";
+  labelPosition?: 'left' | 'right' | 'top';
   labelWidth?: string | number;
   buttonLeftLimit?: number;
   showReset?: boolean;
@@ -214,8 +182,8 @@ const props = withDefaults(defineProps<FormProps>(), {
   items: () => [],
   span: 6,
   gutter: 12,
-  labelPosition: "right",
-  labelWidth: "70px",
+  labelPosition: 'right',
+  labelWidth: '70px',
   buttonLeftLimit: 2,
   showReset: true,
   showSubmit: true,
@@ -241,17 +209,12 @@ const cloneModelValue = (value: Record<string, any> | undefined) => {
       return source.map((item) => deepClone(item));
     }
 
-    if (source && typeof source === "object") {
+    if (source && typeof source === 'object') {
       const rawSource = toRaw(source);
-      return Object.keys(rawSource).reduce<Record<string, unknown>>(
-        (accumulator, key) => {
-          accumulator[key] = deepClone(
-            (rawSource as Record<string, unknown>)[key],
-          );
-          return accumulator;
-        },
-        {},
-      );
+      return Object.keys(rawSource).reduce<Record<string, unknown>>((accumulator, key) => {
+        accumulator[key] = deepClone((rawSource as Record<string, unknown>)[key]);
+        return accumulator;
+      }, {});
     }
 
     return source;
@@ -262,15 +225,7 @@ const cloneModelValue = (value: Record<string, any> | undefined) => {
 
 initialModelValue.value = cloneModelValue(modelValue.value);
 
-const rootProps = [
-  "label",
-  "labelWidth",
-  "key",
-  "type",
-  "hidden",
-  "span",
-  "slots",
-];
+const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots'];
 const sanitizeOutputOptions = computed<SanitizeOutputOptions>(() => ({
   removeEmptyString: true,
   removeEmptyArray: true,
@@ -285,11 +240,9 @@ const PATH_NUMBER_RE = /^\d+$/;
 
 const parsePath = (path: string) => {
   return path
-    .split(".")
+    .split('.')
     .filter(Boolean)
-    .map((segment) =>
-      PATH_NUMBER_RE.test(segment) ? Number(segment) : segment,
-    );
+    .map((segment) => (PATH_NUMBER_RE.test(segment) ? Number(segment) : segment));
 };
 
 const getFieldValue = (path: string) => {
@@ -315,7 +268,7 @@ const deleteFieldValue = (path: string) => {
 };
 
 const setFieldValue = (path: string, value: unknown) => {
-  const normalizedValue = value === "" ? undefined : value;
+  const normalizedValue = value === '' ? undefined : value;
   const segments = parsePath(path);
 
   if (!segments.length) return;
@@ -336,12 +289,12 @@ const setFieldValue = (path: string, value: unknown) => {
     }
 
     const nextSegment = segments[index + 1];
-    const nextContainer = typeof nextSegment === "number" ? [] : {};
+    const nextContainer = typeof nextSegment === 'number' ? [] : {};
 
     if (
       currentValue[segment] === null ||
       currentValue[segment] === undefined ||
-      typeof currentValue[segment] !== "object"
+      typeof currentValue[segment] !== 'object'
     ) {
       currentValue[segment] = nextContainer;
     }
@@ -357,10 +310,10 @@ const isRichTextEmpty = (value: string) => {
 
   return (
     value
-      .replace(/&nbsp;/gi, "")
-      .replace(/<br\s*\/?>/gi, "")
-      .replace(/<[^>]*>/g, "")
-      .trim() === ""
+      .replace(/&nbsp;/gi, '')
+      .replace(/<br\s*\/?>/gi, '')
+      .replace(/<[^>]*>/g, '')
+      .trim() === ''
   );
 };
 
@@ -371,30 +324,28 @@ const sanitizeOutputValue = (value: unknown): unknown => {
     const sanitizedArray = value
       .map((item) => sanitizeOutputValue(item))
       .filter((item) => item !== undefined);
-    return sanitizedArray.length === 0 && options.removeEmptyArray
-      ? undefined
-      : sanitizedArray;
+    return sanitizedArray.length === 0 && options.removeEmptyArray ? undefined : sanitizedArray;
   }
 
-  if (value && typeof value === "object") {
+  if (value && typeof value === 'object') {
     const rawValue = toRaw(value);
-    const sanitizedObject = Object.entries(rawValue).reduce<
-      Record<string, unknown>
-    >((accumulator, [key, item]) => {
-      const sanitizedItem = sanitizeOutputValue(item);
-      if (sanitizedItem !== undefined) {
-        accumulator[key] = sanitizedItem;
-      }
-      return accumulator;
-    }, {});
-    return Object.keys(sanitizedObject).length === 0 &&
-      options.removeEmptyObject
+    const sanitizedObject = Object.entries(rawValue).reduce<Record<string, unknown>>(
+      (accumulator, [key, item]) => {
+        const sanitizedItem = sanitizeOutputValue(item);
+        if (sanitizedItem !== undefined) {
+          accumulator[key] = sanitizedItem;
+        }
+        return accumulator;
+      },
+      {}
+    );
+    return Object.keys(sanitizedObject).length === 0 && options.removeEmptyObject
       ? undefined
       : sanitizedObject;
   }
 
-  if (typeof value === "string") {
-    if (options.removeEmptyString && value.trim() === "") {
+  if (typeof value === 'string') {
+    if (options.removeEmptyString && value.trim() === '') {
       return undefined;
     }
     if (options.removeEmptyRichText && isRichTextEmpty(value)) {
@@ -415,8 +366,7 @@ const sanitizeOutputValue = (value: unknown): unknown => {
 };
 
 const getSanitizedOutput = () => {
-  return (sanitizeOutputValue(cloneModelValue(modelValue.value)) ||
-    {}) as Record<string, any>;
+  return (sanitizeOutputValue(cloneModelValue(modelValue.value)) || {}) as Record<string, any>;
 };
 
 const getProps = (item: FormItem) => {
@@ -442,15 +392,10 @@ const getComponent = (item: FormItem) => {
     return item.render;
   }
   const { type } = item;
-  return (
-    componentMap[type as keyof typeof componentMap] || componentMap["input"]
-  );
+  return componentMap[type as keyof typeof componentMap] || componentMap['input'];
 };
 
-const getColSpan = (
-  itemSpan: number | undefined,
-  breakpoint: ResponsiveBreakpoint,
-): number => {
+const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
   return calculateResponsiveSpan(itemSpan, span.value, breakpoint);
 };
 
@@ -459,11 +404,11 @@ const visibleFormItems = computed(() => {
 });
 
 const actionButtonsStyle = computed(() => ({
-  "justify-content": isMobile.value
-    ? "flex-end"
+  'justify-content': isMobile.value
+    ? 'flex-end'
     : props.items.filter((item) => !item.hidden).length <= props.buttonLeftLimit
-      ? "flex-start"
-      : "flex-end",
+      ? 'flex-start'
+      : 'flex-end',
 }));
 
 const handleReset = () => {
@@ -474,11 +419,11 @@ const handleReset = () => {
   });
   Object.assign(modelValue.value, cloneModelValue(initialModelValue.value));
 
-  emit("reset");
+  emit('reset');
 };
 
 const handleSubmit = () => {
-  emit("submit", getSanitizedOutput());
+  emit('submit', getSanitizedOutput());
 };
 
 defineExpose({

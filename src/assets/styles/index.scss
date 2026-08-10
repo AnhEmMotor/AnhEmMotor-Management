@@ -1,11 +1,11 @@
-@use "./core/reset";
-@use "./core/app";
-@use "./core/el-ui";
-@use "./core/el-dark";
-@use "./core/dark";
-@use "./core/router-transition";
-@use "./core/theme-change";
-@use "./core/reporting-theme";
-@use "./core/responsive";
+@use './core/reset';
+@use './core/app';
+@use './core/el-ui';
+@use './core/el-dark';
+@use './core/dark';
+@use './core/router-transition';
+@use './core/theme-change';
+@use './core/reporting-theme';
+@use './core/responsive';
 
-@import "@/modules/Accountant/logic/reporting";
+@import '@/modules/Accountant/logic/reporting';

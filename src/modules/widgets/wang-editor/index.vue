@@ -3,17 +3,11 @@
     <ElCard class="editor-card">
       <template #header>
         <div class="card-header">
-          <span>{{ $t("admin.t279") }}</span>
+          <span>{{ $t('admin.t279') }}</span>
           <div class="header-buttons">
-            <ElButton size="small" @click="clearFullEditor">{{
-              $t("admin.t280")
-            }}</ElButton>
-            <ElButton size="small" @click="getFullEditorContent">{{
-              $t("admin.t281")
-            }}</ElButton>
-            <ElButton size="small" @click="setFullEditorDemo">{{
-              $t("admin.t282")
-            }}</ElButton>
+            <ElButton size="small" @click="clearFullEditor">{{ $t('admin.t280') }}</ElButton>
+            <ElButton size="small" @click="getFullEditorContent">{{ $t('admin.t281') }}</ElButton>
+            <ElButton size="small" @click="setFullEditorDemo">{{ $t('admin.t282') }}</ElButton>
           </div>
         </div>
       </template>
@@ -32,15 +26,9 @@
         <div class="card-header">
           <span>✨ rúthóaThanh công cụTrình biên tập</span>
           <div class="header-buttons">
-            <ElButton size="small" @click="clearSimpleEditor"
-              >xóakhông</ElButton
-            >
-            <ElButton size="small" @click="getSimpleEditorContent"
-              >LấyNoiDung</ElButton
-            >
-            <ElButton size="small" @click="setSimpleEditorDemo"
-              >CaiDatVí dụ</ElButton
-            >
+            <ElButton size="small" @click="clearSimpleEditor">xóakhông</ElButton>
+            <ElButton size="small" @click="getSimpleEditorContent">LấyNoiDung</ElButton>
+            <ElButton size="small" @click="setSimpleEditorDemo">CaiDatVí dụ</ElButton>
           </div>
         </div>
       </template>
@@ -193,24 +181,13 @@
                 <h5>✅ Đầy đủThanh công cụBao gồm：</h5>
                 <ul>
                   <li>
-                    vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông
-                    chữMàu sắc、Nềnmàu
+                    vănquyểncáchkiểu：thêmđậm、nghiêngthể、dướigạchđường、Phông chữMàu sắc、Nềnmàu
                   </li>
-                  <li>
-                    Đoạn
-                    văncáchkiểu：TieuDe、tríchdùng、đốicănphươngkiểu、thụtvào
-                  </li>
-                  <li>
-                    Danh sách：cóthứDanh sách、vôthứDanh sách、Việc cần
-                    làmviệcmục
-                  </li>
-                  <li>
-                    chènvào：liêntiếp、Hình ảnh、Bảng、phầncắtđường、bảngtình
-                  </li>
+                  <li>Đoạn văncáchkiểu：TieuDe、tríchdùng、đốicănphươngkiểu、thụtvào</li>
+                  <li>Danh sách：cóthứDanh sách、vôthứDanh sách、Việc cần làmviệcmục</li>
+                  <li>chènvào：liêntiếp、Hình ảnh、Bảng、phầncắtđường、bảngtình</li>
                   <li>đạimã：đạimãkhối、dòngtrongđạimã</li>
-                  <li>
-                    HanhDong：hoàntác、trùnglàm、Toàn màn hình、xóachiacáchkiểu
-                  </li>
+                  <li>HanhDong：hoàntác、trùnglàm、Toàn màn hình、xóachiacáchkiểu</li>
                 </ul>
               </ElCol>
               <ElCol :span="12">
@@ -222,8 +199,7 @@
                   <li>HanhDong：hoàntác、trùnglàm</li>
                 </ul>
                 <p class="note">
-                  thíchdùngởrútđơncủavănquyểnChỉnh
-                  sửatrườngcảnh，giaomặthơnxóasảng。
+                  thíchdùngởrútđơncủavănquyểnChỉnh sửatrườngcảnh，giaomặthơnxóasảng。
                 </p>
               </ElCol>
             </ElRow>
@@ -235,31 +211,30 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: "WidgetsWangEditor" });
+defineOptions({ name: 'WidgetsWangEditor' });
 
 const fullEditorRef = ref();
 const simpleEditorRef = ref();
-const fullActiveTab = ref("preview");
-const simpleActiveTab = ref("preview");
-const activeCollapse = ref(["basic"]);
+const fullActiveTab = ref('preview');
+const simpleActiveTab = ref('preview');
+const activeCollapse = ref(['basic']);
 
 const simpleToolbarKeys = [
-  "bold",
-  "italic",
-  "underline",
-  "|",
-  "bulletedList",
-  "numberedList",
-  "|",
-  "insertLink",
-  "insertImage",
-  "|",
-  "undo",
-  "redo",
+  'bold',
+  'italic',
+  'underline',
+  '|',
+  'bulletedList',
+  'numberedList',
+  '|',
+  'insertLink',
+  'insertImage',
+  '|',
+  'undo',
+  'redo',
 ];
 
-const fullEditorHtml =
-  ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>
+const fullEditorHtml = ref(`<h1>🎨 Đầy đủThanh công cụTrình biên tậpthịví dụ</h1>
 <p>nàychiếcTrình biên tậpBao gồmnêncócôngnăng，bạnCó thểlấythểnghiệmphongphúcủacáchkiểuChỉnh sửacôngnăng。</p>
 
 <h2>✨ vănquyểnKiểu dáng</h2>
@@ -336,13 +311,13 @@ const simpleEditorHtml = ref(`<h1>✨ rúthóaThanh công cụTrình biên tập
 
 const clearFullEditor = () => {
   fullEditorRef.value?.clear();
-  ElMessage.success("Đầy đủTrình biên tậpĐãxóakhông");
+  ElMessage.success('Đầy đủTrình biên tậpĐãxóakhông');
 };
 
 const getFullEditorContent = () => {
   const content = fullEditorRef.value?.getHtml();
-  console.log("Đầy đủTrình biên tậpNoiDung:", content);
-  ElMessage.success("Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan");
+  console.log('Đầy đủTrình biên tậpNoiDung:', content);
+  ElMessage.success('Đầy đủTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan');
 };
 
 const setFullEditorDemo = () => {
@@ -360,18 +335,18 @@ const setFullEditorDemo = () => {
 </table>`;
 
   fullEditorRef.value?.setHtml(demoContent);
-  ElMessage.success("ĐãCaiDatĐầy đủTrình biên tậpdiễnthịNoiDung");
+  ElMessage.success('ĐãCaiDatĐầy đủTrình biên tậpdiễnthịNoiDung');
 };
 
 const clearSimpleEditor = () => {
   simpleEditorRef.value?.clear();
-  ElMessage.success("rúthóaTrình biên tậpĐãxóakhông");
+  ElMessage.success('rúthóaTrình biên tậpĐãxóakhông');
 };
 
 const getSimpleEditorContent = () => {
   const content = simpleEditorRef.value?.getHtml();
-  console.log("rúthóaTrình biên tậpNoiDung:", content);
-  ElMessage.success("rúthóaTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan");
+  console.log('rúthóaTrình biên tậpNoiDung:', content);
+  ElMessage.success('rúthóaTrình biên tậpNoiDungĐãnhậprađếnBảng tổng quan');
 };
 
 const setSimpleEditorDemo = () => {
@@ -390,7 +365,7 @@ const setSimpleEditorDemo = () => {
 <p>🔗 <a href="https://example.com" target="_blank">nàylàmộtcáiliêntiếpthịví dụ</a></p>`;
 
   simpleEditorRef.value?.setHtml(demoContent);
-  ElMessage.success("ĐãCaiDatrúthóaTrình biên tậpdiễnthịNoiDung");
+  ElMessage.success('ĐãCaiDatrúthóaTrình biên tậpdiễnthịNoiDung');
 };
 </script>
 
@@ -482,7 +457,7 @@ const setSimpleEditorDemo = () => {
 }
 
 .usage-card pre code {
-  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
   font-size: 14px;
   line-height: 1.5;
 }

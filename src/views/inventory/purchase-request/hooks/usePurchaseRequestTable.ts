@@ -1,44 +1,39 @@
-import { ref, reactive, computed, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { useDebounceFn } from "@vueuse/core";
-import { PurchaseRequestApi } from "@/api/inventory/purchase-request.api";
-import { ProductApi } from "@/api/product";
-import { QuotationApi } from "@/api/sales/quotation.api";
+import { ref, reactive, computed, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { useDebounceFn } from '@vueuse/core';
+import { PurchaseRequestApi } from '@/api/inventory/purchase-request.api';
+import { ProductApi } from '@/api/product';
+import { QuotationApi } from '@/api/sales/quotation.api';
 import type {
   PurchaseRequestListResponse,
   PurchaseRequestDetailResponse,
-} from "@/domain/purchase-request/request.types";
-import type { ProductVariantLiteForInput } from "@/domain/product/product.types";
+} from '@/domain/purchase-request/request.types';
+import type { ProductVariantLiteForInput } from '@/domain/product/product.types';
 
 export function usePurchaseRequestTable() {
   const loading = ref(false);
   const dialogVisible = ref(false);
-  const dialogTitle = ref("Tạo yêu cầu mua hàng mới");
+  const dialogTitle = ref('Tạo yêu cầu mua hàng mới');
   const submitting = ref(false);
   const isEdit = ref(false);
 
   const detailDialogVisible = ref(false);
   const detailData = ref<PurchaseRequestDetailResponse | null>(null);
 
-  const productCache = reactive(
-    new Map<number, { displayName: string; colorName?: string }>(),
-  );
+  const productCache = reactive(new Map<number, { displayName: string; colorName?: string }>());
 
   const getProductNameById = (id?: number) => {
-    if (!id) return "";
+    if (!id) return '';
     return productCache.get(Number(id))?.displayName || `Sản phẩm #${id}`;
   };
 
   const getProductColorName = (row: any) => {
     return (
-      row.productVariantColorName ||
-      productCache.get(Number(row.productVariantId))?.colorName ||
-      ""
+      row.productVariantColorName || productCache.get(Number(row.productVariantId))?.colorName || ''
     );
   };
 
-  const getVariantColorKey = (variant: ProductVariantLiteForInput) =>
-    String(variant.id);
+  const getVariantColorKey = (variant: ProductVariantLiteForInput) => String(variant.id);
 
   const getSelectedVariantColor = (variant: ProductVariantLiteForInput) => {
     const selectedColorId = selectedVariantColors[getVariantColorKey(variant)];
@@ -46,14 +41,12 @@ export function usePurchaseRequestTable() {
   };
 
   const getVariantColorLabel = (
-    color: NonNullable<ProductVariantLiteForInput["colors"]>[number],
+    color: NonNullable<ProductVariantLiteForInput['colors']>[number]
   ) => {
     return color.colorName || `Màu #${color.id}`;
   };
 
-  const getVariantDisplayNameWithColor = (
-    variant: ProductVariantLiteForInput,
-  ) => {
+  const getVariantDisplayNameWithColor = (variant: ProductVariantLiteForInput) => {
     const displayName = variant.displayName || `Sản phẩm #${variant.id}`;
     const selectedColor = getSelectedVariantColor(variant);
     if (!selectedColor) return displayName;
@@ -62,19 +55,15 @@ export function usePurchaseRequestTable() {
 
   const productSelectorVisible = ref(false);
   const productSelectorLoading = ref(false);
-  const productSelectorQuery = ref("");
+  const productSelectorQuery = ref('');
   const productSelectorPage = ref(1);
   const productSelectorPageSize = ref(10);
   const productSelectorTotal = ref(0);
   const productSelectorItems = ref<ProductVariantLiteForInput[]>([]);
-  const selectedVariantColors = reactive<Record<string, number | undefined>>(
-    {},
-  );
+  const selectedVariantColors = reactive<Record<string, number | undefined>>({});
   const productSelectorActiveRowIndex = ref<number | null>(null);
 
-  const initializeVariantColorSelection = (
-    variants: ProductVariantLiteForInput[],
-  ) => {
+  const initializeVariantColorSelection = (variants: ProductVariantLiteForInput[]) => {
     variants.forEach((variant) => {
       const key = getVariantColorKey(variant);
       if (selectedVariantColors[key] || !variant.colors?.length) return;
@@ -92,22 +81,21 @@ export function usePurchaseRequestTable() {
       const res = await ProductApi.getVariantsForInput({
         current: productSelectorPage.value,
         size: productSelectorPageSize.value,
-        Filters: filters.join(","),
+        Filters: filters.join(','),
       });
       productSelectorItems.value = res.items || [];
       initializeVariantColorSelection(productSelectorItems.value);
       productSelectorTotal.value = res.totalCount || 0;
     } catch (err) {
-      console.error("Failed to fetch selector products:", err);
+      console.error('Failed to fetch selector products:', err);
     } finally {
       productSelectorLoading.value = false;
     }
   };
 
   const openProductSelector = (rowIndex?: number) => {
-    productSelectorActiveRowIndex.value =
-      rowIndex !== undefined ? rowIndex : null;
-    productSelectorQuery.value = "";
+    productSelectorActiveRowIndex.value = rowIndex !== undefined ? rowIndex : null;
+    productSelectorQuery.value = '';
     productSelectorPage.value = 1;
     productSelectorVisible.value = true;
     fetchSelectorProducts();
@@ -115,10 +103,9 @@ export function usePurchaseRequestTable() {
 
   const selectProductVariant = (variant: ProductVariantLiteForInput) => {
     if (!variant.id) return;
-    const productVariantColorId =
-      selectedVariantColors[getVariantColorKey(variant)];
+    const productVariantColorId = selectedVariantColors[getVariantColorKey(variant)];
     if (variant.colors?.length && !productVariantColorId) {
-      ElMessage.warning("Vui lòng chọn màu cho biến thể sản phẩm này");
+      ElMessage.warning('Vui lòng chọn màu cho biến thể sản phẩm này');
       return;
     }
 
@@ -138,17 +125,14 @@ export function usePurchaseRequestTable() {
           (item, i) =>
             i !== idx &&
             item.productVariantId === variant.id &&
-            item.productVariantColorId === productVariantColorId,
+            item.productVariantColorId === productVariantColorId
         );
 
         if (existsIdx > -1) {
           formData.value.items[existsIdx].quantity =
-            (formData.value.items[existsIdx].quantity || 0) +
-            (row.quantity || 1);
+            (formData.value.items[existsIdx].quantity || 0) + (row.quantity || 1);
           formData.value.items.splice(idx, 1);
-          ElMessage.success(
-            "Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.",
-          );
+          ElMessage.success('Sản phẩm đã tồn tại trong yêu cầu. Đã gộp và cộng dồn số lượng.');
         } else {
           row.productVariantId = variant.id;
           row.productVariantColorId = productVariantColorId;
@@ -162,7 +146,7 @@ export function usePurchaseRequestTable() {
       const existsIdx = items.findIndex(
         (item) =>
           item.productVariantId === variant.id &&
-          item.productVariantColorId === productVariantColorId,
+          item.productVariantColorId === productVariantColorId
       );
 
       if (existsIdx > -1) {
@@ -209,7 +193,7 @@ export function usePurchaseRequestTable() {
       supplierName?: string;
     }>;
   }>({
-    note: "",
+    note: '',
     items: [],
   });
 
@@ -227,7 +211,7 @@ export function usePurchaseRequestTable() {
       const res = await PurchaseRequestApi.getStatuses();
       statusMap.value = res || {};
     } catch (e) {
-      console.error("Failed to load purchase request statuses", e);
+      console.error('Failed to load purchase request statuses', e);
     }
   };
 
@@ -240,10 +224,10 @@ export function usePurchaseRequestTable() {
   const quoteTotal = computed(() => quotesList.value.length);
 
   const formatCurrency = (value?: number) => {
-    if (value === undefined || value === null) return "0 ₫";
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
+    if (value === undefined || value === null) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
     }).format(value);
   };
 
@@ -255,7 +239,7 @@ export function usePurchaseRequestTable() {
 
   const openQuoteDialog = async (row: any, index: number) => {
     if (!row.productVariantId) {
-      ElMessage.warning("Vui lòng chọn sản phẩm trước khi chọn báo giá");
+      ElMessage.warning('Vui lòng chọn sản phẩm trước khi chọn báo giá');
       return;
     }
     activeQuoteRowIndex.value = index;
@@ -265,12 +249,12 @@ export function usePurchaseRequestTable() {
     try {
       const res = await QuotationApi.getApprovedPrices(
         row.productVariantId,
-        row.productVariantColorId,
+        row.productVariantColorId
       );
       quotesList.value = res || [];
     } catch (e) {
       console.error(e);
-      ElMessage.error("Không thể tải danh sách báo giá");
+      ElMessage.error('Không thể tải danh sách báo giá');
       quotesList.value = [];
     } finally {
       quoteLoading.value = false;
@@ -285,7 +269,7 @@ export function usePurchaseRequestTable() {
         row.supplierId = quote.supplierId;
         row.supplierName = quote.supplierName;
         row.unitPrice = quote.quotePrice;
-        ElMessage.success("Đã áp dụng báo giá");
+        ElMessage.success('Đã áp dụng báo giá');
       }
       quoteDialogVisible.value = false;
     }
@@ -297,11 +281,11 @@ export function usePurchaseRequestTable() {
 
   const searchItems = computed(() => [
     {
-      key: "status",
-      label: "Trạng thái",
-      type: "select",
+      key: 'status',
+      label: 'Trạng thái',
+      type: 'select',
       props: {
-        placeholder: "Tất cả trạng thái",
+        placeholder: 'Tất cả trạng thái',
         clearable: true,
         multiple: true,
         collapseTags: true,
@@ -315,66 +299,66 @@ export function usePurchaseRequestTable() {
 
   const columns = ref([
     {
-      type: "selection" as const,
+      type: 'selection' as const,
       width: 50,
-      align: "center",
-      fixed: "left" as const,
+      align: 'center',
+      fixed: 'left' as const,
     },
-    { label: "Thời gian tạo", prop: "createdAt", useSlot: true, width: 170 },
-    { label: "Ghi chú", prop: "note", minWidth: 200 },
-    { label: "Người tạo", prop: "createdByName", minWidth: 150 },
-    { label: "Số mặt hàng", prop: "totalItems", width: 120, align: "center" },
+    { label: 'Thời gian tạo', prop: 'createdAt', useSlot: true, width: 170 },
+    { label: 'Ghi chú', prop: 'note', minWidth: 200 },
+    { label: 'Người tạo', prop: 'createdByName', minWidth: 150 },
+    { label: 'Số mặt hàng', prop: 'totalItems', width: 120, align: 'center' },
     {
-      label: "Trạng thái",
-      prop: "status",
+      label: 'Trạng thái',
+      prop: 'status',
       useSlot: true,
       width: 130,
-      align: "center",
+      align: 'center',
     },
     {
-      label: "Đã nhập kho",
-      prop: "isFullyImported",
+      label: 'Đã nhập kho',
+      prop: 'isFullyImported',
       useSlot: true,
       width: 150,
-      align: "center",
+      align: 'center',
     },
     {
-      label: "Thao tác",
-      prop: "operation",
+      label: 'Thao tác',
+      prop: 'operation',
       useSlot: true,
       width: 170,
-      fixed: "right" as const,
-      align: "center",
+      fixed: 'right' as const,
+      align: 'center',
     },
   ]);
 
   const columnChecks = ref(columns.value);
 
   const getStatusLabel = (status?: string) => {
-    if (!status) return "-";
+    if (!status) return '-';
     return statusMap.value[status.toLowerCase()] || status;
   };
 
   const getStatusTagType = (status?: string) => {
     switch (status?.toLowerCase()) {
-      case "draft":
-        return "info";
-      case "sent":
-        return "warning";
-      case "approve":
-      case "approved":
-        return "success";
-      case "reject":
-      case "rejected":
-        return "danger";
+      case 'draft':
+        return 'info';
+      case 'sent':
+        return 'warning';
+      case 'approve':
+      case 'approved':
+        return 'success';
+      case 'reject':
+      case 'rejected':
+        return 'danger';
       default:
-        return "info";
+        return 'info';
     }
   };
 
   const formatDateTime = (dateStr?: string) => {
-    if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleString("vi-VN");
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleString('vi-VN');
   };
 
   const loadData = async () => {
@@ -382,21 +366,21 @@ export function usePurchaseRequestTable() {
     try {
       const sieveFilters = [];
       if (searchForm.value.status && searchForm.value.status.length > 0) {
-        sieveFilters.push(`Status==${searchForm.value.status.join("|")}`);
+        sieveFilters.push(`Status==${searchForm.value.status.join('|')}`);
       }
 
       const res = await PurchaseRequestApi.getList({
         current: pagination.current,
         size: pagination.size,
-        Filters: sieveFilters.join(",") || undefined,
-        Sorts: "-createdAt",
+        Filters: sieveFilters.join(',') || undefined,
+        Sorts: '-createdAt',
       });
 
       data.value = res.items || [];
       pagination.total = res.totalCount || 0;
     } catch (error) {
       console.error(error);
-      ElMessage.error("Không thể tải danh sách Yêu cầu mua hàng");
+      ElMessage.error('Không thể tải danh sách Yêu cầu mua hàng');
     } finally {
       loading.value = false;
     }
@@ -431,9 +415,9 @@ export function usePurchaseRequestTable() {
 
   const handleAdd = () => {
     isEdit.value = false;
-    dialogTitle.value = "Tạo yêu cầu mua hàng mới";
+    dialogTitle.value = 'Tạo yêu cầu mua hàng mới';
     formData.value = {
-      note: "",
+      note: '',
       items: [],
     };
     dialogVisible.value = true;
@@ -455,7 +439,7 @@ export function usePurchaseRequestTable() {
 
       formData.value = {
         id: detail.id,
-        note: detail.note || "",
+        note: detail.note || '',
         items: detail.items.map((item) => ({
           id: item.id,
           productVariantId: item.productVariantId,
@@ -472,7 +456,7 @@ export function usePurchaseRequestTable() {
       dialogVisible.value = true;
     } catch (e) {
       console.error(e);
-      ElMessage.error("Không thể tải chi tiết yêu cầu");
+      ElMessage.error('Không thể tải chi tiết yêu cầu');
     } finally {
       loading.value = false;
     }
@@ -482,19 +466,19 @@ export function usePurchaseRequestTable() {
     try {
       await ElMessageBox.confirm(
         `Bạn có chắc muốn xóa yêu cầu mua hàng #${row.id}?`,
-        "Xác nhận xóa",
+        'Xác nhận xóa',
         {
-          confirmButtonText: "Xóa",
-          cancelButtonText: "Hủy",
-          type: "warning",
-        },
+          confirmButtonText: 'Xóa',
+          cancelButtonText: 'Hủy',
+          type: 'warning',
+        }
       );
       await PurchaseRequestApi.delete(row.id);
-      ElMessage.success("Xóa yêu cầu thành công");
+      ElMessage.success('Xóa yêu cầu thành công');
       refreshData();
     } catch (e) {
-      if (e !== "cancel") {
-        ElMessage.error("Xóa Có lỗi từ hệ thống");
+      if (e !== 'cancel') {
+        ElMessage.error('Xóa Có lỗi từ hệ thống');
       }
     }
   };
@@ -503,22 +487,22 @@ export function usePurchaseRequestTable() {
     try {
       await ElMessageBox.confirm(
         `Gửi yêu cầu mua hàng #${row.id} lên cấp trên phê duyệt?`,
-        "Gửi phê duyệt",
+        'Gửi phê duyệt',
         {
-          confirmButtonText: "Gửi",
-          cancelButtonText: "Hủy",
-          type: "info",
-        },
+          confirmButtonText: 'Gửi',
+          cancelButtonText: 'Hủy',
+          type: 'info',
+        }
       );
       await PurchaseRequestApi.send(row.id);
-      ElMessage.success("Gửi phê duyệt thành công");
+      ElMessage.success('Gửi phê duyệt thành công');
       refreshData();
       if (detailDialogVisible.value && detailData.value?.id === row.id) {
         detailDialogVisible.value = false;
       }
     } catch (e) {
-      if (e !== "cancel") {
-        ElMessage.error("Gửi duyệt thất bại");
+      if (e !== 'cancel') {
+        ElMessage.error('Gửi duyệt thất bại');
       }
     }
   };
@@ -530,26 +514,23 @@ export function usePurchaseRequestTable() {
       detailDialogVisible.value = true;
     } catch (e) {
       console.error(e);
-      ElMessage.error("Không thể lấy chi tiết yêu cầu");
+      ElMessage.error('Không thể lấy chi tiết yêu cầu');
     } finally {
       loading.value = false;
     }
   };
 
-  const handleApproveRejectStatus = async (
-    id: number,
-    status: "approve" | "reject",
-  ) => {
+  const handleApproveRejectStatus = async (id: number, status: 'approve' | 'reject') => {
     try {
-      const verb = status === "approve" ? "phê duyệt" : "từ chối";
+      const verb = status === 'approve' ? 'phê duyệt' : 'từ chối';
       await ElMessageBox.confirm(
         `Bạn có chắc muốn ${verb} yêu cầu mua hàng #${id}?`,
-        "Xác nhận hành động",
+        'Xác nhận hành động',
         {
-          confirmButtonText: "Xác nhận",
-          cancelButtonText: "Hủy",
-          type: status === "approve" ? "success" : "warning",
-        },
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
+          type: status === 'approve' ? 'success' : 'warning',
+        }
       );
       await PurchaseRequestApi.approveReject(id, status);
       ElMessage.success(`Đã ${verb} yêu cầu mua hàng`);
@@ -558,8 +539,8 @@ export function usePurchaseRequestTable() {
       }
       refreshData();
     } catch (e) {
-      if (e !== "cancel") {
-        ElMessage.error("Cập nhật trạng thái thất bại");
+      if (e !== 'cancel') {
+        ElMessage.error('Cập nhật trạng thái thất bại');
       }
     }
   };
@@ -574,11 +555,11 @@ export function usePurchaseRequestTable() {
 
   const submitForm = async () => {
     const validItems = formData.value.items.filter(
-      (x) => x.productVariantId !== undefined && x.productVariantId !== null,
+      (x) => x.productVariantId !== undefined && x.productVariantId !== null
     );
 
     if (validItems.length === 0) {
-      ElMessage.warning("Vui lòng thêm ít nhất một sản phẩm yêu cầu");
+      ElMessage.warning('Vui lòng thêm ít nhất một sản phẩm yêu cầu');
       return;
     }
 
@@ -598,7 +579,7 @@ export function usePurchaseRequestTable() {
           })),
         };
         await PurchaseRequestApi.update(formData.value.id, payload);
-        ElMessage.success("Cập nhật yêu cầu mua hàng thành công");
+        ElMessage.success('Cập nhật yêu cầu mua hàng thành công');
       } else {
         const payload = {
           note: formData.value.note,
@@ -612,19 +593,18 @@ export function usePurchaseRequestTable() {
           })),
         };
         await PurchaseRequestApi.create(payload);
-        ElMessage.success("Tạo yêu cầu mua hàng thành công");
+        ElMessage.success('Tạo yêu cầu mua hàng thành công');
       }
       dialogVisible.value = false;
       refreshData();
     } catch (e: any) {
       console.error(e);
-      ElMessage.error(e.message || "Lưu yêu cầu mua hàng thất bại");
+      ElMessage.error(e.message || 'Lưu yêu cầu mua hàng thất bại');
     } finally {
       submitting.value = false;
     }
   };
 
-  // --- MỚI: Chọn nhiều để Xoá, Nhân bản ---
   const selectedRows = ref<PurchaseRequestListResponse[]>([]);
 
   const handleSelectionChange = (rows: PurchaseRequestListResponse[]) => {
@@ -633,65 +613,60 @@ export function usePurchaseRequestTable() {
 
   const handleDeleteMany = () => {
     if (selectedRows.value.length === 0) {
-      ElMessage.warning("Vui lòng chọn ít nhất một yêu cầu mua hàng");
+      ElMessage.warning('Vui lòng chọn ít nhất một yêu cầu mua hàng');
       return;
     }
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa ${selectedRows.value.length} yêu cầu đã chọn?`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await PurchaseRequestApi.deleteMany(ids);
-        ElMessage.success("Xóa hàng loạt thành công");
+        ElMessage.success('Xóa hàng loạt thành công');
         refreshData();
       } catch (err: any) {
-        ElMessage.error(err.message || "Xóa hàng loạt thất bại");
+        ElMessage.error(err.message || 'Xóa hàng loạt thất bại');
       }
     });
   };
 
   const handleCloneMany = () => {
     if (selectedRows.value.length !== 1) {
-      ElMessage.warning(
-        "Vui lòng chọn duy nhất một yêu cầu mua hàng để nhân bản",
-      );
+      ElMessage.warning('Vui lòng chọn duy nhất một yêu cầu mua hàng để nhân bản');
       return;
     }
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn nhân bản yêu cầu mua hàng đã chọn?`,
-      "Xác nhận nhân bản",
+      'Xác nhận nhân bản',
       {
-        confirmButtonText: "Nhân bản",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Nhân bản',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await PurchaseRequestApi.cloneMany(ids);
-        ElMessage.success("Nhân bản thành công");
+        ElMessage.success('Nhân bản thành công');
         refreshData();
       } catch (err: any) {
-        ElMessage.error(err.message || "Nhân bản thất bại");
+        ElMessage.error(err.message || 'Nhân bản thất bại');
       }
     });
   };
 
-  // --- MỚI: Khôi phục nhiều ---
   const restoreDialogVisible = ref(false);
   const deletedRequestsData = ref<PurchaseRequestListResponse[]>([]);
   const deletedRequestsLoading = ref(false);
   const selectedDeletedRequests = ref<PurchaseRequestListResponse[]>([]);
 
-  const handleDeletedSelectionChange = (
-    rows: PurchaseRequestListResponse[],
-  ) => {
+  const handleDeletedSelectionChange = (rows: PurchaseRequestListResponse[]) => {
     selectedDeletedRequests.value = rows;
   };
 
@@ -706,7 +681,7 @@ export function usePurchaseRequestTable() {
       });
       deletedRequestsData.value = res.items || [];
     } catch {
-      ElMessage.error("Không thể tải danh sách PR đã xóa");
+      ElMessage.error('Không thể tải danh sách PR đã xóa');
     } finally {
       deletedRequestsLoading.value = false;
     }
@@ -714,31 +689,30 @@ export function usePurchaseRequestTable() {
 
   const handleRestoreMany = () => {
     if (selectedDeletedRequests.value.length === 0) {
-      ElMessage.warning("Vui lòng chọn ít nhất một yêu cầu để khôi phục");
+      ElMessage.warning('Vui lòng chọn ít nhất một yêu cầu để khôi phục');
       return;
     }
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn khôi phục ${selectedDeletedRequests.value.length} yêu cầu đã chọn?`,
-      "Xác nhận khôi phục",
+      'Xác nhận khôi phục',
       {
-        confirmButtonText: "Khôi phục",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Khôi phục',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         const ids = selectedDeletedRequests.value.map((item) => item.id);
         await PurchaseRequestApi.restoreMany(ids);
-        ElMessage.success("Khôi phục thành công");
+        ElMessage.success('Khôi phục thành công');
         restoreDialogVisible.value = false;
         refreshData();
       } catch (err: any) {
-        ElMessage.error(err.message || "Khôi phục thất bại");
+        ElMessage.error(err.message || 'Khôi phục thất bại');
       }
     });
   };
 
-  // --- MỚI: Nhập/Xuất Excel ---
   const importing = ref(false);
   const importResultData = ref<any | null>(null);
   const importResultDialogVisible = ref(false);
@@ -748,12 +722,7 @@ export function usePurchaseRequestTable() {
     importResultData.value = null;
     try {
       const res = await PurchaseRequestApi.importExcel(file);
-      if (
-        res &&
-        typeof res === "object" &&
-        "failedCount" in res &&
-        (res as any).failedCount > 0
-      ) {
+      if (res && typeof res === 'object' && 'failedCount' in res && (res as any).failedCount > 0) {
         importResultData.value = res;
         importResultDialogVisible.value = true;
       } else {
@@ -761,7 +730,7 @@ export function usePurchaseRequestTable() {
       }
       refreshData();
     } catch (err: any) {
-      ElMessage.error(err.message || "Nhập dữ liệu thất bại");
+      ElMessage.error(err.message || 'Nhập dữ liệu thất bại');
     } finally {
       importing.value = false;
     }
@@ -771,15 +740,15 @@ export function usePurchaseRequestTable() {
     try {
       const resBlob = await PurchaseRequestApi.downloadImportTemplate();
       const url = window.URL.createObjectURL(new Blob([resBlob]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", "Mau_nhap_yeu_cau_mua_hang.xlsx");
+      link.setAttribute('download', 'Mau_nhap_yeu_cau_mua_hang.xlsx');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
-      ElMessage.error(err.message || "Tải file mẫu thất bại");
+      ElMessage.error(err.message || 'Tải file mẫu thất bại');
     }
   };
 
@@ -790,27 +759,27 @@ export function usePurchaseRequestTable() {
     try {
       const sieveFilters = [];
       if (searchForm.value.status && searchForm.value.status.length > 0) {
-        sieveFilters.push(`Status==${searchForm.value.status.join("|")}`);
+        sieveFilters.push(`Status==${searchForm.value.status.join('|')}`);
       }
 
       const resBlob = await PurchaseRequestApi.exportExcel({
-        Filters: sieveFilters.join(",") || undefined,
-        Sorts: "-createdAt",
+        Filters: sieveFilters.join(',') || undefined,
+        Sorts: '-createdAt',
       });
 
       const url = window.URL.createObjectURL(new Blob([resBlob]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", "Danh_sach_yeu_cau_mua_hang.xlsx");
+      link.setAttribute('download', 'Danh_sach_yeu_cau_mua_hang.xlsx');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      ElMessage.success("Xuất file Excel thành công");
+      ElMessage.success('Xuất file Excel thành công');
     } catch (err: any) {
       console.error(err);
-      ElMessage.error(err.message || "Xuất file Excel thất bại");
+      ElMessage.error(err.message || 'Xuất file Excel thất bại');
     } finally {
       exporting.value = false;
     }

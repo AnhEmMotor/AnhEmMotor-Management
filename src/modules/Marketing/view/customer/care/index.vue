@@ -8,8 +8,7 @@
         </div>
         <h1>Khách hàng & hỗ trợ</h1>
         <p>
-          Phân loại khách hàng, ghi nhận tương tác và xử lý các phiên hỗ trợ
-          trên cùng một trang.
+          Phân loại khách hàng, ghi nhận tương tác và xử lý các phiên hỗ trợ trên cùng một trang.
         </p>
       </div>
 
@@ -117,16 +116,16 @@
             <div class="customer-cell">
               <div class="customer-avatar">{{ getInitials(row.fullName) }}</div>
               <div class="customer-cell__copy">
-                <strong>{{ row.fullName || "Chưa cập nhật" }}</strong>
+                <strong>{{ row.fullName || 'Chưa cập nhật' }}</strong>
                 <span class="text-xs text-slate-400">
                   {{
-                    row.gender === "Male"
-                      ? "Nam"
-                      : row.gender === "Female"
-                        ? "Nữ"
-                        : row.gender === "Other"
-                          ? "Khác"
-                          : "Giới tính chưa rõ"
+                    row.gender === 'Male'
+                      ? 'Nam'
+                      : row.gender === 'Female'
+                        ? 'Nữ'
+                        : row.gender === 'Other'
+                          ? 'Khác'
+                          : 'Giới tính chưa rõ'
                   }}
                 </span>
               </div>
@@ -138,11 +137,9 @@
           <template #default="{ row }">
             <div class="flex flex-col gap-0.5">
               <span class="table-primary font-semibold">{{
-                row.phoneNumber || "Chưa có SĐT"
+                row.phoneNumber || 'Chưa có SĐT'
               }}</span>
-              <span class="table-secondary text-xs">{{
-                row.email || "Chưa có email"
-              }}</span>
+              <span class="table-secondary text-xs">{{ row.email || 'Chưa có email' }}</span>
             </div>
           </template>
         </ElTableColumn>
@@ -154,10 +151,7 @@
               size="small"
               :loading="classificationUpdatingId === row.id"
               class="classification-select"
-              @change="
-                (value: CustomerClassification) =>
-                  updateClassification(asLead(row), value)
-              "
+              @change="(value: CustomerClassification) => updateClassification(asLead(row), value)"
             >
               <ElOption
                 v-for="option in classificationOptions"
@@ -172,32 +166,28 @@
         <ElTableColumn label="Nhu cầu hiện tại" min-width="190">
           <template #default="{ row }">
             <span class="table-primary">
-              {{ row.interestedVehicle || "Chưa ghi nhận nhu cầu" }}
+              {{ row.interestedVehicle || 'Chưa ghi nhận nhu cầu' }}
             </span>
           </template>
         </ElTableColumn>
 
         <ElTableColumn label="Tương tác gần nhất" min-width="180">
           <template #default="{ row }">
-            <span class="table-secondary">{{
-              getLastInteraction(asLead(row))
-            }}</span>
+            <span class="table-secondary">{{ getLastInteraction(asLead(row)) }}</span>
           </template>
         </ElTableColumn>
 
         <ElTableColumn label="Phụ trách" min-width="170">
           <template #default="{ row }">
             <span class="table-primary">
-              {{ row.assignedToName || "Chưa phân công" }}
+              {{ row.assignedToName || 'Chưa phân công' }}
             </span>
           </template>
         </ElTableColumn>
 
         <ElTableColumn label="Ngày tạo" min-width="135">
           <template #default="{ row }">
-            <span class="table-secondary">{{
-              formatDateTime(row.createdAt)
-            }}</span>
+            <span class="table-secondary">{{ formatDateTime(row.createdAt) }}</span>
           </template>
         </ElTableColumn>
 
@@ -292,19 +282,12 @@
         </div>
 
         <div class="session-sidebar__filters">
-          <ElInput
-            v-model="sessionSearch"
-            clearable
-            placeholder="Tìm phiên hỗ trợ"
-          >
+          <ElInput v-model="sessionSearch" clearable placeholder="Tìm phiên hỗ trợ">
             <template #prefix>
               <ArtSvgIcon icon="ri:search-line" />
             </template>
           </ElInput>
-          <ElSelect
-            v-model="sessionStatusFilter"
-            aria-label="Lọc trạng thái phiên"
-          >
+          <ElSelect v-model="sessionStatusFilter" aria-label="Lọc trạng thái phiên">
             <ElOption label="Tất cả trạng thái" value="all" />
             <ElOption label="Mới" value="New" />
             <ElOption label="Đang xử lý" value="InProgress" />
@@ -339,14 +322,9 @@
                 <small>{{ formatRelativeDate(session.createdAt) }}</small>
               </span>
               <span class="session-item__subject">{{ session.subject }}</span>
-              <span class="session-item__preview">{{
-                getSessionPreview(session)
-              }}</span>
+              <span class="session-item__preview">{{ getSessionPreview(session) }}</span>
             </span>
-            <span
-              class="status-dot"
-              :class="`status-dot--${session.status.toLowerCase()}`"
-            ></span>
+            <span class="status-dot" :class="`status-dot--${session.status.toLowerCase()}`"></span>
           </button>
 
           <div
@@ -355,9 +333,7 @@
           >
             <ArtSvgIcon icon="ri:chat-off-line" />
             <strong>Chưa có phiên hỗ trợ</strong>
-            <span
-              >Tạo phiên mới để ghi nhận yêu cầu qua điện thoại hoặc Zalo.</span
-            >
+            <span>Tạo phiên mới để ghi nhận yêu cầu qua điện thoại hoặc Zalo.</span>
           </div>
         </div>
       </aside>
@@ -374,7 +350,7 @@
                 {{
                   activeSession.contact?.phoneNumber ||
                   activeSession.email ||
-                  "Chưa có thông tin liên hệ"
+                  'Chưa có thông tin liên hệ'
                 }}
               </span>
             </div>
@@ -392,18 +368,14 @@
               <ElOption label="Đang xử lý" value="InProgress" />
               <ElOption label="Đã đóng" value="Closed" />
             </ElSelect>
-            <ElButton
-              v-if="matchedLead"
-              size="small"
-              @click="openProfile(matchedLead)"
-            >
+            <ElButton v-if="matchedLead" size="small" @click="openProfile(matchedLead)">
               Hồ sơ 360
             </ElButton>
           </div>
         </header>
 
         <div class="conversation-context">
-          <span>{{ activeSession.category || "Hỗ trợ chung" }}</span>
+          <span>{{ activeSession.category || 'Hỗ trợ chung' }}</span>
           <strong>{{ activeSession.subject }}</strong>
           <small>Mã phiên #{{ activeSession.id }}</small>
         </div>
@@ -446,9 +418,7 @@
             <ElButton
               type="primary"
               :loading="replySending"
-              :disabled="
-                activeSession.status === 'Closed' || !replyDraft.trim()
-              "
+              :disabled="activeSession.status === 'Closed' || !replyDraft.trim()"
               @click="sendChatReply"
             >
               <ArtSvgIcon icon="ri:send-plane-fill" class="mr-1.5" />
@@ -475,28 +445,16 @@
     >
       <ElForm label-position="top" class="dialog-form-grid">
         <ElFormItem label="Họ và tên" class="dialog-form-grid__wide" required>
-          <ElInput
-            v-model="customerForm.fullName"
-            placeholder="Nhập họ và tên"
-          />
+          <ElInput v-model="customerForm.fullName" placeholder="Nhập họ và tên" />
         </ElFormItem>
         <ElFormItem label="Số điện thoại" required>
-          <ElInput
-            v-model="customerForm.phoneNumber"
-            placeholder="0901234567"
-          />
+          <ElInput v-model="customerForm.phoneNumber" placeholder="0901234567" />
         </ElFormItem>
         <ElFormItem label="Email">
-          <ElInput
-            v-model="customerForm.email"
-            placeholder="khachhang@email.com"
-          />
+          <ElInput v-model="customerForm.email" placeholder="khachhang@email.com" />
         </ElFormItem>
         <ElFormItem label="CCCD / CMND">
-          <ElInput
-            v-model="customerForm.identificationNumber"
-            placeholder="Nhập số định danh"
-          />
+          <ElInput v-model="customerForm.identificationNumber" placeholder="Nhập số định danh" />
         </ElFormItem>
         <ElFormItem label="Phân loại">
           <ElSelect v-model="customerForm.classification" class="w-full">
@@ -528,11 +486,7 @@
       </ElForm>
       <template #footer>
         <ElButton @click="addCustomerDialogVisible = false">Hủy</ElButton>
-        <ElButton
-          type="primary"
-          :loading="customerCreating"
-          @click="createCustomer"
-        >
+        <ElButton type="primary" :loading="customerCreating" @click="createCustomer">
           Lưu khách hàng
         </ElButton>
       </template>
@@ -575,11 +529,7 @@
       </ElForm>
       <template #footer>
         <ElButton @click="careDialogVisible = false">Hủy</ElButton>
-        <ElButton
-          type="primary"
-          :loading="careSaving"
-          @click="saveCareActivity"
-        >
+        <ElButton type="primary" :loading="careSaving" @click="saveCareActivity">
           Lưu tương tác
         </ElButton>
       </template>
@@ -608,10 +558,7 @@
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Chủ đề" required>
-          <ElInput
-            v-model="supportForm.subject"
-            placeholder="Ví dụ: Hỗ trợ lịch bảo dưỡng"
-          />
+          <ElInput v-model="supportForm.subject" placeholder="Ví dụ: Hỗ trợ lịch bảo dưỡng" />
         </ElFormItem>
         <ElFormItem label="Nhóm yêu cầu" required>
           <ElSelect v-model="supportForm.category" class="w-full">
@@ -635,11 +582,7 @@
       </ElForm>
       <template #footer>
         <ElButton @click="supportDialogVisible = false">Hủy</ElButton>
-        <ElButton
-          type="primary"
-          :loading="sessionCreating"
-          @click="createSupportSession"
-        >
+        <ElButton type="primary" :loading="sessionCreating" @click="createSupportSession">
           Tạo phiên
         </ElButton>
       </template>
@@ -648,10 +591,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
-import dayjs from "dayjs";
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import dayjs from 'dayjs';
 import {
   fetchAddLeadActivity,
   fetchCreateLead,
@@ -659,15 +602,15 @@ import {
   type Lead,
   type LeadActivity,
   type LeadPaginatedResponse,
-} from "@/api/customer/lead.api";
-import { ContactApi } from "@/api/customer/contact.api";
-import type { Contact } from "@/types";
+} from '@/api/customer/lead.api';
+import { ContactApi } from '@/api/customer/contact.api';
+import type { Contact } from '@/types';
 
-defineOptions({ name: "CustomerCare" });
+defineOptions({ name: 'CustomerCare' });
 
-type CustomerClassification = "New" | "Returning" | "VIP" | "NeedsAttention";
-type Workspace = "customers" | "support";
-type ChatDirection = "incoming" | "outgoing";
+type CustomerClassification = 'New' | 'Returning' | 'VIP' | 'NeedsAttention';
+type Workspace = 'customers' | 'support';
+type ChatDirection = 'incoming' | 'outgoing';
 
 interface ChatMessage {
   id: string;
@@ -677,34 +620,34 @@ interface ChatMessage {
   direction: ChatDirection;
 }
 
-const CLASSIFICATION_ACTIVITY = "CustomerClassification";
+const CLASSIFICATION_ACTIVITY = 'CustomerClassification';
 const router = useRouter();
 
 const classificationOptions: Array<{
   value: CustomerClassification;
   label: string;
 }> = [
-  { value: "New", label: "Khách mới" },
-  { value: "Returning", label: "Khách quay lại" },
-  { value: "VIP", label: "Khách VIP" },
-  { value: "NeedsAttention", label: "Cần chăm sóc" },
+  { value: 'New', label: 'Khách mới' },
+  { value: 'Returning', label: 'Khách quay lại' },
+  { value: 'VIP', label: 'Khách VIP' },
+  { value: 'NeedsAttention', label: 'Cần chăm sóc' },
 ];
 
-const activeWorkspace = ref<Workspace>("customers");
+const activeWorkspace = ref<Workspace>('customers');
 const leads = ref<Lead[]>([]);
 const supportSessions = ref<Contact.SupportRequest[]>([]);
 const leadLoading = ref(false);
 const sessionLoading = ref(false);
 const refreshing = ref(false);
-const leadError = ref("");
-const sessionError = ref("");
+const leadError = ref('');
+const sessionError = ref('');
 
-const customerSearch = ref("");
-const classificationFilter = ref<CustomerClassification | "all">("all");
-const sessionSearch = ref("");
-const sessionStatusFilter = ref("all");
+const customerSearch = ref('');
+const classificationFilter = ref<CustomerClassification | 'all'>('all');
+const sessionSearch = ref('');
+const sessionStatusFilter = ref('all');
 const activeSession = ref<Contact.SupportRequest | null>(null);
-const replyDraft = ref("");
+const replyDraft = ref('');
 const replySending = ref(false);
 const sessionStatusUpdating = ref(false);
 const messageListRef = ref<HTMLElement | null>(null);
@@ -716,7 +659,7 @@ const customerForm = ref(createEmptyCustomerForm());
 const careDialogVisible = ref(false);
 const careCustomer = ref<Lead | null>(null);
 const careSaving = ref(false);
-const careForm = ref({ activityType: "Call", description: "" });
+const careForm = ref({ activityType: 'Call', description: '' });
 
 const supportDialogVisible = ref(false);
 const sessionCreating = ref(false);
@@ -725,22 +668,22 @@ const classificationUpdatingId = ref<number | null>(null);
 
 function createEmptyCustomerForm() {
   return {
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    identificationNumber: "",
-    birthday: "",
-    gender: "",
-    classification: "New" as CustomerClassification,
+    fullName: '',
+    phoneNumber: '',
+    email: '',
+    identificationNumber: '',
+    birthday: '',
+    gender: '',
+    classification: 'New' as CustomerClassification,
   };
 }
 
 function createEmptySupportForm() {
   return {
     leadId: null as number | null,
-    subject: "",
-    category: "Other",
-    content: "",
+    subject: '',
+    category: 'Other',
+    content: '',
   };
 }
 
@@ -748,21 +691,15 @@ function asLead(value: unknown): Lead {
   return value as Lead;
 }
 
-function isSupportRequest(
-  item: Contact.ContactItem,
-): item is Contact.SupportRequest {
-  return "subject" in item && "category" in item && "contactId" in item;
+function isSupportRequest(item: Contact.ContactItem): item is Contact.SupportRequest {
+  return 'subject' in item && 'category' in item && 'contactId' in item;
 }
 
-function getLatestClassificationActivity(
-  activities?: LeadActivity[],
-): LeadActivity | undefined {
+function getLatestClassificationActivity(activities?: LeadActivity[]): LeadActivity | undefined {
   return [...(activities ?? [])]
     .filter((activity) => activity.activityType === CLASSIFICATION_ACTIVITY)
     .sort(
-      (first, second) =>
-        new Date(second.createdAt).getTime() -
-        new Date(first.createdAt).getTime(),
+      (first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime()
     )[0];
 }
 
@@ -772,24 +709,20 @@ function getClassification(lead: Lead): CustomerClassification {
     return stored as CustomerClassification;
   }
 
-  const legacyTier = lead.tier?.toLowerCase() ?? "";
-  if (legacyTier.includes("vip") || legacyTier.includes("platinum"))
-    return "VIP";
+  const legacyTier = lead.tier?.toLowerCase() ?? '';
+  if (legacyTier.includes('vip') || legacyTier.includes('platinum')) return 'VIP';
   if (
-    legacyTier.includes("thân thiết") ||
-    legacyTier.includes("gold") ||
-    legacyTier.includes("silver")
+    legacyTier.includes('thân thiết') ||
+    legacyTier.includes('gold') ||
+    legacyTier.includes('silver')
   ) {
-    return "Returning";
+    return 'Returning';
   }
-  return "New";
+  return 'New';
 }
 
 function getClassificationLabel(value: CustomerClassification) {
-  return (
-    classificationOptions.find((option) => option.value === value)?.label ??
-    "Khách mới"
-  );
+  return classificationOptions.find((option) => option.value === value)?.label ?? 'Khách mới';
 }
 
 const filteredLeads = computed(() => {
@@ -803,11 +736,11 @@ const filteredLeads = computed(() => {
       lead.interestedVehicle,
     ]
       .filter(Boolean)
-      .join(" ")
+      .join(' ')
       .toLowerCase();
     const matchesQuery = !query || searchable.includes(query);
     const matchesClassification =
-      classificationFilter.value === "all" ||
+      classificationFilter.value === 'all' ||
       getClassification(lead) === classificationFilter.value;
     return matchesQuery && matchesClassification;
   });
@@ -837,37 +770,28 @@ const filteredSessions = computed(() => {
       session.content,
     ]
       .filter(Boolean)
-      .join(" ")
+      .join(' ')
       .toLowerCase();
     const matchesQuery = !query || searchable.includes(query);
     const matchesStatus =
-      sessionStatusFilter.value === "all" ||
-      session.status === sessionStatusFilter.value;
+      sessionStatusFilter.value === 'all' || session.status === sessionStatusFilter.value;
     return matchesQuery && matchesStatus;
   });
 });
 
 const openSessionCount = computed(
-  () =>
-    supportSessions.value.filter((session) => session.status !== "Closed")
-      .length,
+  () => supportSessions.value.filter((session) => session.status !== 'Closed').length
 );
 
 const matchedLead = computed(() => {
   if (!activeSession.value) return null;
   const contact = activeSession.value.contact;
-  const phone = normalizePhone(contact?.phoneNumber ?? "");
-  const email = (
-    contact?.email ??
-    activeSession.value.email ??
-    ""
-  ).toLowerCase();
+  const phone = normalizePhone(contact?.phoneNumber ?? '');
+  const email = (contact?.email ?? activeSession.value.email ?? '').toLowerCase();
   return (
     leads.value.find((lead) => {
-      const samePhone =
-        phone.length > 0 && normalizePhone(lead.phoneNumber) === phone;
-      const sameEmail =
-        email.length > 0 && (lead.email ?? "").toLowerCase() === email;
+      const samePhone = phone.length > 0 && normalizePhone(lead.phoneNumber) === phone;
+      const sameEmail = email.length > 0 && (lead.email ?? '').toLowerCase() === email;
       return samePhone || sameEmail;
     }) ?? null
   );
@@ -880,37 +804,34 @@ const activeMessages = computed<ChatMessage[]>(() => {
     message: activeSession.value.content,
     sender: getSessionCustomerName(activeSession.value),
     createdAt: activeSession.value.createdAt,
-    direction: "incoming",
+    direction: 'incoming',
   };
   const replies = (activeSession.value.contact?.replies ?? [])
     .filter((reply) => !reply.isInternal)
     .map<ChatMessage>((reply) => ({
       id: `reply-${reply.id}`,
       message: reply.message,
-      sender: reply.repliedByName || "Nhân viên hỗ trợ",
+      sender: reply.repliedByName || 'Nhân viên hỗ trợ',
       createdAt: reply.createdAt,
-      direction: "outgoing",
+      direction: 'outgoing',
     }))
     .sort(
       (first, second) =>
-        new Date(first.createdAt ?? 0).getTime() -
-        new Date(second.createdAt ?? 0).getTime(),
+        new Date(first.createdAt ?? 0).getTime() - new Date(second.createdAt ?? 0).getTime()
     );
   return [initialMessage, ...replies];
 });
 
 async function loadLeads() {
   leadLoading.value = true;
-  leadError.value = "";
+  leadError.value = '';
   try {
     const response = await fetchGetLeadList({ Page: 1, PageSize: 500 });
     const paginated = response as LeadPaginatedResponse<Lead>;
-    leads.value = Array.isArray(response)
-      ? response
-      : (paginated.items ?? paginated.records ?? []);
+    leads.value = Array.isArray(response) ? response : (paginated.items ?? paginated.records ?? []);
   } catch {
     leads.value = [];
-    leadError.value = "Không thể tải danh sách khách hàng. Vui lòng thử lại.";
+    leadError.value = 'Không thể tải danh sách khách hàng. Vui lòng thử lại.';
   } finally {
     leadLoading.value = false;
   }
@@ -918,11 +839,11 @@ async function loadLeads() {
 
 async function loadSupportSessions(preferredSessionId?: number) {
   sessionLoading.value = true;
-  sessionError.value = "";
+  sessionError.value = '';
   const currentId = preferredSessionId ?? activeSession.value?.id;
   try {
     const response = await ContactApi.getPaginated({
-      contactType: "support",
+      contactType: 'support',
       page: 1,
       pageSize: 200,
     });
@@ -930,8 +851,7 @@ async function loadSupportSessions(preferredSessionId?: number) {
       .filter(isSupportRequest)
       .sort(
         (first, second) =>
-          new Date(second.createdAt ?? 0).getTime() -
-          new Date(first.createdAt ?? 0).getTime(),
+          new Date(second.createdAt ?? 0).getTime() - new Date(first.createdAt ?? 0).getTime()
       );
     activeSession.value =
       supportSessions.value.find((session) => session.id === currentId) ??
@@ -940,7 +860,7 @@ async function loadSupportSessions(preferredSessionId?: number) {
   } catch {
     supportSessions.value = [];
     activeSession.value = null;
-    sessionError.value = "Không thể tải các phiên hỗ trợ. Vui lòng thử lại.";
+    sessionError.value = 'Không thể tải các phiên hỗ trợ. Vui lòng thử lại.';
   } finally {
     sessionLoading.value = false;
   }
@@ -963,7 +883,7 @@ function openAddCustomerDialog() {
 async function createCustomer() {
   const form = customerForm.value;
   if (!form.fullName.trim() || !normalizePhone(form.phoneNumber)) {
-    ElMessage.warning("Vui lòng nhập họ tên và số điện thoại");
+    ElMessage.warning('Vui lòng nhập họ tên và số điện thoại');
     return;
   }
 
@@ -983,20 +903,17 @@ async function createCustomer() {
         description: form.classification,
       });
     }
-    ElMessage.success("Đã tạo hồ sơ khách hàng");
+    ElMessage.success('Đã tạo hồ sơ khách hàng');
     addCustomerDialogVisible.value = false;
     await loadLeads();
   } catch {
-    ElMessage.error("Không thể tạo khách hàng. Kiểm tra dữ liệu và thử lại.");
+    ElMessage.error('Không thể tạo khách hàng. Kiểm tra dữ liệu và thử lại.');
   } finally {
     customerCreating.value = false;
   }
 }
 
-async function updateClassification(
-  lead: Lead,
-  classification: CustomerClassification,
-) {
+async function updateClassification(lead: Lead, classification: CustomerClassification) {
   if (classification === getClassification(lead)) return;
   classificationUpdatingId.value = lead.id;
   try {
@@ -1004,12 +921,10 @@ async function updateClassification(
       activityType: CLASSIFICATION_ACTIVITY,
       description: classification,
     });
-    ElMessage.success(
-      `Đã phân loại ${lead.fullName} là ${getClassificationLabel(classification)}`,
-    );
+    ElMessage.success(`Đã phân loại ${lead.fullName} là ${getClassificationLabel(classification)}`);
     await loadLeads();
   } catch {
-    ElMessage.error("Không thể cập nhật phân loại khách hàng");
+    ElMessage.error('Không thể cập nhật phân loại khách hàng');
   } finally {
     classificationUpdatingId.value = null;
   }
@@ -1017,13 +932,13 @@ async function updateClassification(
 
 function openCareDialog(lead: Lead) {
   careCustomer.value = lead;
-  careForm.value = { activityType: "Call", description: "" };
+  careForm.value = { activityType: 'Call', description: '' };
   careDialogVisible.value = true;
 }
 
 async function saveCareActivity() {
   if (!careCustomer.value || !careForm.value.description.trim()) {
-    ElMessage.warning("Vui lòng nhập nội dung tương tác");
+    ElMessage.warning('Vui lòng nhập nội dung tương tác');
     return;
   }
   careSaving.value = true;
@@ -1032,11 +947,11 @@ async function saveCareActivity() {
       activityType: careForm.value.activityType,
       description: careForm.value.description.trim(),
     });
-    ElMessage.success("Đã lưu tương tác chăm sóc");
+    ElMessage.success('Đã lưu tương tác chăm sóc');
     careDialogVisible.value = false;
     await loadLeads();
   } catch {
-    ElMessage.error("Không thể lưu tương tác chăm sóc");
+    ElMessage.error('Không thể lưu tương tác chăm sóc');
   } finally {
     careSaving.value = false;
   }
@@ -1054,7 +969,7 @@ async function createSupportSession() {
   const form = supportForm.value;
   const lead = leads.value.find((item) => item.id === form.leadId);
   if (!lead || !form.subject.trim() || !form.content.trim()) {
-    ElMessage.warning("Vui lòng chọn khách hàng và nhập đầy đủ nội dung phiên");
+    ElMessage.warning('Vui lòng chọn khách hàng và nhập đầy đủ nội dung phiên');
     return;
   }
 
@@ -1063,21 +978,21 @@ async function createSupportSession() {
     const createdResponse = await ContactApi.createSupportRequest({
       fullName: lead.fullName,
       phoneNumber: lead.phoneNumber,
-      email: lead.email || "",
+      email: lead.email || '',
       subject: form.subject.trim(),
       category: form.category,
       content: form.content.trim(),
     });
     await fetchAddLeadActivity(lead.id, {
-      activityType: "SupportSession",
+      activityType: 'SupportSession',
       description: `Đã tạo phiên hỗ trợ: ${form.subject.trim()}`,
     });
     supportDialogVisible.value = false;
-    activeWorkspace.value = "support";
+    activeWorkspace.value = 'support';
     await Promise.all([loadLeads(), loadSupportSessions(createdResponse.id)]);
-    ElMessage.success("Đã tạo phiên hỗ trợ");
+    ElMessage.success('Đã tạo phiên hỗ trợ');
   } catch {
-    ElMessage.error("Không thể tạo phiên hỗ trợ");
+    ElMessage.error('Không thể tạo phiên hỗ trợ');
   } finally {
     sessionCreating.value = false;
   }
@@ -1089,11 +1004,7 @@ function selectSession(session: Contact.SupportRequest) {
 
 async function sendChatReply() {
   const message = replyDraft.value.trim();
-  if (
-    !activeSession.value ||
-    !message ||
-    activeSession.value.status === "Closed"
-  ) {
+  if (!activeSession.value || !message || activeSession.value.status === 'Closed') {
     return;
   }
   replySending.value = true;
@@ -1104,11 +1015,11 @@ async function sendChatReply() {
       message,
       markAsProcessed: true,
     });
-    replyDraft.value = "";
+    replyDraft.value = '';
     await loadSupportSessions(sessionId);
-    ElMessage.success("Đã gửi phản hồi");
+    ElMessage.success('Đã gửi phản hồi');
   } catch {
-    ElMessage.error("Không thể gửi phản hồi");
+    ElMessage.error('Không thể gửi phản hồi');
   } finally {
     replySending.value = false;
   }
@@ -1119,11 +1030,11 @@ async function updateSessionStatus(status: string) {
   sessionStatusUpdating.value = true;
   const sessionId = activeSession.value.id;
   try {
-    await ContactApi.updateStatus(sessionId, "support", { status });
+    await ContactApi.updateStatus(sessionId, 'support', { status });
     await loadSupportSessions(sessionId);
-    ElMessage.success("Đã cập nhật trạng thái phiên");
+    ElMessage.success('Đã cập nhật trạng thái phiên');
   } catch {
-    ElMessage.error("Không thể cập nhật trạng thái phiên");
+    ElMessage.error('Không thể cập nhật trạng thái phiên');
   } finally {
     sessionStatusUpdating.value = false;
   }
@@ -1137,17 +1048,13 @@ function getLastInteraction(lead: Lead) {
   const activities = [...(lead.activities ?? [])]
     .filter((activity) => activity.activityType !== CLASSIFICATION_ACTIVITY)
     .sort(
-      (first, second) =>
-        new Date(second.createdAt).getTime() -
-        new Date(first.createdAt).getTime(),
+      (first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime()
     );
-  return activities[0]?.createdAt
-    ? formatDateTime(activities[0].createdAt)
-    : "Chưa có tương tác";
+  return activities[0]?.createdAt ? formatDateTime(activities[0].createdAt) : 'Chưa có tương tác';
 }
 
 function getSessionCustomerName(session: Contact.SupportRequest) {
-  return session.contact?.fullName || session.email || "Khách hàng";
+  return session.contact?.fullName || session.email || 'Khách hàng';
 }
 
 function getSessionPreview(session: Contact.SupportRequest) {
@@ -1155,23 +1062,22 @@ function getSessionPreview(session: Contact.SupportRequest) {
     .filter((reply) => !reply.isInternal)
     .sort(
       (first, second) =>
-        new Date(second.createdAt ?? 0).getTime() -
-        new Date(first.createdAt ?? 0).getTime(),
+        new Date(second.createdAt ?? 0).getTime() - new Date(first.createdAt ?? 0).getTime()
     );
   return replies[0]?.message || session.content;
 }
 
 function getInitials(name?: string) {
-  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "KH";
+  const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'KH';
   return parts
     .slice(-2)
     .map((part) => part[0]?.toUpperCase())
-    .join("");
+    .join('');
 }
 
 function normalizePhone(phone?: string) {
-  return (phone ?? "").replace(/\D/g, "");
+  return (phone ?? '').replace(/\D/g, '');
 }
 
 function getZaloUrl(phone?: string) {
@@ -1189,21 +1095,21 @@ function callPhone(phone?: string) {
 function openZalo(phone?: string) {
   const url = getZaloUrl(phone);
   if (url) {
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
 
 function formatDateTime(value?: string) {
-  return value ? dayjs(value).format("DD/MM/YYYY HH:mm") : "Chưa cập nhật";
+  return value ? dayjs(value).format('DD/MM/YYYY HH:mm') : 'Chưa cập nhật';
 }
 
 function formatRelativeDate(value?: string) {
-  if (!value) return "";
+  if (!value) return '';
   const date = dayjs(value);
   const now = dayjs();
-  if (date.isSame(now, "day")) return date.format("HH:mm");
-  if (date.isSame(now.subtract(1, "day"), "day")) return "Hôm qua";
-  return date.format("DD/MM");
+  if (date.isSame(now, 'day')) return date.format('HH:mm');
+  if (date.isSame(now.subtract(1, 'day'), 'day')) return 'Hôm qua';
+  return date.format('DD/MM');
 }
 
 async function scrollMessagesToBottom() {
@@ -1213,10 +1119,7 @@ async function scrollMessagesToBottom() {
   }
 }
 
-watch(
-  () => [activeSession.value?.id, activeMessages.value.length],
-  scrollMessagesToBottom,
-);
+watch(() => [activeSession.value?.id, activeMessages.value.length], scrollMessagesToBottom);
 
 onMounted(refreshAll);
 </script>
@@ -1318,11 +1221,9 @@ onMounted(refreshAll);
   position: relative;
   border-color: color-mix(in srgb, var(--care-accent) 30%, var(--care-border));
   background:
-    radial-gradient(circle at 100% 0%, rgb(255 255 255 / 20%), transparent 45%),
-    var(--care-accent);
+    radial-gradient(circle at 100% 0%, rgb(255 255 255 / 20%), transparent 45%), var(--care-accent);
   color: white;
-  box-shadow: 0 14px 32px
-    color-mix(in srgb, var(--care-accent) 22%, transparent);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--care-accent) 22%, transparent);
 
   small,
   .metric-card__label {
@@ -1475,7 +1376,7 @@ onMounted(refreshAll);
     border: 2px solid var(--care-surface);
     border-radius: 50%;
     background: #22c55e;
-    content: "";
+    content: '';
   }
 }
 
@@ -1548,11 +1449,7 @@ onMounted(refreshAll);
     transform 180ms ease;
 
   &:hover {
-    border-color: color-mix(
-      in srgb,
-      var(--care-accent) 40%,
-      var(--care-border)
-    );
+    border-color: color-mix(in srgb, var(--care-accent) 40%, var(--care-border));
     background: var(--care-accent-soft);
     color: var(--care-accent);
     transform: translateY(-1px);
@@ -1694,7 +1591,7 @@ onMounted(refreshAll);
       width: 3px;
       border-radius: 0 3px 3px 0;
       background: var(--care-accent);
-      content: "";
+      content: '';
     }
   }
 }
@@ -1843,8 +1740,7 @@ onMounted(refreshAll);
   padding: 22px;
   overflow-y: auto;
   background:
-    radial-gradient(circle at 8% 10%, var(--care-accent-soft), transparent 24%),
-    var(--care-surface);
+    radial-gradient(circle at 8% 10%, var(--care-accent-soft), transparent 24%), var(--care-surface);
 }
 
 .message-row {

@@ -1,7 +1,7 @@
-import fs from "fs";
+import fs from 'fs';
 
-const path = "d:/DATN/AnhEmMotor/AnhEmMotor-Management/src/i18n/package/vi.ts";
-let content = fs.readFileSync(path, "utf8");
+const path = 'd:/DATN/AnhEmMotor/AnhEmMotor-Management/src/i18n/package/vi.ts';
+let content = fs.readFileSync(path, 'utf8');
 
 // The target marker: line 436 is "},", line 437 is "marketing: {"
 // We want to replace the transition with: "},\ncontact: { ... },\nmarketing: {"
@@ -90,7 +90,7 @@ contact: {
 },
 marketing: {`;
 
-content = content.replace("},\nmarketing: {", contactBlock);
+content = content.replace('},\nmarketing: {', contactBlock);
 
-fs.writeFileSync(path, content, "utf8");
-console.log("Done");
+fs.writeFileSync(path, content, 'utf8');
+console.log('Done');

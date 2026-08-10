@@ -26,11 +26,7 @@
 
     <!-- Table -->
     <ElCard class="art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="fetchData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="fetchData">
         <template #left>
           <ElButton type="primary" v-ripple @click="handleRefresh">
             <ElIcon class="mr-1"><Refresh /></ElIcon> Làm mới
@@ -46,23 +42,18 @@
       >
         <template #orderCode="{ row }">
           <span class="font-medium text-primary">
-            {{ row.orderCode || `RET-${String(row.id).padStart(3, "0")}` }}
+            {{ row.orderCode || `RET-${String(row.id).padStart(3, '0')}` }}
           </span>
         </template>
         <template #customer="{ row }">
           <div class="flex flex-col">
-            <span class="font-medium">{{ row.customerName || "---" }}</span>
-            <span class="text-xs text-gray-500">{{
-              row.customerPhone || "---"
-            }}</span>
+            <span class="font-medium">{{ row.customerName || '---' }}</span>
+            <span class="text-xs text-gray-500">{{ row.customerPhone || '---' }}</span>
           </div>
         </template>
         <template #type="{ row }">
-          <ElTag
-            :type="row.type === 'return' ? 'danger' : 'warning'"
-            size="small"
-          >
-            {{ row.type === "return" ? "Trả hàng" : "Hủy đơn" }}
+          <ElTag :type="row.type === 'return' ? 'danger' : 'warning'" size="small">
+            {{ row.type === 'return' ? 'Trả hàng' : 'Hủy đơn' }}
           </ElTag>
         </template>
         <template #reason="{ row }">
@@ -123,9 +114,7 @@
     <ElDrawer
       v-model="drawer.visible"
       :title="
-        drawer.request
-          ? `Chi tiết yêu cầu #${drawer.request.orderCode || drawer.request.id}`
-          : ''
+        drawer.request ? `Chi tiết yêu cầu #${drawer.request.orderCode || drawer.request.id}` : ''
       "
       size="55%"
       direction="rtl"
@@ -136,10 +125,7 @@
         <div class="summary grid grid-cols-2 gap-4 mb-4">
           <div>
             <strong>Mã đơn:</strong>
-            {{
-              drawer.request.orderCode ||
-              `RET-${String(drawer.request.id).padStart(3, "0")}`
-            }}
+            {{ drawer.request.orderCode || `RET-${String(drawer.request.id).padStart(3, '0')}` }}
           </div>
           <div>
             <strong>Loại yêu cầu:</strong>
@@ -148,16 +134,12 @@
               size="small"
               class="ml-2"
             >
-              {{ drawer.request.type === "return" ? "Trả hàng" : "Hủy đơn" }}
+              {{ drawer.request.type === 'return' ? 'Trả hàng' : 'Hủy đơn' }}
             </ElTag>
           </div>
           <div>
             <strong>Trạng thái:</strong>
-            <ElTag
-              :type="getStatusTagType(drawer.request.status)"
-              size="small"
-              class="ml-2"
-            >
+            <ElTag :type="getStatusTagType(drawer.request.status)" size="small" class="ml-2">
               {{ getStatusLabel(drawer.request.status) }}
             </ElTag>
           </div>
@@ -167,17 +149,12 @@
           </div>
           <div class="col-span-2">
             <strong>Khách hàng:</strong>
-            {{ drawer.request.customerName || "---" }}
-            <span
-              v-if="drawer.request.customerPhone"
-              class="text-gray-500 ml-2"
-            >
+            {{ drawer.request.customerName || '---' }}
+            <span v-if="drawer.request.customerPhone" class="text-gray-500 ml-2">
               - {{ drawer.request.customerPhone }}
             </span>
           </div>
-          <div class="col-span-2">
-            <strong>Lý do:</strong> {{ drawer.request.reason || "---" }}
-          </div>
+          <div class="col-span-2"><strong>Lý do:</strong> {{ drawer.request.reason || '---' }}</div>
           <div v-if="drawer.request.note" class="col-span-2">
             <strong>Ghi chú:</strong> {{ drawer.request.note }}
           </div>
@@ -192,18 +169,9 @@
         <!-- Products Table -->
         <div class="products-section mb-4">
           <h4 class="font-bold mb-2 text-gray-700">
-            {{
-              drawer.request.type === "return"
-                ? "Sản phẩm trả lại"
-                : "Sản phẩm liên quan"
-            }}
+            {{ drawer.request.type === 'return' ? 'Sản phẩm trả lại' : 'Sản phẩm liên quan' }}
           </h4>
-          <ElTable
-            :data="drawer.request.items"
-            border
-            size="small"
-            max-height="300"
-          >
+          <ElTable :data="drawer.request.items" border size="small" max-height="300">
             <ElTableColumn label="Ảnh" width="70" align="center">
               <template #default="{ row }">
                 <img
@@ -246,11 +214,7 @@
             </ElTableColumn>
             <ElTableColumn label="Thành tiền" width="120" align="right">
               <template #default="{ row }">
-                {{
-                  formatCurrency(
-                    (row.returnQuantity || row.quantity) * row.unitPrice,
-                  )
-                }}
+                {{ formatCurrency((row.returnQuantity || row.quantity) * row.unitPrice) }}
               </template>
             </ElTableColumn>
           </ElTable>
@@ -330,9 +294,7 @@
       <div v-if="processDialog.request" class="flex flex-col gap-4">
         <div class="text-sm text-gray-600">
           Loại:
-          <strong>{{
-            processDialog.request.type === "return" ? "Trả hàng" : "Hủy đơn"
-          }}</strong>
+          <strong>{{ processDialog.request.type === 'return' ? 'Trả hàng' : 'Hủy đơn' }}</strong>
         </div>
 
         <ElForm label-position="top" :model="processForm">
@@ -373,11 +335,7 @@
       </div>
       <template #footer>
         <ElButton @click="processDialog.visible = false">Hủy</ElButton>
-        <ElButton
-          type="primary"
-          @click="confirmProcess"
-          :loading="actionLoading"
-        >
+        <ElButton type="primary" @click="confirmProcess" :loading="actionLoading">
           Xác nhận xử lý
         </ElButton>
       </template>
@@ -386,21 +344,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { Refresh } from "@element-plus/icons-vue";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Refresh } from '@element-plus/icons-vue';
 import {
   getReturnRequests,
   getReturnRequestDetail,
   updateReturnRequestStatus,
-} from "@/api/sales/returns.api";
-import type { ReturnRequestDetail } from "@/domain/sales/returns.types";
-import { formatImageUrl } from "@/common/utils/image";
+} from '@/api/sales/returns.api';
+import type { ReturnRequestDetail } from '@/domain/sales/returns.types';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "OrderReturns" });
+defineOptions({ name: 'OrderReturns' });
 
 // ==================== TABS ====================
-type TabId = "all" | "pending" | "inspecting" | "completed" | "rejected";
+type TabId = 'all' | 'pending' | 'inspecting' | 'completed' | 'rejected';
 
 interface TabItem {
   id: TabId;
@@ -411,38 +369,38 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   {
-    id: "all",
-    label: "Tất cả",
-    icon: "ri:file-list-3-line",
-    iconStyle: "bg-primary",
+    id: 'all',
+    label: 'Tất cả',
+    icon: 'ri:file-list-3-line',
+    iconStyle: 'bg-primary',
   },
   {
-    id: "pending",
-    label: "Chờ xử lý",
-    icon: "ri:time-line",
-    iconStyle: "bg-warning",
+    id: 'pending',
+    label: 'Chờ xử lý',
+    icon: 'ri:time-line',
+    iconStyle: 'bg-warning',
   },
   {
-    id: "inspecting",
-    label: "Đang kiểm tra",
-    icon: "ri:search-line",
-    iconStyle: "bg-info",
+    id: 'inspecting',
+    label: 'Đang kiểm tra',
+    icon: 'ri:search-line',
+    iconStyle: 'bg-info',
   },
   {
-    id: "completed",
-    label: "Đã xong",
-    icon: "ri:check-double-line",
-    iconStyle: "bg-success",
+    id: 'completed',
+    label: 'Đã xong',
+    icon: 'ri:check-double-line',
+    iconStyle: 'bg-success',
   },
   {
-    id: "rejected",
-    label: "Đã từ chối",
-    icon: "ri:close-circle-line",
-    iconStyle: "bg-danger",
+    id: 'rejected',
+    label: 'Đã từ chối',
+    icon: 'ri:close-circle-line',
+    iconStyle: 'bg-danger',
   },
 ];
 
-const activeTab = ref<TabId>("all");
+const activeTab = ref<TabId>('all');
 
 // ==================== STATE ====================
 const requests = ref<ReturnRequestDetail[]>([]);
@@ -450,7 +408,7 @@ const loading = ref(false);
 const actionLoading = ref(false);
 
 const searchForm = reactive({
-  keyword: "",
+  keyword: '',
 });
 
 const pagination = reactive({
@@ -465,7 +423,7 @@ const drawer = reactive({
 
 const rejectDialog = reactive({
   visible: false,
-  reason: "",
+  reason: '',
   requestId: 0,
 });
 
@@ -475,21 +433,21 @@ const processDialog = reactive({
 });
 
 const processForm = reactive({
-  boxCondition: "Còn nguyên vẹn",
-  productCondition: "Sử dụng tốt",
-  returnInternalNote: "",
-  returnAction: "refund" as "restock" | "defect" | "refund",
+  boxCondition: 'Còn nguyên vẹn',
+  productCondition: 'Sử dụng tốt',
+  returnInternalNote: '',
+  returnAction: 'refund' as 'restock' | 'defect' | 'refund',
 });
 
 // ==================== SEARCH ITEMS ====================
 const searchItems = computed(() => [
   {
-    label: "Từ khóa",
-    key: "keyword",
-    type: "input",
+    label: 'Từ khóa',
+    key: 'keyword',
+    type: 'input',
     props: {
       clearable: true,
-      placeholder: "Mã đơn, tên KH, SĐT, lý do...",
+      placeholder: 'Mã đơn, tên KH, SĐT, lý do...',
     },
   },
 ]);
@@ -497,54 +455,52 @@ const searchItems = computed(() => [
 // ==================== TABLE COLUMNS ====================
 const columnChecks = ref([
   {
-    prop: "orderCode",
-    label: "Mã đơn",
+    prop: 'orderCode',
+    label: 'Mã đơn',
     width: 130,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "customer",
-    label: "Khách hàng",
+    prop: 'customer',
+    label: 'Khách hàng',
     minWidth: 180,
     checked: true,
     useSlot: true,
   },
-  { prop: "type", label: "Loại", width: 100, checked: true, useSlot: true },
-  { prop: "reason", label: "Lý do", width: 140, checked: true, useSlot: true },
+  { prop: 'type', label: 'Loại', width: 100, checked: true, useSlot: true },
+  { prop: 'reason', label: 'Lý do', width: 140, checked: true, useSlot: true },
   {
-    prop: "status",
-    label: "Trạng thái",
+    prop: 'status',
+    label: 'Trạng thái',
     width: 120,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "createdAt",
-    label: "Ngày tạo",
+    prop: 'createdAt',
+    label: 'Ngày tạo',
     width: 150,
     checked: true,
     useSlot: true,
   },
   {
-    prop: "actions",
-    label: "Thao tác",
+    prop: 'actions',
+    label: 'Thao tác',
     width: 140,
     checked: true,
     useSlot: true,
   },
 ]);
 
-const columns = computed(() =>
-  columnChecks.value.filter((item) => item.checked),
-);
+const columns = computed(() => columnChecks.value.filter((item) => item.checked));
 
 // ==================== COMPUTED ====================
 const filteredRequests = computed(() => {
   let result = requests.value;
 
   // Filter by tab
-  if (activeTab.value !== "all") {
+  if (activeTab.value !== 'all') {
     result = result.filter((r) => r.status === activeTab.value);
   }
 
@@ -552,14 +508,12 @@ const filteredRequests = computed(() => {
   if (searchForm.keyword.trim()) {
     const q = searchForm.keyword.toLowerCase().trim();
     result = result.filter((r) => {
-      const orderCode = (
-        r.orderCode || `RET-${String(r.id).padStart(3, "0")}`
-      ).toLowerCase();
+      const orderCode = (r.orderCode || `RET-${String(r.id).padStart(3, '0')}`).toLowerCase();
       return (
         orderCode.includes(q) ||
-        (r.customerName || "").toLowerCase().includes(q) ||
-        (r.customerPhone || "").includes(q) ||
-        (r.reason || "").toLowerCase().includes(q)
+        (r.customerName || '').toLowerCase().includes(q) ||
+        (r.customerPhone || '').includes(q) ||
+        (r.reason || '').toLowerCase().includes(q)
       );
     });
   }
@@ -583,22 +537,22 @@ async function fetchData() {
   loading.value = true;
   try {
     const res = await getReturnRequests({
-      status: activeTab.value !== "all" ? activeTab.value : undefined,
+      status: activeTab.value !== 'all' ? activeTab.value : undefined,
       keyword: searchForm.keyword.trim() || undefined,
       current: 1,
       size: 1000,
     });
     requests.value = res.items || [];
   } catch (error) {
-    console.error("Failed to fetch return requests:", error);
-    ElMessage.error("Không thể tải danh sách yêu cầu");
+    console.error('Failed to fetch return requests:', error);
+    ElMessage.error('Không thể tải danh sách yêu cầu');
   } finally {
     loading.value = false;
   }
 }
 
 function getCountForTab(tabId: TabId): number {
-  if (tabId === "all") return requests.value.length;
+  if (tabId === 'all') return requests.value.length;
   return requests.value.filter((r) => r.status === tabId).length;
 }
 
@@ -609,7 +563,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  searchForm.keyword = "";
+  searchForm.keyword = '';
   pagination.current = 1;
   fetchData();
 }
@@ -634,31 +588,31 @@ function handleRowClick(row: ReturnRequestDetail) {
 
 function handleReject(row: ReturnRequestDetail) {
   rejectDialog.requestId = row.id;
-  rejectDialog.reason = "";
+  rejectDialog.reason = '';
   rejectDialog.visible = true;
 }
 
 async function confirmReject() {
   if (!rejectDialog.reason.trim()) {
-    ElMessage.warning("Vui lòng nhập lý do từ chối");
+    ElMessage.warning('Vui lòng nhập lý do từ chối');
     return;
   }
   try {
     actionLoading.value = true;
-    await ElMessageBox.confirm("Xác nhận từ chối yêu cầu này?", "Xác nhận", {
-      type: "warning",
+    await ElMessageBox.confirm('Xác nhận từ chối yêu cầu này?', 'Xác nhận', {
+      type: 'warning',
     });
-    await updateReturnRequestStatus(rejectDialog.requestId, "rejected");
-    ElMessage.success("Đã từ chối yêu cầu");
+    await updateReturnRequestStatus(rejectDialog.requestId, 'rejected');
+    ElMessage.success('Đã từ chối yêu cầu');
     rejectDialog.visible = false;
     await fetchData();
     if (drawer.request?.id === rejectDialog.requestId) {
       drawer.visible = false;
     }
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Từ chối thất bại");
+      ElMessage.error('Từ chối thất bại');
     }
   } finally {
     actionLoading.value = false;
@@ -668,36 +622,36 @@ async function confirmReject() {
 function handleProcess(row: ReturnRequestDetail) {
   processDialog.request = row;
   processDialog.visible = true;
-  processForm.boxCondition = "Còn nguyên vẹn";
-  processForm.productCondition = "Sử dụng tốt";
-  processForm.returnInternalNote = "";
-  processForm.returnAction = "refund";
+  processForm.boxCondition = 'Còn nguyên vẹn';
+  processForm.productCondition = 'Sử dụng tốt';
+  processForm.returnInternalNote = '';
+  processForm.returnAction = 'refund';
 }
 
 async function confirmProcess() {
   if (!processDialog.request) return;
   if (!processForm.returnAction) {
-    ElMessage.warning("Vui lòng chọn phương án xử lý");
+    ElMessage.warning('Vui lòng chọn phương án xử lý');
     return;
   }
   try {
     actionLoading.value = true;
     await ElMessageBox.confirm(
       `Xác nhận xử lý yêu cầu này?\\n\\nPhương án: ${getActionLabel(processForm.returnAction)}`,
-      "Xác nhận",
-      { type: "warning" },
+      'Xác nhận',
+      { type: 'warning' }
     );
-    await updateReturnRequestStatus(processDialog.request.id, "inspecting");
-    ElMessage.success("Đã xử lý yêu cầu");
+    await updateReturnRequestStatus(processDialog.request.id, 'inspecting');
+    ElMessage.success('Đã xử lý yêu cầu');
     processDialog.visible = false;
     await fetchData();
     if (drawer.request?.id === processDialog.request.id) {
       drawer.visible = false;
     }
   } catch (error) {
-    if (error !== "cancel") {
+    if (error !== 'cancel') {
       console.error(error);
-      ElMessage.error("Xử lý thất bại");
+      ElMessage.error('Xử lý thất bại');
     }
   } finally {
     actionLoading.value = false;
@@ -706,56 +660,53 @@ async function confirmProcess() {
 
 // ==================== HELPERS ====================
 function formatDateTime(dateStr?: string): string {
-  if (!dateStr) return "---";
+  if (!dateStr) return '---';
   const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return "---";
-  const pad = (num: number) => String(num).padStart(2, "0");
+  if (Number.isNaN(d.getTime())) return '---';
+  const pad = (num: number) => String(num).padStart(2, '0');
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function formatCurrency(val?: number): string {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(Number(val || 0));
 }
 
 function getStatusLabel(status: string): string {
   const map: Record<string, string> = {
-    pending: "Chờ xử lý",
-    inspecting: "Đang kiểm tra",
-    completed: "Đã hoàn tất",
-    rejected: "Đã từ chối",
+    pending: 'Chờ xử lý',
+    inspecting: 'Đang kiểm tra',
+    completed: 'Đã hoàn tất',
+    rejected: 'Đã từ chối',
   };
   return map[status] || status;
 }
 
-function getStatusTagType(
-  status: string,
-): "danger" | "warning" | "success" | "info" {
-  const map: Record<string, "danger" | "warning" | "success" | "info"> = {
-    pending: "danger",
-    inspecting: "warning",
-    completed: "success",
-    rejected: "info",
+function getStatusTagType(status: string): 'danger' | 'warning' | 'success' | 'info' {
+  const map: Record<string, 'danger' | 'warning' | 'success' | 'info'> = {
+    pending: 'danger',
+    inspecting: 'warning',
+    completed: 'success',
+    rejected: 'info',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 }
 
-function getReasonTagType(reason: string): "warning" | "danger" {
+function getReasonTagType(reason: string): 'warning' | 'danger' {
   const r = reason.toLowerCase();
-  if (r.includes("hủy") || r.includes("huy") || r.includes("cancel"))
-    return "warning";
-  return "danger";
+  if (r.includes('hủy') || r.includes('huy') || r.includes('cancel')) return 'warning';
+  return 'danger';
 }
 
 function getActionLabel(action?: string): string {
-  if (!action) return "---";
+  if (!action) return '---';
   const map: Record<string, string> = {
-    restock: "Nhập lại kho bán lẻ",
-    defect: "Cách ly chờ hủy",
-    refund: "Hoàn tiền cho khách",
+    restock: 'Nhập lại kho bán lẻ',
+    defect: 'Cách ly chờ hủy',
+    refund: 'Hoàn tiền cho khách',
   };
   return map[action] || action;
 }

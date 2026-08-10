@@ -31,9 +31,7 @@
           @click="handleWorkspaceClick(workspace)"
         >
           <div
-            v-if="
-              workspace.hasAccess && workspace.badge && workspace.badge.isDot
-            "
+            v-if="workspace.hasAccess && workspace.badge && workspace.badge.isDot"
             class="absolute top-0 right-0 -mt-2 -mr-2 flex h-4 w-4 z-20"
           >
             <span
@@ -63,14 +61,12 @@
                 size="small"
                 round
               >
-                {{ workspace.hasAccess ? "Đã cấp quyền" : "Khóa truy cập" }}
+                {{ workspace.hasAccess ? 'Đã cấp quyền' : 'Khóa truy cập' }}
               </el-tag>
             </div>
 
             <div
-              v-if="
-                workspace.hasAccess && workspace.badge && !workspace.badge.isDot
-              "
+              v-if="workspace.hasAccess && workspace.badge && !workspace.badge.isDot"
               class="realtime-badge"
               :class="workspace.badge.type"
             >
@@ -89,11 +85,9 @@
 
           <div class="card-content">
             <h3 class="workspace-title">{{ workspace.title }}</h3>
-            <span
-              class="workspace-subtitle"
-              :style="{ color: workspace.color }"
-              >{{ workspace.subtitle }}</span
-            >
+            <span class="workspace-subtitle" :style="{ color: workspace.color }">{{
+              workspace.subtitle
+            }}</span>
           </div>
         </el-card>
       </div>
@@ -106,29 +100,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from "vue";
-import {
-  DataAnalysis,
-  Service,
-  Box,
-  UserFilled,
-  Wallet,
-  Document,
-} from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
-import { useCommon } from "@/common/composables/useCommon";
-import ArtHeaderBar from "@/components/core/layouts/art-header-bar/index.vue";
-import ArtGlobalComponent from "@/components/core/layouts/art-global-component/index.vue";
-import { useWorktabStore } from "@/application/store/worktab";
-import { useMenuStore } from "@/application/store/menu";
-import { onMounted, computed } from "vue";
-import { moduleHasAccess } from "@/router/core/ModuleMenu";
-import { adminMenu } from "@/modules/Admin/Menu";
-import { marketingMenu } from "@/modules/Marketing/Menu";
-import { warehouseMenu } from "@/modules/Warehouse/Menu";
-import { factoryMenu } from "@/modules/Factory/Menu";
-import { accountancyMenu } from "@/modules/Accountant/Menu";
-import { orderMenu } from "@/modules/Order/Menu";
+import { ref, markRaw } from 'vue';
+import { DataAnalysis, Service, Box, UserFilled, Wallet, Document } from '@element-plus/icons-vue';
+import { useRouter } from 'vue-router';
+import { useCommon } from '@/common/composables/useCommon';
+import ArtHeaderBar from '@/components/core/layouts/art-header-bar/index.vue';
+import ArtGlobalComponent from '@/components/core/layouts/art-global-component/index.vue';
+import { useWorktabStore } from '@/application/store/worktab';
+import { useMenuStore } from '@/application/store/menu';
+import { onMounted, computed } from 'vue';
+import { moduleHasAccess } from '@/router/core/ModuleMenu';
+import { adminMenu } from '@/modules/Admin/Menu';
+import { marketingMenu } from '@/modules/Marketing/Menu';
+import { warehouseMenu } from '@/modules/Warehouse/Menu';
+import { factoryMenu } from '@/modules/Factory/Menu';
+import { accountancyMenu } from '@/modules/Accountant/Menu';
+import { orderMenu } from '@/modules/Order/Menu';
 
 const router = useRouter();
 const { homePath } = useCommon();
@@ -144,7 +131,7 @@ const handleWorkspaceClick = (workspace: any) => {
     if (workspace.path) {
       router.push(workspace.path);
     } else {
-      router.push(homePath.value || "/dashboard");
+      router.push(homePath.value || '/dashboard');
     }
   }
 };
@@ -154,60 +141,60 @@ const workspaces = computed(() => {
 
   return [
     {
-      title: "Ban Điều Hành & Chủ Showroom",
-      subtitle: "Executive Overview",
+      title: 'Ban Điều Hành & Chủ Showroom',
+      subtitle: 'Executive Overview',
       icon: markRaw(DataAnalysis),
-      color: "#e11d48",
-      shadowColor: "rgba(225, 29, 72, 0.25)",
+      color: '#e11d48',
+      shadowColor: 'rgba(225, 29, 72, 0.25)',
       hasAccess: moduleHasAccess(adminMenu, menuList),
-      badge: { isDot: true, type: "danger" },
-      path: "/admin/dashboard/intro",
+      badge: { isDot: true, type: 'danger' },
+      path: '/admin/dashboard/intro',
     },
     {
-      title: "Marketing & SEO",
-      subtitle: "Marketing & SEO Workspace",
+      title: 'Marketing & SEO',
+      subtitle: 'Marketing & SEO Workspace',
       icon: markRaw(UserFilled),
-      color: "#059669",
-      shadowColor: "rgba(5, 150, 105, 0.25)",
+      color: '#059669',
+      shadowColor: 'rgba(5, 150, 105, 0.25)',
       hasAccess: moduleHasAccess(marketingMenu, menuList),
-      badge: { isDot: false, value: 5, label: "đơn mới", type: "warning" },
-      path: "/Marketing/intro",
+      badge: { isDot: false, value: 5, label: 'đơn mới', type: 'warning' },
+      path: '/Marketing/intro',
     },
     {
-      title: "Quản Lý Kho & Hậu Cần",
-      subtitle: "Inventory & Asset Logistics",
+      title: 'Quản Lý Kho & Hậu Cần',
+      subtitle: 'Inventory & Asset Logistics',
       icon: markRaw(Box),
-      color: "#d97706",
-      shadowColor: "rgba(217, 119, 6, 0.15)",
+      color: '#d97706',
+      shadowColor: 'rgba(217, 119, 6, 0.15)',
       hasAccess: moduleHasAccess(warehouseMenu, menuList),
-      path: "/Warehouse/intro",
+      path: '/Warehouse/intro',
     },
     {
-      title: "Dịch Vụ & Xưởng Sửa Chữa",
-      subtitle: "Workshop Operations",
+      title: 'Dịch Vụ & Xưởng Sửa Chữa',
+      subtitle: 'Workshop Operations',
       icon: markRaw(Service),
-      color: "#2563eb",
-      shadowColor: "rgba(37, 99, 235, 0.15)",
+      color: '#2563eb',
+      shadowColor: 'rgba(37, 99, 235, 0.15)',
       hasAccess: moduleHasAccess(factoryMenu, menuList),
-      path: "/factory/workshop/banner",
+      path: '/factory/workshop/banner',
     },
     {
-      title: "Kế Toán, Lương & Thuế",
-      subtitle: "Financial & Compliance",
+      title: 'Kế Toán, Lương & Thuế',
+      subtitle: 'Financial & Compliance',
       icon: markRaw(Wallet),
-      color: "#7c3aed",
-      shadowColor: "rgba(124, 58, 237, 0.15)",
+      color: '#7c3aed',
+      shadowColor: 'rgba(124, 58, 237, 0.15)',
       hasAccess: moduleHasAccess(accountancyMenu, menuList),
-      path: "/Accountant/intro",
+      path: '/Accountant/intro',
     },
     {
-      title: "Đơn hàng & Vận chuyển",
-      subtitle: "Order & Transer Workspace",
+      title: 'Đơn hàng & Vận chuyển',
+      subtitle: 'Order & Transer Workspace',
       icon: markRaw(Wallet),
-      color: "#7c3aed",
-      shadowColor: "rgba(124, 58, 237, 0.15)",
+      color: '#7c3aed',
+      shadowColor: 'rgba(124, 58, 237, 0.15)',
       hasAccess: moduleHasAccess(orderMenu, menuList),
-      path: "/Order/management/draft",
+      path: '/Order/management/draft',
     },
   ].filter((workspace) => workspace.hasAccess);
 });

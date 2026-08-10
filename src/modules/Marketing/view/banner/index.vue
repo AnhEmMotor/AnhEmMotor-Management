@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="resp-page banner-management-page min-h-full text-[#0F172A] dark:text-slate-100 pb-10"
-  >
+  <div class="resp-page banner-management-page min-h-full text-[#0F172A] dark:text-slate-100 pb-10">
     <div
       class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-6 sticky top-0 z-[50] shadow-sm"
     >
@@ -18,7 +16,7 @@
             <h1
               class="m-0 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none"
             >
-              {{ $t("marketing.bannerManagement.title") }}
+              {{ $t('marketing.bannerManagement.title') }}
             </h1>
           </div>
         </div>
@@ -29,7 +27,7 @@
             class="h-11 px-8 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
           >
             <ArtSvgIcon icon="ri:add-fill" class="text-blue-500" />
-            {{ $t("marketing.bannerManagement.createBtn") }}
+            {{ $t('marketing.bannerManagement.createBtn') }}
           </button>
         </div>
       </div>
@@ -50,9 +48,7 @@
             </span>
           </div>
 
-          <div
-            class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img"
-          >
+          <div class="aspect-[21/9] bg-slate-900 relative overflow-hidden group/img">
             <img
               v-if="!isBannerImageMissing(banner)"
               :src="getBannerImageUrl(banner)"
@@ -63,14 +59,9 @@
               v-else
               class="absolute inset-0 flex-cc flex-col gap-3 bg-slate-900 text-center px-6"
             >
-              <ArtSvgIcon
-                icon="ri:image-off-line"
-                class="text-4xl text-slate-500"
-              />
+              <ArtSvgIcon icon="ri:image-off-line" class="text-4xl text-slate-500" />
               <div>
-                <p class="m-0 text-sm font-bold text-white">
-                  Ảnh không còn tồn tại
-                </p>
+                <p class="m-0 text-sm font-bold text-white">Ảnh không còn tồn tại</p>
                 <p class="m-0 mt-1 text-[10px] text-slate-400">
                   Nội dung banner vẫn được giữ. Hãy chỉnh sửa để tải ảnh mới.
                 </p>
@@ -89,7 +80,7 @@
                     : 'text-white/60 hover:text-white'
                 "
               >
-                {{ $t("marketing.bannerManagement.pc") }}
+                {{ $t('marketing.bannerManagement.pc') }}
               </button>
               <button
                 @click.stop="viewMode = 'Mobile'"
@@ -100,16 +91,14 @@
                     : 'text-white/60 hover:text-white'
                 "
               >
-                {{ $t("marketing.bannerManagement.mb") }}
+                {{ $t('marketing.bannerManagement.mb') }}
               </button>
             </div>
 
             <div
               class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex justify-between items-center gap-4"
             >
-              <h2
-                class="m-0 text-lg font-bold text-white leading-tight truncate"
-              >
+              <h2 class="m-0 text-lg font-bold text-white leading-tight truncate">
                 {{ banner.title }}
               </h2>
               <div class="flex gap-2 shrink-0">
@@ -117,7 +106,7 @@
                   @click.stop="handleEdit(banner)"
                   class="h-10 px-6 bg-slate-900/90 backdrop-blur-md text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
                 >
-                  {{ $t("marketing.bannerManagement.editBtn") }}
+                  {{ $t('marketing.bannerManagement.editBtn') }}
                 </button>
                 <button
                   @click.stop="handleDelete(banner)"
@@ -161,7 +150,7 @@
           <div>
             <label
               class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >{{ $t("marketing.bannerManagement.formTitle") }}</label
+              >{{ $t('marketing.bannerManagement.formTitle') }}</label
             >
             <ElInput
               v-model="bannerForm.title"
@@ -173,7 +162,7 @@
           <div>
             <label
               class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >{{ $t("marketing.bannerManagement.formPlacement") }}</label
+              >{{ $t('marketing.bannerManagement.formPlacement') }}</label
             >
             <ElSelect
               v-model="bannerForm.placement"
@@ -192,7 +181,7 @@
           <div>
             <label
               class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >{{ $t("marketing.bannerManagement.formDesc") }}</label
+              >{{ $t('marketing.bannerManagement.formDesc') }}</label
             >
             <ElInput
               v-model="bannerForm.description"
@@ -207,7 +196,7 @@
             <div>
               <label
                 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
-                >{{ $t("marketing.bannerManagement.formCtaLabel") }}</label
+                >{{ $t('marketing.bannerManagement.formCtaLabel') }}</label
               >
               <ElInput
                 v-model="bannerForm.ctaLabel"
@@ -220,13 +209,9 @@
           <div>
             <label
               class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block px-1"
-              >{{ $t("marketing.bannerManagement.formCtaLink") }}</label
+              >{{ $t('marketing.bannerManagement.formCtaLink') }}</label
             >
-            <ElInput
-              v-model="bannerForm.ctaLink"
-              placeholder="https://..."
-              class="combat-input"
-            >
+            <ElInput v-model="bannerForm.ctaLink" placeholder="https://..." class="combat-input">
               <template #prefix><ArtSvgIcon icon="ri:links-line" /></template>
             </ElInput>
           </div>
@@ -238,7 +223,7 @@
           >
             <label
               class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-3 block"
-              >{{ $t("marketing.bannerManagement.formDesktopImg") }}</label
+              >{{ $t('marketing.bannerManagement.formDesktopImg') }}</label
             >
             <ElUpload
               class="w-full block combat-banner-upload"
@@ -261,8 +246,7 @@
                     icon="ri:computer-line"
                     class="text-2xl text-slate-300 dark:text-slate-600"
                   />
-                  <span
-                    class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
+                  <span class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Desktop</span
                   >
                 </template>
@@ -275,7 +259,7 @@
           >
             <label
               class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-3 block"
-              >{{ $t("marketing.bannerManagement.formMobileImg") }}</label
+              >{{ $t('marketing.bannerManagement.formMobileImg') }}</label
             >
             <ElUpload
               class="w-full block combat-banner-upload"
@@ -298,8 +282,7 @@
                     icon="ri:smartphone-line"
                     class="text-2xl text-slate-300 dark:text-slate-600"
                   />
-                  <span
-                    class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
+                  <span class="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500"
                     >Chọn ảnh Mobile</span
                   >
                 </template>
@@ -317,7 +300,7 @@
               @click="dialogVisible = false"
               class="h-11 px-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest hover:text-slate-700"
             >
-              {{ $t("marketing.bannerManagement.closeBtn") }}
+              {{ $t('marketing.bannerManagement.closeBtn') }}
             </button>
             <button
               @click="saveBanner"
@@ -325,8 +308,8 @@
             >
               {{
                 isEditing
-                  ? $t("marketing.bannerManagement.saveBtn")
-                  : $t("marketing.bannerManagement.createSubmitBtn")
+                  ? $t('marketing.bannerManagement.saveBtn')
+                  : $t('marketing.bannerManagement.createSubmitBtn')
               }}
             </button>
           </div>
@@ -337,42 +320,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { BannerApi } from "@/api/marketing";
-import { FileApi } from "@/api/operations";
-import type { Banner } from "@/domain/marketing/banner.types";
+import { ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { BannerApi } from '@/api/marketing';
+import { FileApi } from '@/api/operations';
+import type { Banner } from '@/domain/marketing/banner.types';
 
-import { useI18n } from "vue-i18n";
-import { formatImageUrl } from "@/common/utils/image";
+import { useI18n } from 'vue-i18n';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "MarketingBannerManagement" });
+defineOptions({ name: 'MarketingBannerManagement' });
 
 const { t } = useI18n();
 
-const viewMode = ref("Desktop");
+const viewMode = ref('Desktop');
 const dialogVisible = ref(false);
-const dialogTitle = ref("");
+const dialogTitle = ref('');
 const isEditing = ref(false);
 
 const banners = ref<Banner[]>([]);
 const placementOptions = ref<any[]>([]);
 const missingBannerImages = ref(new Set<string>());
 
-const apiMediaPathPrefix = "/api/v1/MediaFile/view-image/";
+const apiMediaPathPrefix = '/api/v1/MediaFile/view-image/';
 
 const normalizeBannerImageUrl = (value?: string) => {
-  const imageUrl = value?.trim() || "";
+  const imageUrl = value?.trim() || '';
   if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) {
     return imageUrl;
   }
   try {
     const parsedUrl = new URL(imageUrl);
-    if (
-      parsedUrl.pathname
-        .toLowerCase()
-        .startsWith(apiMediaPathPrefix.toLowerCase())
-    ) {
+    if (parsedUrl.pathname.toLowerCase().startsWith(apiMediaPathPrefix.toLowerCase())) {
       return `${parsedUrl.pathname}${parsedUrl.search}`;
     }
   } catch {
@@ -386,41 +365,37 @@ const resolveBannerImageUrl = (value?: string) => {
   return formatImageUrl(normalizedUrl);
 };
 
-const getBannerImageKey = (banner: Banner) =>
-  `${banner.id}:${viewMode.value.toLowerCase()}`;
+const getBannerImageKey = (banner: Banner) => `${banner.id}:${viewMode.value.toLowerCase()}`;
 
 const getBannerImageUrl = (banner: Banner) =>
   resolveBannerImageUrl(
-    viewMode.value === "Desktop"
+    viewMode.value === 'Desktop'
       ? banner.desktopImageUrl
-      : banner.mobileImageUrl || banner.desktopImageUrl,
+      : banner.mobileImageUrl || banner.desktopImageUrl
   );
 
 const isBannerImageMissing = (banner: Banner) =>
-  !getBannerImageUrl(banner) ||
-  missingBannerImages.value.has(getBannerImageKey(banner));
+  !getBannerImageUrl(banner) || missingBannerImages.value.has(getBannerImageKey(banner));
 
 const markBannerImageMissing = (banner: Banner) => {
-  missingBannerImages.value = new Set(missingBannerImages.value).add(
-    getBannerImageKey(banner),
-  );
+  missingBannerImages.value = new Set(missingBannerImages.value).add(getBannerImageKey(banner));
 };
 
 const getPlacementLabel = (value?: string) => {
-  if (!value) return "";
+  if (!value) return '';
   const opt = placementOptions.value.find((o) => o.value === value);
   return opt ? opt.label : value;
 };
 
 const bannerForm = ref({
   id: 0,
-  title: "",
-  description: "",
-  ctaLabel: "Xem ngay",
-  ctaLink: "",
-  desktopImageUrl: "",
-  mobileImageUrl: "",
-  placement: "Home",
+  title: '',
+  description: '',
+  ctaLabel: 'Xem ngay',
+  ctaLink: '',
+  desktopImageUrl: '',
+  mobileImageUrl: '',
+  placement: 'Home',
 });
 
 const fetchBanners = async () => {
@@ -429,7 +404,7 @@ const fetchBanners = async () => {
     banners.value = res.items || [];
     missingBannerImages.value = new Set();
   } catch {
-    ElMessage.error("Lỗi khi tải danh sách banner");
+    ElMessage.error('Lỗi khi tải danh sách banner');
   }
 };
 
@@ -438,7 +413,7 @@ const fetchPlacements = async () => {
     const res: any = await BannerApi.getPlacements();
     placementOptions.value = res.data || res || [];
   } catch {
-    ElMessage.error("Lỗi khi tải danh sách vị trí");
+    ElMessage.error('Lỗi khi tải danh sách vị trí');
   }
 };
 
@@ -451,9 +426,9 @@ const handleUploadDesktop = async (options: any) => {
   try {
     const res = await FileApi.uploadBannerImage(options.file);
     bannerForm.value.desktopImageUrl = res.publicUrl;
-    ElMessage.success("Tải ảnh Desktop lên thành công");
+    ElMessage.success('Tải ảnh Desktop lên thành công');
   } catch (err: any) {
-    ElMessage.error(err.message || "Tải ảnh thất bại");
+    ElMessage.error(err.message || 'Tải ảnh thất bại');
   }
 };
 
@@ -461,100 +436,97 @@ const handleUploadMobile = async (options: any) => {
   try {
     const res = await FileApi.uploadBannerImage(options.file);
     bannerForm.value.mobileImageUrl = res.publicUrl;
-    ElMessage.success("Tải ảnh Mobile lên thành công");
+    ElMessage.success('Tải ảnh Mobile lên thành công');
   } catch (err: any) {
-    ElMessage.error(err.message || "Tải ảnh thất bại");
+    ElMessage.error(err.message || 'Tải ảnh thất bại');
   }
 };
 
 const handleAddBanner = () => {
   isEditing.value = false;
-  dialogTitle.value = t("marketing.bannerManagement.createTitle");
+  dialogTitle.value = t('marketing.bannerManagement.createTitle');
   bannerForm.value = {
     id: 0,
-    title: "",
-    description: "",
-    ctaLabel: "Xem ngay",
-    ctaLink: "",
-    desktopImageUrl: "",
-    mobileImageUrl: "",
-    placement: "Home",
+    title: '',
+    description: '',
+    ctaLabel: 'Xem ngay',
+    ctaLink: '',
+    desktopImageUrl: '',
+    mobileImageUrl: '',
+    placement: 'Home',
   };
   dialogVisible.value = true;
 };
 
 const handleEdit = (banner: any) => {
   isEditing.value = true;
-  dialogTitle.value = t("marketing.bannerManagement.editTitle");
+  dialogTitle.value = t('marketing.bannerManagement.editTitle');
   bannerForm.value = {
     ...banner,
-    placement: banner.placement || "Home",
+    placement: banner.placement || 'Home',
   };
   dialogVisible.value = true;
 };
 
 const saveBanner = async () => {
   if (!bannerForm.value.title) {
-    ElMessage.warning("Vui lòng nhập tiêu đề banner");
+    ElMessage.warning('Vui lòng nhập tiêu đề banner');
     return;
   }
   if (!bannerForm.value.placement) {
-    ElMessage.warning("Vui lòng chọn vị trí hiển thị");
+    ElMessage.warning('Vui lòng chọn vị trí hiển thị');
     return;
   }
   if (!bannerForm.value.description) {
-    ElMessage.warning("Vui lòng nhập mô tả banner");
+    ElMessage.warning('Vui lòng nhập mô tả banner');
     return;
   }
   if (!bannerForm.value.ctaLabel) {
-    ElMessage.warning("Vui lòng nhập nhãn nút bấm (CTA Label)");
+    ElMessage.warning('Vui lòng nhập nhãn nút bấm (CTA Label)');
     return;
   }
   if (!bannerForm.value.ctaLink) {
-    ElMessage.warning("Vui lòng nhập đường dẫn đích (CTA Link)");
+    ElMessage.warning('Vui lòng nhập đường dẫn đích (CTA Link)');
     return;
   }
   if (!bannerForm.value.desktopImageUrl && !bannerForm.value.mobileImageUrl) {
-    ElMessage.warning("Vui lòng tải lên ít nhất 1 ảnh (Desktop hoặc Mobile)");
+    ElMessage.warning('Vui lòng tải lên ít nhất 1 ảnh (Desktop hoặc Mobile)');
     return;
   }
   try {
     const payload = {
       ...bannerForm.value,
-      desktopImageUrl: normalizeBannerImageUrl(
-        bannerForm.value.desktopImageUrl,
-      ),
-      mobileImageUrl:
-        normalizeBannerImageUrl(bannerForm.value.mobileImageUrl) || undefined,
+      desktopImageUrl: normalizeBannerImageUrl(bannerForm.value.desktopImageUrl),
+      mobileImageUrl: normalizeBannerImageUrl(bannerForm.value.mobileImageUrl) || undefined,
     };
 
     if (isEditing.value && bannerForm.value.id) {
       await BannerApi.update(bannerForm.value.id, payload);
-      ElMessage.success("Cập nhật banner thành công");
+      ElMessage.success('Cập nhật banner thành công');
     } else {
       await BannerApi.create(payload);
-      ElMessage.success("Tạo banner thành công");
+      ElMessage.success('Tạo banner thành công');
     }
     dialogVisible.value = false;
     fetchBanners();
   } catch {
-    ElMessage.error("Có lỗi xảy ra khi lưu banner");
+    ElMessage.error('Có lỗi xảy ra khi lưu banner');
   }
 };
 
 const handleDelete = (banner: any) => {
-  ElMessageBox.confirm("Bạn có chắc chắn muốn xóa banner này?", "Cảnh báo", {
-    confirmButtonText: "Xóa",
-    cancelButtonText: "Hủy",
-    type: "warning",
+  ElMessageBox.confirm('Bạn có chắc chắn muốn xóa banner này?', 'Cảnh báo', {
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+    type: 'warning',
   })
     .then(async () => {
       try {
         await BannerApi.delete(banner.id);
-        ElMessage.success("Xóa banner thành công");
+        ElMessage.success('Xóa banner thành công');
         fetchBanners();
       } catch {
-        ElMessage.error("Lỗi khi xóa banner");
+        ElMessage.error('Lỗi khi xóa banner');
       }
     })
     .catch(() => {});
@@ -687,9 +659,7 @@ const handleDelete = (banner: any) => {
   border-color: rgb(255 255 255 / 12%) !important;
 }
 
-:global(
-  html.dark .combat-banner-dialog .combat-banner-upload span.text-slate-400
-) {
+:global(html.dark .combat-banner-dialog .combat-banner-upload span.text-slate-400) {
   color: #94a3b8 !important;
 }
 </style>

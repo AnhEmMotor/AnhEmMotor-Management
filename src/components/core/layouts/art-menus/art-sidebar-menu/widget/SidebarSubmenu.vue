@@ -1,13 +1,6 @@
 <template>
-  <template
-    v-for="(item, index) in filteredMenuItems"
-    :key="getUniqueKey(item, index)"
-  >
-    <ElSubMenu
-      v-if="hasChildren(item)"
-      :index="item.path || item.meta.title"
-      :level="level"
-    >
+  <template v-for="(item, index) in filteredMenuItems" :key="getUniqueKey(item, index)">
+    <ElSubMenu v-if="hasChildren(item)" :index="item.path || item.meta.title" :level="level">
       <template #title>
         <div class="menu-icon flex-cc">
           <ArtSvgIcon
@@ -55,10 +48,7 @@
           {{ formatMenuTitle(item.meta.title) }}
         </span>
         <div v-if="item.meta.showBadge" class="art-badge" />
-        <div
-          v-if="item.meta.showTextBadge && (level > 0 || menuOpen)"
-          class="art-text-badge"
-        >
+        <div v-if="item.meta.showTextBadge && (level > 0 || menuOpen)" class="art-text-badge">
           {{ item.meta.showTextBadge }}
         </div>
       </template>
@@ -67,11 +57,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import type { AppRouteRecord } from "@/types/router";
-import { formatMenuTitle } from "@/common/utils/router";
-import { handleMenuJump } from "@/common/utils/navigation";
-import { useSettingStore } from "@/application/store/setting";
+import { computed } from 'vue';
+import type { AppRouteRecord } from '@/types/router';
+import { formatMenuTitle } from '@/common/utils/router';
+import { handleMenuJump } from '@/common/utils/navigation';
+import { useSettingStore } from '@/application/store/setting';
 
 interface MenuTheme {
   iconColor?: string;
@@ -90,11 +80,11 @@ interface Props {
 }
 
 interface Emits {
-  (e: "close"): void;
+  (e: 'close'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: "",
+  title: '',
   list: () => [],
   theme: () => ({}),
   isMobile: false,
@@ -115,15 +105,13 @@ const goPage = (item: AppRouteRecord): void => {
 };
 
 const closeMenu = (): void => {
-  emit("close");
+  emit('close');
 };
 
 const isNavigableRoute = (item: AppRouteRecord): boolean => {
   return !!(
     !item.meta.isHide &&
-    ((item.path && item.path.trim()) ||
-      item.meta.link ||
-      item.meta.isIframe === true) &&
+    ((item.path && item.path.trim()) || item.meta.link || item.meta.isIframe === true) &&
     (item.component || item.meta.link || item.meta.isIframe === true)
   );
 };
@@ -157,6 +145,6 @@ const hasChildren = (item: AppRouteRecord): boolean => {
 };
 
 const getUniqueKey = (item: AppRouteRecord, index: number): string => {
-  return `${item.path || item.meta.title || "menu"}-${props.level}-${index}`;
+  return `${item.path || item.meta.title || 'menu'}-${props.level}-${index}`;
 };
 </script>

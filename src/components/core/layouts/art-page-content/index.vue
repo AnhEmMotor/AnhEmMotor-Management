@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="layout-content"
-    :class="{ 'overflow-auto': isFullPage }"
-    :style="containerStyle"
-  >
+  <div class="layout-content" :class="{ 'overflow-auto': isFullPage }" :style="containerStyle">
     <div id="app-content-header">
       <ArtFestivalTextScroll v-if="!isFullPage" />
 
@@ -15,16 +11,8 @@
       </div>
     </div>
 
-    <RouterView
-      v-if="isRefresh"
-      v-slot="{ Component, route }"
-      :style="contentStyle"
-    >
-      <Transition
-        :name="showTransitionMask ? '' : actualTransition"
-        mode="default"
-        appear
-      >
+    <RouterView v-if="isRefresh" v-slot="{ Component, route }" :style="contentStyle">
+      <Transition :name="showTransitionMask ? '' : actualTransition" mode="default" appear>
         <KeepAlive :max="10" :exclude="keepAliveExclude">
           <component
             class="art-page-view"
@@ -35,11 +23,7 @@
         </KeepAlive>
       </Transition>
 
-      <Transition
-        :name="showTransitionMask ? '' : actualTransition"
-        mode="default"
-        appear
-      >
+      <Transition :name="showTransitionMask ? '' : actualTransition" mode="default" appear>
         <component
           class="art-page-view"
           :is="Component"
@@ -70,18 +54,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { CSSProperties } from "vue";
-import { useRoute } from "vue-router";
-import { useAutoLayoutHeight } from "@/common/composables/useLayoutHeight";
-import { useSettingStore } from "@/application/store/setting";
-import { useWorktabStore } from "@/application/store/worktab";
+import type { CSSProperties } from 'vue';
+import { useRoute } from 'vue-router';
+import { useAutoLayoutHeight } from '@/common/composables/useLayoutHeight';
+import { useSettingStore } from '@/application/store/setting';
+import { useWorktabStore } from '@/application/store/worktab';
 
-defineOptions({ name: "ArtPageContent" });
+defineOptions({ name: 'ArtPageContent' });
 
 const route = useRoute();
 const { containerMinHeight } = useAutoLayoutHeight();
-const { pageTransition, containerWidth, refresh } =
-  storeToRefs(useSettingStore());
+const { pageTransition, containerWidth, refresh } = storeToRefs(useSettingStore());
 const { keepAliveExclude } = storeToRefs(useWorktabStore());
 
 const isRefresh = shallowRef(true);
@@ -90,14 +73,12 @@ const showTransitionMask = ref(false);
 
 const isFirstLoad = ref(true);
 
-const isFullPage = computed(() =>
-  route.matched.some((r) => r.meta?.isFullPage),
-);
+const isFullPage = computed(() => route.matched.some((r) => r.meta?.isFullPage));
 const prevIsFullPage = ref(isFullPage.value);
 
 const actualTransition = computed(() => {
-  if (isFirstLoad.value) return "";
-  if (prevIsFullPage.value && !isFullPage.value) return "";
+  if (isFirstLoad.value) return '';
+  if (prevIsFullPage.value && !isFullPage.value) return '';
   return pageTransition.value;
 });
 
@@ -114,28 +95,25 @@ watch(isFullPage, (val, oldVal) => {
   });
 });
 
-const containerStyle = computed(
-  (): CSSProperties =>
-    isFullPage.value
-      ? {
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          zIndex: 2500,
-          background: "var(--default-bg-color)",
-        }
-      : {
-          maxWidth: containerWidth.value,
-        },
+const containerStyle = computed((): CSSProperties =>
+  isFullPage.value
+    ? {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100vh',
+        zIndex: 2500,
+        background: 'var(--default-bg-color)',
+      }
+    : {
+        maxWidth: containerWidth.value,
+      }
 );
 
-const contentStyle = computed(
-  (): CSSProperties => ({
-    minHeight: containerMinHeight.value,
-  }),
-);
+const contentStyle = computed((): CSSProperties => ({
+  minHeight: containerMinHeight.value,
+}));
 
 const reload = () => {
   isRefresh.value = false;
@@ -144,7 +122,7 @@ const reload = () => {
   });
 };
 
-watch(refresh, reload, { flush: "post" });
+watch(refresh, reload, { flush: 'post' });
 
 onMounted(() => {
   nextTick(() => {

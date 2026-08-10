@@ -4,19 +4,19 @@
       <div class="kpi-page__header-copy">
         <span class="kpi-page__eyebrow">
           <ElIcon><TrendCharts /></ElIcon>
-          {{ t("menus.hr.kpiManagement.eyebrow") }}
+          {{ t('menus.hr.kpiManagement.eyebrow') }}
         </span>
-        <h1>{{ t("menus.hr.kpiManagement.title") }}</h1>
-        <p>{{ t("menus.hr.kpiManagement.subtitle") }}</p>
+        <h1>{{ t('menus.hr.kpiManagement.title') }}</h1>
+        <p>{{ t('menus.hr.kpiManagement.subtitle') }}</p>
       </div>
       <div class="kpi-page__header-actions">
         <ElButton :loading="loading" @click="loadData">
           <ElIcon><Refresh /></ElIcon>
-          {{ t("menus.hr.kpiManagement.refresh") }}
+          {{ t('menus.hr.kpiManagement.refresh') }}
         </ElButton>
         <ElButton type="primary" @click="handleAdd">
           <ElIcon><Plus /></ElIcon>
-          {{ t("menus.hr.kpiManagement.add") }}
+          {{ t('menus.hr.kpiManagement.add') }}
         </ElButton>
       </div>
     </header>
@@ -33,7 +33,7 @@
             <ElIcon><DataAnalysis /></ElIcon>
           </div>
           <div>
-            <span>{{ t("menus.hr.kpiManagement.summary.total") }}</span>
+            <span>{{ t('menus.hr.kpiManagement.summary.total') }}</span>
             <strong>{{ summary.total }}</strong>
           </div>
         </article>
@@ -42,7 +42,7 @@
             <ElIcon><CircleCheckFilled /></ElIcon>
           </div>
           <div>
-            <span>{{ t("menus.hr.kpiManagement.summary.met") }}</span>
+            <span>{{ t('menus.hr.kpiManagement.summary.met') }}</span>
             <strong>{{ summary.met }}</strong>
           </div>
         </article>
@@ -51,7 +51,7 @@
             <ElIcon><WarningFilled /></ElIcon>
           </div>
           <div>
-            <span>{{ t("menus.hr.kpiManagement.summary.near") }}</span>
+            <span>{{ t('menus.hr.kpiManagement.summary.near') }}</span>
             <strong>{{ summary.near }}</strong>
           </div>
         </article>
@@ -60,7 +60,7 @@
             <ElIcon><Aim /></ElIcon>
           </div>
           <div>
-            <span>{{ t("menus.hr.kpiManagement.summary.average") }}</span>
+            <span>{{ t('menus.hr.kpiManagement.summary.average') }}</span>
             <strong>{{ formatPercent(summary.average) }}</strong>
           </div>
         </article>
@@ -96,18 +96,9 @@
           :placeholder="t('menus.hr.kpiManagement.filter.status')"
           @change="resetPage"
         >
-          <ElOption
-            :label="t('menus.hr.kpiManagement.status.met')"
-            value="met"
-          />
-          <ElOption
-            :label="t('menus.hr.kpiManagement.status.near')"
-            value="near"
-          />
-          <ElOption
-            :label="t('menus.hr.kpiManagement.status.behind')"
-            value="behind"
-          />
+          <ElOption :label="t('menus.hr.kpiManagement.status.met')" value="met" />
+          <ElOption :label="t('menus.hr.kpiManagement.status.near')" value="near" />
+          <ElOption :label="t('menus.hr.kpiManagement.status.behind')" value="behind" />
         </ElSelect>
         <ElDatePicker
           v-model="filters.period"
@@ -119,23 +110,17 @@
           @change="resetPage"
         />
         <ElButton class="kpi-filter-card__reset" @click="handleReset">
-          {{ t("menus.hr.kpiManagement.filter.reset") }}
+          {{ t('menus.hr.kpiManagement.filter.reset') }}
         </ElButton>
       </div>
     </ElCard>
 
-    <ElAlert
-      v-if="loadError"
-      class="kpi-page__alert"
-      type="error"
-      :closable="false"
-      show-icon
-    >
+    <ElAlert v-if="loadError" class="kpi-page__alert" type="error" :closable="false" show-icon>
       <template #title>
         <div class="kpi-page__alert-title">
           <span>{{ loadError }}</span>
           <ElButton link type="primary" @click="loadData">
-            {{ t("menus.hr.kpiManagement.refresh") }}
+            {{ t('menus.hr.kpiManagement.refresh') }}
           </ElButton>
         </div>
       </template>
@@ -144,22 +129,14 @@
     <ElCard class="kpi-table-card" shadow="never">
       <div class="kpi-table-card__header">
         <div>
-          <h2>{{ t("menus.hr.kpiManagement.title") }}</h2>
+          <h2>{{ t('menus.hr.kpiManagement.title') }}</h2>
           <span>{{ filteredRows.length }} KPI</span>
         </div>
       </div>
 
       <div v-if="filteredRows.length || loading" class="kpi-table-scroll">
-        <ElTable
-          v-loading="loading"
-          :data="pagedRows"
-          row-key="id"
-          class="kpi-table"
-        >
-          <ElTableColumn
-            :label="t('menus.hr.kpiManagement.table.employee')"
-            min-width="230"
-          >
+        <ElTable v-loading="loading" :data="pagedRows" row-key="id" class="kpi-table">
+          <ElTableColumn :label="t('menus.hr.kpiManagement.table.employee')" min-width="230">
             <template #default="{ row }">
               <div class="employee-cell">
                 <span class="employee-cell__avatar">
@@ -167,26 +144,20 @@
                 </span>
                 <div>
                   <strong>{{ row.employeeName }}</strong>
-                  <span>{{ row.jobTitle || "—" }}</span>
+                  <span>{{ row.jobTitle || '—' }}</span>
                 </div>
               </div>
             </template>
           </ElTableColumn>
-          <ElTableColumn
-            :label="t('menus.hr.kpiManagement.table.metric')"
-            min-width="230"
-          >
+          <ElTableColumn :label="t('menus.hr.kpiManagement.table.metric')" min-width="230">
             <template #default="{ row }">
               <div class="metric-cell">
                 <strong>{{ row.kpiName }}</strong>
-                <span>{{ row.description || "—" }}</span>
+                <span>{{ row.description || '—' }}</span>
               </div>
             </template>
           </ElTableColumn>
-          <ElTableColumn
-            :label="t('menus.hr.kpiManagement.table.period')"
-            width="190"
-          >
+          <ElTableColumn :label="t('menus.hr.kpiManagement.table.period')" width="190">
             <template #default="{ row }">
               <div class="period-cell">
                 <ElIcon><Calendar /></ElIcon>
@@ -197,19 +168,16 @@
               </div>
             </template>
           </ElTableColumn>
-          <ElTableColumn
-            :label="t('menus.hr.kpiManagement.table.progress')"
-            min-width="260"
-          >
+          <ElTableColumn :label="t('menus.hr.kpiManagement.table.progress')" min-width="260">
             <template #default="{ row }">
               <div class="progress-cell">
                 <div class="progress-cell__values">
                   <span>
-                    {{ t("menus.hr.kpiManagement.table.actual") }}
+                    {{ t('menus.hr.kpiManagement.table.actual') }}
                     <strong>{{ formatNumber(row.actualValue) }}</strong>
                   </span>
                   <span>
-                    {{ t("menus.hr.kpiManagement.table.target") }}
+                    {{ t('menus.hr.kpiManagement.table.target') }}
                     <strong>{{ formatNumber(row.targetValue) }}</strong>
                   </span>
                 </div>
@@ -270,11 +238,11 @@
 
       <div v-else class="kpi-empty-state">
         <ElIcon><Document /></ElIcon>
-        <strong>{{ t("menus.hr.kpiManagement.empty.title") }}</strong>
-        <p>{{ t("menus.hr.kpiManagement.empty.description") }}</p>
+        <strong>{{ t('menus.hr.kpiManagement.empty.title') }}</strong>
+        <p>{{ t('menus.hr.kpiManagement.empty.description') }}</p>
         <ElButton type="primary" @click="handleAdd">
           <ElIcon><Plus /></ElIcon>
-          {{ t("menus.hr.kpiManagement.add") }}
+          {{ t('menus.hr.kpiManagement.add') }}
         </ElButton>
       </div>
 
@@ -316,9 +284,7 @@
               v-model="form.employeeProfileId"
               filterable
               class="w-full"
-              :placeholder="
-                t('menus.hr.kpiManagement.form.employeePlaceholder')
-              "
+              :placeholder="t('menus.hr.kpiManagement.form.employeePlaceholder')"
             >
               <ElOption
                 v-for="employee in employees"
@@ -340,10 +306,7 @@
               :placeholder="t('menus.hr.kpiManagement.form.metricPlaceholder')"
             />
           </ElFormItem>
-          <ElFormItem
-            :label="t('menus.hr.kpiManagement.form.periodStart')"
-            prop="periodStart"
-          >
+          <ElFormItem :label="t('menus.hr.kpiManagement.form.periodStart')" prop="periodStart">
             <ElDatePicker
               v-model="form.periodStart"
               type="date"
@@ -351,10 +314,7 @@
               class="w-full"
             />
           </ElFormItem>
-          <ElFormItem
-            :label="t('menus.hr.kpiManagement.form.periodEnd')"
-            prop="periodEnd"
-          >
+          <ElFormItem :label="t('menus.hr.kpiManagement.form.periodEnd')" prop="periodEnd">
             <ElDatePicker
               v-model="form.periodEnd"
               type="date"
@@ -362,10 +322,7 @@
               class="w-full"
             />
           </ElFormItem>
-          <ElFormItem
-            :label="t('menus.hr.kpiManagement.form.target')"
-            prop="targetValue"
-          >
+          <ElFormItem :label="t('menus.hr.kpiManagement.form.target')" prop="targetValue">
             <ElInputNumber
               v-model="form.targetValue"
               :min="0"
@@ -374,10 +331,7 @@
               class="w-full"
             />
           </ElFormItem>
-          <ElFormItem
-            :label="t('menus.hr.kpiManagement.form.actual')"
-            prop="actualValue"
-          >
+          <ElFormItem :label="t('menus.hr.kpiManagement.form.actual')" prop="actualValue">
             <ElInputNumber
               v-model="form.actualValue"
               :min="0"
@@ -397,9 +351,7 @@
               :rows="4"
               maxlength="2000"
               show-word-limit
-              :placeholder="
-                t('menus.hr.kpiManagement.form.descriptionPlaceholder')
-              "
+              :placeholder="t('menus.hr.kpiManagement.form.descriptionPlaceholder')"
             />
           </ElFormItem>
         </div>
@@ -409,20 +361,15 @@
           <ElButton @click="dialogVisible = false">
             {{
               isViewMode
-                ? t("menus.hr.kpiManagement.action.close")
-                : t("menus.hr.kpiManagement.action.cancel")
+                ? t('menus.hr.kpiManagement.action.close')
+                : t('menus.hr.kpiManagement.action.cancel')
             }}
           </ElButton>
-          <ElButton
-            v-if="!isViewMode"
-            type="primary"
-            :loading="saving"
-            @click="handleSubmit"
-          >
+          <ElButton v-if="!isViewMode" type="primary" :loading="saving" @click="handleSubmit">
             {{
-              dialogMode === "create"
-                ? t("menus.hr.kpiManagement.action.save")
-                : t("menus.hr.kpiManagement.action.update")
+              dialogMode === 'create'
+                ? t('menus.hr.kpiManagement.action.save')
+                : t('menus.hr.kpiManagement.action.update')
             }}
           </ElButton>
         </div>
@@ -446,25 +393,18 @@ import {
   TrendCharts,
   View,
   WarningFilled,
-} from "@element-plus/icons-vue";
-import type { FormInstance, FormRules, TagProps } from "element-plus";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import {
-  EmployeeApi,
-  type EmployeeResponse,
-} from "@/api/operations/employee.api";
-import {
-  kpiApi,
-  type KpiResponse,
-  type KpiUpsertRequest,
-} from "@/api/operations/kpi.api";
+} from '@element-plus/icons-vue';
+import type { FormInstance, FormRules, TagProps } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.api';
+import { kpiApi, type KpiResponse, type KpiUpsertRequest } from '@/api/operations/kpi.api';
 
-defineOptions({ name: "HRKPI" });
+defineOptions({ name: 'HRKPI' });
 
-type DialogMode = "create" | "edit" | "view";
-type KpiStatus = "" | "met" | "near" | "behind";
+type DialogMode = 'create' | 'edit' | 'view';
+type KpiStatus = '' | 'met' | 'near' | 'behind';
 
 interface KpiFormModel {
   id?: number;
@@ -488,17 +428,17 @@ const { t } = useI18n();
 const loading = ref(false);
 const saving = ref(false);
 const deletingId = ref<number>();
-const loadError = ref("");
+const loadError = ref('');
 const rows = ref<KpiResponse[]>([]);
 const employees = ref<EmployeeResponse[]>([]);
 const dialogVisible = ref(false);
-const dialogMode = ref<DialogMode>("create");
+const dialogMode = ref<DialogMode>('create');
 const formRef = ref<FormInstance>();
 
 const filters = reactive<KpiFilters>({
-  keyword: "",
+  keyword: '',
   employeeId: undefined,
-  status: "",
+  status: '',
   period: [],
 });
 
@@ -510,12 +450,12 @@ const pagination = reactive({
 const createEmptyForm = (): KpiFormModel => ({
   id: undefined,
   employeeProfileId: undefined,
-  metricName: "",
+  metricName: '',
   targetValue: 0,
   actualValue: 0,
-  periodStart: "",
-  periodEnd: "",
-  description: "",
+  periodStart: '',
+  periodEnd: '',
+  description: '',
 });
 
 const form = reactive<KpiFormModel>(createEmptyForm());
@@ -524,85 +464,83 @@ const formRules = computed<FormRules<KpiFormModel>>(() => ({
   employeeProfileId: [
     {
       required: true,
-      message: t("menus.hr.kpiManagement.validation.employee"),
-      trigger: "change",
+      message: t('menus.hr.kpiManagement.validation.employee'),
+      trigger: 'change',
     },
   ],
   metricName: [
     {
       required: true,
       whitespace: true,
-      message: t("menus.hr.kpiManagement.validation.metric"),
-      trigger: "blur",
+      message: t('menus.hr.kpiManagement.validation.metric'),
+      trigger: 'blur',
     },
   ],
   targetValue: [
     {
       validator: (_rule, value: number, callback) => {
         if (value <= 0) {
-          callback(new Error(t("menus.hr.kpiManagement.validation.target")));
+          callback(new Error(t('menus.hr.kpiManagement.validation.target')));
           return;
         }
         callback();
       },
-      trigger: "change",
+      trigger: 'change',
     },
   ],
   actualValue: [
     {
       validator: (_rule, value: number, callback) => {
         if (value < 0) {
-          callback(new Error(t("menus.hr.kpiManagement.validation.actual")));
+          callback(new Error(t('menus.hr.kpiManagement.validation.actual')));
           return;
         }
         callback();
       },
-      trigger: "change",
+      trigger: 'change',
     },
   ],
   periodStart: [
     {
       required: true,
-      message: t("menus.hr.kpiManagement.validation.periodStart"),
-      trigger: "change",
+      message: t('menus.hr.kpiManagement.validation.periodStart'),
+      trigger: 'change',
     },
   ],
   periodEnd: [
     {
       required: true,
-      message: t("menus.hr.kpiManagement.validation.periodEnd"),
-      trigger: "change",
+      message: t('menus.hr.kpiManagement.validation.periodEnd'),
+      trigger: 'change',
     },
     {
       validator: (_rule, value: string, callback) => {
         if (form.periodStart && value && value < form.periodStart) {
-          callback(
-            new Error(t("menus.hr.kpiManagement.validation.periodOrder")),
-          );
+          callback(new Error(t('menus.hr.kpiManagement.validation.periodOrder')));
           return;
         }
         callback();
       },
-      trigger: "change",
+      trigger: 'change',
     },
   ],
 }));
 
 const dialogTitle = computed(() => {
   const keyByMode: Record<DialogMode, string> = {
-    create: "menus.hr.kpiManagement.form.createTitle",
-    edit: "menus.hr.kpiManagement.form.editTitle",
-    view: "menus.hr.kpiManagement.form.viewTitle",
+    create: 'menus.hr.kpiManagement.form.createTitle',
+    edit: 'menus.hr.kpiManagement.form.editTitle',
+    view: 'menus.hr.kpiManagement.form.viewTitle',
   };
   return t(keyByMode[dialogMode.value]);
 });
 
-const isViewMode = computed(() => dialogMode.value === "view");
+const isViewMode = computed(() => dialogMode.value === 'view');
 
-const getStatus = (score: number): Exclude<KpiStatus, ""> => {
-  if (score >= 100) return "met";
-  if (score >= 80) return "near";
-  return "behind";
+const getStatus = (score: number): Exclude<KpiStatus, ''> => {
+  if (score >= 100) return 'met';
+  if (score >= 80) return 'near';
+  return 'behind';
 };
 
 const filteredRows = computed(() => {
@@ -613,16 +551,12 @@ const filteredRows = computed(() => {
       !keyword ||
       row.employeeName.toLocaleLowerCase().includes(keyword) ||
       row.kpiName.toLocaleLowerCase().includes(keyword);
-    const matchesEmployee =
-      !filters.employeeId || row.employeeId === filters.employeeId;
-    const matchesStatus =
-      !filters.status || getStatus(row.score) === filters.status;
+    const matchesEmployee = !filters.employeeId || row.employeeId === filters.employeeId;
+    const matchesStatus = !filters.status || getStatus(row.score) === filters.status;
     const rowStart = row.periodStart.slice(0, 10);
     const rowEnd = row.periodEnd.slice(0, 10);
     const matchesPeriod =
-      !filterStart ||
-      !filterEnd ||
-      (rowStart <= filterEnd && rowEnd >= filterStart);
+      !filterStart || !filterEnd || (rowStart <= filterEnd && rowEnd >= filterStart);
     return matchesKeyword && matchesEmployee && matchesStatus && matchesPeriod;
   });
 });
@@ -648,7 +582,7 @@ watch(
   ([total]) => {
     const lastPage = Math.max(1, Math.ceil(total / pagination.size));
     if (pagination.current > lastPage) pagination.current = lastPage;
-  },
+  }
 );
 
 const resetPage = () => {
@@ -657,11 +591,11 @@ const resetPage = () => {
 
 const loadData = async () => {
   loading.value = true;
-  loadError.value = "";
+  loadError.value = '';
   try {
     rows.value = await kpiApi.getAll();
   } catch {
-    loadError.value = t("menus.hr.kpiManagement.message.loadError");
+    loadError.value = t('menus.hr.kpiManagement.message.loadError');
     ElMessage.error(loadError.value);
   } finally {
     loading.value = false;
@@ -672,14 +606,14 @@ const loadEmployees = async () => {
   try {
     employees.value = await EmployeeApi.getList();
   } catch {
-    ElMessage.error(t("menus.hr.kpiManagement.message.employeeLoadError"));
+    ElMessage.error(t('menus.hr.kpiManagement.message.employeeLoadError'));
   }
 };
 
 const handleReset = () => {
-  filters.keyword = "";
+  filters.keyword = '';
   filters.employeeId = undefined;
-  filters.status = "";
+  filters.status = '';
   filters.period = [];
   resetPage();
 };
@@ -696,9 +630,9 @@ const assignForm = (row?: KpiResponse) => {
           actualValue: row.actualValue,
           periodStart: row.periodStart.slice(0, 10),
           periodEnd: row.periodEnd.slice(0, 10),
-          description: row.description ?? "",
+          description: row.description ?? '',
         }
-      : createEmptyForm(),
+      : createEmptyForm()
   );
 };
 
@@ -711,24 +645,24 @@ const openDialog = (mode: DialogMode, row?: KpiResponse) => {
 
 const resolveKpiRow = (value: unknown) => {
   if (
-    typeof value !== "object" ||
+    typeof value !== 'object' ||
     value === null ||
-    !("id" in value) ||
-    typeof value.id !== "number"
+    !('id' in value) ||
+    typeof value.id !== 'number'
   ) {
     return undefined;
   }
   return rows.value.find((row) => row.id === value.id);
 };
 
-const handleAdd = () => openDialog("create");
+const handleAdd = () => openDialog('create');
 const handleEdit = (value: unknown) => {
   const row = resolveKpiRow(value);
-  if (row) openDialog("edit", row);
+  if (row) openDialog('edit', row);
 };
 const handleView = (value: unknown) => {
   const row = resolveKpiRow(value);
-  if (row) openDialog("view", row);
+  if (row) openDialog('view', row);
 };
 
 const toRequest = (): KpiUpsertRequest => ({
@@ -746,17 +680,17 @@ const handleSubmit = async () => {
   if (!isValid) return;
   saving.value = true;
   try {
-    if (dialogMode.value === "create") {
+    if (dialogMode.value === 'create') {
       await kpiApi.create(toRequest());
-      ElMessage.success(t("menus.hr.kpiManagement.message.created"));
+      ElMessage.success(t('menus.hr.kpiManagement.message.created'));
     } else if (form.id) {
       await kpiApi.update(form.id, toRequest());
-      ElMessage.success(t("menus.hr.kpiManagement.message.updated"));
+      ElMessage.success(t('menus.hr.kpiManagement.message.updated'));
     }
     dialogVisible.value = false;
     await loadData();
   } catch {
-    ElMessage.error(t("menus.hr.kpiManagement.message.saveError"));
+    ElMessage.error(t('menus.hr.kpiManagement.message.saveError'));
   } finally {
     saving.value = false;
   }
@@ -767,24 +701,24 @@ const handleDelete = async (value: unknown) => {
   if (!row) return;
   try {
     await ElMessageBox.confirm(
-      t("menus.hr.kpiManagement.message.deleteConfirm", {
+      t('menus.hr.kpiManagement.message.deleteConfirm', {
         name: row.kpiName,
         employee: row.employeeName,
       }),
-      t("menus.hr.kpiManagement.message.deleteTitle"),
+      t('menus.hr.kpiManagement.message.deleteTitle'),
       {
-        type: "warning",
-        confirmButtonText: t("menus.hr.kpiManagement.action.delete"),
-        cancelButtonText: t("menus.hr.kpiManagement.action.cancel"),
-      },
+        type: 'warning',
+        confirmButtonText: t('menus.hr.kpiManagement.action.delete'),
+        cancelButtonText: t('menus.hr.kpiManagement.action.cancel'),
+      }
     );
     deletingId.value = row.id;
     await kpiApi.delete(row.id);
-    ElMessage.success(t("menus.hr.kpiManagement.message.deleted"));
+    ElMessage.success(t('menus.hr.kpiManagement.message.deleted'));
     await loadData();
   } catch (error) {
-    if (error !== "cancel" && error !== "close") {
-      ElMessage.error(t("menus.hr.kpiManagement.message.deleteError"));
+    if (error !== 'cancel' && error !== 'close') {
+      ElMessage.error(t('menus.hr.kpiManagement.message.deleteError'));
     }
   } finally {
     deletingId.value = undefined;
@@ -797,19 +731,19 @@ const handleDialogClosed = () => {
 };
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat("vi-VN", {
+  new Intl.NumberFormat('vi-VN', {
     maximumFractionDigits: 2,
   }).format(value);
 
 const formatPercent = (value: number) =>
-  `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(value)}%`;
+  `${new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(value)}%`;
 
 const formatDate = (value: string) =>
-  new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "Asia/Ho_Chi_Minh",
+  new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'Asia/Ho_Chi_Minh',
   }).format(new Date(value));
 
 const getInitials = (name: string) =>
@@ -818,21 +752,20 @@ const getInitials = (name: string) =>
     .split(/\s+/)
     .slice(-2)
     .map((part) => part.charAt(0).toLocaleUpperCase())
-    .join("");
+    .join('');
 
-const getProgressPercentage = (score: number) =>
-  Math.max(0, Math.min(100, Math.round(score)));
+const getProgressPercentage = (score: number) => Math.max(0, Math.min(100, Math.round(score)));
 
 const getProgressColor = (score: number) => {
-  if (score >= 100) return "#22a06b";
-  if (score >= 80) return "#d9902f";
-  return "#e84a4a";
+  if (score >= 100) return '#22a06b';
+  if (score >= 80) return '#d9902f';
+  return '#e84a4a';
 };
 
-const getStatusType = (score: number): TagProps["type"] => {
-  if (score >= 100) return "success";
-  if (score >= 80) return "warning";
-  return "danger";
+const getStatusType = (score: number): TagProps['type'] => {
+  if (score >= 100) return 'success';
+  if (score >= 80) return 'warning';
+  return 'danger';
 };
 
 onMounted(async () => {
@@ -860,8 +793,7 @@ onMounted(async () => {
   padding: 22px 24px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 88% 0%, rgb(232 74 74 / 13%), transparent 35%),
-    var(--el-bg-color);
+    radial-gradient(circle at 88% 0%, rgb(232 74 74 / 13%), transparent 35%), var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 16px;
 }
@@ -1168,8 +1100,7 @@ onMounted(async () => {
 
 :global(html.dark) .kpi-page__header {
   background:
-    radial-gradient(circle at 88% 0%, rgb(232 74 74 / 16%), transparent 36%),
-    var(--el-bg-color);
+    radial-gradient(circle at 88% 0%, rgb(232 74 74 / 16%), transparent 36%), var(--el-bg-color);
 }
 
 :global(html.dark) .kpi-summary-card--featured {

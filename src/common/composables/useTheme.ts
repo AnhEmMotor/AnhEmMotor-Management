@@ -1,50 +1,42 @@
-import { useSettingStore } from "@/application/store/setting";
-import { SystemThemeEnum } from "@/common/enums/appEnum";
-import AppConfig from "@/config";
-import { SystemThemeTypes } from "@/types/store";
-import {
-  getDarkColor,
-  getLightColor,
-  setElementThemeColor,
-} from "@/common/utils/ui";
-import { usePreferredDark } from "@vueuse/core";
-import { watch } from "vue";
+import { useSettingStore } from '@/application/store/setting';
+import { SystemThemeEnum } from '@/common/enums/appEnum';
+import AppConfig from '@/config';
+import { SystemThemeTypes } from '@/types/store';
+import { getDarkColor, getLightColor, setElementThemeColor } from '@/common/utils/ui';
+import { usePreferredDark } from '@vueuse/core';
+import { watch } from 'vue';
 
 export function useTheme() {
   const settingStore = useSettingStore();
 
   const disableTransitions = () => {
-    const style = document.createElement("style");
-    style.setAttribute("id", "disable-transitions");
-    style.textContent = "* { transition: none !important; }";
+    const style = document.createElement('style');
+    style.setAttribute('id', 'disable-transitions');
+    style.textContent = '* { transition: none !important; }';
     document.head.appendChild(style);
   };
 
   const enableTransitions = () => {
-    const style = document.getElementById("disable-transitions");
+    const style = document.getElementById('disable-transitions');
     if (style) {
       style.remove();
     }
   };
 
-  const setSystemTheme = (
-    theme: SystemThemeEnum,
-    themeMode?: SystemThemeEnum,
-  ) => {
+  const setSystemTheme = (theme: SystemThemeEnum, themeMode?: SystemThemeEnum) => {
     disableTransitions();
 
-    const el = document.getElementsByTagName("html")[0];
+    const el = document.getElementsByTagName('html')[0];
     const isDark = theme === SystemThemeEnum.DARK;
 
     if (!themeMode) {
       themeMode = theme;
     }
 
-    const currentTheme =
-      AppConfig.systemThemeStyles[theme as keyof SystemThemeTypes];
+    const currentTheme = AppConfig.systemThemeStyles[theme as keyof SystemThemeTypes];
 
     if (currentTheme) {
-      el.setAttribute("class", currentTheme.className);
+      el.setAttribute('class', currentTheme.className);
     }
 
     const primary = settingStore.systemThemeColor;
@@ -52,9 +44,7 @@ export function useTheme() {
     for (let i = 1; i <= 9; i++) {
       document.documentElement.style.setProperty(
         `--el-color-primary-light-${i}`,
-        isDark
-          ? `${getDarkColor(primary, i / 10)}`
-          : `${getLightColor(primary, i / 10)}`,
+        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`
       );
     }
 
@@ -70,9 +60,7 @@ export function useTheme() {
   const prefersDark = usePreferredDark();
 
   const setSystemAutoTheme = () => {
-    const theme = prefersDark.value
-      ? SystemThemeEnum.DARK
-      : SystemThemeEnum.LIGHT;
+    const theme = prefersDark.value ? SystemThemeEnum.DARK : SystemThemeEnum.LIGHT;
     setSystemTheme(theme, SystemThemeEnum.AUTO);
   };
 
@@ -97,28 +85,25 @@ export function initializeTheme() {
   const prefersDark = usePreferredDark();
 
   const applyThemeByMode = () => {
-    const el = document.getElementsByTagName("html")[0];
+    const el = document.getElementsByTagName('html')[0];
     let actualTheme = settingStore.systemThemeType;
 
     if (settingStore.systemThemeMode === SystemThemeEnum.AUTO) {
-      actualTheme = prefersDark.value
-        ? SystemThemeEnum.DARK
-        : SystemThemeEnum.LIGHT;
+      actualTheme = prefersDark.value ? SystemThemeEnum.DARK : SystemThemeEnum.LIGHT;
 
       settingStore.systemThemeType = actualTheme;
     }
 
-    const currentTheme =
-      AppConfig.systemThemeStyles[actualTheme as keyof SystemThemeTypes];
+    const currentTheme = AppConfig.systemThemeStyles[actualTheme as keyof SystemThemeTypes];
     if (currentTheme) {
-      el.setAttribute("class", currentTheme.className);
+      el.setAttribute('class', currentTheme.className);
     }
 
     setElementThemeColor(settingStore.systemThemeColor);
 
     document.documentElement.style.setProperty(
-      "--custom-radius",
-      `${settingStore.customRadius}rem`,
+      '--custom-radius',
+      `${settingStore.customRadius}rem`
     );
   };
 
@@ -132,7 +117,7 @@ export function initializeTheme() {
           applyThemeByMode();
         }
       },
-      { immediate: false },
+      { immediate: false }
     );
   }
 }

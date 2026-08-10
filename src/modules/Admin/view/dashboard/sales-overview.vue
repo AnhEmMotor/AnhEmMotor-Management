@@ -16,12 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
-import * as echarts from "echarts";
-import {
-  fetchMonthlyRevenueProfit,
-  type MonthlyRevenueProfit,
-} from "@/api/dashboard.api";
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import * as echarts from 'echarts';
+import { fetchMonthlyRevenueProfit, type MonthlyRevenueProfit } from '@/api/dashboard.api';
 
 const chartRef = ref<HTMLElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
@@ -39,14 +36,10 @@ async function fetchData() {
       const date = new Date(item.reportMonth);
       return `Thang ${date.getMonth() + 1}`;
     });
-    revenueData.value = data.map(
-      (item: MonthlyRevenueProfit) => item.totalRevenue,
-    );
-    profitData.value = data.map(
-      (item: MonthlyRevenueProfit) => item.totalProfit,
-    );
+    revenueData.value = data.map((item: MonthlyRevenueProfit) => item.totalRevenue);
+    profitData.value = data.map((item: MonthlyRevenueProfit) => item.totalProfit);
   } catch (error) {
-    console.error("Failed to fetch monthly revenue profit:", error);
+    console.error('Failed to fetch monthly revenue profit:', error);
   } finally {
     isLoading.value = false;
   }
@@ -58,8 +51,8 @@ function initChart() {
 
   const option = {
     tooltip: {
-      trigger: "axis",
-      axisPointer: { type: "shadow" },
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
       formatter(params: any) {
         let html = `<strong>${params[0].name}</strong><br/>`;
         params.forEach((p: any) => {
@@ -72,53 +65,53 @@ function initChart() {
       },
     },
     legend: {
-      data: ["Doanh thu", "Lợi nhuận gộp"],
+      data: ['Doanh thu', 'Lợi nhuận gộp'],
       bottom: 0,
-      textStyle: { color: "#9ca3af" },
+      textStyle: { color: '#9ca3af' },
     },
     grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "15%",
-      top: "15%",
+      left: '3%',
+      right: '4%',
+      bottom: '15%',
+      top: '15%',
       containLabel: true,
     },
     xAxis: [
       {
-        type: "category",
+        type: 'category',
         data: months.value,
         axisTick: { alignWithLabel: true },
-        axisLabel: { color: "#9ca3af" },
+        axisLabel: { color: '#9ca3af' },
       },
     ],
     yAxis: [
       {
-        type: "value",
-        name: "Ty VND",
-        nameTextStyle: { color: "#9ca3af" },
+        type: 'value',
+        name: 'Ty VND',
+        nameTextStyle: { color: '#9ca3af' },
         splitLine: {
-          lineStyle: { type: "dashed", color: "rgba(156,163,175,0.2)" },
+          lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.2)' },
         },
         axisLabel: {
-          color: "#9ca3af",
+          color: '#9ca3af',
           formatter: (v: number) => (v / 1e9).toFixed(1),
         },
       },
     ],
     series: [
       {
-        name: "Doanh thu",
-        type: "bar",
+        name: 'Doanh thu',
+        type: 'bar',
         barGap: 0,
-        emphasis: { focus: "series" },
-        itemStyle: { color: "#409eff", borderRadius: [4, 4, 0, 0] },
+        emphasis: { focus: 'series' },
+        itemStyle: { color: '#409eff', borderRadius: [4, 4, 0, 0] },
         data: revenueData.value,
       },
       {
-        name: "Lợi nhuận gộp",
-        type: "bar",
-        emphasis: { focus: "series" },
-        itemStyle: { color: "#67c23a", borderRadius: [4, 4, 0, 0] },
+        name: 'Lợi nhuận gộp',
+        type: 'bar',
+        emphasis: { focus: 'series' },
+        itemStyle: { color: '#67c23a', borderRadius: [4, 4, 0, 0] },
         data: profitData.value,
       },
     ],
@@ -134,13 +127,13 @@ onMounted(() => {
   nextTick(() => {
     fetchData().then(() => {
       if (chartRef.value) initChart();
-      window.addEventListener("resize", resizeChart);
+      window.addEventListener('resize', resizeChart);
     });
   });
 });
 
 onUnmounted(() => {
   if (chartInstance) chartInstance.dispose();
-  window.removeEventListener("resize", resizeChart);
+  window.removeEventListener('resize', resizeChart);
 });
 </script>

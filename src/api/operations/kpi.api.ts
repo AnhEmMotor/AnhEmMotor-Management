@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface KpiResponse {
   id: number;
@@ -30,12 +30,12 @@ export interface KpiUpsertRequest {
 export const kpiApi = {
   getAll() {
     return request.get<KpiResponse[]>({
-      url: "/api/v1/hr/kpis",
+      url: '/api/v1/hr/kpis',
     });
   },
   create(data: KpiUpsertRequest) {
     return request.post<number>({
-      url: "/api/v1/hr/kpis",
+      url: '/api/v1/hr/kpis',
       data,
     });
   },

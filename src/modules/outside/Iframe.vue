@@ -11,20 +11,20 @@
 </template>
 
 <script setup lang="ts">
-import { IframeRouteManager } from "@/router/core";
+import { IframeRouteManager } from '@/router/core';
 
-defineOptions({ name: "IframeView" });
+defineOptions({ name: 'IframeView' });
 
 const route = useRoute();
 const isLoading = ref(true);
-const iframeUrl = ref("");
+const iframeUrl = ref('');
 const iframeRef = ref<HTMLIFrameElement | null>(null);
 
 onMounted(() => {
   const iframeRoute = IframeRouteManager.getInstance().findByPath(route.path);
 
   if (iframeRoute?.meta) {
-    iframeUrl.value = iframeRoute.meta.link || "";
+    iframeUrl.value = iframeRoute.meta.link || '';
   }
 });
 

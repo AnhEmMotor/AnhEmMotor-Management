@@ -19,11 +19,7 @@
 
       <ElScrollbar style="height: calc(100% - 135px)">
         <ul>
-          <li
-            v-for="menu in firstLevelMenus"
-            :key="menu.path"
-            @click="handleMenuJump(menu, true)"
-          >
+          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
             <ElTooltip
               class="box-item"
               effect="dark"
@@ -53,10 +49,7 @@
                 <span v-if="dualMenuShowText" class="text-md text-g-700">
                   {{ $t(menu.meta.title) }}
                 </span>
-                <div
-                  v-if="menu.meta.showBadge"
-                  class="art-badge art-badge-dual"
-                />
+                <div v-if="menu.meta.showBadge" class="art-badge art-badge-dual" />
               </div>
             </ElTooltip>
           </li>
@@ -105,11 +98,7 @@
           {{ AppConfig.systemInfo.name }}
         </p>
 
-        <div
-          v-if="isMobileScreen"
-          class="mobile-close-btn"
-          @click.stop="handleMenuClose"
-        >
+        <div v-if="isMobileScreen" class="mobile-close-btn" @click.stop="handleMenuClose">
           <ArtSvgIcon icon="ri:close-line" />
         </div>
       </div>
@@ -134,16 +123,10 @@
         </ElMenu>
       </ElScrollbar>
 
-      <div
-        class="dual-menu-collapse-btn"
-        v-if="isDualMenu"
-        @click="toggleMenuVisibility"
-      >
+      <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
         <ArtSvgIcon
           class="text-g-500/70"
-          :icon="
-            menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'
-          "
+          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
         />
       </div>
     </div>
@@ -151,22 +134,22 @@
 </template>
 
 <script setup lang="ts">
-import AppConfig from "@/config";
-import { useSettingStore } from "@/application/store/setting";
-import { MenuTypeEnum, MenuWidth } from "@/common/enums/appEnum";
-import { useMenuStore } from "@/application/store/menu";
-import { isIframe } from "@/common/utils/navigation";
-import { handleMenuJump } from "@/common/utils/navigation";
-import SidebarSubmenu from "./widget/SidebarSubmenu.vue";
-import { useWindowSize, useTimeoutFn } from "@vueuse/core";
-import { adminMenu } from "@/modules/Admin/Menu";
-import { factoryMenu } from "@/modules/Factory/Menu";
-import { marketingMenu } from "@/modules/Marketing/Menu";
-import { orderMenu } from "@/modules/Order/Menu";
-import { warehouseMenu } from "@/modules/Warehouse/Menu";
-import { accountancyMenu } from "@/modules/Accountant/Menu";
+import AppConfig from '@/config';
+import { useSettingStore } from '@/application/store/setting';
+import { MenuTypeEnum, MenuWidth } from '@/common/enums/appEnum';
+import { useMenuStore } from '@/application/store/menu';
+import { isIframe } from '@/common/utils/navigation';
+import { handleMenuJump } from '@/common/utils/navigation';
+import SidebarSubmenu from './widget/SidebarSubmenu.vue';
+import { useWindowSize, useTimeoutFn } from '@vueuse/core';
+import { adminMenu } from '@/modules/Admin/Menu';
+import { factoryMenu } from '@/modules/Factory/Menu';
+import { marketingMenu } from '@/modules/Marketing/Menu';
+import { orderMenu } from '@/modules/Order/Menu';
+import { warehouseMenu } from '@/modules/Warehouse/Menu';
+import { accountancyMenu } from '@/modules/Accountant/Menu';
 
-defineOptions({ name: "ArtSidebarMenu" });
+defineOptions({ name: 'ArtSidebarMenu' });
 
 const MOBILE_BREAKPOINT = 800;
 const ANIMATION_DELAY = 350;
@@ -190,9 +173,7 @@ const menuclosewidth = computed(() => MENU_CLOSE_WIDTH);
 
 const isTopLeftMenu = computed(() => menuType.value === MenuTypeEnum.TOP_LEFT);
 const showLeftMenu = computed(
-  () =>
-    menuType.value === MenuTypeEnum.LEFT ||
-    menuType.value === MenuTypeEnum.TOP_LEFT,
+  () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT
 );
 const isDualMenu = computed(() => menuType.value === MenuTypeEnum.DUAL_MENU);
 
@@ -212,8 +193,7 @@ const menuList = computed(() => {
   // Lọc menu theo phân hệ hiện tại (Admin hoặc Factory)
   const isPathInMenu = (menus: any[], targetPath: string): boolean => {
     return menus.some((m) => {
-      if (m.path && m.path.startsWith("/") && targetPath.startsWith(m.path))
-        return true;
+      if (m.path && m.path.startsWith('/') && targetPath.startsWith(m.path)) return true;
       if (m.children) return isPathInMenu(m.children, targetPath);
       return false;
     });
@@ -263,10 +243,8 @@ const menuList = computed(() => {
     return [];
   }
 
-  const currentTopPath = `/${route.path.split("/")[1]}`;
-  const currentMenu = workspaceMenus.find(
-    (menu) => menu.path === currentTopPath,
-  );
+  const currentTopPath = `/${route.path.split('/')[1]}`;
+  const currentMenu = workspaceMenus.find((menu) => menu.path === currentTopPath);
   return currentMenu?.children ?? [];
 });
 
@@ -283,9 +261,9 @@ const menuList = computed(() => {
 const scrollbarStyle = computed(() => {
   const isCollapsed = isDualMenu.value && !menuOpen.value;
   return {
-    transform: isCollapsed ? "translateY(-50px)" : "translateY(0)",
-    height: isCollapsed ? "calc(100% + 50px)" : "calc(100% - 60px)",
-    transition: "transform 0.3s ease",
+    transform: isCollapsed ? 'translateY(-50px)' : 'translateY(0)',
+    height: isCollapsed ? 'calc(100% + 50px)' : 'calc(100% - 60px)',
+    transition: 'transform 0.3s ease',
   };
 });
 
@@ -294,7 +272,7 @@ const { start: delayHideMobileModal } = useTimeoutFn(
     showMobileModal.value = false;
   },
   ANIMATION_DELAY,
-  { immediate: false },
+  { immediate: false }
 );
 
 const findIframeMenuList = (currentPath: string, menuList: any[]) => {
@@ -321,7 +299,7 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
 // Removed unused homePath
 
 const navigateToHome = (): void => {
-  router.push("/workspace");
+  router.push('/workspace');
 };
 
 const toggleMenuVisibility = (): void => {
@@ -377,16 +355,16 @@ watch(
       }
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 </script>
 
 <style lang="scss" scoped>
-@use "./style";
+@use './style';
 </style>
 
 <style lang="scss">
-@use "./theme";
+@use './theme';
 
 .layout-sidebar {
   .el-menu:not(.el-menu--collapse) {

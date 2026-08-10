@@ -1,15 +1,15 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   Product,
   ProductList,
   ProductVariantLiteForInputList,
-} from "@/domain/product/product.types";
+} from '@/domain/product/product.types';
 
 export const ProductApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<ProductList>({
-      url: "/api/v1/Product/for-manager",
+      url: '/api/v1/Product/for-manager',
       params: {
         Page: current,
         PageSize: size,
@@ -20,9 +20,9 @@ export const ProductApi = {
 
   exportProducts(params: any) {
     return request.get({
-      url: "/api/v1/Product/export",
+      url: '/api/v1/Product/export',
       params,
-      responseType: "blob" as const,
+      responseType: 'blob' as const,
     });
   },
 
@@ -34,7 +34,7 @@ export const ProductApi = {
 
   create(data: Partial<Product>) {
     return request.post<Product>({
-      url: "/api/v1/Product",
+      url: '/api/v1/Product',
       data,
     });
   },
@@ -55,7 +55,7 @@ export const ProductApi = {
   getVariantsForInput(params: any) {
     const { current, size, ...rest } = params;
     return request.get<ProductVariantLiteForInputList>({
-      url: "/api/v1/Product/variants-lite/for-InventoryReceipt",
+      url: '/api/v1/Product/variants-lite/for-InventoryReceipt',
       params: {
         Page: current,
         PageSize: size,
@@ -67,7 +67,7 @@ export const ProductApi = {
   getVariantsForOutput(params: any) {
     const { current, size, ...rest } = params;
     return request.get<ProductVariantLiteForInputList>({
-      url: "/api/v1/Product/variants-lite/for-output",
+      url: '/api/v1/Product/variants-lite/for-output',
       params: {
         Page: current,
         PageSize: size,
@@ -78,7 +78,7 @@ export const ProductApi = {
 
   getPredefinedOptions() {
     return request.get<Record<string, string>>({
-      url: "/api/v1/Option/predefined",
+      url: '/api/v1/Option/predefined',
     });
   },
 };

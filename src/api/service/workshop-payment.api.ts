@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface WorkshopPayment {
   id: number;
@@ -42,31 +42,31 @@ export interface CreateWorkshopPaymentPayload {
 }
 
 export const PAYMENT_METHODS = [
-  { label: "Tiền mặt", value: "Cash" },
-  { label: "Chuyển khoản", value: "Transfer" },
-  { label: "Thẻ", value: "Card" },
-  { label: "VNPay", value: "VNPay" },
-  { label: "MoMo", value: "MoMo" },
+  { label: 'Tiền mặt', value: 'Cash' },
+  { label: 'Chuyển khoản', value: 'Transfer' },
+  { label: 'Thẻ', value: 'Card' },
+  { label: 'VNPay', value: 'VNPay' },
+  { label: 'MoMo', value: 'MoMo' },
 ] as const;
 
 export const PAYMENT_STATUSES = [
-  { label: "Đã thanh toán", value: "Paid" },
-  { label: "Chưa thanh toán", value: "Unpaid" },
-  { label: "Thanh toán một phần", value: "Partial" },
-  { label: "Hoàn tiền", value: "Refunded" },
+  { label: 'Đã thanh toán', value: 'Paid' },
+  { label: 'Chưa thanh toán', value: 'Unpaid' },
+  { label: 'Thanh toán một phần', value: 'Partial' },
+  { label: 'Hoàn tiền', value: 'Refunded' },
 ] as const;
 
 export const SOURCE_TYPES = [
-  { label: "Phiếu sửa chữa", value: "RepairOrder" },
-  { label: "Phiếu bảo hành", value: "Warranty" },
-  { label: "Đặt dịch vụ", value: "ServiceBooking" },
+  { label: 'Phiếu sửa chữa', value: 'RepairOrder' },
+  { label: 'Phiếu bảo hành', value: 'Warranty' },
+  { label: 'Đặt dịch vụ', value: 'ServiceBooking' },
 ] as const;
 
 export const WorkshopPaymentApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<WorkshopPaymentList>({
-      url: "/api/v1/WorkshopPayments",
+      url: '/api/v1/WorkshopPayments',
       params: {
         Page: current,
         PageSize: size,
@@ -83,14 +83,14 @@ export const WorkshopPaymentApi = {
 
   create(data: CreateWorkshopPaymentPayload) {
     return request.post<number>({
-      url: "/api/v1/WorkshopPayments",
+      url: '/api/v1/WorkshopPayments',
       data,
     });
   },
 
   getStats() {
     return request.get<any>({
-      url: "/api/v1/WorkshopPayments/stats",
+      url: '/api/v1/WorkshopPayments/stats',
     });
   },
 };

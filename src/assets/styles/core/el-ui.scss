@@ -7,9 +7,7 @@
   --el-component-size: var(--el-component-custom-height) !important;
   --el-border-radius-base: calc(var(--custom-radius) / 3 + 2px) !important;
   --el-border-radius-small: calc(var(--custom-radius) / 3 + 4px) !important;
-  --el-messagebox-border-radius: calc(
-    var(--custom-radius) / 3 + 4px
-  ) !important;
+  --el-messagebox-border-radius: calc(var(--custom-radius) / 3 + 4px) !important;
   --el-popover-border-radius: calc(var(--custom-radius) / 3 + 4px) !important;
 
   .region .el-radio-button__original-radio:checked + .el-radio-button__inner {
@@ -119,7 +117,7 @@ html.dark .el-card {
       left: -16px;
       width: calc(100% + 32px);
       height: 1px;
-      content: "";
+      content: '';
       background-color: var(--art-gray-300);
     }
 
@@ -191,12 +189,12 @@ html.dark .el-card {
     width: calc(100% - 24px);
   }
 
-  .el-picker-panel *[slot="sidebar"],
+  .el-picker-panel *[slot='sidebar'],
   .el-picker-panel__sidebar {
     display: none;
   }
 
-  .el-picker-panel *[slot="sidebar"] + .el-picker-panel__body,
+  .el-picker-panel *[slot='sidebar'] + .el-picker-panel__body,
   .el-picker-panel__sidebar + .el-picker-panel__body {
     margin-left: 0;
   }
@@ -261,7 +259,7 @@ html.dark .el-card {
     &::before {
       top: 5px !important;
       height: 4px !important;
-      content: "";
+      content: '';
       background-color: #fff !important;
       transform: scale(0.6) !important;
     }
@@ -404,9 +402,7 @@ html.dark .el-card {
     }
 
     .el-select-dropdown__item:hover ~ .is-selected,
-    .el-select-dropdown__item.is-selected:has(
-        ~ .el-select-dropdown__item:hover
-      ) {
+    .el-select-dropdown__item.is-selected:has(~ .el-select-dropdown__item:hover) {
       background-color: transparent !important;
     }
   }
@@ -455,9 +451,7 @@ html.dark .el-card {
 }
 
 .dark {
-  .el-tree--highlight-current
-    .el-tree-node.is-current
-    > .el-tree-node__content {
+  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: var(--art-gray-300) !important;
   }
 }

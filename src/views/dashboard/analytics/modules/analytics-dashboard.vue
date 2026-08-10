@@ -3,10 +3,7 @@
     <div class="art-card-header">
       <div class="title">
         <h4>9.2. Dashboard Tổng quan</h4>
-        <p>
-          Khớp Workflow: Tổng thu/Tổng chi/Lợi nhuận gộp/Lợi nhuận ròng + biểu
-          đồ theo tháng
-        </p>
+        <p>Khớp Workflow: Tổng thu/Tổng chi/Lợi nhuận gộp/Lợi nhuận ròng + biểu đồ theo tháng</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -57,9 +54,7 @@
             <div class="mt-2 text-2xl font-semibold">
               {{ formatVnd(grossProfit) }}
             </div>
-            <div class="mt-2 text-xs text-g-500">
-              Doanh thu - Chi phí vận hành
-            </div>
+            <div class="mt-2 text-xs text-g-500">Doanh thu - Chi phí vận hành</div>
           </div>
         </ElCol>
 
@@ -72,9 +67,7 @@
             <div class="mt-2 text-2xl font-semibold">
               {{ formatVnd(netProfit) }}
             </div>
-            <div class="mt-2 text-xs text-g-500">
-              Lợi nhuận sau chi phí phát sinh
-            </div>
+            <div class="mt-2 text-xs text-g-500">Lợi nhuận sau chi phí phát sinh</div>
           </div>
         </ElCol>
       </ElRow>
@@ -82,9 +75,7 @@
       <div class="mt-6">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-base font-medium">
-              Biểu đồ so sánh doanh thu vs chi phí theo tháng
-            </div>
+            <div class="text-base font-medium">Biểu đồ so sánh doanh thu vs chi phí theo tháng</div>
             <div class="text-xs text-g-500">Biểu đồ theo tháng</div>
           </div>
         </div>
@@ -98,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue';
 // note: v-chart is registered globally in project via plugins/echarts.ts; use directly.
 
 interface MonthlyPoint {
@@ -112,9 +103,9 @@ const isLoading = ref(false);
 // Data is loaded from API.
 const monthly = computed<MonthlyPoint[]>(() => []);
 
-const chartTextColor = "#aeb0bd";
-const chartAxisLineColor = "rgba(255, 255, 255, 0.16)";
-const chartGridLineColor = "rgba(255, 255, 255, 0.1)";
+const chartTextColor = '#aeb0bd';
+const chartAxisLineColor = 'rgba(255, 255, 255, 0.16)';
+const chartGridLineColor = 'rgba(255, 255, 255, 0.1)';
 
 const totalIncome = computed(() => 0);
 const totalExpense = computed(() => 0);
@@ -123,17 +114,17 @@ const netProfit = computed(() => 0);
 
 const chartOption = computed(() => {
   return {
-    tooltip: { trigger: "axis" },
+    tooltip: { trigger: 'axis' },
     legend: { top: 10, textStyle: { color: chartTextColor } },
     grid: { left: 30, right: 20, top: 50, bottom: 25 },
     xAxis: {
-      type: "category",
+      type: 'category',
       data: monthly.value.map((x) => x.month),
       axisLabel: { interval: 0, rotate: 0, color: chartTextColor },
       axisLine: { lineStyle: { color: chartAxisLineColor } },
     },
     yAxis: {
-      type: "value",
+      type: 'value',
       axisLabel: {
         formatter: (v: number) => formatVnd(v),
         color: chartTextColor,
@@ -142,14 +133,14 @@ const chartOption = computed(() => {
     },
     series: [
       {
-        name: "Doanh thu",
-        type: "bar",
+        name: 'Doanh thu',
+        type: 'bar',
         barMaxWidth: 22,
         data: monthly.value.map((x) => Math.round(x.income)),
       },
       {
-        name: "Chi phí",
-        type: "bar",
+        name: 'Chi phí',
+        type: 'bar',
         barMaxWidth: 22,
         data: monthly.value.map((x) => Math.round(x.expense)),
       },
@@ -159,11 +150,7 @@ const chartOption = computed(() => {
 
 function formatVnd(value: number): string {
   try {
-    return (
-      new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(
-        value,
-      ) + "đ"
-    );
+    return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(value) + 'đ';
   } catch {
     return `${Math.round(value)}đ`;
   }

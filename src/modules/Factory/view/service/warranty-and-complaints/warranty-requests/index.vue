@@ -7,11 +7,10 @@
       <div>
         <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
           <el-icon class="text-primary"><Tickets /></el-icon>
-          {{ $t("menus.service.warrantyAndComplaints.warrantyRequests") }}
+          {{ $t('menus.service.warrantyAndComplaints.warrantyRequests') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Quản lý danh sách, tra cứu điều kiện bảo hành của khách hàng và tạo
-          phiếu bảo hành mới.
+          Quản lý danh sách, tra cứu điều kiện bảo hành của khách hàng và tạo phiếu bảo hành mới.
         </p>
       </div>
       <div>
@@ -30,11 +29,7 @@
 
     <!-- Filters & Actions -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
-      <el-form
-        :inline="true"
-        :model="filters"
-        class="flex flex-wrap gap-4 items-center"
-      >
+      <el-form :inline="true" :model="filters" class="flex flex-wrap gap-4 items-center">
         <el-form-item label="Tìm kiếm" class="mb-0">
           <el-input
             v-model="filters.search"
@@ -71,9 +66,7 @@
     </div>
 
     <!-- Table List -->
-    <div
-      class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden"
-    >
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <el-table
         :data="tableData"
         border
@@ -94,21 +87,14 @@
         <el-table-column prop="customerName" label="Khách Hàng" min-width="160">
           <template #default="{ row }">
             <div class="font-medium text-slate-800">
-              {{ row.customerName || "N/A" }}
+              {{ row.customerName || 'N/A' }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="customerPhone"
-          label="Số Điện Thoại"
-          min-width="130"
-        />
+        <el-table-column prop="customerPhone" label="Số Điện Thoại" min-width="130" />
         <el-table-column prop="vehiclePlate" label="Biển Số Xe" min-width="130">
           <template #default="{ row }">
-            <el-tag
-              effect="plain"
-              class="font-bold border-slate-300 text-slate-700"
-            >
+            <el-tag effect="plain" class="font-bold border-slate-300 text-slate-700">
               {{ row.vehiclePlate || generateMockPlate(row.id) }}
             </el-tag>
           </template>
@@ -120,21 +106,12 @@
         </el-table-column>
         <el-table-column prop="statusText" label="Trạng Thái" min-width="150">
           <template #default="{ row }">
-            <el-tag
-              :type="getStatusTagType(row.statusText)"
-              effect="dark"
-              class="capitalize"
-            >
+            <el-tag :type="getStatusTagType(row.statusText)" effect="dark" class="capitalize">
               {{ getStatusLabel(row.statusText) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          label="Hành động"
-          min-width="200"
-          fixed="right"
-          align="center"
-        >
+        <el-table-column label="Hành động" min-width="200" fixed="right" align="center">
           <template #default="{ row }">
             <div class="flex items-center justify-center gap-2">
               <el-button
@@ -153,9 +130,7 @@
                 :icon="Delete"
                 plain
                 @click="handleDelete(row.id)"
-                v-auth="
-                  Permissions.Factory.RepairOrderManagement.AssignTechnician
-                "
+                v-auth="Permissions.Factory.RepairOrderManagement.AssignTechnician"
               >
                 Xóa
               </el-button>
@@ -229,8 +204,8 @@
             </div>
             <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
               <li v-for="h in customerHistory" :key="h.id">
-                Mã xe: <span class="font-medium">{{ h.licensePlate }}</span> -
-                Vin: {{ h.vinNumber }} - Mua ngày:
+                Mã xe: <span class="font-medium">{{ h.licensePlate }}</span> - Vin:
+                {{ h.vinNumber }} - Mua ngày:
                 {{ formatDateOnly(h.purchaseDate) }}
               </li>
             </ul>
@@ -246,11 +221,7 @@
             Thông tin xe
           </h3>
           <div class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <el-form-item
-              label="Biển số xe"
-              prop="licensePlate"
-              class="md:col-span-1"
-            >
+            <el-form-item label="Biển số xe" prop="licensePlate" class="md:col-span-1">
               <el-input
                 v-model="form.licensePlate"
                 placeholder="VD: 29-A1 999.99"
@@ -259,18 +230,10 @@
               />
             </el-form-item>
             <el-form-item label="Màu sắc" prop="vehicleColor">
-              <el-input
-                v-model="form.vehicleColor"
-                placeholder="Tự động điền"
-                disabled
-              />
+              <el-input v-model="form.vehicleColor" placeholder="Tự động điền" disabled />
             </el-form-item>
             <el-form-item label="Hãng xe" prop="vehicleBrand">
-              <el-input
-                v-model="form.vehicleBrand"
-                placeholder="Tự động điền"
-                disabled
-              />
+              <el-input v-model="form.vehicleBrand" placeholder="Tự động điền" disabled />
             </el-form-item>
           </div>
 
@@ -294,9 +257,7 @@
                 </div>
                 <div class="text-xs text-slate-500 mt-0.5">
                   Nội dung:
-                  {{
-                    h.description || h.issueDescription || "Bảo dưỡng định kỳ"
-                  }}
+                  {{ h.description || h.issueDescription || 'Bảo dưỡng định kỳ' }}
                 </div>
               </el-timeline-item>
             </el-timeline>
@@ -319,10 +280,7 @@
           </h3>
 
           <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <el-form-item
-              label="Ngày mua xe / Ngày bắt đầu BH"
-              prop="purchaseDate"
-            >
+            <el-form-item label="Ngày mua xe / Ngày bắt đầu BH" prop="purchaseDate">
               <el-date-picker
                 v-model="form.purchaseDate"
                 type="date"
@@ -331,10 +289,7 @@
                 disabled
               />
             </el-form-item>
-            <el-form-item
-              label="Thời hạn bảo hành (tháng)"
-              prop="warrantyPeriodMonths"
-            >
+            <el-form-item label="Thời hạn bảo hành (tháng)" prop="warrantyPeriodMonths">
               <el-input-number
                 v-model="form.warrantyPeriodMonths"
                 :min="0"
@@ -352,12 +307,7 @@
               />
             </el-form-item>
             <el-form-item label="Giới hạn km bảo hành" prop="limitOdo">
-              <el-input-number
-                v-model="form.limitOdo"
-                :min="0"
-                style="width: 100%"
-                disabled
-              />
+              <el-input-number v-model="form.limitOdo" :min="0" style="width: 100%" disabled />
             </el-form-item>
           </div>
 
@@ -367,9 +317,7 @@
               v-if="isWarrantyValid"
               class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3"
             >
-              <el-icon class="text-emerald-600 text-xl mt-0.5"
-                ><Check
-              /></el-icon>
+              <el-icon class="text-emerald-600 text-xl mt-0.5"><Check /></el-icon>
               <div>
                 <div class="text-sm font-bold text-emerald-800">
                   Xe đủ điều kiện bảo hành tiêu chuẩn
@@ -378,38 +326,25 @@
                   - Ngày hết hạn lý thuyết:
                   {{ formatDateOnly(warrantyExpiryDate) }} (Còn
                   {{ warrantyRemainingDays }} ngày)<br />
-                  - ODO hiện tại hợp lệ ({{ form.currentOdo }} km &le;
-                  {{ form.limitOdo }} km)
+                  - ODO hiện tại hợp lệ ({{ form.currentOdo }} km &le; {{ form.limitOdo }} km)
                 </div>
               </div>
             </div>
-            <div
-              v-else
-              class="p-4 bg-rose-50 border border-rose-200 rounded-lg"
-            >
+            <div v-else class="p-4 bg-rose-50 border border-rose-200 rounded-lg">
               <div class="flex items-start gap-3">
-                <el-icon class="text-rose-600 text-xl mt-0.5"
-                  ><Warning
-                /></el-icon>
+                <el-icon class="text-rose-600 text-xl mt-0.5"><Warning /></el-icon>
                 <div>
-                  <div class="text-sm font-bold text-rose-800">
-                    Xe đã hết hạn bảo hành!
-                  </div>
+                  <div class="text-sm font-bold text-rose-800">Xe đã hết hạn bảo hành!</div>
                   <div class="text-xs text-rose-600 mt-1">
-                    <span
-                      :class="{ 'text-rose-800 font-semibold': isTimeExpired }"
-                    >
+                    <span :class="{ 'text-rose-800 font-semibold': isTimeExpired }">
                       - Hạn thời gian:
-                      {{ isTimeExpired ? "HẾT HẠN" : "CÒN HẠN" }} (Hết hạn ngày
+                      {{ isTimeExpired ? 'HẾT HẠN' : 'CÒN HẠN' }} (Hết hạn ngày
                       {{ formatDateOnly(warrantyExpiryDate) }}) </span
                     ><br />
-                    <span
-                      :class="{ 'text-rose-800 font-semibold': isOdoExpired }"
-                    >
+                    <span :class="{ 'text-rose-800 font-semibold': isOdoExpired }">
                       - Hạn ODO:
-                      {{ isOdoExpired ? "HẾT HẠN" : "CÒN HẠN" }} (Hiện tại
-                      {{ form.currentOdo }} km / Giới hạn
-                      {{ form.limitOdo }} km)
+                      {{ isOdoExpired ? 'HẾT HẠN' : 'CÒN HẠN' }} (Hiện tại {{ form.currentOdo }} km
+                      / Giới hạn {{ form.limitOdo }} km)
                     </span>
                   </div>
                 </div>
@@ -418,8 +353,8 @@
                 <el-form-item prop="confirmExpiredWarranty" class="mb-0">
                   <el-checkbox v-model="form.confirmExpiredWarranty">
                     <span class="text-xs font-bold text-rose-800"
-                      >Xác nhận: Xe đã hết bảo hành, tôi muốn tiếp tục tạo phiếu
-                      bảo hành ngoại lệ.</span
+                      >Xác nhận: Xe đã hết bảo hành, tôi muốn tiếp tục tạo phiếu bảo hành ngoại
+                      lệ.</span
                     >
                   </el-checkbox>
                 </el-form-item>
@@ -467,10 +402,7 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item
-              label="Mô tả lỗi / yêu cầu bảo hành"
-              prop="issueDescription"
-            >
+            <el-form-item label="Mô tả lỗi / yêu cầu bảo hành" prop="issueDescription">
               <el-input
                 v-model="form.issueDescription"
                 type="textarea"
@@ -482,8 +414,7 @@
             <!-- Nghiệp vụ linh kiện phụ tùng -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span
-                  class="text-xs font-bold text-slate-700 uppercase tracking-wider"
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider"
                   >Danh sách phụ tùng thay thế (nếu có)</span
                 >
                 <el-button
@@ -497,12 +428,7 @@
                 >
               </div>
 
-              <el-table
-                :data="form.parts"
-                border
-                class="parts-table"
-                size="small"
-              >
+              <el-table :data="form.parts" border class="parts-table" size="small">
                 <el-table-column label="Tên Phụ Tùng" min-width="200">
                   <template #default="{ row, $index }">
                     <el-form-item
@@ -529,10 +455,7 @@
                 </el-table-column>
                 <el-table-column label="Phân Loại BH" width="130">
                   <template #default="{ row }">
-                    <el-select
-                      v-model="row.isWarranty"
-                      @change="handlePartTypeChange(row)"
-                    >
+                    <el-select v-model="row.isWarranty" @change="handlePartTypeChange(row)">
                       <el-option label="Trong diện BH" :value="true" />
                       <el-option label="Ngoài diện BH" :value="false" />
                     </el-select>
@@ -594,20 +517,12 @@
               class="mt-4 p-4 bg-white rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <div>
-                <div class="text-xs text-slate-500 font-medium">
-                  Chi phí sửa chữa (Công thợ)
-                </div>
-                <div class="text-lg font-bold text-slate-400 mt-1 line-through">
-                  0 đ
-                </div>
-                <div class="text-[10px] text-slate-400 italic mt-0.5">
-                  (Được miễn phí 100%)
-                </div>
+                <div class="text-xs text-slate-500 font-medium">Chi phí sửa chữa (Công thợ)</div>
+                <div class="text-lg font-bold text-slate-400 mt-1 line-through">0 đ</div>
+                <div class="text-[10px] text-slate-400 italic mt-0.5">(Được miễn phí 100%)</div>
               </div>
               <div>
-                <div class="text-xs text-slate-500 font-medium">
-                  Chi phí linh kiện phát sinh
-                </div>
+                <div class="text-xs text-slate-500 font-medium">Chi phí linh kiện phát sinh</div>
                 <div class="text-lg font-bold text-amber-600 mt-1">
                   {{ formatPrice(totalPartsCost) }}
                 </div>
@@ -616,9 +531,7 @@
                 </div>
               </div>
               <div class="border-l border-slate-200 pl-4">
-                <div class="text-xs text-slate-500 font-medium">
-                  Khách hàng cần trả
-                </div>
+                <div class="text-xs text-slate-500 font-medium">Khách hàng cần trả</div>
                 <div class="text-xl font-extrabold text-primary mt-1">
                   {{ formatPrice(totalPartsCost) }}
                 </div>
@@ -649,11 +562,11 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { ref, reactive, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
+import { Permissions } from '@/domain/constants/permissions';
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
 import {
   Tickets,
   Plus,
@@ -666,12 +579,12 @@ import {
   Delete,
   Check,
   Flag,
-} from "@element-plus/icons-vue";
-import { WarrantyClaimApi } from "@/api/service/warranty-claim.api";
-import { VehicleApi } from "@/api/vehicle/vehicle.api";
-import { EmployeeApi } from "@/api/operations/employee.api";
-import { ProductApi } from "@/api/product/product.api";
-import dayjs from "dayjs";
+} from '@element-plus/icons-vue';
+import { WarrantyClaimApi } from '@/api/service/warranty-claim.api';
+import { VehicleApi } from '@/api/vehicle/vehicle.api';
+import { EmployeeApi } from '@/api/operations/employee.api';
+import { ProductApi } from '@/api/product/product.api';
+import dayjs from 'dayjs';
 
 const router = useRouter();
 
@@ -682,8 +595,8 @@ const drawerVisible = ref(false);
 const formRef = ref<FormInstance>();
 
 const filters = reactive({
-  search: "",
-  status: "" as any,
+  search: '',
+  status: '' as any,
 });
 
 const pagination = reactive({
@@ -705,12 +618,12 @@ type WarrantyClaimRow = {
 const tableData = ref<WarrantyClaimRow[]>([]);
 
 const generateMockPlate = (id: number) => {
-  const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "K"];
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K'];
   const l1 = letters[id % letters.length];
   const n1 = (id * 17) % 10;
   const p1 = (id * 123) % 999;
   const p2 = (id * 45) % 99;
-  return `29-${l1}${n1} ${String(p1).padStart(3, "0")}.${String(p2).padStart(2, "0")}`;
+  return `29-${l1}${n1} ${String(p1).padStart(3, '0')}.${String(p2).padStart(2, '0')}`;
 };
 
 // Drawer states
@@ -720,22 +633,22 @@ const vehicleHistory = ref<any[]>([]);
 const vehicleSearched = ref(false);
 const isReadOnlyCustomer = ref(false);
 const selectedVehicleId = ref<number | null>(null);
-const warrantyType = ref<"standard" | "exception">("standard");
+const warrantyType = ref<'standard' | 'exception'>('standard');
 
 // Form
 const form = reactive({
-  customerPhone: "",
-  customerName: "",
-  licensePlate: "",
-  vehicleColor: "",
-  vehicleBrand: "",
-  purchaseDate: "" as any,
+  customerPhone: '',
+  customerName: '',
+  licensePlate: '',
+  vehicleColor: '',
+  vehicleBrand: '',
+  purchaseDate: '' as any,
   warrantyPeriodMonths: 36,
   currentOdo: 0,
   limitOdo: 100000,
   confirmExpiredWarranty: false,
-  technicianId: "" as any,
-  issueDescription: "",
+  technicianId: '' as any,
+  issueDescription: '',
   parts: [] as Array<{
     selectedVariantId?: number;
     partName: string;
@@ -749,58 +662,49 @@ const form = reactive({
 
 // Part inline validation rules
 const partRules = {
-  selectedVariantId: [
-    { required: true, message: "Chọn phụ tùng", trigger: "change" },
-  ],
-  unitPrice: [{ required: true, message: "Nhập đơn giá", trigger: "blur" }],
+  selectedVariantId: [{ required: true, message: 'Chọn phụ tùng', trigger: 'change' }],
+  unitPrice: [{ required: true, message: 'Nhập đơn giá', trigger: 'blur' }],
 };
 
 // Form main validation rules
 const formRules = reactive<FormRules>({
   customerPhone: [
-    { required: true, message: "Vui lòng nhập số điện thoại", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhập số điện thoại', trigger: 'blur' },
     {
       pattern: /^(03|05|07|08|09)\d{8}$/,
-      message:
-        "Số điện thoại Việt Nam không hợp lệ (10 số, bắt đầu bằng 03/05/07/08/09)",
-      trigger: "blur",
+      message: 'Số điện thoại Việt Nam không hợp lệ (10 số, bắt đầu bằng 03/05/07/08/09)',
+      trigger: 'blur',
     },
   ],
   customerName: [
     {
       required: true,
-      message: "Vui lòng nhập họ tên khách hàng",
-      trigger: "blur",
+      message: 'Vui lòng nhập họ tên khách hàng',
+      trigger: 'blur',
     },
   ],
-  licensePlate: [
-    { required: true, message: "Vui lòng nhập biển số xe", trigger: "blur" },
-  ],
+  licensePlate: [{ required: true, message: 'Vui lòng nhập biển số xe', trigger: 'blur' }],
   currentOdo: [
     {
       required: true,
-      message: "Vui lòng nhập số km hiện tại",
-      trigger: "blur",
+      message: 'Vui lòng nhập số km hiện tại',
+      trigger: 'blur',
     },
   ],
   technicianId: [
     {
       required: true,
-      message: "Vui lòng chọn kỹ thuật viên",
-      trigger: "change",
+      message: 'Vui lòng chọn kỹ thuật viên',
+      trigger: 'change',
     },
   ],
-  issueDescription: [
-    { required: true, message: "Vui lòng nhập mô tả lỗi", trigger: "blur" },
-  ],
+  issueDescription: [{ required: true, message: 'Vui lòng nhập mô tả lỗi', trigger: 'blur' }],
 });
 
 // Computed properties
 const warrantyExpiryDate = computed(() => {
   if (!form.purchaseDate) return null;
-  return dayjs(form.purchaseDate)
-    .add(form.warrantyPeriodMonths, "month")
-    .toDate();
+  return dayjs(form.purchaseDate).add(form.warrantyPeriodMonths, 'month').toDate();
 });
 
 const isTimeExpired = computed(() => {
@@ -818,7 +722,7 @@ const isWarrantyValid = computed(() => {
 
 const warrantyRemainingDays = computed(() => {
   if (!warrantyExpiryDate.value) return 0;
-  const diff = dayjs(warrantyExpiryDate.value).diff(dayjs(), "day");
+  const diff = dayjs(warrantyExpiryDate.value).diff(dayjs(), 'day');
   return diff > 0 ? diff : 0;
 });
 
@@ -830,39 +734,39 @@ const totalPartsCost = computed(() => {
 
 // Methods
 const formatDate = (val: string) => {
-  if (!val) return "N/A";
-  return dayjs(val).format("DD/MM/YYYY HH:mm");
+  if (!val) return 'N/A';
+  return dayjs(val).format('DD/MM/YYYY HH:mm');
 };
 
 const formatDateOnly = (val: any) => {
-  if (!val) return "N/A";
-  return dayjs(val).format("DD/MM/YYYY");
+  if (!val) return 'N/A';
+  return dayjs(val).format('DD/MM/YYYY');
 };
 
 const formatPrice = (val: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(val);
 };
 
 const getStatusTagType = (status: string) => {
-  const s = status ? String(status).toLowerCase() : "";
-  if (s.includes("completed")) return "success";
-  if (s.includes("approved")) return "warning";
-  if (s.includes("replaced")) return "primary";
-  if (s.includes("rejected")) return "danger";
-  return "info";
+  const s = status ? String(status).toLowerCase() : '';
+  if (s.includes('completed')) return 'success';
+  if (s.includes('approved')) return 'warning';
+  if (s.includes('replaced')) return 'primary';
+  if (s.includes('rejected')) return 'danger';
+  return 'info';
 };
 
 const getStatusLabel = (status: string) => {
-  const s = status ? String(status).toLowerCase() : "";
-  if (s === "received") return "Tiếp nhận";
-  if (s === "pendingmanufacturer") return "Chờ hãng thẩm định";
-  if (s === "approved") return "Đã duyệt bồi hoàn";
-  if (s === "replaced") return "Thợ thay thế";
-  if (s === "completed") return "Hoàn tất - Đóng hồ sơ";
-  if (s === "rejected") return "Từ chối";
+  const s = status ? String(status).toLowerCase() : '';
+  if (s === 'received') return 'Tiếp nhận';
+  if (s === 'pendingmanufacturer') return 'Chờ hãng thẩm định';
+  if (s === 'approved') return 'Đã duyệt bồi hoàn';
+  if (s === 'replaced') return 'Thợ thay thế';
+  if (s === 'completed') return 'Hoàn tất - Đóng hồ sơ';
+  if (s === 'rejected') return 'Từ chối';
   return status;
 };
 
@@ -881,7 +785,7 @@ async function loadData() {
     const res = await WarrantyClaimApi.getList({
       current: pagination.current,
       size: pagination.size,
-      filters: sieveFilters.join(","),
+      filters: sieveFilters.join(','),
     });
 
     if (res && res.items) {
@@ -892,8 +796,8 @@ async function loadData() {
       pagination.total = 0;
     }
   } catch (error: any) {
-    console.error("Lỗi khi tải danh sách bảo hành:", error);
-    ElMessage.error("Không thể tải danh sách phiếu bảo hành.");
+    console.error('Lỗi khi tải danh sách bảo hành:', error);
+    ElMessage.error('Không thể tải danh sách phiếu bảo hành.');
   } finally {
     loading.value = false;
   }
@@ -905,8 +809,8 @@ function handleSearch() {
 }
 
 function resetFilters() {
-  filters.search = "";
-  filters.status = "";
+  filters.search = '';
+  filters.status = '';
   handleSearch();
 }
 
@@ -921,28 +825,22 @@ function handleCurrentChange(page: number) {
 }
 
 function openDetail(id: number) {
-  router
-    .push({ name: "WorkshopWarrantyDetail", params: { id } })
-    .catch(() => null);
+  router.push({ name: 'WorkshopWarrantyDetail', params: { id } }).catch(() => null);
 }
 
 async function handleDelete(id: number) {
   try {
-    await ElMessageBox.confirm(
-      "Bạn có chắc chắn muốn xóa phiếu bảo hành này?",
-      "Xác nhận xóa",
-      {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "error",
-      },
-    );
+    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa phiếu bảo hành này?', 'Xác nhận xóa', {
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+      type: 'error',
+    });
     await WarrantyClaimApi.delete(id);
-    ElMessage.success("Xóa phiếu bảo hành thành công!");
+    ElMessage.success('Xóa phiếu bảo hành thành công!');
     handleSearch();
   } catch (err: any) {
-    if (err !== "cancel") {
-      ElMessage.error(err.message || "Xóa thất bại.");
+    if (err !== 'cancel') {
+      ElMessage.error(err.message || 'Xóa thất bại.');
     }
   }
 }
@@ -951,18 +849,18 @@ async function handleDelete(id: number) {
 async function openCreateDrawer() {
   // Clear form
   Object.assign(form, {
-    customerPhone: "",
-    customerName: "",
-    licensePlate: "",
-    vehicleColor: "",
-    vehicleBrand: "",
-    purchaseDate: "",
+    customerPhone: '',
+    customerName: '',
+    licensePlate: '',
+    vehicleColor: '',
+    vehicleBrand: '',
+    purchaseDate: '',
     warrantyPeriodMonths: 36,
     currentOdo: 0,
     limitOdo: 100000,
     confirmExpiredWarranty: false,
-    technicianId: "",
-    issueDescription: "",
+    technicianId: '',
+    issueDescription: '',
     parts: [],
   });
 
@@ -979,7 +877,7 @@ async function openCreateDrawer() {
     // Filter technicians
     technicians.value = res || [];
   } catch (error) {
-    console.error("Lỗi lấy danh sách nhân viên:", error);
+    console.error('Lỗi lấy danh sách nhân viên:', error);
   }
 }
 
@@ -994,7 +892,7 @@ function handlePhoneInput() {
       try {
         const res = await VehicleApi.getPortfolio({
           query: phone,
-          queryType: "phone",
+          queryType: 'phone',
           page: 1,
           pageSize: 10,
         });
@@ -1009,7 +907,7 @@ function handlePhoneInput() {
           customerHistory.value = [];
         }
       } catch (err) {
-        console.error("Lỗi tra cứu SĐT:", err);
+        console.error('Lỗi tra cứu SĐT:', err);
       }
     }, 400);
   } else {
@@ -1029,7 +927,7 @@ function handlePlateInput() {
       try {
         const res = await VehicleApi.getPortfolio({
           query: plate,
-          queryType: "licensePlate",
+          queryType: 'licensePlate',
           page: 1,
           pageSize: 10,
         });
@@ -1037,10 +935,9 @@ function handlePlateInput() {
         if (res && res.vehicle) {
           form.customerName = res.vehicle.fullName;
           form.customerPhone = res.vehicle.phoneNumber;
-          form.vehicleColor = res.vehicle.colorName || "N/A";
+          form.vehicleColor = res.vehicle.colorName || 'N/A';
           form.vehicleBrand =
-            `${res.vehicle.brandName || ""} ${res.vehicle.variantName || ""}`.trim() ||
-            "N/A";
+            `${res.vehicle.brandName || ''} ${res.vehicle.variantName || ''}`.trim() || 'N/A';
           form.purchaseDate = res.vehicle.purchaseDate;
           form.warrantyPeriodMonths = Number(res.vehicle.warrantyPeriod || 36);
           form.limitOdo = 100000;
@@ -1057,7 +954,7 @@ function handlePlateInput() {
           vehicleHistory.value = [];
         }
       } catch (err) {
-        console.error("Lỗi tra cứu biển số:", err);
+        console.error('Lỗi tra cứu biển số:', err);
         vehicleSearched.value = false;
         vehicleHistory.value = [];
       }
@@ -1084,7 +981,7 @@ async function loadAvailableParts() {
       availableParts.value = res.items;
     }
   } catch (error) {
-    console.error("Lỗi lấy danh sách phụ tùng:", error);
+    console.error('Lỗi lấy danh sách phụ tùng:', error);
   }
 }
 
@@ -1102,8 +999,8 @@ function handlePartSelect(variantId: number, row: any) {
 function addPart() {
   form.parts.push({
     selectedVariantId: undefined,
-    partName: "",
-    partCode: "",
+    partName: '',
+    partCode: '',
     isWarranty: true,
     unitPrice: 0,
     quantity: 1,
@@ -1119,9 +1016,7 @@ function handlePartTypeChange(row: any) {
   if (row.isWarranty) {
     row.unitPrice = 0;
   } else if (row.selectedVariantId) {
-    const variant = availableParts.value.find(
-      (p) => p.id === row.selectedVariantId,
-    );
+    const variant = availableParts.value.find((p) => p.id === row.selectedVariantId);
     row.unitPrice = variant ? variant.price || 0 : 0;
   }
   row.total = row.unitPrice * row.quantity;
@@ -1133,24 +1028,24 @@ async function submitForm() {
 
   await formRef.value.validate(async (valid) => {
     if (!valid) {
-      ElMessage.warning("Vui lòng điền đầy đủ các trường bắt buộc.");
+      ElMessage.warning('Vui lòng điền đầy đủ các trường bắt buộc.');
       return;
     }
 
     if (!selectedVehicleId.value) {
-      ElMessage.error("Vui lòng tra biển số xe trước khi tạo phiếu bảo hành.");
+      ElMessage.error('Vui lòng tra biển số xe trước khi tạo phiếu bảo hành.');
       return;
     }
 
     // Check điều kiện bảo hành
     if (!isWarrantyValid.value && !form.confirmExpiredWarranty) {
       ElMessageBox.alert(
-        "Xe đã hết thời hạn bảo hành! Bạn phải tích chọn xác nhận tạo phiếu bảo hành ngoại lệ ở Nhóm 3 để tiếp tục.",
-        "Cảnh báo hết bảo hành",
+        'Xe đã hết thời hạn bảo hành! Bạn phải tích chọn xác nhận tạo phiếu bảo hành ngoại lệ ở Nhóm 3 để tiếp tục.',
+        'Cảnh báo hết bảo hành',
         {
-          type: "warning",
-          confirmButtonText: "Đã hiểu",
-        },
+          type: 'warning',
+          confirmButtonText: 'Đã hiểu',
+        }
       );
       return;
     }
@@ -1176,17 +1071,17 @@ async function submitForm() {
         isRecall: false,
         totalPartsCost: totalPartsCost.value,
         totalLaborCost: 0,
-        serviceCenterName: "Trung tâm bảo hành AnhEmMotor",
-        manufacturerClaimNumber: "",
+        serviceCenterName: 'Trung tâm bảo hành AnhEmMotor',
+        manufacturerClaimNumber: '',
         parts: partsPayload,
       });
 
-      ElMessage.success("Tạo phiếu bảo hành thành công!");
+      ElMessage.success('Tạo phiếu bảo hành thành công!');
       drawerVisible.value = false;
       handleSearch();
     } catch (error: any) {
-      console.error("Lỗi khi tạo phiếu bảo hành:", error);
-      ElMessage.error(error.message || "Tạo phiếu bảo hành thất bại.");
+      console.error('Lỗi khi tạo phiếu bảo hành:', error);
+      ElMessage.error(error.message || 'Tạo phiếu bảo hành thất bại.');
     } finally {
       submitting.value = false;
     }

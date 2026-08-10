@@ -1,17 +1,13 @@
 <template>
-  <div
-    ref="chartRef"
-    :style="{ height: props.height }"
-    v-loading="props.loading"
-  ></div>
+  <div ref="chartRef" :style="{ height: props.height }" v-loading="props.loading"></div>
 </template>
 
 <script setup lang="ts">
-import { useChartOps, useChartComponent } from "@/common/composables/useChart";
-import type { EChartsOption, BarSeriesOption } from "@/plugins/echarts";
-import type { BidirectionalBarChartProps } from "@/types/component/chart";
+import { useChartOps, useChartComponent } from '@/common/composables/useChart';
+import type { EChartsOption, BarSeriesOption } from '@/plugins/echarts';
+import type { BidirectionalBarChartProps } from '@/types/component/chart';
 
-defineOptions({ name: "ArtDualBarCompareChart" });
+defineOptions({ name: 'ArtDualBarCompareChart' });
 
 const props = withDefaults(defineProps<BidirectionalBarChartProps>(), {
   height: useChartOps().chartHeight,
@@ -22,8 +18,8 @@ const props = withDefaults(defineProps<BidirectionalBarChartProps>(), {
   positiveData: () => [],
   negativeData: () => [],
   xAxisData: () => [],
-  positiveName: "đúnghướngDữ liệu",
-  negativeName: "hướngDữ liệu",
+  positiveName: 'đúnghướngDữ liệu',
+  negativeName: 'hướngDữ liệu',
   barWidth: 16,
   yAxisMin: -100,
   yAxisMax: 100,
@@ -38,14 +34,14 @@ const props = withDefaults(defineProps<BidirectionalBarChartProps>(), {
 
   showTooltip: true,
   showLegend: false,
-  legendPosition: "bottom",
+  legendPosition: 'bottom',
 });
 
 const createSeriesConfig = (config: {
   name: string;
   data: number[];
   borderRadius: number | number[];
-  labelPosition: "top" | "bottom";
+  labelPosition: 'top' | 'bottom';
   colorIndex: number;
   formatter?: (params: unknown) => string;
 }): BarSeriesOption => {
@@ -54,10 +50,10 @@ const createSeriesConfig = (config: {
 
   return {
     name: config.name,
-    type: "bar",
-    stack: "total",
+    type: 'bar',
+    stack: 'total',
     barWidth: props.barWidth,
-    barGap: "-100%",
+    barGap: '-100%',
     data: config.data,
     itemStyle: {
       borderRadius: config.borderRadius,
@@ -68,8 +64,7 @@ const createSeriesConfig = (config: {
       position: config.labelPosition,
       formatter:
         config.formatter ||
-        ((params: unknown) =>
-          String((params as Record<string, unknown>).value)),
+        ((params: unknown) => String((params as Record<string, unknown>).value)),
       color: fontColor,
       fontSize: 12,
     },
@@ -93,8 +88,7 @@ const {
       props.isEmpty ||
       !props.positiveData.length ||
       !props.negativeData.length ||
-      (props.positiveData.every((val) => val === 0) &&
-        props.negativeData.every((val) => val === 0))
+      (props.positiveData.every((val) => val === 0) && props.negativeData.every((val) => val === 0))
     );
   },
   watchSources: [
@@ -104,9 +98,7 @@ const {
     () => props.colors,
   ],
   generateOptions: (): EChartsOption => {
-    const processedNegativeData = props.negativeData.map((val) =>
-      val > 0 ? -val : val,
-    );
+    const processedNegativeData = props.negativeData.map((val) => (val > 0 ? -val : val));
 
     const gridConfig = {
       top: props.showLegend ? 50 : 20,
@@ -117,22 +109,18 @@ const {
     };
 
     const options: EChartsOption = {
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       animation: true,
       animationDuration: 1000,
-      animationEasing: "cubicOut",
-      grid: getGridWithLegend(
-        props.showLegend,
-        props.legendPosition,
-        gridConfig,
-      ),
+      animationEasing: 'cubicOut',
+      grid: getGridWithLegend(props.showLegend, props.legendPosition, gridConfig),
 
       tooltip: props.showTooltip
         ? {
             ...getTooltipStyle(),
-            trigger: "axis",
+            trigger: 'axis',
             axisPointer: {
-              type: "none",
+              type: 'none',
             },
           }
         : undefined,
@@ -145,7 +133,7 @@ const {
         : undefined,
 
       xAxis: {
-        type: "category",
+        type: 'category',
         data: props.xAxisData,
         axisTick: getAxisTickStyle(),
         axisLine: getAxisLineStyle(props.showAxisLine),
@@ -154,7 +142,7 @@ const {
       },
 
       yAxis: {
-        type: "value",
+        type: 'value',
         min: props.yAxisMin,
         max: props.yAxisMax,
         axisLabel: getAxisLabelStyle(props.showAxisLabel),
@@ -167,18 +155,16 @@ const {
           name: props.negativeName,
           data: processedNegativeData,
           borderRadius: props.negativeBorderRadius,
-          labelPosition: "bottom",
+          labelPosition: 'bottom',
           colorIndex: 1,
           formatter: (params: unknown) =>
-            String(
-              Math.abs((params as Record<string, unknown>).value as number),
-            ),
+            String(Math.abs((params as Record<string, unknown>).value as number)),
         }),
         createSeriesConfig({
           name: props.positiveName,
           data: props.positiveData,
           borderRadius: props.positiveBorderRadius,
-          labelPosition: "top",
+          labelPosition: 'top',
           colorIndex: 0,
         }),
       ],

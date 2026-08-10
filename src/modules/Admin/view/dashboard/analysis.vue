@@ -4,13 +4,11 @@
       <div class="resp-page admin-dashboard">
         <div class="art-card">
           <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-              🛒 Kênh Doanh thu
-            </h2>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">🛒 Kênh Doanh thu</h2>
             <div class="flex flex-wrap items-center gap-3">
               <span class="text-sm text-gray-500">
-                <b>{{ formatDate(dateRange[0] ?? "") }}</b> đến
-                <b>{{ formatDate(dateRange[dateRange.length - 1] ?? "") }}</b>
+                <b>{{ formatDate(dateRange[0] ?? '') }}</b> đến
+                <b>{{ formatDate(dateRange[dateRange.length - 1] ?? '') }}</b>
               </span>
               <ElRadioGroup v-model="timeRange" size="small" @change="load">
                 <ElRadioButton value="Week">Tuần</ElRadioButton>
@@ -54,9 +52,7 @@
             </ElCol>
             <ElCol :xs="24" :sm="24" :md="12">
               <div class="art-card p-5">
-                <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">
-                  Doanh thu theo kênh
-                </h3>
+                <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">Doanh thu theo kênh</h3>
                 <div ref="barChartRef" class="h-64 w-full"></div>
                 <div
                   v-if="chartLoading"
@@ -70,23 +66,11 @@
 
           <!-- Table -->
           <div class="art-card !mt-0">
-            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">
-              Chi tiết theo kênh
-            </h3>
+            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4">Chi tiết theo kênh</h3>
             <ElTable :data="paginatedTableData" stripe class="w-full">
               <ElTableColumn prop="name" label="Kênh" min-width="150" />
-              <ElTableColumn
-                prop="visits"
-                label="Lượt truy cập"
-                min-width="130"
-                align="right"
-              />
-              <ElTableColumn
-                prop="orders"
-                label="Số đơn"
-                min-width="110"
-                align="right"
-              />
+              <ElTableColumn prop="visits" label="Lượt truy cập" min-width="130" align="right" />
+              <ElTableColumn prop="orders" label="Số đơn" min-width="110" align="right" />
               <ElTableColumn
                 prop="conversionRate"
                 label="Tỉ lệ chuyển đổi"
@@ -99,12 +83,7 @@
                   }}</span>
                 </template>
               </ElTableColumn>
-              <ElTableColumn
-                prop="amount"
-                label="Doanh thu"
-                min-width="150"
-                align="right"
-              >
+              <ElTableColumn prop="amount" label="Doanh thu" min-width="150" align="right">
                 <template #default="scope">
                   <span class="font-bold text-blue-600">{{
                     formatCurrency(scope.row.amount)
@@ -126,9 +105,7 @@
                   >
                     <i
                       :class="
-                        scope.row.changePercent >= 0
-                          ? 'ri-arrow-up-line'
-                          : 'ri-arrow-down-line'
+                        scope.row.changePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'
                       "
                     ></i>
                     {{ Math.abs(scope.row.changePercent).toFixed(1) }}%
@@ -155,8 +132,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from "vue";
-import * as echarts from "echarts";
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import * as echarts from 'echarts';
 import {
   ElRadioGroup,
   ElRadioButton,
@@ -167,30 +144,30 @@ import {
   ElTableColumn,
   ElPagination,
   ElTag,
-} from "element-plus";
-import { computed } from "vue";
-import CardList from "./card-list.vue";
-import { fetchDailyCategoryRevenue } from "@/api/dashboard.api";
-import { AnalyticsService } from "@/services/analytics.service";
+} from 'element-plus';
+import { computed } from 'vue';
+import CardList from './card-list.vue';
+import { fetchDailyCategoryRevenue } from '@/api/dashboard.api';
+import { AnalyticsService } from '@/services/analytics.service';
 import type {
   DashboardSummary,
   DailyCategoryRevenueRow,
   RevenueByCategoryItem,
-} from "@/services/analytics.types";
+} from '@/services/analytics.types';
 
-defineOptions({ name: "RevenueChannels" });
+defineOptions({ name: 'RevenueChannels' });
 
 const breadcrumb = ref([
-  { title: "Trang chủ", to: "/" },
+  { title: 'Trang chủ', to: '/' },
   {
-    title: "Tổng quan",
-    to: "/admin/dashboard/console",
-    icon: "ri-pie-chart-line",
+    title: 'Tổng quan',
+    to: '/admin/dashboard/console',
+    icon: 'ri-pie-chart-line',
   },
-  { title: "Kênh Doanh thu", to: "/admin/dashboard/analysis" },
+  { title: 'Kênh Doanh thu', to: '/admin/dashboard/analysis' },
 ]);
 
-const timeRange = ref<"Week" | "1Month" | "Year">("1Month");
+const timeRange = ref<'Week' | '1Month' | 'Year'>('1Month');
 const dateRange = ref<string[]>([]);
 const chartLoading = ref(false);
 const tableData = ref<any[]>([]);
@@ -217,61 +194,59 @@ const isFuture = (date: Date) => {
 function defaultRange() {
   const now = new Date();
   const to = now.toISOString().slice(0, 10);
-  const from = new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .slice(0, 10);
+  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   dateRange.value = [from, to];
   return { from, to };
 }
 
 function formatCurrency(value: number) {
-  if (!value && value !== 0) return "-";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  if (!value && value !== 0) return '-';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(value);
 }
 
 function formatPercent(value: number) {
-  if (!value && value !== 0) return "-";
+  if (!value && value !== 0) return '-';
   return `${value.toFixed(1)}%`;
 }
 
 function formatDate(dateStr: string) {
-  if (!dateStr) return "-";
-  const [y, m, d] = dateStr.split("-");
+  if (!dateStr) return '-';
+  const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
 }
 
 function mapSummary(s: DashboardSummary) {
   return [
     {
-      label: "Doanh thu thực tế",
+      label: 'Doanh thu thực tế',
       value: s.totalRevenue ?? 0,
       change: safe(s.revenueChangePercentage ?? 0),
       positive: (s.revenueChangePercentage ?? 0) >= 0,
-      color: "#2563eb",
+      color: '#2563eb',
     },
     {
-      label: "Lợi nhuận ròng",
+      label: 'Lợi nhuận ròng',
       value: s.netProfit ?? 0,
       change: safe(s.profitVsYesterdayPercentage ?? 0),
       positive: (s.profitVsYesterdayPercentage ?? 0) >= 0,
-      color: "#16a34a",
+      color: '#16a34a',
     },
     {
-      label: "Tiền đang treo",
+      label: 'Tiền đang treo',
       value: s.pendingAmount ?? 0,
-      color: "#f59e0b",
+      color: '#f59e0b',
     },
     {
-      label: "Cần xử lý",
+      label: 'Cần xử lý',
       value:
         (Number(s.newComplaintsCount) || 0) +
         (Number(s.lowStockVehiclesCount) || 0) +
         (Number(s.delayedLoansCount) || 0),
-      color: "#ef4444",
+      color: '#ef4444',
     },
   ];
 }
@@ -287,67 +262,55 @@ async function loadCharts() {
   if (!barChart) barChart = echarts.init(barChartRef.value);
 
   let days = 30;
-  if (timeRange.value === "Week") days = 7;
-  if (timeRange.value === "Year") days = 30;
+  if (timeRange.value === 'Week') days = 7;
+  if (timeRange.value === 'Year') days = 30;
 
   try {
     const daily = await fetchDailyCategoryRevenue(days);
 
     // Line chart: visits by hour (mock) + doanh thu theo kênh (API)
-    const rawByDay = daily.reduce<Record<string, DailyCategoryRevenueRow[]>>(
-      (acc, cur) => {
-        const day = cur.reportDay ?? "";
-        if (!acc[day]) acc[day] = [];
-        acc[day].push(cur);
-        return acc;
-      },
-      {},
-    );
+    const rawByDay = daily.reduce<Record<string, DailyCategoryRevenueRow[]>>((acc, cur) => {
+      const day = cur.reportDay ?? '';
+      if (!acc[day]) acc[day] = [];
+      acc[day].push(cur);
+      return acc;
+    }, {});
     const dayKeys = Object.keys(rawByDay).sort();
-    const categories = Array.from(
-      new Set(daily.map((d) => d.categoryName)),
-    ).filter(Boolean);
-    const palette = [
-      "#2563eb",
-      "#16a34a",
-      "#f59e0b",
-      "#ef4444",
-      "#8b5cf6",
-      "#06b6d4",
-    ];
+    const categories = Array.from(new Set(daily.map((d) => d.categoryName))).filter(Boolean);
+    const palette = ['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
     const dailyTotal = dayKeys.map((day) =>
-      rawByDay[day].reduce((s, d) => s + (d.revenue ?? 0), 0),
+      rawByDay[day].reduce((s, d) => s + (d.revenue ?? 0), 0)
     );
 
     lineChart.setOption({
-      tooltip: { trigger: "axis" },
+      tooltip: { trigger: 'axis' },
       legend: {
         data: categories,
         bottom: 0,
-        textStyle: { color: "#4b5563", fontSize: 13, fontWeight: "bold" },
+        textStyle: { color: '#4b5563', fontSize: 13, fontWeight: 'bold' },
       },
       grid: { left: 10, right: 10, bottom: 40, top: 10, containLabel: true },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: dayKeys,
-        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
+        axisLabel: { color: '#4b5563', fontSize: 12, fontWeight: 500 },
       },
       yAxis: {
-        type: "value",
-        name: "VNĐ",
-        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
-        nameTextStyle: { fontSize: 12, fontWeight: "bold" },
+        type: 'value',
+        name: 'VNĐ',
+        axisLabel: { color: '#4b5563', fontSize: 12, fontWeight: 500 },
+        nameTextStyle: { fontSize: 12, fontWeight: 'bold' },
       },
       series: [
         {
-          name: "Doanh thu",
-          type: "line",
+          name: 'Doanh thu',
+          type: 'line',
           smooth: true,
           data: dailyTotal,
-          itemStyle: { color: "#2563eb" },
+          itemStyle: { color: '#2563eb' },
           lineStyle: { width: 3 },
           symbolSize: 6,
-          emphasis: { focus: "series" },
+          emphasis: { focus: 'series' },
         },
       ],
       color: palette,
@@ -355,40 +318,38 @@ async function loadCharts() {
 
     // Bar chart: tổng theo kênh
     barChart.setOption({
-      tooltip: { trigger: "axis" },
+      tooltip: { trigger: 'axis' },
       grid: { left: 10, right: 10, bottom: 20, top: 10, containLabel: true },
       xAxis: {
-        type: "category",
+        type: 'category',
         data: categories,
         axisLabel: {
           rotate: 20,
-          color: "#4b5563",
+          color: '#4b5563',
           fontSize: 12,
           fontWeight: 500,
         },
       },
       yAxis: {
-        type: "value",
-        name: "VNĐ",
-        axisLabel: { color: "#4b5563", fontSize: 12, fontWeight: 500 },
-        nameTextStyle: { fontSize: 12, fontWeight: "bold" },
+        type: 'value',
+        name: 'VNĐ',
+        axisLabel: { color: '#4b5563', fontSize: 12, fontWeight: 500 },
+        nameTextStyle: { fontSize: 12, fontWeight: 'bold' },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: categories.map((cat, idx) => ({
             value: dayKeys.reduce(
-              (s, d) =>
-                s +
-                (rawByDay[d].find((x) => x.categoryName === cat)?.revenue ?? 0),
-              0,
+              (s, d) => s + (rawByDay[d].find((x) => x.categoryName === cat)?.revenue ?? 0),
+              0
             ),
             itemStyle: {
               color: palette[idx % palette.length],
               borderRadius: [4, 4, 0, 0],
             },
           })),
-          emphasis: { focus: "series" },
+          emphasis: { focus: 'series' },
           barMaxWidth: 50,
         },
       ],
@@ -403,8 +364,7 @@ async function loadTable() {
   const [start, end] = dateRange.value;
   try {
     const raw = await AnalyticsService.getDashboardSummary(start, end);
-    if (raw?.channelData && Array.isArray(raw.channelData))
-      tableData.value = raw.channelData;
+    if (raw?.channelData && Array.isArray(raw.channelData)) tableData.value = raw.channelData;
     else tableData.value = [];
   } catch {
     tableData.value = [];
@@ -421,7 +381,7 @@ async function load() {
 }
 
 function reset() {
-  timeRange.value = "1Month";
+  timeRange.value = '1Month';
   defaultRange();
   load();
 }
@@ -434,13 +394,13 @@ onMounted(() => {
     lineChart?.resize();
     barChart?.resize();
   };
-  window.addEventListener("resize", lineResize);
+  window.addEventListener('resize', lineResize);
 });
 
 onUnmounted(() => {
   lineChart?.dispose();
   barChart?.dispose();
-  if (lineResize) window.removeEventListener("resize", lineResize);
+  if (lineResize) window.removeEventListener('resize', lineResize);
 });
 </script>
 

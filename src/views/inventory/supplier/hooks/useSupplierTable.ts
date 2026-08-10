@@ -1,16 +1,12 @@
-import { ref, reactive, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { SupplierApi } from "@/api/supplier";
-import type {
-  Supplier,
-  PartnerType,
-  SupplierStatistics,
-} from "@/domain/supplier/supplier.types";
+import { ref, reactive, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { SupplierApi } from '@/api/supplier';
+import type { Supplier, PartnerType, SupplierStatistics } from '@/domain/supplier/supplier.types';
 
 export function useSupplierTable() {
   const loading = ref(false);
   const dialogVisible = ref(false);
-  const dialogTitle = ref("Thêm đối tác");
+  const dialogTitle = ref('Thêm đối tác');
   const submitting = ref(false);
   const partnerTypes = ref<PartnerType[]>([]);
   const stats = ref<SupplierStatistics>({
@@ -28,46 +24,46 @@ export function useSupplierTable() {
   const data = ref<Supplier[]>([]);
 
   const formData = ref<Partial<Supplier>>({
-    name: "",
-    partnerTypeId: "",
-    phone: "",
-    email: "",
-    taxIdentificationNumber: "",
-    address: "",
-    notes: "",
+    name: '',
+    partnerTypeId: '',
+    phone: '',
+    email: '',
+    taxIdentificationNumber: '',
+    address: '',
+    notes: '',
     status: true,
   });
 
   const columns = ref([
-    { label: "Tên đối tác", prop: "name", minWidth: 220 },
+    { label: 'Tên đối tác', prop: 'name', minWidth: 220 },
     {
-      label: "Phân loại",
-      prop: "partnerTypeId",
+      label: 'Phân loại',
+      prop: 'partnerTypeId',
       useSlot: true,
       width: 200,
-      align: "center",
+      align: 'center',
     },
-    { label: "Liên hệ", prop: "contact", useSlot: true, width: 350 },
+    { label: 'Liên hệ', prop: 'contact', useSlot: true, width: 350 },
     {
-      label: "Mã số thuế",
-      prop: "taxIdentificationNumber",
+      label: 'Mã số thuế',
+      prop: 'taxIdentificationNumber',
       width: 140,
-      align: "center",
+      align: 'center',
     },
     {
-      label: "Thao tác",
-      prop: "operation",
+      label: 'Thao tác',
+      prop: 'operation',
       useSlot: true,
       width: 120,
-      fixed: "right" as const,
-      align: "center",
+      fixed: 'right' as const,
+      align: 'center',
     },
   ]);
 
   const columnChecks = columns;
 
   const searchForm = ref({
-    name: "",
+    name: '',
     type: [] as string[],
   });
 
@@ -75,7 +71,7 @@ export function useSupplierTable() {
     try {
       partnerTypes.value = await SupplierApi.getPartnerTypes();
     } catch (error) {
-      console.error("Failed to load partner types:", error);
+      console.error('Failed to load partner types:', error);
     }
   };
 
@@ -83,7 +79,7 @@ export function useSupplierTable() {
     try {
       stats.value = await SupplierApi.getStatistics();
     } catch (error) {
-      console.error("Failed to load supplier statistics:", error);
+      console.error('Failed to load supplier statistics:', error);
     }
   };
 
@@ -94,14 +90,14 @@ export function useSupplierTable() {
       const keyword = filters?.name?.trim() || searchForm.value.name?.trim();
       if (keyword) {
         sieveFilters.push(
-          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
+          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`
         );
       }
 
       const typeFiltersValue = filters?.type || searchForm.value.type;
       if (typeFiltersValue && typeFiltersValue.length > 0) {
         if (Array.isArray(typeFiltersValue)) {
-          const typeFilters = `PartnerTypeId==${typeFiltersValue.join("|")}`;
+          const typeFilters = `PartnerTypeId==${typeFiltersValue.join('|')}`;
           sieveFilters.push(typeFilters);
         } else {
           sieveFilters.push(`PartnerTypeId==${typeFiltersValue}`);
@@ -111,15 +107,15 @@ export function useSupplierTable() {
       const params: any = {
         current: pagination.current,
         size: pagination.size,
-        Filters: sieveFilters.join(",") || undefined,
+        Filters: sieveFilters.join(',') || undefined,
       };
 
       const res = await SupplierApi.getList(params);
       data.value = res.items || [];
       pagination.total = res.totalCount || 0;
     } catch (error) {
-      console.error("Failed to load suppliers:", error);
-      ElMessage.error("Không thể tải danh sách nhà cung cấp");
+      console.error('Failed to load suppliers:', error);
+      ElMessage.error('Không thể tải danh sách nhà cung cấp');
     } finally {
       loading.value = false;
     }
@@ -136,7 +132,7 @@ export function useSupplierTable() {
   };
 
   const handleReset = () => {
-    searchForm.value.name = "";
+    searchForm.value.name = '';
     searchForm.value.type = [];
     pagination.current = 1;
     refreshAll();
@@ -149,22 +145,22 @@ export function useSupplierTable() {
   };
 
   const handleAdd = () => {
-    dialogTitle.value = "Thêm đối tác mới";
+    dialogTitle.value = 'Thêm đối tác mới';
     formData.value = {
-      name: "",
-      partnerTypeId: "",
-      phone: "",
-      email: "",
-      taxIdentificationNumber: "",
-      address: "",
-      notes: "",
+      name: '',
+      partnerTypeId: '',
+      phone: '',
+      email: '',
+      taxIdentificationNumber: '',
+      address: '',
+      notes: '',
       status: true,
     };
     dialogVisible.value = true;
   };
 
   const handleEdit = (row: Supplier) => {
-    dialogTitle.value = "Cập nhật đối tác";
+    dialogTitle.value = 'Cập nhật đối tác';
     formData.value = { ...row };
     dialogVisible.value = true;
   };
@@ -173,43 +169,43 @@ export function useSupplierTable() {
     try {
       await ElMessageBox.confirm(
         `Bạn có chắc chắn muốn xóa đối tác "${row.name}"?`,
-        "Xác nhận xóa",
+        'Xác nhận xóa',
         {
-          confirmButtonText: "Xóa",
-          cancelButtonText: "Hủy",
-          type: "warning",
-        },
+          confirmButtonText: 'Xóa',
+          cancelButtonText: 'Hủy',
+          type: 'warning',
+        }
       );
       await SupplierApi.delete(row.id);
-      ElMessage.success("Xóa thành công");
+      ElMessage.success('Xóa thành công');
       refreshAll();
     } catch (error) {
-      if (error !== "cancel") {
-        console.error("Failed to delete supplier:", error);
-        ElMessage.error("Không thể xóa nhà cung cấp");
+      if (error !== 'cancel') {
+        console.error('Failed to delete supplier:', error);
+        ElMessage.error('Không thể xóa nhà cung cấp');
       }
     }
   };
 
   const submitForm = async () => {
     if (!formData.value.name || !formData.value.partnerTypeId) {
-      ElMessage.warning("Vui lòng điền đầy đủ thông tin bắt buộc");
+      ElMessage.warning('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
     submitting.value = true;
     try {
       if (formData.value.id) {
         await SupplierApi.update(formData.value.id, formData.value);
-        ElMessage.success("Cập nhật thành công");
+        ElMessage.success('Cập nhật thành công');
       } else {
         await SupplierApi.create(formData.value);
-        ElMessage.success("Tạo mới thành công");
+        ElMessage.success('Tạo mới thành công');
       }
       dialogVisible.value = false;
       refreshAll();
     } catch (error) {
-      console.error("Failed to save supplier:", error);
-      ElMessage.error("Không thể lưu nhà cung cấp");
+      console.error('Failed to save supplier:', error);
+      ElMessage.error('Không thể lưu nhà cung cấp');
     } finally {
       submitting.value = false;
     }
@@ -226,7 +222,6 @@ export function useSupplierTable() {
     loadData();
   };
 
-  // --- MỚI: Chọn nhiều để Xoá, Nhân bản ---
   const selectedRows = ref<Supplier[]>([]);
 
   const handleSelectionChange = (rows: Supplier[]) => {
@@ -235,55 +230,50 @@ export function useSupplierTable() {
 
   const handleDeleteMany = () => {
     if (selectedRows.value.length === 0) {
-      ElMessage.warning("Vui lòng chọn ít nhất một đối tác");
+      ElMessage.warning('Vui lòng chọn ít nhất một đối tác');
       return;
     }
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa ${selectedRows.value.length} đối tác đã chọn?`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await SupplierApi.deleteMany(ids);
-        ElMessage.success("Xóa hàng loạt thành công");
+        ElMessage.success('Xóa hàng loạt thành công');
         refreshAll();
       } catch (err: any) {
-        ElMessage.error(err.message || "Xóa hàng loạt thất bại");
+        ElMessage.error(err.message || 'Xóa hàng loạt thất bại');
       }
     });
   };
 
   const handleCloneMany = () => {
     if (selectedRows.value.length !== 1) {
-      ElMessage.warning("Vui lòng chọn duy nhất một đối tác để nhân bản");
+      ElMessage.warning('Vui lòng chọn duy nhất một đối tác để nhân bản');
       return;
     }
-    ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn nhân bản đối tác đã chọn?`,
-      "Xác nhận nhân bản",
-      {
-        confirmButtonText: "Nhân bản",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
-    ).then(async () => {
+    ElMessageBox.confirm(`Bạn có chắc chắn muốn nhân bản đối tác đã chọn?`, 'Xác nhận nhân bản', {
+      confirmButtonText: 'Nhân bản',
+      cancelButtonText: 'Hủy',
+      type: 'warning',
+    }).then(async () => {
       try {
         const ids = selectedRows.value.map((item) => item.id);
         await SupplierApi.cloneMany(ids);
-        ElMessage.success("Nhân bản thành công");
+        ElMessage.success('Nhân bản thành công');
         refreshAll();
       } catch (err: any) {
-        ElMessage.error(err.message || "Nhân bản thất bại");
+        ElMessage.error(err.message || 'Nhân bản thất bại');
       }
     });
   };
 
-  // --- MỚI: Khôi phục nhiều ---
   const restoreDialogVisible = ref(false);
   const deletedSuppliersData = ref<Supplier[]>([]);
   const deletedSuppliersLoading = ref(false);
@@ -298,10 +288,10 @@ export function useSupplierTable() {
     deletedSuppliersLoading.value = true;
     selectedDeletedSuppliers.value = [];
     try {
-      const res = await SupplierApi.getDeletedList({ current: 1, size: 1000 }); // fetch all deleted
+      const res = await SupplierApi.getDeletedList({ current: 1, size: 1000 });
       deletedSuppliersData.value = res.items || [];
     } catch {
-      ElMessage.error("Không thể tải danh sách đối tác đã xóa");
+      ElMessage.error('Không thể tải danh sách đối tác đã xóa');
     } finally {
       deletedSuppliersLoading.value = false;
     }
@@ -309,31 +299,30 @@ export function useSupplierTable() {
 
   const handleRestoreMany = () => {
     if (selectedDeletedSuppliers.value.length === 0) {
-      ElMessage.warning("Vui lòng chọn ít nhất một đối tác để khôi phục");
+      ElMessage.warning('Vui lòng chọn ít nhất một đối tác để khôi phục');
       return;
     }
     ElMessageBox.confirm(
       `Bạn có chắc chắn muốn khôi phục ${selectedDeletedSuppliers.value.length} đối tác đã chọn?`,
-      "Xác nhận khôi phục",
+      'Xác nhận khôi phục',
       {
-        confirmButtonText: "Khôi phục",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Khôi phục',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     ).then(async () => {
       try {
         const ids = selectedDeletedSuppliers.value.map((item) => item.id);
         await SupplierApi.restoreMany(ids);
-        ElMessage.success("Khôi phục thành công");
+        ElMessage.success('Khôi phục thành công');
         restoreDialogVisible.value = false;
         refreshAll();
       } catch (err: any) {
-        ElMessage.error(err.message || "Khôi phục thất bại");
+        ElMessage.error(err.message || 'Khôi phục thất bại');
       }
     });
   };
 
-  // --- MỚI: Nhập/Xuất Excel ---
   const importing = ref(false);
   const importResultData = ref<any | null>(null);
   const importResultDialogVisible = ref(false);
@@ -351,7 +340,7 @@ export function useSupplierTable() {
       }
       refreshAll();
     } catch (err: any) {
-      ElMessage.error(err.message || "Nhập dữ liệu thất bại");
+      ElMessage.error(err.message || 'Nhập dữ liệu thất bại');
     } finally {
       importing.value = false;
     }
@@ -361,15 +350,15 @@ export function useSupplierTable() {
     try {
       const resBlob = await SupplierApi.getImportTemplate();
       const url = window.URL.createObjectURL(new Blob([resBlob]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", "Mau_nhap_doi_tac.xlsx");
+      link.setAttribute('download', 'Mau_nhap_doi_tac.xlsx');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
-      ElMessage.error(err.message || "Tải file mẫu thất bại");
+      ElMessage.error(err.message || 'Tải file mẫu thất bại');
     }
   };
 
@@ -382,12 +371,12 @@ export function useSupplierTable() {
       const keyword = searchForm.value.name?.trim();
       if (keyword) {
         sieveFilters.push(
-          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`,
+          `Name@=${keyword}|Phone@=${keyword}|TaxIdentificationNumber@=${keyword}|Address@=${keyword}`
         );
       }
       if (searchForm.value.type && searchForm.value.type.length > 0) {
         if (Array.isArray(searchForm.value.type)) {
-          const typeFilters = `PartnerTypeId==${searchForm.value.type.join("|")}`;
+          const typeFilters = `PartnerTypeId==${searchForm.value.type.join('|')}`;
           sieveFilters.push(typeFilters);
         } else {
           sieveFilters.push(`PartnerTypeId==${searchForm.value.type}`);
@@ -395,23 +384,23 @@ export function useSupplierTable() {
       }
 
       const resBlob = await SupplierApi.exportExcel({
-        Filters: sieveFilters.join(",") || undefined,
-        Sorts: "Id desc",
+        Filters: sieveFilters.join(',') || undefined,
+        Sorts: 'Id desc',
       });
 
       const url = window.URL.createObjectURL(new Blob([resBlob]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", "Danh_sach_nha_cung_cap.xlsx");
+      link.setAttribute('download', 'Danh_sach_nha_cung_cap.xlsx');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      ElMessage.success("Xuất file Excel thành công");
+      ElMessage.success('Xuất file Excel thành công');
     } catch (err: any) {
       console.error(err);
-      ElMessage.error(err.message || "Xuất file Excel thất bại");
+      ElMessage.error(err.message || 'Xuất file Excel thất bại');
     } finally {
       exporting.value = false;
     }

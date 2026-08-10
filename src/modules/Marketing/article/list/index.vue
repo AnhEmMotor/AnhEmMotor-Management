@@ -6,16 +6,12 @@
           <span class="article-hero__eyebrow">Trung tâm nội dung</span>
           <h1>Quản lý bài viết</h1>
           <p>
-            Theo dõi nội dung, trạng thái xuất bản và thông tin biên tập trong
-            một danh sách rõ ràng.
+            Theo dõi nội dung, trạng thái xuất bản và thông tin biên tập trong một danh sách rõ
+            ràng.
           </p>
         </div>
 
-        <button
-          class="article-create-button"
-          type="button"
-          @click="toAddArticle"
-        >
+        <button class="article-create-button" type="button" @click="toAddArticle">
           <ArtSvgIcon icon="ri:add-line" />
           <span>Viết bài mới</span>
         </button>
@@ -95,17 +91,13 @@
           <ArtSvgIcon icon="ri:file-list-3-line" />
         </div>
         <h2>
-          {{
-            searchVal
-              ? "Không tìm thấy bài viết phù hợp"
-              : "Chưa có bài viết nào"
-          }}
+          {{ searchVal ? 'Không tìm thấy bài viết phù hợp' : 'Chưa có bài viết nào' }}
         </h2>
         <p>
           {{
             searchVal
-              ? "Hãy thử một từ khóa ngắn hơn hoặc xóa bộ lọc tìm kiếm."
-              : "Tạo bài viết đầu tiên để bắt đầu xây dựng thư viện nội dung."
+              ? 'Hãy thử một từ khóa ngắn hơn hoặc xóa bộ lọc tìm kiếm.'
+              : 'Tạo bài viết đầu tiên để bắt đầu xây dựng thư viện nội dung.'
           }}
         </p>
         <button v-if="!searchVal" type="button" @click="toAddArticle">
@@ -139,19 +131,16 @@
               <span>{{ getTitleInitial(item.title) }}</span>
               <ArtSvgIcon icon="ri:motorbike-line" />
             </div>
-            <span
-              class="article-status"
-              :class="getStatusClasses(item.isPublished)"
-            >
+            <span class="article-status" :class="getStatusClasses(item.isPublished)">
               <i></i>
-              {{ item.isPublished ? "Đã xuất bản" : "Bản nháp" }}
+              {{ item.isPublished ? 'Đã xuất bản' : 'Bản nháp' }}
             </span>
           </div>
 
           <div class="article-card__body">
             <div class="article-card__topline">
               <span class="article-category">
-                {{ item.categoryName || "Chưa phân loại" }}
+                {{ item.categoryName || 'Chưa phân loại' }}
               </span>
               <span class="article-code">#{{ item.id }}</span>
             </div>
@@ -164,7 +153,7 @@
             <dl class="article-card__meta">
               <div>
                 <dt><ArtSvgIcon icon="ri:user-3-line" /> Biên tập</dt>
-                <dd>{{ item.authorName || "Chưa cập nhật" }}</dd>
+                <dd>{{ item.authorName || 'Chưa cập nhật' }}</dd>
               </div>
               <div>
                 <dt><ArtSvgIcon icon="ri:calendar-line" /> Ngày đăng</dt>
@@ -181,11 +170,7 @@
                 <ArtSvgIcon icon="ri:edit-line" />
                 Chỉnh sửa
               </button>
-              <button
-                type="button"
-                class="article-card__delete"
-                @click.stop="toDelete(item)"
-              >
+              <button type="button" class="article-card__delete" @click.stop="toDelete(item)">
                 <ArtSvgIcon icon="ri:delete-bin-line" />
                 Xóa
               </button>
@@ -218,15 +203,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onActivated, onMounted, ref } from "vue";
-import { useDebounceFn } from "@vueuse/core";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { router } from "@/router";
-import { NewsApi } from "@/api/marketing";
-import { useCommon } from "@/common/composables/useCommon";
-import { formatImageUrl } from "@/common/utils/image";
+import { computed, onActivated, onMounted, ref } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { router } from '@/router';
+import { NewsApi } from '@/api/marketing';
+import { useCommon } from '@/common/composables/useCommon';
+import { formatImageUrl } from '@/common/utils/image';
 
-defineOptions({ name: "ArticleListAnalytics" });
+defineOptions({ name: 'ArticleListAnalytics' });
 
 interface ArticleListItem {
   id: number;
@@ -249,85 +234,70 @@ interface ArticleListResponse {
 
 const DEFAULT_PAGE_SIZE = 10;
 
-const searchVal = ref("");
+const searchVal = ref('');
 const currentPage = ref(1);
 const pageSize = ref(DEFAULT_PAGE_SIZE);
 const total = ref(0);
 const loading = ref(false);
-const loadError = ref("");
+const loadError = ref('');
 const failedImages = ref(new Set<number>());
 const articleList = ref<ArticleListItem[]>([]);
 
-const showEmpty = computed(
-  () => articleList.value.length === 0 && !loading.value,
-);
-const publishedOnPage = computed(
-  () => articleList.value.filter((item) => item.isPublished).length,
-);
-const draftsOnPage = computed(
-  () => articleList.value.filter((item) => !item.isPublished).length,
-);
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(total.value / pageSize.value)),
-);
+const showEmpty = computed(() => articleList.value.length === 0 && !loading.value);
+const publishedOnPage = computed(() => articleList.value.filter((item) => item.isPublished).length);
+const draftsOnPage = computed(() => articleList.value.filter((item) => !item.isPublished).length);
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)));
 const pageStart = computed(() =>
-  total.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1,
+  total.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1
 );
-const pageEnd = computed(() =>
-  Math.min(currentPage.value * pageSize.value, total.value),
-);
+const pageEnd = computed(() => Math.min(currentPage.value * pageSize.value, total.value));
 
 const getStatusClasses = (isPublished: boolean) =>
-  isPublished ? "article-status--published" : "article-status--draft";
+  isPublished ? 'article-status--published' : 'article-status--draft';
 
 const formatDate = (value?: string | null) => {
-  if (!value) return "Chưa cập nhật";
+  if (!value) return 'Chưa cập nhật';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Chưa cập nhật";
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  if (Number.isNaN(date.getTime())) return 'Chưa cập nhật';
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date);
 };
 
 const getDescription = (item: ArticleListItem) =>
   item.metaDescription?.trim() ||
-  "Bài viết chưa có mô tả ngắn. Hãy bổ sung mô tả để người quản lý nhận biết nội dung nhanh hơn.";
+  'Bài viết chưa có mô tả ngắn. Hãy bổ sung mô tả để người quản lý nhận biết nội dung nhanh hơn.';
 
-const getTitleInitial = (title: string) =>
-  title.trim().charAt(0).toLocaleUpperCase("vi-VN") || "A";
+const getTitleInitial = (title: string) => title.trim().charAt(0).toLocaleUpperCase('vi-VN') || 'A';
 
 const markImageFailed = (id: number) => {
   failedImages.value = new Set(failedImages.value).add(id);
 };
 
-const normalizeSearchTerm = (value: string) =>
-  value.trim().replace(/[(),|]/g, " ");
+const normalizeSearchTerm = (value: string) => value.trim().replace(/[(),|]/g, ' ');
 
 const fetchList = async () => {
   try {
     loading.value = true;
-    loadError.value = "";
+    loadError.value = '';
     failedImages.value = new Set();
     const searchTerm = normalizeSearchTerm(searchVal.value);
     const response = (await NewsApi.getList({
       current: currentPage.value,
       size: pageSize.value,
       Filters: searchTerm ? `Title@=*${searchTerm}` : undefined,
-      Sorts: "-CreatedAt",
+      Sorts: '-CreatedAt',
     })) as ArticleListResponse | ArticleListItem[];
     const items = Array.isArray(response) ? response : response.items || [];
     articleList.value = items;
-    total.value = Array.isArray(response)
-      ? response.length
-      : response.totalCount || items.length;
+    total.value = Array.isArray(response) ? response.length : response.totalCount || items.length;
   } catch {
     articleList.value = [];
     total.value = 0;
-    loadError.value =
-      "Kết nối tới máy chủ thất bại. Vui lòng kiểm tra dịch vụ backend và thử lại.";
-    ElMessage.error("Không thể lấy danh sách bài viết");
+    loadError.value = 'Kết nối tới máy chủ thất bại. Vui lòng kiểm tra dịch vụ backend và thử lại.';
+    ElMessage.error('Không thể lấy danh sách bài viết');
   } finally {
     loading.value = false;
   }
@@ -348,7 +318,7 @@ const runSearchNow = () => {
 };
 
 const clearSearch = () => {
-  searchVal.value = "";
+  searchVal.value = '';
   currentPage.value = 1;
   fetchList();
 };
@@ -367,22 +337,22 @@ const handleSizeChange = (size: number) => {
 
 const toEdit = (item: ArticleListItem) =>
   router.push({
-    name: "ArticlePublish",
+    name: 'ArticlePublish',
     query: { id: item.id, slug: item.slug },
   });
 
-const toAddArticle = () => router.push({ name: "ArticlePublish" });
+const toAddArticle = () => router.push({ name: 'ArticlePublish' });
 
 const toDelete = async (item: ArticleListItem) => {
   try {
     await ElMessageBox.confirm(
       `Bạn có chắc chắn muốn xóa bài viết “${item.title}”?`,
-      "Xác nhận xóa",
+      'Xác nhận xóa',
       {
-        confirmButtonText: "Xóa bài viết",
-        cancelButtonText: "Hủy",
-        type: "warning",
-      },
+        confirmButtonText: 'Xóa bài viết',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      }
     );
   } catch {
     return;
@@ -394,9 +364,9 @@ const toDelete = async (item: ArticleListItem) => {
       currentPage.value -= 1;
     }
     await fetchList();
-    ElMessage.success("Đã xóa bài viết");
+    ElMessage.success('Đã xóa bài viết');
   } catch {
-    ElMessage.error("Không thể xóa bài viết");
+    ElMessage.error('Không thể xóa bài viết');
   }
 };
 
@@ -677,8 +647,7 @@ onActivated(() => {
   justify-content: space-between;
   padding: 24px;
   color: rgb(255 255 255 / 92%);
-  background:
-    linear-gradient(150deg, rgb(232 74 74 / 94%), rgb(116 26 32 / 96%)), #a92832;
+  background: linear-gradient(150deg, rgb(232 74 74 / 94%), rgb(116 26 32 / 96%)), #a92832;
 }
 
 .article-card__fallback::after {
@@ -689,7 +658,7 @@ onActivated(() => {
   height: 210px;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 50%;
-  content: "";
+  content: '';
 }
 
 .article-card__fallback span {
@@ -1120,9 +1089,7 @@ onActivated(() => {
 }
 
 :global(html.dark .article-list-page) {
-  background:
-    radial-gradient(circle at 7% 0%, rgb(232 74 74 / 12%), transparent 28rem),
-    #07090d;
+  background: radial-gradient(circle at 7% 0%, rgb(232 74 74 / 12%), transparent 28rem), #07090d;
 }
 
 :global(html.dark .article-list-page .article-hero),

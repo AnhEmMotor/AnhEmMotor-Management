@@ -1,5 +1,5 @@
-import type { ApiResponse } from "./tableCache";
-import { tableConfig } from "./tableConfig";
+import type { ApiResponse } from './tableCache';
+import { tableConfig } from './tableConfig';
 
 export interface BaseRequestParams extends Api.Common.PaginationParams {
   [key: string]: unknown;
@@ -11,10 +11,7 @@ export interface TableError {
   details?: unknown;
 }
 
-function extractRecords<T>(
-  obj: Record<string, unknown>,
-  fields: string[],
-): T[] {
+function extractRecords<T>(obj: Record<string, unknown>, fields: string[]): T[] {
   for (const field of fields) {
     if (field in obj && Array.isArray(obj[field])) {
       return obj[field] as T[];
@@ -23,13 +20,9 @@ function extractRecords<T>(
   return [];
 }
 
-function extractTotal(
-  obj: Record<string, unknown>,
-  records: unknown[],
-  fields: string[],
-): number {
+function extractTotal(obj: Record<string, unknown>, records: unknown[], fields: string[]): number {
   for (const field of fields) {
-    if (field in obj && typeof obj[field] === "number") {
+    if (field in obj && typeof obj[field] === 'number') {
       return obj[field] as number;
     }
   }
@@ -38,15 +31,15 @@ function extractTotal(
 
 function extractPagination(
   obj: Record<string, unknown>,
-  data?: Record<string, unknown>,
-): Pick<ApiResponse<unknown>, "current" | "size"> | undefined {
-  const result: Partial<Pick<ApiResponse<unknown>, "current" | "size">> = {};
+  data?: Record<string, unknown>
+): Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined {
+  const result: Partial<Pick<ApiResponse<unknown>, 'current' | 'size'>> = {};
   const sources = [obj, data ?? {}];
 
   const currentFields = tableConfig.currentFields;
   for (const src of sources) {
     for (const field of currentFields) {
-      if (field in src && typeof src[field] === "number") {
+      if (field in src && typeof src[field] === 'number') {
         result.current = src[field] as number;
         break;
       }
@@ -57,7 +50,7 @@ function extractPagination(
   const sizeFields = tableConfig.sizeFields;
   for (const src of sources) {
     for (const field of sizeFields) {
-      if (field in src && typeof src[field] === "number") {
+      if (field in src && typeof src[field] === 'number') {
         result.size = src[field] as number;
         break;
       }
@@ -65,14 +58,11 @@ function extractPagination(
     if (result.size !== undefined) break;
   }
 
-  if (result.current === undefined && result.size === undefined)
-    return undefined;
+  if (result.current === undefined && result.size === undefined) return undefined;
   return result;
 }
 
-export const defaultResponseAdapter = <T>(
-  response: unknown,
-): ApiResponse<T> => {
+export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => {
   const recordFields = tableConfig.recordFields;
 
   if (!response) {
@@ -83,12 +73,12 @@ export const defaultResponseAdapter = <T>(
     return { records: response, total: response.length };
   }
 
-  if (typeof response !== "object") {
+  if (typeof response !== 'object') {
     console.warn(
-      "[tableUtils] vôpháptínhcủaứngcáchkiểu，chiếctrìcủacáchkiểubaobao: Mảng、Bao gồm" +
-        recordFields.join("/") +
-        "chữđoạncủaDoiTuong、nhúngbộdataDoiTuong。khitrướccáchkiểu:",
-      response,
+      '[tableUtils] vôpháptínhcủaứngcáchkiểu，chiếctrìcủacáchkiểubaobao: Mảng、Bao gồm' +
+        recordFields.join('/') +
+        'chữđoạncủaDoiTuong、nhúngbộdataDoiTuong。khitrướccáchkiểu:',
+      response
     );
     return { records: [], total: 0 };
   }
@@ -96,15 +86,15 @@ export const defaultResponseAdapter = <T>(
   const res = response as Record<string, unknown>;
   let records: T[] = [];
   let total = 0;
-  let pagination: Pick<ApiResponse<unknown>, "current" | "size"> | undefined;
+  let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined;
 
   records = extractRecords(res, recordFields);
   total = extractTotal(res, records, tableConfig.totalFields);
   pagination = extractPagination(res);
 
-  if (records.length === 0 && "data" in res && typeof res.data === "object") {
+  if (records.length === 0 && 'data' in res && typeof res.data === 'object') {
     const data = res.data as Record<string, unknown>;
-    records = extractRecords(data, ["list", "records", "items"]);
+    records = extractRecords(data, ['list', 'records', 'items']);
     total = extractTotal(data, records, tableConfig.totalFields);
     pagination = extractPagination(res, data);
 
@@ -115,14 +105,9 @@ export const defaultResponseAdapter = <T>(
   }
 
   if (!recordFields.some((field) => field in res) && records.length === 0) {
-    console.warn("[tableUtils] vôpháptínhcủaứngcáchkiểu");
-    console.warn(
-      "chiếctrìcủachữđoạnbaobao: " + recordFields.join("、"),
-      response,
-    );
-    console.warn(
-      "mởtriểnchữđoạnVui lòngđến utils/table/tableConfig vănphần tửCauHinh",
-    );
+    console.warn('[tableUtils] vôpháptínhcủaứngcáchkiểu');
+    console.warn('chiếctrìcủachữđoạnbaobao: ' + recordFields.join('、'), response);
+    console.warn('mởtriểnchữđoạnVui lòngđến utils/table/tableConfig vănphần tửCauHinh');
   }
 
   const result: ApiResponse<T> = { records, total };
@@ -139,7 +124,7 @@ export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
 
 export const updatePaginationFromResponse = <T>(
   pagination: Api.Common.PaginationParams,
-  response: ApiResponse<T>,
+  response: ApiResponse<T>
 ): void => {
   pagination.total = response.total ?? pagination.total ?? 0;
 
@@ -147,10 +132,7 @@ export const updatePaginationFromResponse = <T>(
     pagination.current = response.current;
   }
 
-  const maxPage = Math.max(
-    1,
-    Math.ceil(pagination.total / (pagination.size || 1)),
-  );
+  const maxPage = Math.max(1, Math.ceil(pagination.total / (pagination.size || 1)));
   if (pagination.current > maxPage) {
     pagination.current = maxPage;
   }
@@ -158,7 +140,7 @@ export const updatePaginationFromResponse = <T>(
 
 export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   fn: T,
-  delay: number,
+  delay: number
 ): T & { cancel: () => void; flush: () => Promise<any> } => {
   let timeoutId: NodeJS.Timeout | null = null;
   let lastArgs: Parameters<T> | null = null;
@@ -222,7 +204,7 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
 
 export const createErrorHandler = (
   onError?: (error: TableError) => void,
-  enableLog: boolean = false,
+  enableLog: boolean = false
 ) => {
   const logger = {
     error: (message: string, ...args: any[]) => {
@@ -232,15 +214,15 @@ export const createErrorHandler = (
 
   return (err: unknown, context: string): TableError => {
     const tableError: TableError = {
-      code: "UNKNOWN_ERROR",
-      message: "ChưabáoLỗi",
+      code: 'UNKNOWN_ERROR',
+      message: 'ChưabáoLỗi',
       details: err,
     };
 
     if (err instanceof Error) {
       tableError.message = err.message;
       tableError.code = err.name;
-    } else if (typeof err === "string") {
+    } else if (typeof err === 'string') {
       tableError.message = err;
     }
 

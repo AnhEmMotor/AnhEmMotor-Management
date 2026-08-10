@@ -19,7 +19,7 @@ export interface WarrantyTerm {
   updatedAt?: string;
 }
 
-export type WarrantyTermStatus = "Active" | "Inactive" | "Expired";
+export type WarrantyTermStatus = 'Active' | 'Inactive' | 'Expired';
 
 export interface WarrantyTermList {
   items: WarrantyTerm[];

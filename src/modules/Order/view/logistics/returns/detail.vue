@@ -5,10 +5,8 @@
     <!-- Header: Nút back và Tiêu đề -->
     <div class="flex items-center gap-4">
       <ElButton :icon="Back" circle @click="goBack" />
-      <h1
-        class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none"
-      >
-        Chi tiết đơn hoàn RET-{{ String(route.params.id).padStart(3, "0") }}
+      <h1 class="m-0 text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+        Chi tiết đơn hoàn RET-{{ String(route.params.id).padStart(3, '0') }}
       </h1>
     </div>
 
@@ -27,12 +25,7 @@
             detail.originalTrackingNumber
           }}</span>
         </p>
-        <ElTag
-          :type="getStatusTag(detail.status)"
-          effect="dark"
-          size="large"
-          class="text-sm px-4"
-        >
+        <ElTag :type="getStatusTag(detail.status)" effect="dark" size="large" class="text-sm px-4">
           {{ getStatusLabel(detail.status) }}
         </ElTag>
       </div>
@@ -50,17 +43,13 @@
           class="resp-stats-3 grid grid-cols-1 md:grid-cols-3 gap-6 p-5 rounded-lg border bg-fill-blank border-color"
         >
           <div class="flex flex-col">
-            <span class="text-xs uppercase text-secondary"
-              >Giá trị hoàn lại</span
-            >
+            <span class="text-xs uppercase text-secondary">Giá trị hoàn lại</span>
             <span class="font-bold text-red-500 text-lg mt-1">{{
               formatCurrency(detail.refundAmount || 0)
             }}</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-xs uppercase text-secondary"
-              >Phí hoàn phát sinh</span
-            >
+            <span class="text-xs uppercase text-secondary">Phí hoàn phát sinh</span>
             <span class="font-bold text-lg mt-1 text-primary-dark">{{
               formatCurrency(detail.returnShippingCost || 0)
             }}</span>
@@ -68,12 +57,8 @@
           <div class="flex flex-col">
             <span class="text-xs uppercase text-secondary">Nhà vận chuyển</span>
             <div class="flex items-center gap-2 mt-1">
-              <el-tag size="small" type="info" effect="plain">{{
-                detail.carrier
-              }}</el-tag>
-              <span class="text-sm font-mono text-secondary">{{
-                detail.trackingNumber
-              }}</span>
+              <el-tag size="small" type="info" effect="plain">{{ detail.carrier }}</el-tag>
+              <span class="text-sm font-mono text-secondary">{{ detail.trackingNumber }}</span>
             </div>
           </div>
         </div>
@@ -117,12 +102,7 @@
                 min-width="250"
                 show-overflow-tooltip
               />
-              <ElTableColumn
-                prop="quantity"
-                label="Số lượng"
-                width="100"
-                align="center"
-              />
+              <ElTableColumn prop="quantity" label="Số lượng" width="100" align="center" />
             </ElTable>
           </div>
         </div>
@@ -131,18 +111,11 @@
           v-if="detail.status === 'pending'"
           class="bg-fill-lighter p-6 rounded-xl border border-color mt-4"
         >
-          <h3
-            class="text-lg font-bold mb-5 flex items-center gap-2 text-primary"
-          >
+          <h3 class="text-lg font-bold mb-5 flex items-center gap-2 text-primary">
             <ElIcon><Check /></ElIcon> Kiểm định thực tế tại kho
           </h3>
 
-          <ElForm
-            :model="inspectForm"
-            label-position="top"
-            :disabled="submitting"
-            size="large"
-          >
+          <ElForm :model="inspectForm" label-position="top" :disabled="submitting" size="large">
             <div class="grid grid-cols-2 gap-8">
               <ElFormItem label="Tình trạng vỏ hộp/bao bì">
                 <ElRadioGroup v-model="inspectForm.boxCondition">
@@ -191,9 +164,7 @@
                   accept="image/*"
                   @change="onFileChange"
                 />
-                <ElButton :icon="Camera" @click="handleUploadClick"
-                  >Tải ảnh lên</ElButton
-                >
+                <ElButton :icon="Camera" @click="handleUploadClick">Tải ảnh lên</ElButton>
                 <span
                   v-if="inspectForm.returnProofImage"
                   class="text-success text-sm flex items-center gap-1 font-medium"
@@ -203,10 +174,7 @@
               </div>
             </ElFormItem>
 
-            <ElFormItem
-              label="Ghi chú nội bộ (Lưu vết trách nhiệm)"
-              class="mt-2"
-            >
+            <ElFormItem label="Ghi chú nội bộ (Lưu vết trách nhiệm)" class="mt-2">
               <ElInput
                 v-model="inspectForm.returnInternalNote"
                 type="textarea"
@@ -217,37 +185,20 @@
           </ElForm>
 
           <div class="pt-6 mt-4 border-t border-color flex gap-3 justify-end">
-            <ElButton
-              type="primary"
-              size="large"
-              :loading="submitting"
-              @click="submitInspection"
-            >
+            <ElButton type="primary" size="large" :loading="submitting" @click="submitInspection">
               <ElIcon class="mr-1"><Check /></ElIcon> Chuyển Admin phê duyệt
             </ElButton>
           </div>
         </div>
 
-        <div
-          v-else-if="detail.status === 'inspecting'"
-          class="pt-4 mt-2 flex justify-end"
-        >
-          <ElTag
-            type="warning"
-            size="large"
-            effect="dark"
-            class="px-6 py-2 h-auto text-base"
+        <div v-else-if="detail.status === 'inspecting'" class="pt-4 mt-2 flex justify-end">
+          <ElTag type="warning" size="large" effect="dark" class="px-6 py-2 h-auto text-base"
             >Đang chờ Admin phê duyệt</ElTag
           >
         </div>
 
-        <div
-          v-else
-          class="bg-success-light-9 p-6 rounded-xl border border-success-light-5 mt-4"
-        >
-          <h3
-            class="text-lg font-bold mb-5 flex items-center gap-2 text-success"
-          >
+        <div v-else class="bg-success-light-9 p-6 rounded-xl border border-success-light-5 mt-4">
+          <h3 class="text-lg font-bold mb-5 flex items-center gap-2 text-success">
             <ElIcon><SuccessFilled /></ElIcon> Đã hoàn tất xử lý
           </h3>
           <div class="grid grid-cols-2 gap-y-4 text-base">
@@ -258,12 +209,12 @@
 
             <div class="text-secondary">Vỏ hộp:</div>
             <div class="font-medium">
-              {{ detail.boxCondition || "Không có" }}
+              {{ detail.boxCondition || 'Không có' }}
             </div>
 
             <div class="text-secondary">Sản phẩm:</div>
             <div class="font-medium">
-              {{ detail.productCondition || "Không có" }}
+              {{ detail.productCondition || 'Không có' }}
             </div>
 
             <div class="text-secondary">Giá trị hoàn:</div>
@@ -278,7 +229,7 @@
 
             <div class="text-secondary">Ghi chú:</div>
             <div class="font-medium italic">
-              {{ detail.returnInternalNote || "Không có" }}
+              {{ detail.returnInternalNote || 'Không có' }}
             </div>
           </div>
         </div>
@@ -288,9 +239,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   Box,
   Picture,
@@ -299,15 +250,12 @@ import {
   CircleCheck,
   SuccessFilled,
   Back,
-} from "@element-plus/icons-vue";
-import { getReturnDetail, inspectReturn } from "@/api/logistics/returns";
-import type {
-  ReturnDetailDto,
-  InspectReturnCommand,
-} from "@/domain/logistics/returns.types";
-import { FileApi } from "@/api/operations/file.api";
+} from '@element-plus/icons-vue';
+import { getReturnDetail, inspectReturn } from '@/api/logistics/returns';
+import type { ReturnDetailDto, InspectReturnCommand } from '@/domain/logistics/returns.types';
+import { FileApi } from '@/api/operations/file.api';
 
-defineOptions({ name: "ReturnDetail" });
+defineOptions({ name: 'ReturnDetail' });
 
 const route = useRoute();
 const router = useRouter();
@@ -316,11 +264,11 @@ const detail = ref<ReturnDetailDto | null>(null);
 const loadingDetail = ref(false);
 
 const inspectForm = ref<InspectReturnCommand>({
-  boxCondition: "",
-  productCondition: "",
-  returnProofImage: "",
-  returnInternalNote: "",
-  action: "",
+  boxCondition: '',
+  productCondition: '',
+  returnProofImage: '',
+  returnInternalNote: '',
+  action: '',
   refundAmount: 0,
   returnShippingCost: 0,
 });
@@ -342,24 +290,22 @@ const fetchDetail = async (id: number) => {
 
     // Reset form
     inspectForm.value = {
-      boxCondition: detail.value?.boxCondition || "Còn nguyên vẹn",
-      productCondition: detail.value?.productCondition || "Sử dụng tốt",
-      returnProofImage: detail.value?.returnProofImage || "",
-      returnInternalNote: detail.value?.returnInternalNote || "",
-      action: "",
+      boxCondition: detail.value?.boxCondition || 'Còn nguyên vẹn',
+      productCondition: detail.value?.productCondition || 'Sử dụng tốt',
+      returnProofImage: detail.value?.returnProofImage || '',
+      returnInternalNote: detail.value?.returnInternalNote || '',
+      action: '',
       refundAmount:
-        detail.value?.refundAmount !== undefined &&
-        detail.value?.refundAmount > 0
+        detail.value?.refundAmount !== undefined && detail.value?.refundAmount > 0
           ? detail.value.refundAmount
           : detail.value?.codAmount || 0,
       returnShippingCost:
-        detail.value?.returnShippingCost !== undefined &&
-        detail.value?.returnShippingCost > 0
+        detail.value?.returnShippingCost !== undefined && detail.value?.returnShippingCost > 0
           ? detail.value.returnShippingCost
           : Math.round((detail.value?.shippingCost || 0) * 0.5),
     };
   } catch (_error) {
-    ElMessage.error("Lỗi khi tải chi tiết hàng hoàn");
+    ElMessage.error('Lỗi khi tải chi tiết hàng hoàn');
     goBack();
   } finally {
     loadingDetail.value = false;
@@ -367,7 +313,7 @@ const fetchDetail = async (id: number) => {
 };
 
 const goBack = () => {
-  router.push({ name: "OrderLogisticsReturns" });
+  router.push({ name: 'OrderLogisticsReturns' });
 };
 
 const handleUploadClick = () => {
@@ -382,10 +328,10 @@ const onFileChange = async (e: Event) => {
       const res = await FileApi.uploadProductImage(file);
       const data = (res as any).data || res;
       inspectForm.value.returnProofImage = data.publicUrl;
-      ElMessage.success("Tải ảnh bằng chứng thành công!");
+      ElMessage.success('Tải ảnh bằng chứng thành công!');
     } catch (error) {
       console.error(error);
-      ElMessage.error("Không thể tải ảnh lên hệ thống.");
+      ElMessage.error('Không thể tải ảnh lên hệ thống.');
     }
   }
 };
@@ -394,23 +340,23 @@ const submitInspection = async () => {
   if (!detail.value) return;
 
   if (!inspectForm.value.boxCondition || !inspectForm.value.productCondition) {
-    ElMessage.warning("Vui lòng nhập tình trạng hộp và phụ tùng");
+    ElMessage.warning('Vui lòng nhập tình trạng hộp và phụ tùng');
     return;
   }
 
   try {
     await ElMessageBox.confirm(
       `Xác nhận lưu thông tin kiểm định và chuyển Admin phê duyệt?`,
-      "Xác nhận chuyển",
+      'Xác nhận chuyển',
       {
-        confirmButtonText: "Xác nhận",
-        cancelButtonText: "Hủy",
-        type: "info",
-      },
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
+        type: 'info',
+      }
     );
 
     submitting.value = true;
-    inspectForm.value.action = ""; // Admin se duyet sau
+    inspectForm.value.action = ''; // Admin se duyet sau
 
     await inspectReturn(detail.value.id, inspectForm.value);
 
@@ -419,8 +365,8 @@ const submitInspection = async () => {
     // Reload
     fetchDetail(detail.value.id);
   } catch (e: any) {
-    if (e !== "cancel") {
-      ElMessage.error("Có lỗi xảy ra khi xử lý");
+    if (e !== 'cancel') {
+      ElMessage.error('Có lỗi xảy ra khi xử lý');
     }
   } finally {
     submitting.value = false;
@@ -429,52 +375,50 @@ const submitInspection = async () => {
 
 const getReasonAlertType = (reason: string) => {
   const r = reason.toLowerCase();
-  if (r.includes("bom") || r.includes("không nhận")) return "warning";
-  return "error";
+  if (r.includes('bom') || r.includes('không nhận')) return 'warning';
+  return 'error';
 };
 
-const getStatusTag = (
-  status: string | number,
-): "danger" | "warning" | "success" | "info" => {
+const getStatusTag = (status: string | number): 'danger' | 'warning' | 'success' | 'info' => {
   const strStatus = String(status).toLowerCase();
-  const map: Record<string, "danger" | "warning" | "success" | "info"> = {
-    pending: "danger",
-    "0": "danger",
-    inspecting: "warning",
-    "1": "warning",
-    completed: "success",
-    "2": "success",
+  const map: Record<string, 'danger' | 'warning' | 'success' | 'info'> = {
+    pending: 'danger',
+    '0': 'danger',
+    inspecting: 'warning',
+    '1': 'warning',
+    completed: 'success',
+    '2': 'success',
   };
-  return map[strStatus] || "info";
+  return map[strStatus] || 'info';
 };
 
 const getStatusLabel = (status: string | number) => {
   const strStatus = String(status).toLowerCase();
   const map: Record<string, string> = {
-    pending: "Chờ kiểm tra",
-    "0": "Chờ kiểm tra",
-    inspecting: "Đang kiểm tra",
-    "1": "Đang kiểm tra",
-    completed: "Đã hoàn tất",
-    "2": "Đã hoàn tất",
+    pending: 'Chờ kiểm tra',
+    '0': 'Chờ kiểm tra',
+    inspecting: 'Đang kiểm tra',
+    '1': 'Đang kiểm tra',
+    completed: 'Đã hoàn tất',
+    '2': 'Đã hoàn tất',
   };
   return map[strStatus] || String(status);
 };
 
 const getActionLabel = (action?: string) => {
-  if (!action) return "Chưa xử lý";
+  if (!action) return 'Chưa xử lý';
   const map: Record<string, string> = {
-    restock: "Nhập lại kho bán lẻ",
-    defect: "Cách ly chờ hủy",
-    refund: "Hoàn tiền cho khách",
+    restock: 'Nhập lại kho bán lẻ',
+    defect: 'Cách ly chờ hủy',
+    refund: 'Hoàn tiền cho khách',
   };
   return map[action] || action;
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 </script>

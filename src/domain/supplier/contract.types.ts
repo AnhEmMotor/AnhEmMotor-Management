@@ -1,10 +1,5 @@
 export type SupplierContractStatus =
-  | "Draft"
-  | "PendingApproval"
-  | "Active"
-  | "Expired"
-  | "Terminated"
-  | "Completed";
+  'Draft' | 'PendingApproval' | 'Active' | 'Expired' | 'Terminated' | 'Completed';
 
 export interface SupplierContractSkuItem {
   id?: string;

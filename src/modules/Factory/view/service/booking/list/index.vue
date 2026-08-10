@@ -31,11 +31,7 @@
     />
 
     <ElCard class="flex-1 art-table-card">
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        :loading="loading"
-        @refresh="refreshData"
-      >
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElButton
             v-auth="'Permissions.Bookings.Create'"
@@ -62,24 +58,12 @@
         </template>
 
         <template #type="{ row }">
-          <ElTag
-            v-if="row.bookingType === 'TestDrive'"
-            size="small"
-            type="success"
-            >Lái thử</ElTag
-          >
+          <ElTag v-if="row.bookingType === 'TestDrive'" size="small" type="success">Lái thử</ElTag>
         </template>
 
         <template #status="{ row }">
-          <ElTag v-if="row.status === 'Confirmed'" size="small" type="success"
-            >Đã xác nhận</ElTag
-          >
-          <ElTag
-            v-else-if="row.status === 'Cancelled'"
-            size="small"
-            type="danger"
-            >Đã hủy</ElTag
-          >
+          <ElTag v-if="row.status === 'Confirmed'" size="small" type="success">Đã xác nhận</ElTag>
+          <ElTag v-else-if="row.status === 'Cancelled'" size="small" type="danger">Đã hủy</ElTag>
           <ElTag v-else size="small" type="warning">Chờ xác nhận</ElTag>
         </template>
 
@@ -132,10 +116,7 @@
             <ElOption label="Lái thử" value="TestDrive" />
           </ElSelect>
         </ElFormItem>
-        <ElFormItem
-          label="Xe lái thử"
-          v-if="formData.bookingType === 'TestDrive'"
-        >
+        <ElFormItem label="Xe lái thử" v-if="formData.bookingType === 'TestDrive'">
           <ElSelect
             v-model="formData.productVariantId"
             placeholder="Chọn xe demo..."
@@ -147,11 +128,7 @@
             <ElOption label="Air Blade 160 - Demo" :value="3" />
           </ElSelect>
         </ElFormItem>
-        <ElFormItem
-          :label="
-            formData.bookingType === 'TestDrive' ? 'Ghi chú nội bộ' : 'Ghi chú'
-          "
-        >
+        <ElFormItem :label="formData.bookingType === 'TestDrive' ? 'Ghi chú nội bộ' : 'Ghi chú'">
           <ElInput
             v-model="formData.note"
             type="textarea"
@@ -165,16 +142,11 @@
         </ElFormItem>
 
         <div
-          v-if="
-            formData.bookingType === 'TestDrive' &&
-            formData.status === 'Pending'
-          "
+          v-if="formData.bookingType === 'TestDrive' && formData.status === 'Pending'"
           class="mt-2"
         >
           <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
-            <p
-              class="m-0 text-[11px] font-bold text-blue-700 leading-normal mb-1"
-            >
+            <p class="m-0 text-[11px] font-bold text-blue-700 leading-normal mb-1">
               Trạng thái Pipeline:
               <ElTag size="small" type="warning">Đang tư vấn</ElTag>
             </p>
@@ -188,9 +160,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="submitting" @click="submitForm">
-            Xác nhận
-          </ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitForm"> Xác nhận </ElButton>
         </div>
       </template>
     </ElDialog>
@@ -198,11 +168,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { Plus } from "@element-plus/icons-vue";
-import { useBookingTable } from "@/modules/Factory/logic/service/booking/list/hooks/useBookingTable";
+import { ref } from 'vue';
+import { Plus } from '@element-plus/icons-vue';
+import { useBookingTable } from '@/modules/Factory/logic/service/booking/list/hooks/useBookingTable';
 
-defineOptions({ name: "ServiceBookingList" });
+defineOptions({ name: 'ServiceBookingList' });
 
 const searchForm = ref({});
 
@@ -229,25 +199,25 @@ const {
 } = useBookingTable();
 
 const formatDateTime = (val: string | null | undefined) => {
-  if (!val) return "";
-  return new Date(val).toLocaleString("vi-VN");
+  if (!val) return '';
+  return new Date(val).toLocaleString('vi-VN');
 };
 
 const searchItems = [
   {
-    key: "keyword",
-    label: "Tìm kiếm",
-    type: "input",
-    props: { placeholder: "Tên, SĐT khách hàng..." },
+    key: 'keyword',
+    label: 'Tìm kiếm',
+    type: 'input',
+    props: { placeholder: 'Tên, SĐT khách hàng...' },
   },
   {
-    key: "status",
-    label: "Trạng thái",
-    type: "select",
+    key: 'status',
+    label: 'Trạng thái',
+    type: 'select',
     options: [
-      { label: "Chờ xác nhận", value: "Pending" },
-      { label: "Đã xác nhận", value: "Confirmed" },
-      { label: "Đã hủy", value: "Cancelled" },
+      { label: 'Chờ xác nhận', value: 'Pending' },
+      { label: 'Đã xác nhận', value: 'Confirmed' },
+      { label: 'Đã hủy', value: 'Cancelled' },
     ],
   },
 ];

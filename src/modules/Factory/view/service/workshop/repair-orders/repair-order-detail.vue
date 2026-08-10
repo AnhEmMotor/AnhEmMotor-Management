@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           <ElButton circle :icon="ArrowLeft" @click="goBack" class="mr-2" />
-          Chi tiết phiếu sửa chữa RO-{{ String(orderId).padStart(5, "0") }}
+          Chi tiết phiếu sửa chữa RO-{{ String(orderId).padStart(5, '0') }}
           <ElTag
             :type="getStatusType(calculatedStatus)"
             class="ml-2 uppercase font-bold"
@@ -14,7 +14,7 @@
           </ElTag>
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-          Ngày tạo: {{ formatDate(order?.createdAt || "") }}
+          Ngày tạo: {{ formatDate(order?.createdAt || '') }}
         </p>
       </div>
 
@@ -48,14 +48,8 @@
           <div class="flex flex-col gap-4">
             <!-- Tiến độ -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
-                Tiến độ quy trình
-              </h3>
-              <ElSteps
-                :active="currentStepIndex"
-                direction="vertical"
-                class="mt-2"
-              >
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Tiến độ quy trình</h3>
+              <ElSteps :active="currentStepIndex" direction="vertical" class="mt-2">
                 <ElStep
                   v-for="(step, index) in steps"
                   :key="index"
@@ -103,9 +97,7 @@
                   <div class="font-bold text-slate-800">
                     {{ currentTechnicianName }}
                   </div>
-                  <div class="text-xs text-slate-500">
-                    Kỹ thuật viên được phân công
-                  </div>
+                  <div class="text-xs text-slate-500">Kỹ thuật viên được phân công</div>
                 </div>
               </div>
               <div v-else class="text-sm text-slate-400 italic mb-4">
@@ -136,9 +128,7 @@
                   :loading="submitting"
                   :disabled="!assignForm.technicianId"
                   class="w-full"
-                  v-auth="
-                    Permissions.Factory.RepairOrderManagement.AssignTechnician
-                  "
+                  v-auth="Permissions.Factory.RepairOrderManagement.AssignTechnician"
                   @click="submitAssign"
                 >
                   <ElIcon class="mr-1"><User /></ElIcon>
@@ -152,9 +142,7 @@
               class="bg-white rounded-xl border border-gray-100 p-5"
               v-else-if="currentTechnicianName"
             >
-              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
-                Kỹ thuật viên thực hiện
-              </h3>
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Kỹ thuật viên thực hiện</h3>
               <div class="flex items-center gap-3">
                 <div
                   class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0"
@@ -172,31 +160,22 @@
 
             <!-- Thông tin xe & khách -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
-                Thông tin Khách hàng & Xe
-              </h3>
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Thông tin Khách hàng & Xe</h3>
               <ElDescriptions :column="1" border size="small">
                 <ElDescriptionsItem label="Thông tin xe">
-                  <span class="font-bold text-slate-800">{{
-                    order.vehicleInfo || "-"
-                  }}</span>
+                  <span class="font-bold text-slate-800">{{ order.vehicleInfo || '-' }}</span>
                 </ElDescriptionsItem>
                 <ElDescriptionsItem label="Mã bảo dưỡng">
-                  <span class="font-mono">{{
-                    order.maintenanceNumber || "-"
-                  }}</span>
+                  <span class="font-mono">{{ order.maintenanceNumber || '-' }}</span>
                 </ElDescriptionsItem>
                 <ElDescriptionsItem label="Số KM lúc vào">
                   <span class="font-bold">{{
-                    order.mileage ? order.mileage.toLocaleString() + " km" : "-"
+                    order.mileage ? order.mileage.toLocaleString() + ' km' : '-'
                   }}</span>
                 </ElDescriptionsItem>
 
                 <ElDescriptionsItem label="Dự kiến lần tới">
-                  <span
-                    class="font-medium text-emerald-600"
-                    v-if="order.nextMaintenanceDate"
-                  >
+                  <span class="font-medium text-emerald-600" v-if="order.nextMaintenanceDate">
                     {{ formatDate(order.nextMaintenanceDate) }} (Hoặc
                     {{ order.nextMaintenanceOdo?.toLocaleString() }} km)
                   </span>
@@ -207,13 +186,11 @@
 
             <!-- Ghi chú -->
             <div class="bg-white rounded-xl border border-gray-100 p-5">
-              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
-                Triệu chứng & Lỗi ghi nhận
-              </h3>
+              <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">Triệu chứng & Lỗi ghi nhận</h3>
               <div
                 class="bg-slate-50 p-3 rounded text-sm italic text-slate-700 border border-slate-100"
               >
-                "{{ order.description || "Không có mô tả" }}"
+                "{{ order.description || 'Không có mô tả' }}"
               </div>
             </div>
           </div>
@@ -225,40 +202,23 @@
             <!-- Phase 2: Hạng mục & Vật tư -->
             <div
               class="bg-white rounded-xl border border-gray-100 p-5"
-              v-if="
-                calculatedStatus === 'InProgress' ||
-                calculatedStatus === 'QcPending'
-              "
+              v-if="calculatedStatus === 'InProgress' || calculatedStatus === 'QcPending'"
             >
               <div class="flex justify-between items-center mb-4">
                 <h3 class="text-sm font-bold m-0 text-slate-800">
                   Hạng mục sửa chữa & Vật tư thay thế
                 </h3>
                 <div class="flex gap-2" v-if="calculatedStatus !== 'QcPending'">
-                  <ElButton
-                    size="small"
-                    type="primary"
-                    plain
-                    @click="openServiceDialog"
+                  <ElButton size="small" type="primary" plain @click="openServiceDialog"
                     >+ Thêm dịch vụ</ElButton
                   >
-                  <ElButton
-                    size="small"
-                    type="primary"
-                    plain
-                    @click="openPartsDialog"
+                  <ElButton size="small" type="primary" plain @click="openPartsDialog"
                     >+ Thêm phụ tùng</ElButton
                   >
                 </div>
               </div>
 
-              <ElTable
-                :data="combinedDetails"
-                border
-                stripe
-                size="small"
-                class="w-full"
-              >
+              <ElTable :data="combinedDetails" border stripe size="small" class="w-full">
                 <ElTableColumn label="Hạng mục" min-width="200">
                   <template #default="{ row }">
                     <div class="font-bold text-slate-800">{{ row.name }}</div>
@@ -276,21 +236,15 @@
                 </ElTableColumn>
                 <ElTableColumn label="Loại" width="100" align="center">
                   <template #default="{ row }">
-                    <ElTag
-                      size="small"
-                      :type="row.type === 'Service' ? 'warning' : 'primary'"
-                      >{{
-                        row.type === "Service" ? "Công việc" : "Phụ tùng"
-                      }}</ElTag
-                    >
+                    <ElTag size="small" :type="row.type === 'Service' ? 'warning' : 'primary'">{{
+                      row.type === 'Service' ? 'Công việc' : 'Phụ tùng'
+                    }}</ElTag>
                   </template>
                 </ElTableColumn>
                 <ElTableColumn label="Số lượng" width="120" align="center">
                   <template #default="{ row }">
                     <ElInputNumber
-                      v-if="
-                        row.type === 'Part' && calculatedStatus !== 'QcPending'
-                      "
+                      v-if="row.type === 'Part' && calculatedStatus !== 'QcPending'"
                       v-model="row.count"
                       :min="1"
                       size="small"
@@ -310,9 +264,7 @@
                       class="w-full"
                       :controls="false"
                     />
-                    <span v-else class="font-medium">{{
-                      formatCurrency(row.price)
-                    }}</span>
+                    <span v-else class="font-medium">{{ formatCurrency(row.price) }}</span>
                   </template>
                 </ElTableColumn>
                 <ElTableColumn label="Thành tiền" width="140" align="right">
@@ -343,22 +295,14 @@
                 <div class="w-72 space-y-2">
                   <div class="flex justify-between text-sm">
                     <span class="text-slate-500">Tiền công sửa chữa:</span>
-                    <span class="font-bold">{{
-                      formatCurrency(totalLaborCost)
-                    }}</span>
+                    <span class="font-bold">{{ formatCurrency(totalLaborCost) }}</span>
                   </div>
                   <div class="flex justify-between text-sm">
                     <span class="text-slate-500">Tiền phụ tùng:</span>
-                    <span class="font-bold">{{
-                      formatCurrency(totalPartsCost)
-                    }}</span>
+                    <span class="font-bold">{{ formatCurrency(totalPartsCost) }}</span>
                   </div>
-                  <div
-                    class="flex justify-between text-base border-t pt-2 mt-2"
-                  >
-                    <span class="font-bold uppercase text-slate-800"
-                      >Tổng cộng:</span
-                    >
+                  <div class="flex justify-between text-base border-t pt-2 mt-2">
+                    <span class="font-bold uppercase text-slate-800">Tổng cộng:</span>
                     <span class="font-bold text-red-600 text-lg">{{
                       formatCurrency(discountedTotal)
                     }}</span>
@@ -371,9 +315,7 @@
                 class="flex justify-end gap-3 mt-5 pt-4 border-t"
                 v-if="calculatedStatus === 'InProgress'"
               >
-                <ElButton
-                  :disabled="submitting"
-                  @click="saveIssueParts('InProgress')"
+                <ElButton :disabled="submitting" @click="saveIssueParts('InProgress')"
                   >Lưu thay đổi</ElButton
                 >
                 <ElButton
@@ -395,15 +337,13 @@
                 Nghiệm thu QC & Thanh toán hóa đơn
               </h3>
               <p class="text-sm text-slate-500 mb-4">
-                Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra
-                chất lượng (QC). Tiến hành lập hóa đơn để bàn giao.
+                Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra chất lượng (QC). Tiến
+                hành lập hóa đơn để bàn giao.
               </p>
 
               <ElRow :gutter="20">
                 <ElCol :span="24" class="mb-4">
-                  <ElDivider content-position="left"
-                    >🎫 Mã giảm giá (Voucher)</ElDivider
-                  >
+                  <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
                   <div class="flex items-start gap-3">
                     <ElInput
                       v-model="voucherCode"
@@ -413,11 +353,7 @@
                       :disabled="voucherApplying"
                     >
                       <template #append>
-                        <ElButton
-                          :loading="voucherApplying"
-                          type="primary"
-                          @click="applyVoucher"
-                        >
+                        <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher">
                           Áp dụng
                         </ElButton>
                       </template>
@@ -432,16 +368,9 @@
                       appliedVoucher.code
                     }}</span>
                     <span class="text-xs text-emerald-600"
-                      >-{{
-                        formatCurrency(appliedVoucher.discountAmount)
-                      }}</span
+                      >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
                     >
-                    <ElButton
-                      link
-                      type="danger"
-                      size="small"
-                      @click="removeVoucher"
-                    >
+                    <ElButton link type="danger" size="small" @click="removeVoucher">
                       Hủy
                     </ElButton>
                   </div>
@@ -451,10 +380,7 @@
                 </ElCol>
 
                 <ElCol :span="8">
-                  <ElFormItem
-                    label="Phương thức thanh toán"
-                    label-position="top"
-                  >
+                  <ElFormItem label="Phương thức thanh toán" label-position="top">
                     <ElSelect v-model="paymentMethod" class="w-full">
                       <ElOption label="Tiền mặt" value="Cash" />
                       <ElOption label="Chuyển khoản" value="BankTransfer" />
@@ -462,10 +388,7 @@
                   </ElFormItem>
                 </ElCol>
                 <ElCol :span="8">
-                  <ElFormItem
-                    label="Trạng thái thanh toán"
-                    label-position="top"
-                  >
+                  <ElFormItem label="Trạng thái thanh toán" label-position="top">
                     <ElSelect v-model="paymentStatus" class="w-full">
                       <ElOption label="Đã thanh toán" value="Paid" />
                       <ElOption label="Chưa thanh toán" value="Unpaid" />
@@ -474,20 +397,13 @@
                 </ElCol>
                 <ElCol :span="8">
                   <ElFormItem label="Ghi chú bàn giao" label-position="top">
-                    <ElInput
-                      v-model="checkoutNotes"
-                      placeholder="Nhập ghi chú"
-                    />
+                    <ElInput v-model="checkoutNotes" placeholder="Nhập ghi chú" />
                   </ElFormItem>
                 </ElCol>
               </ElRow>
 
               <div class="flex justify-end mt-4 pt-4 border-t">
-                <ElButton
-                  type="success"
-                  :disabled="submitting"
-                  @click="completeRepairOrder"
-                >
+                <ElButton type="success" :disabled="submitting" @click="completeRepairOrder">
                   Thanh toán & Hoàn tất
                 </ElButton>
               </div>
@@ -497,34 +413,24 @@
               v-if="calculatedStatus === 'Completed'"
               class="bg-emerald-50 rounded-xl border border-emerald-200 p-6"
             >
-              <div
-                class="flex flex-col items-center justify-center text-center mb-6"
-              >
+              <div class="flex flex-col items-center justify-center text-center mb-6">
                 <h3 class="font-bold text-emerald-700 m-0">
                   Phiếu sửa chữa đã hoàn tất & Bàn giao thành công
                 </h3>
               </div>
               <ElRow :gutter="20">
                 <ElCol :span="6">
-                  <div class="text-xs text-slate-500 uppercase">
-                    Tổng tiền hóa đơn
-                  </div>
+                  <div class="text-xs text-slate-500 uppercase">Tổng tiền hóa đơn</div>
                   <div class="font-bold text-lg mt-1 text-slate-800">
                     {{
                       formatCurrency(
-                        Math.max(
-                          0,
-                          (order.totalCost || 0) -
-                            (appliedVoucher?.discountAmount || 0),
-                        ),
+                        Math.max(0, (order.totalCost || 0) - (appliedVoucher?.discountAmount || 0))
                       )
                     }}
                   </div>
                 </ElCol>
                 <ElCol :span="6">
-                  <div class="text-xs text-slate-500 uppercase">
-                    Thời điểm hoàn tất
-                  </div>
+                  <div class="text-xs text-slate-500 uppercase">Thời điểm hoàn tất</div>
                   <div class="font-bold mt-1 text-slate-800">
                     {{ formatDate(order.updatedAt || order.createdAt) }}
                   </div>
@@ -532,15 +438,8 @@
               </ElRow>
 
               <div class="mt-6 border-t pt-4 border-emerald-100">
-                <p class="font-bold text-emerald-800 mb-2">
-                  Chi tiết dịch vụ & phụ tùng:
-                </p>
-                <ElTable
-                  :data="combinedDetails"
-                  border
-                  size="small"
-                  class="w-full"
-                >
+                <p class="font-bold text-emerald-800 mb-2">Chi tiết dịch vụ & phụ tùng:</p>
+                <ElTable :data="combinedDetails" border size="small" class="w-full">
                   <ElTableColumn label="Hạng mục" min-width="200">
                     <template #default="{ row }">
                       <div class="font-medium">{{ row.name }}</div>
@@ -551,31 +450,18 @@
                   </ElTableColumn>
                   <ElTableColumn label="Loại" width="100" align="center">
                     <template #default="{ row }">
-                      <ElTag
-                        size="small"
-                        :type="row.type === 'Service' ? 'warning' : 'primary'"
-                        >{{
-                          row.type === "Service" ? "Công việc" : "Phụ tùng"
-                        }}</ElTag
-                      >
+                      <ElTag size="small" :type="row.type === 'Service' ? 'warning' : 'primary'">{{
+                        row.type === 'Service' ? 'Công việc' : 'Phụ tùng'
+                      }}</ElTag>
                     </template>
                   </ElTableColumn>
-                  <ElTableColumn
-                    label="SL"
-                    prop="count"
-                    width="60"
-                    align="center"
-                  />
+                  <ElTableColumn label="SL" prop="count" width="60" align="center" />
                   <ElTableColumn label="Đơn giá" width="120" align="right">
-                    <template #default="{ row }">{{
-                      formatCurrency(row.price)
-                    }}</template>
+                    <template #default="{ row }">{{ formatCurrency(row.price) }}</template>
                   </ElTableColumn>
                   <ElTableColumn label="Thành tiền" width="120" align="right">
                     <template #default="{ row }">
-                      <span class="font-bold">{{
-                        formatCurrency(row.price * row.count)
-                      }}</span>
+                      <span class="font-bold">{{ formatCurrency(row.price * row.count) }}</span>
                     </template>
                   </ElTableColumn>
                 </ElTable>
@@ -587,17 +473,8 @@
     </div>
 
     <!-- Edit Dialog -->
-    <ElDialog
-      v-model="editDialogVisible"
-      title="Chỉnh sửa phiếu sửa chữa"
-      width="500px"
-    >
-      <ElForm
-        :model="editForm"
-        label-width="120px"
-        class="space-y-4"
-        :disabled="submitting"
-      >
+    <ElDialog v-model="editDialogVisible" title="Chỉnh sửa phiếu sửa chữa" width="500px">
+      <ElForm :model="editForm" label-width="120px" class="space-y-4" :disabled="submitting">
         <ElFormItem label="Số KM hiện tại">
           <ElInputNumber v-model="editForm.mileage" :min="0" class="w-full" />
         </ElFormItem>
@@ -613,11 +490,7 @@
           />
         </ElFormItem>
         <ElFormItem label="Số KM BD tới">
-          <ElInputNumber
-            v-model="editForm.nextMaintenanceOdo"
-            :min="0"
-            class="w-full"
-          />
+          <ElInputNumber v-model="editForm.nextMaintenanceOdo" :min="0" class="w-full" />
         </ElFormItem>
         <ElFormItem label="Nhân viên phụ trách">
           <ElSelect
@@ -639,22 +512,14 @@
       </ElForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <ElButton @click="editDialogVisible = false" :disabled="submitting"
-            >Hủy</ElButton
-          >
-          <ElButton type="primary" :loading="submitting" @click="submitEdit"
-            >Lưu phiếu</ElButton
-          >
+          <ElButton @click="editDialogVisible = false" :disabled="submitting">Hủy</ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitEdit">Lưu phiếu</ElButton>
         </div>
       </template>
     </ElDialog>
 
     <!-- Assign Dialog -->
-    <ElDialog
-      v-model="assignDialogVisible"
-      title="Phân công Kỹ thuật viên"
-      width="400px"
-    >
+    <ElDialog v-model="assignDialogVisible" title="Phân công Kỹ thuật viên" width="400px">
       <ElForm :model="assignForm" label-position="top" :disabled="submitting">
         <ElFormItem label="Chọn kỹ thuật viên">
           <ElSelect v-model="assignForm.technicianId" filterable class="w-full">
@@ -669,12 +534,8 @@
       </ElForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <ElButton @click="assignDialogVisible = false" :disabled="submitting"
-            >Hủy</ElButton
-          >
-          <ElButton type="primary" :loading="submitting" @click="submitAssign"
-            >Phân công</ElButton
-          >
+          <ElButton @click="assignDialogVisible = false" :disabled="submitting">Hủy</ElButton>
+          <ElButton type="primary" :loading="submitting" @click="submitAssign">Phân công</ElButton>
         </div>
       </template>
     </ElDialog>
@@ -702,11 +563,7 @@
     </ElDialog>
 
     <!-- Services Dialog -->
-    <ElDialog
-      v-model="servicesDialogVisible"
-      title="Thêm dịch vụ"
-      width="500px"
-    >
+    <ElDialog v-model="servicesDialogVisible" title="Thêm dịch vụ" width="500px">
       <ElForm label-position="top">
         <ElFormItem label="Chọn dịch vụ">
           <ElSelect v-model="selectedServiceId" filterable class="w-full">
@@ -730,46 +587,31 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/domain/constants/permissions";
-import { computed, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import {
-  ArrowLeft,
-  Printer,
-  Delete,
-  Edit,
-  User,
-} from "@element-plus/icons-vue";
+import { Permissions } from '@/domain/constants/permissions';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { ArrowLeft, Printer, Delete, Edit, User } from '@element-plus/icons-vue';
 
-import {
-  RepairOrderApi,
-  type RepairOrder,
-  type RepairOrderDetail,
-} from "@/api/sales";
-import { ProductApi } from "@/api/product";
-import {
-  ServiceCategoryApi,
-  type ServiceCategoryResponse,
-} from "@/api/product";
-import { useVoucher } from "@/common/composables/useVoucher";
-import { EmployeeApi, type EmployeeResponse } from "@/api/operations";
+import { RepairOrderApi, type RepairOrder, type RepairOrderDetail } from '@/api/sales';
+import { ProductApi } from '@/api/product';
+import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/api/product';
+import { useVoucher } from '@/common/composables/useVoucher';
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations';
 
-defineOptions({ name: "ServiceWorkshopRepairOrderDetail" });
+defineOptions({ name: 'ServiceWorkshopRepairOrderDetail' });
 
 const route = useRoute();
 const router = useRouter();
 
-const orderId = Number(
-  Array.isArray(route.params.id) ? route.params.id[0] : route.params.id,
-);
+const orderId = Number(Array.isArray(route.params.id) ? route.params.id[0] : route.params.id);
 
 const loading = ref(false);
 const submitting = ref(false);
 const order = ref<RepairOrder | null>(null);
 
 interface LocalItem {
-  type: "Service" | "Part";
+  type: 'Service' | 'Part';
   id: number;
   name: string;
   count: number;
@@ -778,25 +620,24 @@ interface LocalItem {
 }
 
 const localItems = ref<LocalItem[]>([]);
-const paymentMethod = ref("Cash");
-const paymentStatus = ref("Paid");
-const checkoutNotes = ref("");
+const paymentMethod = ref('Cash');
+const paymentStatus = ref('Paid');
+const checkoutNotes = ref('');
 
 const steps = [
-  { title: "Sửa chữa", description: "Đang khảo sát, lắp phụ tùng" },
-  { title: "Kiểm định QC", description: "Kiểm tra chất lượng xe" },
-  { title: "Hoàn tất & Bàn giao", description: "Thanh toán hóa đơn" },
+  { title: 'Sửa chữa', description: 'Đang khảo sát, lắp phụ tùng' },
+  { title: 'Kiểm định QC', description: 'Kiểm tra chất lượng xe' },
+  { title: 'Hoàn tất & Bàn giao', description: 'Thanh toán hóa đơn' },
 ];
 
 const calculatedStatus = computed(() => {
-  if (!order.value) return "InProgress";
+  if (!order.value) return 'InProgress';
   const stored = sessionStorage.getItem(`ro_status_${orderId}`);
   if (stored) return stored;
   if (order.value.status) return order.value.status;
-  if (!order.value.technicianId && !order.value.technicianName)
-    return "Pending";
-  if (order.value.totalCost > 0) return "Completed";
-  return "InProgress";
+  if (!order.value.technicianId && !order.value.technicianName) return 'Pending';
+  if (order.value.totalCost > 0) return 'Completed';
+  return 'InProgress';
 });
 
 const currentStepIndex = computed(() => {
@@ -811,21 +652,19 @@ const combinedDetails = computed(() => localItems.value);
 
 const totalLaborCost = computed(() =>
   localItems.value
-    .filter((x) => x.type === "Service")
-    .reduce((acc, item) => acc + item.price * item.count, 0),
+    .filter((x) => x.type === 'Service')
+    .reduce((acc, item) => acc + item.price * item.count, 0)
 );
 
 const totalPartsCost = computed(() =>
   localItems.value
-    .filter((x) => x.type === "Part")
-    .reduce((acc, item) => acc + item.price * item.count, 0),
+    .filter((x) => x.type === 'Part')
+    .reduce((acc, item) => acc + item.price * item.count, 0)
 );
 
 const totalAmount = computed(() => totalLaborCost.value + totalPartsCost.value);
 
-const discountedTotal = computed(() =>
-  Math.max(0, totalAmount.value - voucherDiscount.value),
-);
+const discountedTotal = computed(() => Math.max(0, totalAmount.value - voucherDiscount.value));
 
 const {
   voucherCode,
@@ -839,12 +678,12 @@ const {
 } = useVoucher(
   () => totalAmount.value,
   () => orderId,
-  true,
+  true
 );
 
 const loadOrderDetail = async () => {
   if (!orderId) {
-    ElMessage.error("Mã phiếu sửa chữa không hợp lệ");
+    ElMessage.error('Mã phiếu sửa chữa không hợp lệ');
     return;
   }
   loading.value = true;
@@ -859,50 +698,49 @@ const loadOrderDetail = async () => {
         if (Array.isArray(parsed)) {
           parsed.forEach((p: any) => {
             itemsList.push({
-              type: p.productVariantId ? "Part" : "Service",
+              type: p.productVariantId ? 'Part' : 'Service',
               id: p.productVariantId || p.serviceId || 0,
-              name: p.productVariantName || p.serviceName || "Hạng mục",
+              name: p.productVariantName || p.serviceName || 'Hạng mục',
               count: p.count || 1,
               price: p.price || p.laborCost || 0,
-              notes: p.notes || "",
+              notes: p.notes || '',
             });
           });
-        } else if (parsed && typeof parsed === "object") {
+        } else if (parsed && typeof parsed === 'object') {
           if (Array.isArray(parsed.Parts)) {
             parsed.Parts.forEach((p: any) => {
               itemsList.push({
-                type: "Part",
+                type: 'Part',
                 id: p.ProductVariantId || p.productVariantId || 0,
-                name:
-                  p.ProductVariantName || p.productVariantName || "Phụ tùng",
+                name: p.ProductVariantName || p.productVariantName || 'Phụ tùng',
                 count: p.Count || p.count || 1,
                 price: p.Price || p.price || 0,
-                notes: p.Notes || p.notes || "",
+                notes: p.Notes || p.notes || '',
               });
             });
           }
           if (Array.isArray(parsed.Services)) {
             parsed.Services.forEach((s: any) => {
               itemsList.push({
-                type: "Service",
+                type: 'Service',
                 id: s.ServiceId || s.serviceId || 0,
-                name: s.ServiceName || s.serviceName || "Dịch vụ",
+                name: s.ServiceName || s.serviceName || 'Dịch vụ',
                 count: s.Count || s.count || 1,
                 price: s.Price || s.price || s.LaborCost || s.laborCost || 0,
-                notes: s.Notes || s.notes || "",
+                notes: s.Notes || s.notes || '',
               });
             });
           }
         }
       } catch (e) {
-        console.warn("Failed to parse partsJson", e);
+        console.warn('Failed to parse partsJson', e);
       }
     }
     localItems.value = itemsList;
     // Pre-populate assign form with current technician
     assignForm.value.technicianId = (res as any).technicianId || undefined;
   } catch (err: any) {
-    ElMessage.error(err?.message || "Không thể tải thông tin phiếu");
+    ElMessage.error(err?.message || 'Không thể tải thông tin phiếu');
   } finally {
     loading.value = false;
   }
@@ -912,8 +750,8 @@ const loadOrderDetail = async () => {
 const editDialogVisible = ref(false);
 const editForm = ref({
   mileage: 0,
-  description: "",
-  nextMaintenanceDate: "",
+  description: '',
+  nextMaintenanceDate: '',
   nextMaintenanceOdo: 0,
   technicianId: undefined as number | undefined,
 });
@@ -922,8 +760,8 @@ const openEditDialog = () => {
   if (!order.value) return;
   editForm.value = {
     mileage: order.value.mileage || 0,
-    description: order.value.description || "",
-    nextMaintenanceDate: order.value.nextMaintenanceDate || "",
+    description: order.value.description || '',
+    nextMaintenanceDate: order.value.nextMaintenanceDate || '',
     nextMaintenanceOdo: order.value.nextMaintenanceOdo || 0,
     technicianId: (order.value as any).technicianId || undefined,
   };
@@ -938,9 +776,7 @@ const submitEdit = async () => {
       id: orderId,
       vehicleId: order.value.vehicleId || 0,
       maintenanceDate:
-        order.value.maintenanceDate ||
-        order.value.createdAt ||
-        new Date().toISOString(),
+        order.value.maintenanceDate || order.value.createdAt || new Date().toISOString(),
       description: editForm.value.description,
       mileage: editForm.value.mileage,
       technicianId: editForm.value.technicianId,
@@ -949,11 +785,11 @@ const submitEdit = async () => {
       nextMaintenanceDate: editForm.value.nextMaintenanceDate || undefined,
       nextMaintenanceOdo: editForm.value.nextMaintenanceOdo || undefined,
     });
-    ElMessage.success("Cập nhật thông tin thành công");
+    ElMessage.success('Cập nhật thông tin thành công');
     editDialogVisible.value = false;
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Cập nhật thất bại");
+    ElMessage.error(err?.message || 'Cập nhật thất bại');
   } finally {
     submitting.value = false;
   }
@@ -968,20 +804,16 @@ const currentTechnicianName = computed(() => {
   // Nếu có technicianName từ API (order) và user chưa đổi KTV khác
   if (order.value && (order.value as any).technicianName) {
     if (assignForm.value.technicianId !== (order.value as any).technicianId) {
-      const foundLocally = technicians.value.find(
-        (t) => t.id === assignForm.value.technicianId,
-      );
+      const foundLocally = technicians.value.find((t) => t.id === assignForm.value.technicianId);
       if (foundLocally) return foundLocally.fullName;
     }
     return (order.value as any).technicianName;
   }
 
   // Fallback tìm trong local (dùng khi form đang mở và user chọn)
-  if (!assignForm.value.technicianId) return "";
-  const found = technicians.value.find(
-    (t) => t.id === assignForm.value.technicianId,
-  );
-  return found?.fullName || "";
+  if (!assignForm.value.technicianId) return '';
+  const found = technicians.value.find((t) => t.id === assignForm.value.technicianId);
+  return found?.fullName || '';
 });
 
 const onTechSelectOpen = async (visible: boolean) => {
@@ -991,7 +823,7 @@ const onTechSelectOpen = async (visible: boolean) => {
       const list = await EmployeeApi.getList();
       technicians.value = list.length ? list : [];
     } catch {
-      ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+      ElMessage.error('Không thể tải danh sách kỹ thuật viên');
     } finally {
       loadingTechnicians.value = false;
     }
@@ -1003,7 +835,7 @@ const fetchTechnicians = async () => {
     const list = await EmployeeApi.getList();
     technicians.value = list.length ? list : [];
   } catch (err) {
-    ElMessage.error("Không thể tải danh sách kỹ thuật viên");
+    ElMessage.error('Không thể tải danh sách kỹ thuật viên');
   }
 };
 
@@ -1022,10 +854,8 @@ const submitAssign = async () => {
       id: orderId,
       vehicleId: order.value.vehicleId || 0,
       maintenanceDate:
-        order.value.maintenanceDate ||
-        order.value.createdAt ||
-        new Date().toISOString(),
-      description: order.value.description || "",
+        order.value.maintenanceDate || order.value.createdAt || new Date().toISOString(),
+      description: order.value.description || '',
       mileage: order.value.mileage || 0,
       technicianId: assignForm.value.technicianId,
       partsCost: 0,
@@ -1033,12 +863,12 @@ const submitAssign = async () => {
       nextMaintenanceDate: order.value.nextMaintenanceDate || undefined,
       nextMaintenanceOdo: order.value.nextMaintenanceOdo || undefined,
     });
-    ElMessage.success("Phân công kỹ thuật viên thành công");
-    sessionStorage.setItem(`ro_status_${orderId}`, "InProgress");
+    ElMessage.success('Phân công kỹ thuật viên thành công');
+    sessionStorage.setItem(`ro_status_${orderId}`, 'InProgress');
     assignDialogVisible.value = false;
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Phân công thất bại");
+    ElMessage.error(err?.message || 'Phân công thất bại');
   } finally {
     submitting.value = false;
   }
@@ -1058,7 +888,7 @@ const openServiceDialog = async () => {
     const res = await ServiceCategoryApi.getList({ current: 1, size: 100 });
     availableServices.value = res.items || [];
   } catch (err) {
-    ElMessage.error("Không thể tải danh sách dịch vụ");
+    ElMessage.error('Không thể tải danh sách dịch vụ');
   }
   selectedServiceId.value = undefined;
   servicesDialogVisible.value = true;
@@ -1066,17 +896,15 @@ const openServiceDialog = async () => {
 
 const confirmAddService = () => {
   if (!selectedServiceId.value) return;
-  const srv = availableServices.value.find(
-    (s) => s.id === selectedServiceId.value,
-  );
+  const srv = availableServices.value.find((s) => s.id === selectedServiceId.value);
   if (srv) {
     localItems.value.push({
-      type: "Service",
+      type: 'Service',
       id: srv.id,
       name: srv.name,
       count: 1,
       price: 0, // Nhập giá thủ công hoặc lấy mặc định nếu có
-      notes: "",
+      notes: '',
     });
   }
   servicesDialogVisible.value = false;
@@ -1087,7 +915,7 @@ const openPartsDialog = async () => {
     const res = await ProductApi.getVariantsForInput({ current: 1, size: 100 });
     availableParts.value = res.items || [];
   } catch (err) {
-    ElMessage.error("Không thể tải danh sách phụ tùng");
+    ElMessage.error('Không thể tải danh sách phụ tùng');
   }
   selectedPartId.value = undefined;
   partsDialogVisible.value = true;
@@ -1098,12 +926,12 @@ const confirmAddPart = () => {
   const part = availableParts.value.find((p) => p.id === selectedPartId.value);
   if (part) {
     localItems.value.push({
-      type: "Part",
+      type: 'Part',
       id: part.id,
       name: part.displayName || part.name,
       count: 1,
       price: part.price || 0,
-      notes: "",
+      notes: '',
     });
   }
   partsDialogVisible.value = false;
@@ -1113,13 +941,13 @@ const removeItem = (type: string, index: number) => {
   localItems.value.splice(index, 1);
 };
 
-const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
+const saveIssueParts = async (targetStatus: 'InProgress' | 'QcPending') => {
   submitting.value = true;
   try {
     await RepairOrderApi.issueParts({
       repairOrderId: orderId,
       parts: localItems.value
-        .filter((x) => x.type === "Part")
+        .filter((x) => x.type === 'Part')
         .map((part) => ({
           productVariantId: part.id,
           count: part.count,
@@ -1127,7 +955,7 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
           notes: part.notes || undefined,
         })),
       services: localItems.value
-        .filter((x) => x.type === "Service")
+        .filter((x) => x.type === 'Service')
         .map((service) => ({
           serviceId: service.id,
           laborCost: service.price,
@@ -1135,11 +963,11 @@ const saveIssueParts = async (targetStatus: "InProgress" | "QcPending") => {
         })),
       status: targetStatus,
     });
-    ElMessage.success("Đã cập nhật hạng mục");
+    ElMessage.success('Đã cập nhật hạng mục');
     sessionStorage.setItem(`ro_status_${orderId}`, targetStatus);
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Cập nhật thất bại");
+    ElMessage.error(err?.message || 'Cập nhật thất bại');
   } finally {
     submitting.value = false;
   }
@@ -1156,11 +984,11 @@ const completeRepairOrder = async () => {
       voucherId: appliedVoucher.value?.voucherId,
       discountAmount: appliedVoucher.value?.discountAmount || 0,
     } as any);
-    ElMessage.success("Đã hoàn tất phiếu sửa chữa");
-    sessionStorage.setItem(`ro_status_${orderId}`, "Completed");
+    ElMessage.success('Đã hoàn tất phiếu sửa chữa');
+    sessionStorage.setItem(`ro_status_${orderId}`, 'Completed');
     await loadOrderDetail();
   } catch (err: any) {
-    ElMessage.error(err?.message || "Hoàn tất thất bại");
+    ElMessage.error(err?.message || 'Hoàn tất thất bại');
   } finally {
     submitting.value = false;
   }
@@ -1171,46 +999,43 @@ const openPrintInvoice = () => {
 };
 
 const goBack = () => {
-  router.push("/factory/workshop/repair");
+  router.push('/factory/workshop/repair');
 };
 
 const formatCurrency = (value: number) => {
-  if (!value) return "0 ₫";
-  return new Intl.NumberFormat("vi-VN").format(value) + " ₫";
+  if (!value) return '0 ₫';
+  return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
 };
 
 const formatDate = (dateStr: string | Date) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 const getStatusType = (
-  status: string,
-): "primary" | "success" | "warning" | "info" | "danger" | undefined => {
-  const map: Record<
-    string,
-    "primary" | "success" | "warning" | "info" | "danger"
-  > = {
-    Pending: "warning",
-    InProgress: "primary",
-    QcPending: "primary",
-    Completed: "success",
+  status: string
+): 'primary' | 'success' | 'warning' | 'info' | 'danger' | undefined => {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    Pending: 'warning',
+    InProgress: 'primary',
+    QcPending: 'primary',
+    Completed: 'success',
   };
-  return map[status] || "info";
+  return map[status] || 'info';
 };
 
 const getStatusText = (status: string) => {
   const map: Record<string, string> = {
-    Pending: "Chờ tiếp nhận",
-    InProgress: "Đang sửa chữa",
-    QcPending: "Đang QC",
-    Completed: "Hoàn tất",
+    Pending: 'Chờ tiếp nhận',
+    InProgress: 'Đang sửa chữa',
+    QcPending: 'Đang QC',
+    Completed: 'Hoàn tất',
   };
   return map[status] || status;
 };

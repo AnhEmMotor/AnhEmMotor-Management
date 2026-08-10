@@ -13,9 +13,7 @@
       @scroll="handleScroll"
       @wheel="handleWheel"
     >
-      <div
-        class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap"
-      >
+      <div class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap">
         <template v-for="item in processedMenuList" :key="item.meta.title">
           <div
             v-if="!item.meta.isHide"
@@ -42,11 +40,7 @@
       </div>
     </ElScrollbar>
 
-    <div
-      v-show="showRightArrow"
-      class="button-arrow right-2"
-      @click="scroll('right')"
-    >
+    <div v-show="showRightArrow" class="button-arrow right-2" @click="scroll('right')">
       <ElIcon>
         <ArrowRight />
       </ElIcon>
@@ -55,14 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from "vue";
-import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
-import { useThrottleFn } from "@vueuse/core";
-import { formatMenuTitle } from "@/common/utils/router";
-import { handleMenuJump } from "@/common/utils/navigation";
-import type { AppRouteRecord } from "@/types/router";
+import { ref, computed, onMounted, nextTick } from 'vue';
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
+import { useThrottleFn } from '@vueuse/core';
+import { formatMenuTitle } from '@/common/utils/router';
+import { handleMenuJump } from '@/common/utils/navigation';
+import type { AppRouteRecord } from '@/types/router';
 
-defineOptions({ name: "ArtMixedMenu" });
+defineOptions({ name: 'ArtMixedMenu' });
 
 interface Props {
   list: AppRouteRecord[];
@@ -73,7 +67,7 @@ interface ProcessedMenuItem extends AppRouteRecord {
   formattedTitle: string;
 }
 
-type ScrollDirection = "left" | "right";
+type ScrollDirection = 'left' | 'right';
 
 const route = useRoute();
 
@@ -136,13 +130,13 @@ const scroll = (direction: ScrollDirection): void => {
 
   const currentScroll = scrollbarRef.value.wrapRef.scrollLeft;
   const targetScroll =
-    direction === "left"
+    direction === 'left'
       ? currentScroll - SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE
       : currentScroll + SCROLL_CONFIG.BUTTON_SCROLL_DISTANCE;
 
   scrollbarRef.value.wrapRef.scrollTo({
     left: targetScroll,
-    behavior: "smooth",
+    behavior: 'smooth',
   });
 };
 
@@ -160,10 +154,7 @@ const handleWheel = (event: WheelEvent): void => {
       ? SCROLL_CONFIG.WHEEL_FAST_STEP
       : SCROLL_CONFIG.WHEEL_SLOW_STEP;
   const scrollDelta = event.deltaY > 0 ? scrollStep : -scrollStep;
-  const targetScroll = Math.max(
-    0,
-    Math.min(scrollLeft + scrollDelta, scrollWidth - clientWidth),
-  );
+  const targetScroll = Math.max(0, Math.min(scrollLeft + scrollDelta, scrollWidth - clientWidth));
 
   wrapRef.scrollLeft = targetScroll;
 
@@ -222,7 +213,7 @@ onMounted(initScrollState);
   width: 40px;
   height: 2px;
   margin: auto;
-  content: "";
+  content: '';
   background-color: var(--theme-color);
 }
 

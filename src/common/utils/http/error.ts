@@ -1,7 +1,7 @@
-import { ElNotification } from "element-plus";
-import { AxiosError } from "axios";
-import { ApiStatus } from "./status";
-import { $t } from "@/i18n";
+import { ElNotification } from 'element-plus';
+import { AxiosError } from 'axios';
+import { ApiStatus } from './status';
+import { $t } from '@/i18n';
 
 export interface ErrorResponse {
   code: number;
@@ -33,10 +33,10 @@ export class HttpError extends Error {
       data?: unknown;
       url?: string;
       method?: string;
-    },
+    }
   ) {
     super(message);
-    this.name = "HttpError";
+    this.name = 'HttpError';
     this.code = code;
     this.data = options?.data;
     this.timestamp = new Date().toISOString();
@@ -59,24 +59,24 @@ export class HttpError extends Error {
 
 const getErrorMessage = (status: number): string => {
   const errorMap: Record<number, string> = {
-    [ApiStatus.error]: "httpMsg.requestFailed",
-    [ApiStatus.unauthorized]: "httpMsg.unauthorized",
-    [ApiStatus.forbidden]: "httpMsg.forbidden",
-    [ApiStatus.notFound]: "httpMsg.notFound",
-    [ApiStatus.methodNotAllowed]: "httpMsg.methodNotAllowed",
-    [ApiStatus.requestTimeout]: "httpMsg.requestTimeout",
-    [ApiStatus.internalServerError]: "httpMsg.internalServerError",
-    [ApiStatus.badGateway]: "httpMsg.badGateway",
-    [ApiStatus.serviceUnavailable]: "httpMsg.serviceUnavailable",
-    [ApiStatus.gatewayTimeout]: "httpMsg.gatewayTimeout",
+    [ApiStatus.error]: 'httpMsg.requestFailed',
+    [ApiStatus.unauthorized]: 'httpMsg.unauthorized',
+    [ApiStatus.forbidden]: 'httpMsg.forbidden',
+    [ApiStatus.notFound]: 'httpMsg.notFound',
+    [ApiStatus.methodNotAllowed]: 'httpMsg.methodNotAllowed',
+    [ApiStatus.requestTimeout]: 'httpMsg.requestTimeout',
+    [ApiStatus.internalServerError]: 'httpMsg.internalServerError',
+    [ApiStatus.badGateway]: 'httpMsg.badGateway',
+    [ApiStatus.serviceUnavailable]: 'httpMsg.serviceUnavailable',
+    [ApiStatus.gatewayTimeout]: 'httpMsg.gatewayTimeout',
   };
 
-  return $t(errorMap[status] || "httpMsg.internalServerError");
+  return $t(errorMap[status] || 'httpMsg.internalServerError');
 };
 
 export function handleError(error: AxiosError<ErrorResponse>): never {
-  if (error.code === "ERR_CANCELED") {
-    throw new HttpError($t("httpMsg.requestCancelled"), ApiStatus.error);
+  if (error.code === 'ERR_CANCELED') {
+    throw new HttpError($t('httpMsg.requestCancelled'), ApiStatus.error);
   }
 
   const statusCode = error.response?.status;
@@ -84,7 +84,7 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   const requestConfig = error.config;
 
   if (!error.response) {
-    throw new HttpError($t("httpMsg.networkError"), ApiStatus.error, {
+    throw new HttpError($t('httpMsg.networkError'), ApiStatus.error, {
       url: requestConfig?.url,
       method: requestConfig?.method?.toUpperCase(),
     });
@@ -92,7 +92,7 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
 
   const message = statusCode
     ? getErrorMessage(statusCode)
-    : errorMessage || $t("httpMsg.requestFailed");
+    : errorMessage || $t('httpMsg.requestFailed');
   throw new HttpError(message, statusCode || ApiStatus.error, {
     data: error.response.data,
     url: requestConfig?.url,
@@ -104,26 +104,21 @@ export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
     ElNotification({
       title:
-        error.code === ApiStatus.unauthorized
-          ? $t("common.tips")
-          : $t("httpMsg.requestFailed"),
+        error.code === ApiStatus.unauthorized ? $t('common.tips') : $t('httpMsg.requestFailed'),
       message: error.message,
-      type: "error",
-      position: "bottom-right",
+      type: 'error',
+      position: 'bottom-right',
     });
   }
 }
 
-export function showSuccess(
-  message: string,
-  showMessage: boolean = true,
-): void {
+export function showSuccess(message: string, showMessage: boolean = true): void {
   if (showMessage) {
     ElNotification({
-      title: $t("common.tips"),
+      title: $t('common.tips'),
       message: message,
-      type: "success",
-      position: "bottom-right",
+      type: 'success',
+      position: 'bottom-right',
     });
   }
 }

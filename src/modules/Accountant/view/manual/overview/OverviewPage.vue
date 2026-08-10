@@ -2,9 +2,7 @@
   <div class="admin-guide">
     <div class="guide-hero">
       <h1 class="hero-title">Trung Tâm Hướng Dẫn Sử Dụng</h1>
-      <p class="hero-sub">
-        Phân hệ Quản trị Hệ thống — chọn một phân hệ để xem tài liệu chi tiết.
-      </p>
+      <p class="hero-sub">Phân hệ Quản trị Hệ thống — chọn một phân hệ để xem tài liệu chi tiết.</p>
     </div>
 
     <div class="sections-grid">
@@ -17,17 +15,12 @@
         @click="goTo(item.id)"
       >
         <div class="card-inner">
-          <div
-            class="icon-wrap"
-            :style="{ backgroundColor: item.color + '18', color: item.color }"
-          >
+          <div class="icon-wrap" :style="{ backgroundColor: item.color + '18', color: item.color }">
             <el-icon :size="26"><component :is="item.icon" /></el-icon>
           </div>
           <div class="card-body">
             <h3 class="card-title">{{ item.title }}</h3>
-            <span class="card-sub" :style="{ color: item.color }">{{
-              item.subtitle
-            }}</span>
+            <span class="card-sub" :style="{ color: item.color }">{{ item.subtitle }}</span>
           </div>
           <el-icon class="card-arrow" :size="18"><ArrowRight /></el-icon>
         </div>
@@ -37,23 +30,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import { ArrowRight } from "@element-plus/icons-vue";
-import { guideSections } from "../data/guideSections";
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { ArrowRight } from '@element-plus/icons-vue';
+import { guideSections } from '../data/guideSections';
 
 const router = useRouter();
 const sections = ref(guideSections);
 
 function cardStyle(item: any, idx: number) {
   return {
-    cursor: "pointer",
-    transition: "all .22s ease",
-    borderRadius: "16px",
-    border: "1px solid " + item.color + "22",
-    background: "var(--el-bg-color-overlay)",
-    animationDelay: idx * 50 + "ms",
-    animation: "cardIn .35s ease both",
+    cursor: 'pointer',
+    transition: 'all .22s ease',
+    borderRadius: '16px',
+    border: '1px solid ' + item.color + '22',
+    background: 'var(--el-bg-color-overlay)',
+    animationDelay: idx * 50 + 'ms',
+    animation: 'cardIn .35s ease both',
   };
 }
 

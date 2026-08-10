@@ -1,25 +1,21 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export const DebtApi = {
   getSuppliersWithDebt(params?: any) {
     return request.get<any>({
-      url: "/api/v1/DebtPayments/suppliers",
+      url: '/api/v1/DebtPayments/suppliers',
       params,
     });
   },
 
   exportExcel() {
     return request.get<Blob>({
-      url: "/api/v1/DebtPayments/suppliers/export",
-      responseType: "blob",
+      url: '/api/v1/DebtPayments/suppliers/export',
+      responseType: 'blob',
     });
   },
 
-  paySupplierDebt(
-    supplierId: number,
-    amount: number,
-    proofImageUrls?: string[],
-  ) {
+  paySupplierDebt(supplierId: number, amount: number, proofImageUrls?: string[]) {
     return request.post<any>({
       url: `/api/v1/DebtPayments/suppliers/${supplierId}/pay`,
       data: {
@@ -37,12 +33,12 @@ export const DebtApi = {
 
   uploadProofImage(file: File) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     return request.post<{ mediaFileId: number; url: string }>({
-      url: "/api/v1/DebtPayments/proof-image",
+      url: '/api/v1/DebtPayments/proof-image',
       data: formData,
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
   },
@@ -64,7 +60,7 @@ export const DebtApi = {
 
   getMissingProofs(params?: any) {
     return request.get<any>({
-      url: "/api/v1/DebtPayments/missing-proofs",
+      url: '/api/v1/DebtPayments/missing-proofs',
       params,
     });
   },

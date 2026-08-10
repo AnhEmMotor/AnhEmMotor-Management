@@ -6,13 +6,7 @@
     align-center
     @close="handleClose"
   >
-    <ElForm
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-position="top"
-      class="mt-2"
-    >
+    <ElForm ref="formRef" :model="form" :rules="rules" label-position="top" class="mt-2">
       <ElFormItem label="Mật khẩu mới" prop="newPassword">
         <ElInput
           v-model="form.newPassword"
@@ -32,16 +26,14 @@
     </ElForm>
     <template #footer>
       <ElButton @click="handleClose">Hủy</ElButton>
-      <ElButton type="primary" @click="handleSubmit" :loading="submitting"
-        >Lưu thay đổi</ElButton
-      >
+      <ElButton type="primary" @click="handleSubmit" :loading="submitting">Lưu thay đổi</ElButton>
     </template>
   </ElDialog>
 </template>
 
 <script setup lang="ts">
-import type { FormInstance, FormRules } from "element-plus";
-import { fetchChangeUserPassword } from "@/api/auth";
+import type { FormInstance, FormRules } from 'element-plus';
+import { fetchChangeUserPassword } from '@/api/auth';
 
 interface Props {
   modelValue: boolean;
@@ -49,8 +41,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", value: boolean): void;
-  (e: "success"): void;
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'success'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -64,20 +56,20 @@ const formRef = ref<FormInstance>();
 const submitting = ref(false);
 
 const form = reactive({
-  newPassword: "",
-  confirmPassword: "",
+  newPassword: '',
+  confirmPassword: '',
 });
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
+  set: (value) => emit('update:modelValue', value),
 });
 
 const validateConfirmPassword = (rule: any, value: any, callback: any) => {
-  if (value === "") {
-    callback(new Error("Vui lòng xác nhận mật khẩu mới"));
+  if (value === '') {
+    callback(new Error('Vui lòng xác nhận mật khẩu mới'));
   } else if (value !== form.newPassword) {
-    callback(new Error("Mật khẩu xác nhận không khớp!"));
+    callback(new Error('Mật khẩu xác nhận không khớp!'));
   } else {
     callback();
   }
@@ -85,24 +77,22 @@ const validateConfirmPassword = (rule: any, value: any, callback: any) => {
 
 const rules = reactive<FormRules>({
   newPassword: [
-    { required: true, message: "Vui lòng nhập mật khẩu mới", trigger: "blur" },
+    { required: true, message: 'Vui lòng nhập mật khẩu mới', trigger: 'blur' },
     {
       min: 6,
       max: 32,
-      message: "Độ dài mật khẩu từ 6 đến 32 ký tự",
-      trigger: "blur",
+      message: 'Độ dài mật khẩu từ 6 đến 32 ký tự',
+      trigger: 'blur',
     },
   ],
-  confirmPassword: [
-    { required: true, validator: validateConfirmPassword, trigger: "blur" },
-  ],
+  confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
 });
 
 const handleClose = () => {
   visible.value = false;
   formRef.value?.resetFields();
-  form.newPassword = "";
-  form.confirmPassword = "";
+  form.newPassword = '';
+  form.confirmPassword = '';
 };
 
 const handleSubmit = async () => {
@@ -113,11 +103,11 @@ const handleSubmit = async () => {
     submitting.value = true;
 
     await fetchChangeUserPassword(props.userData.id, form.newPassword);
-    ElMessage.success("Đổi mật khẩu tài khoản người dùng thành công!");
-    emit("success");
+    ElMessage.success('Đổi mật khẩu tài khoản người dùng thành công!');
+    emit('success');
     handleClose();
   } catch (error: any) {
-    console.error("Failed to change password:", error);
+    console.error('Failed to change password:', error);
   } finally {
     submitting.value = false;
   }

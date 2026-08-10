@@ -7,10 +7,7 @@
       icon="ri:file-contract-line"
     >
       <template #actions>
-        <el-button
-          @click="handlePrint"
-          v-auth="Permissions.Admin.ContractManagement.Edit"
-        >
+        <el-button @click="handlePrint" v-auth="Permissions.Admin.ContractManagement.Edit">
           <el-icon><Printer /></el-icon>&nbsp;In Hợp Đồng
         </el-button>
         <el-button
@@ -74,14 +71,10 @@
 
     <!-- Progress Pipeline -->
     <el-card shadow="never" class="mb-4 pipeline-card">
-      <div class="text-sm text-gray-500 mb-4 font-medium">
-        Trạng thái vòng đời hợp đồng
-      </div>
+      <div class="text-sm text-gray-500 mb-4 font-medium">Trạng thái vòng đời hợp đồng</div>
 
       <div class="relative flex w-full">
-        <div
-          class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0"
-        ></div>
+        <div class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-gray-200 z-0"></div>
         <div
           class="absolute top-4 left-[12.5%] h-0.5 bg-report-red z-0 transition-all duration-300"
           :style="{ width: `${Math.min(Math.max(activeStep, 0), 2) * 37.5}%` }"
@@ -100,9 +93,7 @@
             class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 bg-white transition-colors duration-300"
             :class="[
               activeStep > index ? 'border-report-red text-report-red' : '',
-              activeStep === index
-                ? 'border-report-red bg-report-red text-white'
-                : '',
+              activeStep === index ? 'border-report-red bg-report-red text-white' : '',
               activeStep < index ? 'border-gray-300 text-gray-400' : '',
             ]"
           >
@@ -111,11 +102,7 @@
           </div>
           <div
             class="mt-2 text-center text-sm px-1 w-full wrap-break-word"
-            :class="
-              activeStep >= index
-                ? 'text-gray-900 font-medium'
-                : 'text-gray-400'
-            "
+            :class="activeStep >= index ? 'text-gray-900 font-medium' : 'text-gray-400'"
           >
             {{ step.label }}
           </div>
@@ -194,14 +181,11 @@
             :class="{ 'highlight-upload': isHighlightUpload }"
           >
             <div class="flex items-center gap-2 mb-2">
-              <el-icon class="text-report-red text-lg"
-                ><UploadFilled
-              /></el-icon>
+              <el-icon class="text-report-red text-lg"><UploadFilled /></el-icon>
               <h4 class="font-bold m-0">Bản quét Chứng từ Thực tế</h4>
             </div>
             <p class="text-xs text-gray-500 mb-2">
-              Tải lên bản gốc có chữ ký/dấu vân tay để xác nhận hợp đồng có hiệu
-              lực (Signed).
+              Tải lên bản gốc có chữ ký/dấu vân tay để xác nhận hợp đồng có hiệu lực (Signed).
             </p>
             <el-upload
               class="upload-demo"
@@ -210,21 +194,13 @@
               :disabled="true"
             >
               <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-              <div class="el-upload__text">
-                Kéo thả file hoặc <em>Bấm vào đây</em> để tải lên
-              </div>
+              <div class="el-upload__text">Kéo thả file hoặc <em>Bấm vào đây</em> để tải lên</div>
               <template #tip>
-                <div class="el-upload__tip">
-                  Chỉ hỗ trợ file PDF/JPG/PNG (Tối đa 10MB)
-                </div>
+                <div class="el-upload__tip">Chỉ hỗ trợ file PDF/JPG/PNG (Tối đa 10MB)</div>
               </template>
             </el-upload>
-            <div
-              v-if="contractData.scannedFileUrl"
-              class="mt-2 text-green-600 text-sm"
-            >
-              <i class="el-icon-document-checked"></i> Đã tải lên file hợp đồng
-              có chữ ký.
+            <div v-if="contractData.scannedFileUrl" class="mt-2 text-green-600 text-sm">
+              <i class="el-icon-document-checked"></i> Đã tải lên file hợp đồng có chữ ký.
             </div>
           </div>
         </el-card>
@@ -237,47 +213,30 @@
           class="preview-card reporting-card"
           body-style="padding: 0; background-color: #f3f4f6; height: 650px;"
         >
-          <div
-            class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center"
-          >
-            <span
-              class="text-sm font-bold text-gray-600 flex items-center gap-2"
-            >
+          <div class="preview-toolbar p-2 bg-gray-200 border-b flex justify-between items-center">
+            <span class="text-sm font-bold text-gray-600 flex items-center gap-2">
               <el-icon class="text-report-red"><Document /></el-icon>
               Trình Xem Trước Bản In (A4)
             </span>
-            <el-tag size="small" type="info">{{
-              contractData.contractNumber
-            }}</el-tag>
+            <el-tag size="small" type="info">{{ contractData.contractNumber }}</el-tag>
           </div>
 
-          <div
-            class="a4-preview-container p-6"
-            style="height: calc(100% - 40px); overflow-y: auto"
-          >
+          <div class="a4-preview-container p-6" style="height: calc(100% - 40px); overflow-y: auto">
             <div
               class="a4-paper bg-white shadow-lg p-8 mx-auto"
               style="width: 210mm; max-width: 100%; min-height: 297mm"
             >
-              <h2 class="text-center font-bold text-xl mb-4">
-                HỢP ĐỒNG MUA BÁN XE MÁY
-              </h2>
-              <p class="text-right italic mb-6">
-                Số: {{ contractData.contractNumber }}
-              </p>
+              <h2 class="text-center font-bold text-xl mb-4">HỢP ĐỒNG MUA BÁN XE MÁY</h2>
+              <p class="text-right italic mb-6">Số: {{ contractData.contractNumber }}</p>
 
               <div class="section mb-4">
                 <h3 class="font-bold mb-2">BÊN BÁN (BÊN A):</h3>
-                <p>
-                  <strong>Tên cửa hàng:</strong> {{ contractData.showroomName }}
-                </p>
+                <p><strong>Tên cửa hàng:</strong> {{ contractData.showroomName }}</p>
                 <p>
                   <strong>Mã số thuế:</strong>
                   {{ contractData.showroomTaxCode }}
                 </p>
-                <p>
-                  <strong>Địa chỉ:</strong> {{ contractData.showroomAddress }}
-                </p>
+                <p><strong>Địa chỉ:</strong> {{ contractData.showroomAddress }}</p>
                 <p>
                   <strong>Đại diện pháp luật:</strong>
                   {{ contractData.showroomRepresentative }}
@@ -295,15 +254,11 @@
                   <strong>Địa chỉ thường trú:</strong>
                   {{ contractData.customerAddress }}
                 </p>
-                <p>
-                  <strong>Điện thoại:</strong> {{ contractData.customerPhone }}
-                </p>
+                <p><strong>Điện thoại:</strong> {{ contractData.customerPhone }}</p>
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 1: THÔNG TIN PHƯƠNG TIỆN GIAO DỊCH
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 1: THÔNG TIN PHƯƠNG TIỆN GIAO DỊCH</h3>
                 <table class="w-full border-collapse border mb-2">
                   <tr>
                     <td class="border p-1">
@@ -335,9 +290,7 @@
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 2: ĐIỀU KHOẢN TÀI CHÍNH & THANH TOÁN
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 2: ĐIỀU KHOẢN TÀI CHÍNH & THANH TOÁN</h3>
                 <p>
                   <strong>Số tiền đặt cọc:</strong>
                   {{ formatCurrency(contractData.depositAmount) }}
@@ -353,9 +306,7 @@
               </div>
 
               <div class="section mb-4">
-                <h3 class="font-bold mb-2">
-                  ĐIỀU 3: BẢO HÀNH & ĐIỀU KHOẢN ĐẶC BIỆT
-                </h3>
+                <h3 class="font-bold mb-2">ĐIỀU 3: BẢO HÀNH & ĐIỀU KHOẢN ĐẶC BIỆT</h3>
                 <p>
                   <strong>Thời gian bảo hành:</strong>
                   {{ contractData.warrantyPeriod }}
@@ -389,9 +340,9 @@
 </template>
 
 <script setup lang="ts">
-import { Permissions } from "@/common/constants/permissions";
-import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { Permissions } from '@/common/constants/permissions';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import {
   UploadFilled,
   Document,
@@ -400,46 +351,46 @@ import {
   Printer,
   CircleCheck,
   Check,
-} from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { SalesContractApi } from "@/infrastructure/api/sales-contract.api";
-import type { SalesContractStatus } from "@/domain/sales/contract.types";
-import ReportPageHeader from "@/views/analytics-reporting/components/ReportPageHeader.vue";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
+} from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { SalesContractApi } from '@/infrastructure/api/sales-contract.api';
+import type { SalesContractStatus } from '@/domain/sales/contract.types';
+import ReportPageHeader from '@/views/analytics-reporting/components/ReportPageHeader.vue';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
 
 const route = useRoute();
 
 const contractData = ref({
-  id: "" as string,
+  id: '' as string,
   orderId: undefined as number | undefined,
-  contractNumber: "" as string,
-  status: "Draft" as SalesContractStatus,
+  contractNumber: '' as string,
+  status: 'Draft' as SalesContractStatus,
 
-  showroomName: "",
-  showroomTaxCode: "",
-  showroomAddress: "",
-  showroomRepresentative: "",
+  showroomName: '',
+  showroomTaxCode: '',
+  showroomAddress: '',
+  showroomRepresentative: '',
 
-  customerFullName: "",
-  customerCCCD: "",
-  customerAddress: "",
-  customerPhone: "",
+  customerFullName: '',
+  customerCCCD: '',
+  customerAddress: '',
+  customerPhone: '',
 
-  vehicleModel: "",
-  vehicleVersion: "",
-  vehicleColor: "",
-  frameNumber: "",
-  engineNumber: "",
+  vehicleModel: '',
+  vehicleVersion: '',
+  vehicleColor: '',
+  frameNumber: '',
+  engineNumber: '',
   actualSalePrice: 0,
 
   depositAmount: 0,
   remainingAmount: 0,
-  finalPaymentDeadline: "",
+  finalPaymentDeadline: '',
 
-  warrantyPeriod: "",
-  warrantyScope: "",
-  specialTerms: "",
-  note: "",
+  warrantyPeriod: '',
+  warrantyScope: '',
+  specialTerms: '',
+  note: '',
 
   scannedFileUrl: null as string | null,
 });
@@ -448,34 +399,34 @@ const uploadZoneRef = ref<HTMLElement | null>(null);
 const isHighlightUpload = ref(false);
 
 const activeStep = computed(() => {
-  if (contractData.value.status === "Fulfilled") return 2;
-  if (contractData.value.status === "Signed") return 1;
+  if (contractData.value.status === 'Fulfilled') return 2;
+  if (contractData.value.status === 'Signed') return 1;
   return 0;
 });
 
-const isContractSigned = computed(() => contractData.value.status !== "Draft");
+const isContractSigned = computed(() => contractData.value.status !== 'Draft');
 
 const _contractStatusType = computed(() => {
   switch (contractData.value.status) {
-    case "Draft":
-      return "info";
-    case "Signed":
-      return "success";
-    case "Fulfilled":
-      return "primary";
+    case 'Draft':
+      return 'info';
+    case 'Signed':
+      return 'success';
+    case 'Fulfilled':
+      return 'primary';
     default:
-      return "info";
+      return 'info';
   }
 });
 
 const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
-    case "Draft":
-      return "Nháp";
-    case "Signed":
-      return "Đã ký";
-    case "Fulfilled":
-      return "Hoàn tất";
+    case 'Draft':
+      return 'Nháp';
+    case 'Signed':
+      return 'Đã ký';
+    case 'Fulfilled':
+      return 'Hoàn tất';
     default:
       return status;
   }
@@ -484,7 +435,7 @@ const getStatusLabel = (status: SalesContractStatus): string => {
 const loadData = async () => {
   const contractId = route.params?.id as string | undefined;
   if (!contractId) {
-    ElMessage.error("Thiếu ID hợp đồng.");
+    ElMessage.error('Thiếu ID hợp đồng.');
     return;
   }
 
@@ -494,30 +445,30 @@ const loadData = async () => {
     contractData.value.orderId = c.orderId;
     contractData.value.contractNumber = c.contractNumber;
     contractData.value.status = c.status as SalesContractStatus;
-    contractData.value.customerFullName = c.customerFullName || "";
-    contractData.value.customerCCCD = c.customerCCCD || "";
-    contractData.value.customerAddress = c.customerAddress || "";
-    contractData.value.customerPhone = c.customerPhone || "";
-    contractData.value.showroomName = c.showroomName || "";
-    contractData.value.showroomTaxCode = c.showroomTaxCode || "";
-    contractData.value.showroomAddress = c.showroomAddress || "";
-    contractData.value.showroomRepresentative = c.showroomRepresentative || "";
-    contractData.value.vehicleModel = c.vehicleModel || "";
-    contractData.value.vehicleVersion = c.vehicleVersion || "";
-    contractData.value.vehicleColor = c.vehicleColor || "";
-    contractData.value.frameNumber = c.frameNumber || "";
-    contractData.value.engineNumber = c.engineNumber || "";
+    contractData.value.customerFullName = c.customerFullName || '';
+    contractData.value.customerCCCD = c.customerCCCD || '';
+    contractData.value.customerAddress = c.customerAddress || '';
+    contractData.value.customerPhone = c.customerPhone || '';
+    contractData.value.showroomName = c.showroomName || '';
+    contractData.value.showroomTaxCode = c.showroomTaxCode || '';
+    contractData.value.showroomAddress = c.showroomAddress || '';
+    contractData.value.showroomRepresentative = c.showroomRepresentative || '';
+    contractData.value.vehicleModel = c.vehicleModel || '';
+    contractData.value.vehicleVersion = c.vehicleVersion || '';
+    contractData.value.vehicleColor = c.vehicleColor || '';
+    contractData.value.frameNumber = c.frameNumber || '';
+    contractData.value.engineNumber = c.engineNumber || '';
     contractData.value.actualSalePrice = c.actualSalePrice;
     contractData.value.depositAmount = c.depositAmount;
     contractData.value.remainingAmount = c.remainingAmount;
-    contractData.value.finalPaymentDeadline = c.finalPaymentDeadline || "";
-    contractData.value.warrantyPeriod = c.warrantyPeriod || "";
-    contractData.value.warrantyScope = c.warrantyScope || "";
-    contractData.value.specialTerms = c.specialTerms || "";
-    contractData.value.note = c.note || "";
+    contractData.value.finalPaymentDeadline = c.finalPaymentDeadline || '';
+    contractData.value.warrantyPeriod = c.warrantyPeriod || '';
+    contractData.value.warrantyScope = c.warrantyScope || '';
+    contractData.value.specialTerms = c.specialTerms || '';
+    contractData.value.note = c.note || '';
     contractData.value.scannedFileUrl = c.scannedFileUrl || null;
   } catch (_e) {
-    ElMessage.error("Không tải được dữ liệu hợp đồng.");
+    ElMessage.error('Không tải được dữ liệu hợp đồng.');
   }
 };
 
@@ -525,11 +476,11 @@ onMounted(loadData);
 
 const handlePrint = () => {
   window.print();
-  if (contractData.value.status === "Draft") {
+  if (contractData.value.status === 'Draft') {
     setTimeout(() => {
       uploadZoneRef.value?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
+        behavior: 'smooth',
+        block: 'center',
       });
       isHighlightUpload.value = true;
       setTimeout(() => {
@@ -547,65 +498,62 @@ const handleSaveDraft = async () => {
       warrantyScope: contractData.value.warrantyScope,
       note: contractData.value.note,
     });
-    ElMessage.success("Đã lưu bản nháp hợp đồng.");
+    ElMessage.success('Đã lưu bản nháp hợp đồng.');
   } catch (_e) {
-    ElMessage.error("Lưu bản nháp thất bại.");
+    ElMessage.error('Lưu bản nháp thất bại.');
   }
 };
 
 const handleCreateAddendum = () => {
-  ElMessage.info("Chức năng tạo Phụ lục hợp đồng đang được phát triển.");
+  ElMessage.info('Chức năng tạo Phụ lục hợp đồng đang được phát triển.');
 };
 
 const customUploadRequest = async (options: any) => {
   try {
-    const res = await SalesContractApi.uploadScannedFile(
-      contractData.value.id,
-      options.file,
-    );
+    const res = await SalesContractApi.uploadScannedFile(contractData.value.id, options.file);
     contractData.value.scannedFileUrl = res.scannedFileUrl;
-    contractData.value.status = "Signed";
+    contractData.value.status = 'Signed';
     ElMessage.success(
-      "Đã tải lên bản gốc thành công. Hợp đồng chuyển sang trạng thái Signed. Đã khóa chỉnh sửa.",
+      'Đã tải lên bản gốc thành công. Hợp đồng chuyển sang trạng thái Signed. Đã khóa chỉnh sửa.'
     );
     options.onSuccess();
   } catch (_e) {
-    ElMessage.error("Upload file thất bại.");
+    ElMessage.error('Upload file thất bại.');
     options.onError();
   }
 };
 
 const handleHandover = async () => {
-  if (contractData.value.status !== "Signed") {
+  if (contractData.value.status !== 'Signed') {
     ElMessageBox.alert(
-      "Hợp đồng chưa được ký kết (thiếu bản scan). Không thể xuất bãi và bàn giao xe!",
-      "Cảnh báo Rào Chắn",
-      { confirmButtonText: "Đóng", type: "error" },
+      'Hợp đồng chưa được ký kết (thiếu bản scan). Không thể xuất bãi và bàn giao xe!',
+      'Cảnh báo Rào Chắn',
+      { confirmButtonText: 'Đóng', type: 'error' }
     );
     return;
   }
 
   try {
     await SalesContractApi.updateStatus(contractData.value.id, {
-      status: "Fulfilled",
+      status: 'Fulfilled',
     });
-    contractData.value.status = "Fulfilled";
-    ElMessage.success("Đã hoàn tất bàn giao xe. Hợp đồng đóng (Fulfilled).");
+    contractData.value.status = 'Fulfilled';
+    ElMessage.success('Đã hoàn tất bàn giao xe. Hợp đồng đóng (Fulfilled).');
   } catch (_e) {
-    ElMessage.error("Cập nhật trạng thái bàn giao thất bại.");
+    ElMessage.error('Cập nhật trạng thái bàn giao thất bại.');
   }
 };
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 };
 
 const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("vi-VN");
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('vi-VN');
 };
 </script>
 
@@ -718,7 +666,7 @@ const formatDate = (dateString: string) => {
 }
 
 .a4-paper {
-  font-family: "Times New Roman", Times, serif;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 14px;
   line-height: 1.5;
   color: #000;

@@ -51,15 +51,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import CardList from "./card-list.vue";
-import ActiveUser from "./active-user.vue";
-import SalesOverview from "./sales-overview.vue";
-import Dynamic from "./dynamic-stats.vue";
-import TodoList from "./todo-list.vue";
+import { ref } from 'vue';
+import CardList from './card-list.vue';
+import ActiveUser from './active-user.vue';
+import SalesOverview from './sales-overview.vue';
+import Dynamic from './dynamic-stats.vue';
+import TodoList from './todo-list.vue';
 
-defineOptions({ name: "AdminDashboard" });
+defineOptions({ name: 'AdminDashboard' });
 
-const timeFilter = ref("month");
+const timeFilter = ref('month');
 const dateRange = ref<[Date, Date] | null>(null);
 </script>

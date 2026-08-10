@@ -1,17 +1,17 @@
-import request from "@/common/utils/http";
-import type { Technology } from "@/domain/product/technology.types";
+import request from '@/common/utils/http';
+import type { Technology } from '@/domain/product/technology.types';
 
 export const TechnologyApi = {
   getList: (params?: { category_id?: number; brand_id?: number }) => {
     return request.get<Technology[]>({
-      url: "/api/v1/Technologies",
+      url: '/api/v1/Technologies',
       params,
     });
   },
 
   getCategories: () => {
     return request.get<any[]>({
-      url: "/api/v1/Technologies/categories",
+      url: '/api/v1/Technologies/categories',
     });
   },
 
@@ -24,14 +24,14 @@ export const TechnologyApi = {
     defaultImageUrl?: string;
   }) => {
     return request.post<Technology>({
-      url: "/api/v1/Technologies",
+      url: '/api/v1/Technologies',
       data,
     });
   },
 
   createCategory: (data: { name: string }) => {
     return request.post<any>({
-      url: "/api/v1/Technologies/categories",
+      url: '/api/v1/Technologies/categories',
       data,
     });
   },
@@ -46,7 +46,7 @@ export const TechnologyApi = {
       defaultTitle?: string;
       defaultDescription?: string;
       defaultImageUrl?: string;
-    },
+    }
   ) => {
     return request.put<Technology>({
       url: `/api/v1/Technologies/${id}`,

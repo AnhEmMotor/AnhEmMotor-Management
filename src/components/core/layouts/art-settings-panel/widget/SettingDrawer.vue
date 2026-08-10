@@ -24,9 +24,9 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", value: boolean): void;
-  (e: "open"): void;
-  (e: "close"): void;
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'open'): void;
+  (e: 'close'): void;
 }
 
 const props = defineProps<Props>();
@@ -34,15 +34,15 @@ const emit = defineEmits<Emits>();
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value: boolean) => emit("update:modelValue", value),
+  set: (value: boolean) => emit('update:modelValue', value),
 });
 
 const handleOpen = () => {
-  emit("open");
+  emit('open');
 };
 
 const handleDrawerClose = () => {
-  emit("close");
+  emit('close');
 };
 
 const handleClose = () => {

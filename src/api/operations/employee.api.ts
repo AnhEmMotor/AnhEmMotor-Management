@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface EmployeeResponse {
   id: number;
@@ -30,7 +30,7 @@ export interface EmployeeUpsertRequest {
 export const EmployeeApi = {
   getList() {
     return request.get<EmployeeResponse[]>({
-      url: "/api/v1/hr/employees",
+      url: '/api/v1/hr/employees',
     });
   },
   getById(id: number) {
@@ -40,7 +40,7 @@ export const EmployeeApi = {
   },
   create(data: EmployeeUpsertRequest) {
     return request.post<number>({
-      url: "/api/v1/hr/employees",
+      url: '/api/v1/hr/employees',
       data,
     });
   },

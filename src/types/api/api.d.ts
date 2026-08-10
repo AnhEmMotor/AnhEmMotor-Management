@@ -8,7 +8,7 @@ declare namespace Api {
       total: number;
     }
 
-    type CommonSearchParams = Pick<PaginationParams, "current" | "size">;
+    type CommonSearchParams = Pick<PaginationParams, 'current' | 'size'>;
 
     interface PaginatedResponse<T = any> {
       records: T[];
@@ -17,7 +17,7 @@ declare namespace Api {
       total: number;
     }
 
-    type EnableStatus = "1" | "2";
+    type EnableStatus = '1' | '2';
   }
 
   namespace Auth {
@@ -74,10 +74,7 @@ declare namespace Api {
     }
 
     type UserSearchParams = Partial<
-      Pick<
-        UserListItem,
-        "id" | "userName" | "userGender" | "userPhone" | "userEmail" | "status"
-      > &
+      Pick<UserListItem, 'id' | 'userName' | 'userGender' | 'userPhone' | 'userEmail' | 'status'> &
         Api.Common.CommonSearchParams
     >;
 
@@ -93,10 +90,7 @@ declare namespace Api {
     }
 
     type RoleSearchParams = Partial<
-      Pick<
-        RoleListItem,
-        "roleId" | "roleName" | "roleCode" | "description" | "enabled"
-      > &
+      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
         Api.Common.CommonSearchParams & {
           startTime: string | null;
           endTime: string | null;

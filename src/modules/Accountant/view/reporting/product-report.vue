@@ -57,21 +57,10 @@
 
     <ElCard class="reporting-card mt-4">
       <template #header>Hiệu suất sản phẩm</template>
-      <ElTable
-        :data="paginatedTableData"
-        class="reporting-table"
-        empty-text="Chưa có dữ liệu"
-      >
+      <ElTable :data="paginatedTableData" class="reporting-table" empty-text="Chưa có dữ liệu">
         <ElTableColumn prop="productName" label="Sản phẩm" min-width="220" />
-        <ElTableColumn
-          prop="sellPrice"
-          label="Giá bán"
-          min-width="140"
-          align="right"
-        >
-          <template #default="{ row }">{{
-            formatCurrency(row.sellPrice)
-          }}</template>
+        <ElTableColumn prop="sellPrice" label="Giá bán" min-width="140" align="right">
+          <template #default="{ row }">{{ formatCurrency(row.sellPrice) }}</template>
         </ElTableColumn>
         <ElTableColumn
           prop="soldCount30Days"
@@ -91,29 +80,15 @@
           align="right"
         >
           <template #default="{ row }">
-            <span
-              :class="
-                row.marginPercentage >= 0 ? 'text-green-600' : 'text-red-600'
-              "
-            >
+            <span :class="row.marginPercentage >= 0 ? 'text-green-600' : 'text-red-600'">
               {{ row.marginPercentage.toFixed(1) }}%
             </span>
           </template>
         </ElTableColumn>
-        <ElTableColumn
-          prop="status"
-          label="Trạng thái"
-          min-width="130"
-          align="center"
-        >
+        <ElTableColumn prop="status" label="Trạng thái" min-width="130" align="center">
           <template #default="{ row }">
-            <ElTag
-              :type="productStatusType(row.status)"
-              size="small"
-              effect="light"
-              round
-            >
-              {{ row.status || "-" }}
+            <ElTag :type="productStatusType(row.status)" size="small" effect="light" round>
+              {{ row.status || '-' }}
             </ElTag>
           </template>
         </ElTableColumn>
@@ -124,13 +99,7 @@
                 v-for="(value, index) in row.trend"
                 :key="index"
                 class="inline-block w-2 rounded-sm"
-                :class="
-                  value > 0
-                    ? 'bg-green-500'
-                    : value < 0
-                      ? 'bg-red-500'
-                      : 'bg-gray-300'
-                "
+                :class="value > 0 ? 'bg-green-500' : value < 0 ? 'bg-red-500' : 'bg-gray-300'"
                 :style="{ height: `${Math.max(4, Math.abs(value) * 3)}px` }"
               ></span>
             </div>
@@ -152,32 +121,29 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed, nextTick } from "vue";
-import * as echarts from "echarts";
-import { ElPagination } from "element-plus";
-import ArtStatsCard from "@/components/core/cards/art-stats-card/index.vue";
-import ArtSvgIcon from "@/components/core/base/art-svg-icon/index.vue";
-import { exportReportWorkbook } from "@/utils/report-excel";
-import { statisticsApi } from "@/api/operations";
-import ReportPageHeader from "./ReportPageHeader.vue";
-import type * as Statistical from "@/types/api/statistical";
+import { onMounted, onUnmounted, ref, computed, nextTick } from 'vue';
+import * as echarts from 'echarts';
+import { ElPagination } from 'element-plus';
+import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
+import { exportReportWorkbook } from '@/utils/report-excel';
+import { statisticsApi } from '@/api/operations';
+import ReportPageHeader from './ReportPageHeader.vue';
+import type * as Statistical from '@/types/api/statistical';
 
 const topRevenueChartRef = ref<HTMLElement | null>(null);
 const topProfitChartRef = ref<HTMLElement | null>(null);
 let topRevenueChart: echarts.ECharts | null = null;
 let topProfitChart: echarts.ECharts | null = null;
-const chartTextColor = "#4b5563";
-const chartAxisLineColor = "#e5e7eb";
-const chartGridLineColor = "#f3f4f6";
+const chartTextColor = '#4b5563';
+const chartAxisLineColor = '#e5e7eb';
+const chartGridLineColor = '#f3f4f6';
 
 const currentPage = ref(1);
 const pageSize = ref(10);
 const paginatedTableData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
-  return data.value.productPerformanceTable.slice(
-    start,
-    start + pageSize.value,
-  );
+  return data.value.productPerformanceTable.slice(start, start + pageSize.value);
 });
 
 const props = defineProps<{
@@ -187,9 +153,9 @@ const props = defineProps<{
 
 const data = ref<Statistical.AdminProductReportResponse>({
   highlights: {
-    bestSellerName: "",
+    bestSellerName: '',
     bestSellerSold: 0,
-    deadStockName: "",
+    deadStockName: '',
     deadStockValue: 0,
     avgTurnover: 0,
     totalSKUs: 0,
@@ -199,13 +165,13 @@ const data = ref<Statistical.AdminProductReportResponse>({
   productPerformanceTable: [],
 });
 
-import { watch } from "vue";
+import { watch } from 'vue';
 watch(
   () => [props.startDate, props.endDate],
   () => {
     // Backend getProductReport currently doesn't accept date params
     // load();
-  },
+  }
 );
 
 async function load() {
@@ -213,30 +179,29 @@ async function load() {
     data.value = await statisticsApi.getProductReport();
     renderCharts();
   } catch (e) {
-    console.error("Failed to load product report:", e);
+    console.error('Failed to load product report:', e);
   }
 }
 
 async function renderCharts() {
   await nextTick();
   if (topRevenueChartRef.value) {
-    if (!topRevenueChart)
-      topRevenueChart = echarts.init(topRevenueChartRef.value);
+    if (!topRevenueChart) topRevenueChart = echarts.init(topRevenueChartRef.value);
     const top = data.value.topRevenueProducts.slice(0, 8);
     topRevenueChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
       tooltip: {
-        trigger: "axis",
-        axisPointer: { type: "shadow" },
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
         formatter: (params: any) => {
           const p = Array.isArray(params) ? params[0] : params;
           return `${p.name}<br/>${p.marker} ${formatShortCurrency(p.value)}`;
         },
       },
-      grid: { left: "3%", right: "6%", bottom: "3%", containLabel: true },
+      grid: { left: '3%', right: '6%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: {
           color: chartTextColor,
           fontWeight: 500,
@@ -245,16 +210,16 @@ async function renderCharts() {
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
-        type: "category",
+        type: 'category',
         data: top.map((r) => r.productName).reverse(),
-        axisLabel: { color: chartTextColor, width: 180, overflow: "truncate" },
+        axisLabel: { color: chartTextColor, width: 180, overflow: 'truncate' },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: top.map((r) => r.revenue).reverse(),
-          itemStyle: { color: "#e84a4a", borderRadius: [0, 4, 4, 0] },
+          itemStyle: { color: '#e84a4a', borderRadius: [0, 4, 4, 0] },
           barMaxWidth: 30,
         },
       ],
@@ -264,19 +229,19 @@ async function renderCharts() {
     if (!topProfitChart) topProfitChart = echarts.init(topProfitChartRef.value);
     const top = data.value.topProfitProducts.slice(0, 8);
     topProfitChart.setOption({
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       textStyle: { color: chartTextColor, fontSize: 12, fontWeight: 500 },
       tooltip: {
-        trigger: "axis",
-        axisPointer: { type: "shadow" },
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
         formatter: (params: any) => {
           const p = Array.isArray(params) ? params[0] : params;
           return `${p.name}<br/>${p.marker} ${formatShortCurrency(p.value)}`;
         },
       },
-      grid: { left: "3%", right: "6%", bottom: "3%", containLabel: true },
+      grid: { left: '3%', right: '6%', bottom: '3%', containLabel: true },
       xAxis: {
-        type: "value",
+        type: 'value',
         axisLabel: {
           color: chartTextColor,
           fontWeight: 500,
@@ -285,16 +250,16 @@ async function renderCharts() {
         splitLine: { lineStyle: { color: chartGridLineColor } },
       },
       yAxis: {
-        type: "category",
+        type: 'category',
         data: top.map((r) => r.productName).reverse(),
-        axisLabel: { color: chartTextColor, width: 180, overflow: "truncate" },
+        axisLabel: { color: chartTextColor, width: 180, overflow: 'truncate' },
         axisLine: { lineStyle: { color: chartAxisLineColor } },
       },
       series: [
         {
-          type: "bar",
+          type: 'bar',
           data: top.map((r) => r.profit).reverse(),
-          itemStyle: { color: "#10b981", borderRadius: [0, 4, 4, 0] },
+          itemStyle: { color: '#10b981', borderRadius: [0, 4, 4, 0] },
           barMaxWidth: 30,
         },
       ],
@@ -303,16 +268,16 @@ async function renderCharts() {
 }
 
 function truncate(text: string | undefined | null, maxLen: number): string {
-  if (!text) return "";
-  return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
+  if (!text) return '';
+  return text.length > maxLen ? text.slice(0, maxLen) + '...' : text;
 }
 
 function exportProductReportExcel() {
   exportReportWorkbook({
-    fileName: "Bao_cao_san_pham",
+    fileName: 'Bao_cao_san_pham',
     sheets: [
       {
-        name: "Tổng quan",
+        name: 'Tổng quan',
         rows: [
           {
             Tong_SKU: data.value.highlights.totalSKUs,
@@ -325,7 +290,7 @@ function exportProductReportExcel() {
         ],
       },
       {
-        name: "Hieu suat san pham",
+        name: 'Hieu suat san pham',
         rows: data.value.productPerformanceTable.map((p: any) => ({
           San_pham: p.productName,
           Gia_ban: p.sellPrice,
@@ -333,7 +298,7 @@ function exportProductReportExcel() {
           Ton_kho: p.stockQuantity,
           Ton_kho_toi_da: p.maxStockQuantity,
           Ty_suat_loi_nhuan: p.marginPercentage,
-          Trang_thai: p.status || "-",
+          Trang_thai: p.status || '-',
         })),
       },
     ],
@@ -341,32 +306,31 @@ function exportProductReportExcel() {
 }
 
 function formatShortLabel(val: number): string {
-  if (Math.abs(val) >= 1_000_000_000)
-    return (val / 1_000_000_000).toFixed(1) + " tỷ";
-  if (Math.abs(val) >= 1_000_000) return (val / 1_000_000).toFixed(0) + " tr";
-  if (Math.abs(val) >= 1_000) return (val / 1_000).toFixed(0) + "k";
+  if (Math.abs(val) >= 1_000_000_000) return (val / 1_000_000_000).toFixed(1) + ' tỷ';
+  if (Math.abs(val) >= 1_000_000) return (val / 1_000_000).toFixed(0) + ' tr';
+  if (Math.abs(val) >= 1_000) return (val / 1_000).toFixed(0) + 'k';
   return val.toString();
 }
 
 function formatShortCurrency(val: number): string {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
     maximumFractionDigits: 0,
   }).format(val);
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   }).format(value);
 }
 function productStatusType(status?: string) {
-  if (status === "Bán chạy") return "success";
-  if (status === "Tồn kho") return "danger";
-  if (status === "Sắp hết") return "warning";
-  return "info";
+  if (status === 'Bán chạy') return 'success';
+  if (status === 'Tồn kho') return 'danger';
+  if (status === 'Sắp hết') return 'warning';
+  return 'info';
 }
 function handleResize() {
   topRevenueChart?.resize();
@@ -374,10 +338,10 @@ function handleResize() {
 }
 onMounted(() => {
   load();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener('resize', handleResize);
   topRevenueChart?.dispose();
   topProfitChart?.dispose();
 });

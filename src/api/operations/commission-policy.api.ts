@@ -1,4 +1,4 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 
 export interface CommissionPolicyResponse {
   id: number;
@@ -18,7 +18,7 @@ export interface CommissionPolicyResponse {
 export const commissionPolicyApi = {
   getAll() {
     return request.get<CommissionPolicyResponse[]>({
-      url: "/api/v1/hr/commission-policies",
+      url: '/api/v1/hr/commission-policies',
     });
   },
   getById(id: number) {
@@ -28,7 +28,7 @@ export const commissionPolicyApi = {
   },
   create(data: Partial<CommissionPolicyResponse>) {
     return request.post<CommissionPolicyResponse>({
-      url: "/api/v1/hr/commission-policies",
+      url: '/api/v1/hr/commission-policies',
       data,
     });
   },

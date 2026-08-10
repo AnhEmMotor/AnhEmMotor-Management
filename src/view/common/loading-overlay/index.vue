@@ -37,8 +37,8 @@ withDefaults(
   }>(),
   {
     visible: false,
-    text: "Đang tải dữ liệu",
-  },
+    text: 'Đang tải dữ liệu',
+  }
 );
 </script>
 
@@ -89,19 +89,14 @@ withDefaults(
 .road-line {
   width: 100%;
   height: 4px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--el-color-primary, #e74c3c),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, var(--el-color-primary, #e74c3c), transparent);
   border-radius: 4px;
   margin-top: 10px;
   position: relative;
   overflow: hidden;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -129,9 +124,7 @@ withDefaults(
   text-transform: uppercase;
   letter-spacing: 1px;
   white-space: nowrap;
-  filter: drop-shadow(
-    0 0 10px rgb(var(--el-color-primary-rgb, 231, 76, 60), 0.5)
-  );
+  filter: drop-shadow(0 0 10px rgb(var(--el-color-primary-rgb, 231, 76, 60), 0.5));
   z-index: 2;
 }
 

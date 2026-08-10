@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="art-table"
-    :class="{ 'is-empty': isEmpty }"
-    :style="containerHeight"
-  >
+  <div class="art-table" :class="{ 'is-empty': isEmpty }" :style="containerHeight">
     <ElTable ref="elTableRef" v-loading="!!loading" v-bind="mergedTableProps">
       <template #default>
         <template v-for="col in columns" :key="col.prop || col.type">
@@ -13,20 +9,14 @@
             </template>
           </ElTableColumn>
 
-          <ElTableColumn
-            v-else-if="col.type === 'expand'"
-            v-bind="cleanColumnProps(col)"
-          >
+          <ElTableColumn v-else-if="col.type === 'expand'" v-bind="cleanColumnProps(col)">
             <template #default="{ row }">
               <component :is="col.formatter ? col.formatter(row) : null" />
             </template>
           </ElTableColumn>
 
           <ElTableColumn v-else v-bind="cleanColumnProps(col)">
-            <template
-              v-if="col.useHeaderSlot && col.prop"
-              #header="headerScope"
-            >
+            <template v-if="col.useHeaderSlot && col.prop" #header="headerScope">
               <slot
                 :name="col.headerSlotName || `${col.prop}-header`"
                 v-bind="{ ...headerScope, prop: col.prop, label: col.label }"
@@ -77,31 +67,23 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  computed,
-  nextTick,
-  watchEffect,
-  getCurrentInstance,
-  useAttrs,
-} from "vue";
-import type { TableProps } from "element-plus";
-import { storeToRefs } from "pinia";
-import { ColumnOption } from "@/types";
-import { useTableStore } from "@/application/store/table";
-import { useCommon } from "@/common/composables/useCommon";
-import { useTableHeight } from "@/common/composables/useTableHeight";
-import { useResizeObserver, useWindowSize } from "@vueuse/core";
+import { ref, computed, nextTick, watchEffect, getCurrentInstance, useAttrs } from 'vue';
+import type { TableProps } from 'element-plus';
+import { storeToRefs } from 'pinia';
+import { ColumnOption } from '@/types';
+import { useTableStore } from '@/application/store/table';
+import { useCommon } from '@/common/composables/useCommon';
+import { useTableHeight } from '@/common/composables/useTableHeight';
+import { useResizeObserver, useWindowSize } from '@vueuse/core';
 
-defineOptions({ name: "ArtTable" });
+defineOptions({ name: 'ArtTable' });
 
 const { width } = useWindowSize();
 const elTableRef = ref<any>(null);
 const paginationRef = ref<HTMLElement>();
 const tableHeaderRef = ref<HTMLElement>();
 const tableStore = useTableStore();
-const { isBorder, isZebra, tableSize, isFullScreen, isHeaderBackground } =
-  storeToRefs(tableStore);
+const { isBorder, isZebra, tableSize, isFullScreen, isHeaderBackground } = storeToRefs(tableStore);
 
 interface PaginationConfig {
   current: number;
@@ -114,7 +96,7 @@ interface PaginationConfig {
 interface PaginationOptions {
   pageSizes?: number[];
 
-  align?: "left" | "center" | "right";
+  align?: 'left' | 'center' | 'right';
 
   layout?: string;
 
@@ -122,7 +104,7 @@ interface PaginationOptions {
 
   hideOnSinglePage?: boolean;
 
-  size?: "small" | "default" | "large";
+  size?: 'small' | 'default' | 'large';
 
   pagerCount?: number;
 }
@@ -150,17 +132,17 @@ const props = withDefaults(defineProps<ArtTableProps>(), {
   stripe: undefined,
   border: undefined,
   size: undefined,
-  emptyHeight: "100%",
-  emptyText: "Không có dữ liệu. Vui lòng thử lại sau!",
+  emptyHeight: '100%',
+  emptyText: 'Không có dữ liệu. Vui lòng thử lại sau!',
   showTableHeader: true,
 });
 const instance = getCurrentInstance();
 const attrs = useAttrs();
 
 const LAYOUT = {
-  MOBILE: "prev, pager, next, sizes, jumper, total",
-  IPAD: "prev, pager, next, jumper, total",
-  DESKTOP: "total, prev, pager, next, sizes, jumper",
+  MOBILE: 'prev, pager, next, sizes, jumper, total',
+  IPAD: 'prev, pager, next, jumper, total',
+  DESKTOP: 'total, prev, pager, next, sizes, jumper',
 };
 
 const layout = computed(() => {
@@ -175,11 +157,11 @@ const layout = computed(() => {
 
 const DEFAULT_PAGINATION_OPTIONS: PaginationOptions = {
   pageSizes: [10, 20, 30, 50, 100],
-  align: "center",
+  align: 'center',
   background: true,
   layout: layout.value,
   hideOnSinglePage: false,
-  size: "default",
+  size: 'default',
   pagerCount: width.value > 1200 ? 7 : 5,
 };
 
@@ -227,28 +209,25 @@ const { containerHeight } = useTableHeight({
 });
 
 const height = computed(() => {
-  if (isFullScreen.value) return "100%";
+  if (isFullScreen.value) return '100%';
 
   if (isEmpty.value && !props.loading) return props.emptyHeight;
 
   if (props.height) return props.height;
 
-  return "100%";
+  return '100%';
 });
 
 const headerCellStyle = computed(() => ({
   background: isHeaderBackground.value
-    ? "var(--el-fill-color-lighter)"
-    : "var(--default-box-color)",
+    ? 'var(--el-fill-color-lighter)'
+    : 'var(--default-box-color)',
   ...(props.headerCellStyle || {}),
 }));
 
 const hasExplicitTableProp = (propName: string): boolean => {
   const rawProps = (instance?.vnode.props || {}) as Record<string, unknown>;
-  const kebabName = propName.replace(
-    /[A-Z]/g,
-    (match) => `-${match.toLowerCase()}`,
-  );
+  const kebabName = propName.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
   return propName in rawProps || kebabName in rawProps;
 };
 
@@ -261,7 +240,7 @@ const mergedTableProps = computed(() => ({
   size: size.value,
   headerCellStyle: headerCellStyle.value,
 
-  selectOnIndeterminate: hasExplicitTableProp("selectOnIndeterminate")
+  selectOnIndeterminate: hasExplicitTableProp('selectOnIndeterminate')
     ? props.selectOnIndeterminate
     : undefined,
 }));
@@ -283,11 +262,11 @@ const cleanColumnProps = (col: ColumnOption) => {
 };
 
 const handleSizeChange = (val: number) => {
-  emit("pagination:size-change", val);
+  emit('pagination:size-change', val);
 };
 
 const handleCurrentChange = (val: number) => {
-  emit("pagination:current-change", val);
+  emit('pagination:current-change', val);
   scrollToTop();
 };
 
@@ -307,8 +286,8 @@ const getGlobalIndex = (index: number) => {
 };
 
 const emit = defineEmits<{
-  (e: "pagination:size-change", val: number): void;
-  (e: "pagination:current-change", val: number): void;
+  (e: 'pagination:size-change', val: number): void;
+  (e: 'pagination:current-change', val: number): void;
 }>();
 
 const findTableHeader = () => {
@@ -317,7 +296,7 @@ const findTableHeader = () => {
     return;
   }
 
-  const tableHeader = document.getElementById("art-table-header");
+  const tableHeader = document.getElementById('art-table-header');
   if (tableHeader) {
     tableHeaderRef.value = tableHeader;
   } else {
@@ -338,7 +317,7 @@ watchEffect(
       tableHeaderRef.value = undefined;
     }
   },
-  { flush: "post" },
+  { flush: 'post' }
 );
 
 defineExpose({
@@ -348,5 +327,5 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@use "./style";
+@use './style';
 </style>

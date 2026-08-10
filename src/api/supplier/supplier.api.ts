@@ -1,16 +1,16 @@
-import request from "@/common/utils/http";
+import request from '@/common/utils/http';
 import type {
   Supplier,
   SupplierList,
   PartnerType,
   SupplierStatistics,
-} from "@/domain/supplier/supplier.types";
+} from '@/domain/supplier/supplier.types';
 
 export const SupplierApi = {
   getList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<SupplierList>({
-      url: "/api/v1/Supplier",
+      url: '/api/v1/Supplier',
       params: {
         Page: current,
         PageSize: size,
@@ -27,7 +27,7 @@ export const SupplierApi = {
 
   create(data: Partial<Supplier>) {
     return request.post<Supplier>({
-      url: "/api/v1/Supplier",
+      url: '/api/v1/Supplier',
       data,
     });
   },
@@ -53,21 +53,21 @@ export const SupplierApi = {
 
   deleteMany(ids: number[]) {
     return request.del({
-      url: "/api/v1/Supplier/delete-many",
+      url: '/api/v1/Supplier/delete-many',
       data: { ids },
     });
   },
 
   cloneMany(ids: number[]) {
     return request.post({
-      url: "/api/v1/Supplier/clone-many",
+      url: '/api/v1/Supplier/clone-many',
       data: { ids },
     });
   },
 
   restoreMany(ids: number[]) {
     return request.post({
-      url: "/api/v1/Supplier/restore-many",
+      url: '/api/v1/Supplier/restore-many',
       data: { ids },
     });
   },
@@ -81,14 +81,14 @@ export const SupplierApi = {
 
   updateStatusMany(items: Array<{ id: number; status: boolean }>) {
     return request.patch({
-      url: "/api/v1/Supplier/update-status-many",
+      url: '/api/v1/Supplier/update-status-many',
       data: { items },
     });
   },
 
   getPartnerTypes() {
     return request.get<PartnerType[]>({
-      url: "/api/v1/Supplier/partner-types",
+      url: '/api/v1/Supplier/partner-types',
     });
   },
 
@@ -106,41 +106,41 @@ export const SupplierApi = {
 
   getStatistics() {
     return request.get<SupplierStatistics>({
-      url: "/api/v1/Supplier/statistics",
+      url: '/api/v1/Supplier/statistics',
     });
   },
 
   exportExcel(params: any) {
     return request.get<Blob>({
-      url: "/api/v1/Supplier/export",
+      url: '/api/v1/Supplier/export',
       params,
-      responseType: "blob",
+      responseType: 'blob',
     });
   },
 
   importExcel(file: File) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     return request.post<any>({
-      url: "/api/v1/Supplier/import",
+      url: '/api/v1/Supplier/import',
       data: formData,
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
   },
 
   getImportTemplate() {
     return request.get<Blob>({
-      url: "/api/v1/Supplier/import-template",
-      responseType: "blob",
+      url: '/api/v1/Supplier/import-template',
+      responseType: 'blob',
     });
   },
 
   getDeletedList(params: any) {
     const { current, size, ...rest } = params;
     return request.get<SupplierList>({
-      url: "/api/v1/Supplier/deleted",
+      url: '/api/v1/Supplier/deleted',
       params: {
         Page: current,
         PageSize: size,
