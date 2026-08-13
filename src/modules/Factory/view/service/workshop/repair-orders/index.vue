@@ -134,8 +134,8 @@
           <span v-else-if="row.technicianId" class="font-medium text-gray-700">{{
             getTechnicianName(row.technicianId)
           }}</span>
-          <span v-else class="font-medium text-gray-700">
-            {{ ['Nguyễn Văn Sơn', 'Trần Quốc Đạt', 'Lê Hữu Nghĩa', 'Phạm Minh Tuấn'][row.id % 4] }}
+          <span v-else class="italic text-slate-400">
+            Chưa phân công
           </span>
         </template>
 
@@ -312,11 +312,27 @@
             >
               Mã giảm giá
             </label>
-            <ElInput
+            <ElSelect
               v-model="createForm.voucherCode"
-              placeholder="Nhập mã giảm giá (nếu có)"
+              placeholder="Chọn mã giảm giá (nếu có)"
+              class="w-full"
               clearable
-            />
+              filterable
+            >
+              <ElOption
+                v-for="v in availableVouchers"
+                :key="v.id"
+                :label="`${v.code} - ${v.name}`"
+                :value="v.code"
+              >
+                <div class="flex flex-col py-1 h-auto leading-tight">
+                  <span class="text-sm font-bold text-slate-800">{{ v.code }} - {{ v.name }}</span>
+                  <span class="text-xs text-slate-500" v-if="v.minOrderValue > 0">
+                    Đơn tối thiểu: {{ formatCurrency(v.minOrderValue) }}
+                  </span>
+                </div>
+              </ElOption>
+            </ElSelect>
           </div>
           <div></div>
         </div>
@@ -408,6 +424,8 @@ import { RepairOrderApi, type RepairOrder } from '@/api/sales';
 import { VehicleApi } from '@/api/vehicle/vehicle.api';
 
 import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.api';
+import { VoucherApi } from '@/api/voucher.api';
+import type { VoucherItem } from '@/domain/voucher/voucher.types';
 
 defineOptions({ name: 'ServiceWorkshopRepairOrders' });
 
@@ -778,6 +796,29 @@ const assignDialogVisible = ref(false);
 const assignForm = ref({ repairOrderId: 0, technicianId: 1 });
 const technicians = ref<EmployeeResponse[]>([]);
 
+const availableVouchers = ref<VoucherItem[]>([]);
+
+const fetchVouchers = async () => {
+  try {
+    const res = await VoucherApi.getList({
+      current: 1,
+      size: 100,
+      Filters: 'IsActive==true'
+    });
+    availableVouchers.value = res.items || [];
+  } catch (err) {
+    console.error('Không thể tải danh sách voucher:', err);
+  }
+};
+
+const formatCurrency = (value?: number): string => {
+  if (value == null) return '0 đ';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(value);
+};
+
 const fetchTechnicians = async () => {
   try {
     const list = await EmployeeApi.getList();
@@ -823,6 +864,7 @@ const submitAssign = async () => {
 const route = useRoute();
 onMounted(async () => {
   await fetchTechnicians();
+  await fetchVouchers();
   if (route.query.action === 'create' && route.query.phone) {
     createDialogVisible.value = true;
     createForm.value.customerPhone = route.query.phone as string;
