@@ -102,6 +102,16 @@ export const warehouseMenu: AppRouteRecord[] = [
         },
       },
       {
+        path: 'returns',
+        name: 'WarehouseReturnManagement',
+        component: '/sales-settings/returns/index',
+        meta: {
+          title: 'Quản lý trả hàng',
+          icon: 'ri:arrow-go-back-line',
+          keepAlive: true,
+        },
+      },
+      {
         path: 'debt',
         name: 'WarehouseDebt',
         component: '/Warehouse/view/inventory/debt/index',

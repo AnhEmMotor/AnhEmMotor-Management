@@ -14,12 +14,11 @@ export const salesRoutes: AppRouteRecord = {
     {
       path: 'returns',
       name: 'SalesReturns',
-      component: '/sales/returns/index',
+      component: '/sales-settings/returns/index',
       meta: {
-        title: 'Quản lý Hủy đơn / Trả hàng',
+        title: 'Quản lý trả hàng',
         icon: 'ri:arrow-go-back-line',
         keepAlive: true,
-        isHide: true,
       },
     },
     {

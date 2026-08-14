@@ -88,6 +88,16 @@ export const orderMenu: AppRouteRecord[] = [
             },
           },
           {
+            path: 'returns',
+            name: 'OrderReturnManagement',
+            component: '/sales-settings/returns/index',
+            meta: {
+              title: 'Quản lý trả hàng',
+              icon: 'ri:arrow-go-back-line',
+              keepAlive: true,
+            },
+          },
+          {
             path: 'contract',
             name: 'OrderContract',
             component: '/Order/view/order/contract/index',
