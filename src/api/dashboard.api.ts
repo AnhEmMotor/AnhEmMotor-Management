@@ -41,9 +41,10 @@ export interface MonthlyRevenueProfit {
   hasZeroCostPrice: boolean;
 }
 
-export const fetchDashboardKpis = () => {
+export const fetchDashboardKpis = (period: string = 'month') => {
   return request.get<DashboardKpisData>({
     url: '/api/v1/admin/analytics/dashboard-kpis',
+    params: { period },
   });
 };
 

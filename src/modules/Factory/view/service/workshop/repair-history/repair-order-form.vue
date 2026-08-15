@@ -239,19 +239,29 @@
             </div>
 
             <ElDivider content-position="left" class="!my-4">Mã giảm giá (Voucher)</ElDivider>
-            <ElInput
+            <ElSelect
               v-model="voucherCode"
-              placeholder="Nhập mã voucher..."
-              class="combat-input"
-              @keyup.enter="applyVoucher"
-              :disabled="submitting"
+              placeholder="Chọn mã giảm giá..."
+              class="w-full combat-select"
+              filterable
+              clearable
+              @change="applyVoucher"
+              :disabled="submitting || voucherApplying"
             >
-              <template #append>
-                <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher">
-                  Áp dụng
-                </ElButton>
-              </template>
-            </ElInput>
+              <ElOption
+                v-for="v in availableVouchers"
+                :key="v.id"
+                :label="`${v.code} - ${v.name}`"
+                :value="v.code"
+              >
+                <div class="flex flex-col py-1">
+                  <span class="text-sm font-bold text-slate-800">{{ v.code }} - {{ v.name }}</span>
+                  <span class="text-xs text-slate-500" v-if="v.minOrderValue > 0">
+                    Đơn tối thiểu: {{ formatCurrency(v.minOrderValue) }}
+                  </span>
+                </div>
+              </ElOption>
+            </ElSelect>
             <div
               v-if="appliedVoucher"
               class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg mt-2"
@@ -299,13 +309,15 @@
 
 <script setup lang="ts">
 import { Permissions } from '@/domain/constants/permissions';
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useVoucher } from '@/common/composables/useVoucher';
 import type { AppliedVoucherInfo } from '@/domain/voucher/voucher.types';
 import { VehicleApi, Vehicle } from '@/api/vehicle';
 import { RepairOrderApi } from '@/api/sales';
+import { VoucherApi } from '@/api/voucher.api';
+import type { VoucherItem } from '@/domain/voucher/voucher.types';
 import type { CreateRepairOrderPayload } from '@/api/sales/repair-order.api';
 
 defineOptions({ name: 'CustomerWorkshopCreate' });
@@ -317,6 +329,24 @@ const searched = ref(false);
 const vehicles = ref<Vehicle[]>([]);
 const selectedVehicle = ref<Vehicle | null>(null);
 const submitting = ref(false);
+const availableVouchers = ref<VoucherItem[]>([]);
+
+const loadVouchers = async () => {
+  try {
+    const res = await VoucherApi.getList({
+      current: 1,
+      size: 100,
+      Filters: 'IsActive==true'
+    });
+    availableVouchers.value = res.items || [];
+  } catch (err) {
+    console.error('Lỗi khi tải danh sách voucher:', err);
+  }
+};
+
+onMounted(() => {
+  loadVouchers();
+});
 
 const form = reactive({
   customerName: '',
@@ -457,9 +487,11 @@ watch(voucherError, (val) => {
 
 const applyVoucher = async () => {
   voucherError.value = '';
-  const code = voucherCode.value.trim().toUpperCase();
+  const code = voucherCode.value?.trim().toUpperCase() || '';
   if (!code) {
-    voucherError.value = 'Vui lòng nhập mã voucher';
+    if (appliedVoucher.value) {
+      await removeVoucher();
+    }
     return;
   }
   voucherApplying.value = true;
@@ -499,6 +531,16 @@ const removeVoucher = async () => {
     :deep(.el-input__wrapper) {
       height: 40px;
       padding: 6px 12px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+  }
+
+  .combat-select {
+    :deep(.el-input__wrapper) {
+      height: 40px;
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
