@@ -248,6 +248,26 @@ export const marketingMenu: AppRouteRecord[] = [
           permissions: [Permissions.Marketing.BookingManagement.View],
         },
       },
+      {
+        path: 'visitor-tracking',
+        name: 'VisitorTracking',
+        component: '/Marketing/view/visitor-tracking/index',
+        meta: {
+          title: 'Theo dõi truy cập',
+          icon: 'ri:eye-line',
+          keepAlive: true,
+        },
+      },
+      {
+        path: 'google-ads',
+        name: 'GoogleAdsIntegration',
+        component: '/Marketing/view/google-ads/index',
+        meta: {
+          title: 'Google Ads',
+          icon: 'ri:google-fill',
+          keepAlive: true,
+        },
+      },
       ...marketingManualRoutes,
     ],
   },

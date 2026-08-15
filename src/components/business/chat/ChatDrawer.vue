@@ -11,7 +11,7 @@ import {
   type ChatPlanDto,
   type SteeringResultDto,
 } from '@/api/chat/chat.api';
-import PlanCard from './PlanCard.vue';
+
 import {
   getSuggestedPages,
   getFollowUpSuggestions,
@@ -1518,14 +1518,8 @@ const formatTime = (isoString: string) => {
           <el-button size="small" text @click="planPanelOpen = false">✕</el-button>
         </div>
         <div class="flex-1 overflow-y-auto p-3">
-          <PlanCard
-            :plan="currentPlan"
-            @update:plan="
-              (p) => {
-                if (activeSessionId) activePlans[activeSessionId] = p;
-              }
-            "
-          />
+          :plan="currentPlan" @update:plan=" (p) => { if (activeSessionId)
+          activePlans[activeSessionId] = p; } " />
         </div>
       </div>
     </div>
