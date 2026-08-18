@@ -65,7 +65,6 @@ function itemMatches(card: DashboardKpisCard, key: string): boolean {
 
 async function load() {
   try {
-    // Lấy tổng số tài khoản trong hệ thống
     const userRes = await fetchGetUserList({ Page: 1, PageSize: 1 });
     if (userRes && typeof userRes.total === 'number') {
       list[0].num = fmt(userRes.total);
