@@ -266,6 +266,7 @@ export const marketingMenu: AppRouteRecord[] = [
           title: 'Google Ads',
           icon: 'ri:google-fill',
           keepAlive: true,
+          isHide: true,
         },
       },
       ...marketingManualRoutes,

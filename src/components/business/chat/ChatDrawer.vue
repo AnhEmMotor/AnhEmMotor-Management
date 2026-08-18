@@ -1288,7 +1288,7 @@ const formatTime = (isoString: string) => {
                     </button>
                     <div v-if="isReasoningPanelOpen(msg)" class="flex flex-col gap-1 px-3 pb-2">
                       <div class="text-[11px] italic text-gray-400">
-                        Đây là diễn giải của AI, không phải nhật ký hệ thống
+                        Đây là thông tin lấy dữ liệu của AI, không phải nhật ký hệ thống
                       </div>
                       <template v-for="(step, idx) in msg.reasoningSteps" :key="idx">
                         <div
