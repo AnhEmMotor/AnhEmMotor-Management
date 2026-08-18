@@ -27,14 +27,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <button
-            @click="goToCreate"
-            class="h-10 px-6 bg-white text-slate-800 border border-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 flex items-center gap-2"
-          >
-            <ArtSvgIcon icon="ri:user-add-line" class="text-blue-500" /> + Tiếp nhận xe
-          </button>
-        </div>
+
       </div>
     </div>
 
@@ -230,22 +223,16 @@
                     </span>
                     <div class="mt-1.5">
                       <span
-                        v-if="row.licensePlate"
+                        v-if="row.vehicleInfo"
                         class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-slate-700 dark:text-slate-200 font-mono font-bold text-[11px] border border-slate-200 dark:border-slate-700"
                       >
-                        {{ row.licensePlate }}
+                        {{ row.vehicleInfo }}
                       </span>
                       <span
                         v-else
                         class="text-slate-400 dark:text-slate-500 italic text-[11px] block mt-0.5"
                         >Chưa đăng ký biển</span
                       >
-                      <div
-                        v-if="row.vehicle && row.vehicle.vinNumber"
-                        class="text-[9px] text-slate-400 dark:text-slate-500 mt-1.5 font-mono"
-                      >
-                        Khung: {{ row.vehicle.vinNumber }}
-                      </div>
                     </div>
                   </div>
 
@@ -294,11 +281,11 @@
                       <ArtSvgIcon icon="ri:money-dollar-circle-line" /> Chi phí
                     </span>
                     <span class="font-black text-slate-800 dark:text-slate-100 text-[14px] mt-1">{{
-                      formatCurrency(row.totalAmount || 0)
+                      formatCurrency(row.voucherFinalTotal || row.totalCost || 0)
                     }}</span>
                     <span
                       class="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight"
-                      v-if="(row.totalAmount || 0) > 0"
+                      v-if="(row.voucherFinalTotal || row.totalCost || 0) > 0"
                     >
                       DV: {{ formatCurrency(row.laborCost || 0) }} <br />
                       PT: {{ formatCurrency(row.partsCost || 0) }}
@@ -388,32 +375,14 @@ const stats = reactive({
 const loadData = async () => {
   loading.value = true;
   try {
-    const filterArray: string[] = [];
-    if (statusFilter.value) {
-      filterArray.push(`Status==${statusFilter.value}`);
-    }
-    if (searchQuery.value) {
-      const q = searchQuery.value.trim();
-      if (/^\d+$/.test(q)) {
-        filterArray.push(`CustomerPhone@=${q}`);
-      } else {
-        filterArray.push(`CustomerName@=${q}|LicensePlate@=${q}`);
-      }
-    }
-
     const res = await RepairOrderApi.getList({
-      current: currentPage.value,
-      size: pageSize.value,
-      Filters: filterArray.join(','),
+      current: 1,
+      size: 200,
       Sorts: 'createdAt desc',
     });
     const rawItems = res.items || [];
 
-    const validItems = rawItems.filter(
-      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
-    );
-
-    allValidItems.value = validItems.map((item: any) => {
+    allValidItems.value = rawItems.map((item: any) => {
       let calcStatus = 'InProgress';
       if (item.status) calcStatus = item.status;
       else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
@@ -422,11 +391,13 @@ const loadData = async () => {
       return {
         ...item,
         status: calcStatus,
+        customerName: item.customerName || 'Khách vãng lai',
+        customerPhone: item.customerPhone || 'Không có SĐT'
       };
     });
 
     applyLocalFilterAndPagination();
-    loadStats();
+    calculateStats();
   } catch (err: any) {
     allValidItems.value = [];
     repairOrders.value = [];
@@ -437,41 +408,38 @@ const loadData = async () => {
   }
 };
 
-const loadStats = async () => {
-  try {
-    const resPending = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: 'Status==Pending',
-    });
-    const resInProgress = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: 'Status==InProgress',
-    });
-    const resQc = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: 'Status==QcPending',
-    });
+const calculateStats = () => {
+  const safe = allValidItems.value || [];
+  stats.pending = 0;
+  stats.inProgress = 0;
+  stats.qcPending = 0;
+  stats.completedToday = 0;
 
-    const resCompleted = await RepairOrderApi.getList({
-      current: 1,
-      size: 1,
-      Filters: 'Status==Completed',
-    });
-
-    stats.pending = resPending.totalCount || 0;
-    stats.inProgress = resInProgress.totalCount || 0;
-    stats.qcPending = resQc.totalCount || 0;
-    stats.completedToday = resCompleted.totalCount || 0;
-  } catch (e) {
-    console.error('Failed to load stats', e);
-  }
+  safe.forEach((x: any) => {
+    if (x.status === 'Pending') stats.pending++;
+    else if (x.status === 'InProgress') stats.inProgress++;
+    else if (x.status === 'QcPending') stats.qcPending++;
+    else if (x.status === 'Completed') stats.completedToday++;
+  });
 };
 
 const applyLocalFilterAndPagination = () => {
-  const filtered = allValidItems.value || [];
+  let filtered = allValidItems.value || [];
+
+  if (statusFilter.value) {
+    filtered = filtered.filter((x: any) => x.status === statusFilter.value);
+  }
+
+  if (searchQuery.value) {
+    const q = searchQuery.value.trim().toLowerCase();
+    filtered = filtered.filter((x: any) => {
+      const name = (x.customerName || '').toLowerCase();
+      const phone = (x.customerPhone || '').toLowerCase();
+      const plate = (x.licensePlate || '').toLowerCase();
+      return name.includes(q) || phone.includes(q) || plate.includes(q);
+    });
+  }
+
   totalCount.value = filtered.length;
 
   const start = (currentPage.value - 1) * pageSize.value;

@@ -589,10 +589,10 @@ const columns = ref<ColumnOption[]>([
     label: 'Thao tác',
     prop: 'operation',
     width: 190,
-    fixed: 'right' as const,
     align: 'center',
     headerAlign: 'center',
     useSlot: true,
+    fixed: 'right',
   },
 ]);
 const columnChecks = columns;

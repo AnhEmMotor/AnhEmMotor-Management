@@ -59,6 +59,27 @@ export const warehouseMenu: AppRouteRecord[] = [
         },
       },
       {
+        path: 'supplier-contract',
+        name: 'WarehouseSupplierContract',
+        component: '/Warehouse/view/inventory/supplier-contract/index',
+        meta: {
+          title: 'Hợp đồng nhà cung cấp',
+          icon: 'ri:file-text-line',
+          keepAlive: true,
+          permissions: [Permissions.Accountant.SupplierContractManagement.View],
+        },
+      },
+      {
+        path: 'supplier-contract/preview/:id?',
+        name: 'WarehouseSupplierContractPreview',
+        component: '/Warehouse/view/inventory/supplier-contract/contract-preview',
+        meta: {
+          title: 'Chi tiết Hợp đồng',
+          icon: 'ri:file-search-line',
+          isHide: true,
+        },
+      },
+      {
         path: 'purchase-request',
         name: 'WarehousePurchaseRequest',
         component: '/Warehouse/view/inventory/purchase-request/index',
@@ -78,6 +99,16 @@ export const warehouseMenu: AppRouteRecord[] = [
           icon: 'ri:file-list-3-line',
           keepAlive: true,
           permissions: [Permissions.Warehouse.ReceiptManagement.View],
+        },
+      },
+      {
+        path: 'returns',
+        name: 'WarehouseReturnManagement',
+        component: '/sales-settings/returns/index',
+        meta: {
+          title: 'Quản lý trả hàng',
+          icon: 'ri:arrow-go-back-line',
+          keepAlive: true,
         },
       },
       {

@@ -7,12 +7,7 @@ import type {
   CreateCancelRequestCommand,
 } from '@/domain/sales/returns.types';
 
-export function getReturnRequests(params?: {
-  status?: string;
-  keyword?: string;
-  current?: number;
-  size?: number;
-}) {
+export function getReturnRequests(params?: any) {
   return request.get<ReturnRequestListResponse>({
     url: '/api/v1/sales/returns',
     params,
@@ -25,6 +20,13 @@ export function getReturnRequestDetail(id: number) {
   });
 }
 
+export interface ProcessReturnRequest {
+  status: string;
+  rejectionReason?: string;
+  returnAction?: string;
+  note?: string;
+}
+
 export function createReturnRequest(data: CreateReturnRequestCommand) {
   return request.post<ReturnRequestDetail>({
     url: '/api/v1/sales/returns',
@@ -35,6 +37,13 @@ export function createReturnRequest(data: CreateReturnRequestCommand) {
 export function createCancelRequest(data: CreateCancelRequestCommand) {
   return request.post<ReturnRequestDetail>({
     url: '/api/v1/sales/returns/cancel',
+    data,
+  });
+}
+
+export function processReturnRequest(id: number, data: ProcessReturnRequest) {
+  return request.put<ReturnRequestDetail>({
+    url: `/api/v1/sales/returns/${id}/process`,
     data,
   });
 }

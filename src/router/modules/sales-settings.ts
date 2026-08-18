@@ -32,5 +32,15 @@ export const salesSettingsRoutes: AppRouteRecord = {
         permissions: ['Permissions.Warehouse.InventorySettingManagement.View'],
       },
     },
+    {
+      path: 'returns',
+      name: 'ReturnManagement',
+      component: '/sales-settings/returns/index',
+      meta: {
+        title: 'Quản lý trả hàng',
+        icon: 'ri:arrow-go-back-line',
+        permissions: [Permissions.SettingsView],
+      },
+    },
   ],
 };

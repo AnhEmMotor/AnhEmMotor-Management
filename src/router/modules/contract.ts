@@ -36,7 +36,6 @@ export const contractRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.contract.supplier',
         icon: 'ri:truck-line',
-        isHide: true,
       },
     },
     {
