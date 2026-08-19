@@ -14,6 +14,7 @@
         <template #left>
           <div class="flex items-center gap-3">
             <ElButton
+              v-if="workflowMode === 'classification'"
               type="primary"
               class="btn-add"
               @click="showCreateModal = true"
@@ -39,30 +40,22 @@
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center flex-wrap">
             <ElButton
-              v-if="row.status?.toLowerCase() === 'processing'"
+              v-if="workflowMode === 'classification' && row.status?.toLowerCase() === 'pending'"
               type="warning"
-              @click="submitToAdmin(row)"
+              @click="openProcessModal(row)"
             >
-              Gửi Admin duyệt
+              Phân loại lỗi
             </ElButton>
 
             <ElButton
-              v-if="row.status?.toLowerCase() === 'pending'"
+              v-else-if="workflowMode === 'approval' && row.status?.toLowerCase() === 'inspecting'"
               type="primary"
               @click="openProcessModal(row)"
             >
               Duyệt / Từ chối
             </ElButton>
 
-            <ElButton
-              v-if="
-                row.status?.toLowerCase() !== 'processing' &&
-                row.status?.toLowerCase() !== 'pending'
-              "
-              type="info"
-              plain
-              @click="openProcessModal(row)"
-            >
+            <ElButton v-else type="info" plain @click="openProcessModal(row)">
               Xem chi tiết
             </ElButton>
           </div>
@@ -70,28 +63,56 @@
       </ArtTable>
     </ElCard>
 
-    <CreateReturnModal v-model="showCreateModal" @success="refreshData" />
+    <CreateReturnModal
+      v-if="workflowMode === 'classification'"
+      v-model="showCreateModal"
+      @success="refreshData"
+    />
     <ProcessReturnModal
       v-model="showProcessModal"
       :returnRequest="selectedRequest"
+      :mode="workflowMode"
       @success="refreshData"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { Plus } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import ArtSearchBar from '@/components/core/forms/art-search-bar/index.vue';
 import ArtTableHeader from '@/components/core/tables/art-table-header/index.vue';
 import ArtTable from '@/components/core/tables/art-table/index.vue';
 import CreateReturnModal from './components/CreateReturnModal.vue';
 import ProcessReturnModal from './components/ProcessReturnModal.vue';
 import { useReturnsTable } from './hooks/useReturnsTable';
-import { processReturnRequest } from '@/api/sales/returns.api';
+import type { ReturnRequestDetail } from '@/domain/sales/returns.types';
 
 defineOptions({ name: 'SalesReturns' });
+
+type WorkflowMode = 'classification' | 'approval' | 'warehouse';
+
+const route = useRoute();
+const workflowMode = computed<WorkflowMode>(() => {
+  const path = route.path.toLowerCase();
+  if (path.startsWith('/order/')) return 'classification';
+  if (path.startsWith('/warehouse/')) return 'warehouse';
+  return 'approval';
+});
+
+const allowedStatuses = computed<ReturnRequestDetail['status'][]>(() => {
+  switch (workflowMode.value) {
+    case 'classification':
+      return ['pending'];
+    case 'approval':
+      return ['inspecting', 'rejected'];
+    case 'warehouse':
+      return ['completed'];
+    default:
+      return ['pending'];
+  }
+});
 
 const {
   loading,
@@ -106,18 +127,18 @@ const {
   handleReset,
   handleSizeChange,
   handleCurrentChange,
-} = useReturnsTable();
+} = useReturnsTable(allowedStatuses);
 
 const showCreateModal = ref(false);
 const showProcessModal = ref(false);
-const selectedRequest = ref<any>(null);
+const selectedRequest = ref<ReturnRequestDetail | null>(null);
 
 const getStatusType = (status: string) => {
   switch (status?.toLowerCase()) {
-    case 'processing':
-      return 'info';
     case 'pending':
       return 'warning';
+    case 'inspecting':
+      return 'primary';
     case 'completed':
       return 'success';
     case 'rejected':
@@ -129,12 +150,12 @@ const getStatusType = (status: string) => {
 
 const getStatusLabel = (status: string) => {
   switch (status?.toLowerCase()) {
-    case 'processing':
-      return 'Đang xử lý';
     case 'pending':
-      return 'Chờ duyệt';
+      return 'Chờ Order phân loại';
+    case 'inspecting':
+      return 'Chờ Sales duyệt';
     case 'completed':
-      return 'Đã lưu kho';
+      return 'Đã duyệt — Chuyển vào kho';
     case 'rejected':
       return 'Đã từ chối';
     default:
@@ -142,33 +163,8 @@ const getStatusLabel = (status: string) => {
   }
 };
 
-const openProcessModal = (row: any) => {
+const openProcessModal = (row: ReturnRequestDetail) => {
   selectedRequest.value = row;
   showProcessModal.value = true;
-};
-
-const submitToAdmin = async (row: any) => {
-  try {
-    await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn gửi yêu cầu này cho Admin duyệt?',
-      'Xác nhận gửi duyệt',
-      {
-        confirmButtonText: 'Gửi duyệt',
-        cancelButtonText: 'Hủy',
-        type: 'warning',
-      }
-    );
-
-    await processReturnRequest(row.id, {
-      status: 'pending',
-    });
-
-    ElMessage.success('Đã gửi yêu cầu cho Admin duyệt thành công!');
-    refreshData();
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('Có lỗi xảy ra khi gửi duyệt!');
-    }
-  }
 };
 </script>

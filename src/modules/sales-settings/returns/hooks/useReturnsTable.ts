@@ -1,15 +1,18 @@
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
+import type { ComputedRef } from 'vue';
 import type { ColumnOption } from '@/types';
 import type { SearchFormItem } from '@/components/core/forms/art-search-bar/index.vue';
 import { getReturnRequests } from '@/api/sales/returns.api';
+import type { ReturnRequestDetail } from '@/domain/sales/returns.types';
 
-export function useReturnsTable() {
+type ReturnWorkflowStatus = ReturnRequestDetail['status'];
+
+export function useReturnsTable(allowedStatuses: ComputedRef<ReturnWorkflowStatus[]>) {
   const loading = ref(false);
-  const data = ref<any[]>([]);
+  const data = ref<ReturnRequestDetail[]>([]);
 
   const searchForm = reactive({
     orderCode: '',
-    status: '',
   });
 
   const searchItems: SearchFormItem[] = [
@@ -18,18 +21,6 @@ export function useReturnsTable() {
       type: 'input',
       label: 'Mã đơn hàng',
       placeholder: 'Nhập mã đơn hàng',
-    },
-    {
-      key: 'status',
-      type: 'select',
-      label: 'Trạng thái',
-      placeholder: 'Chọn trạng thái',
-      options: [
-        { label: 'Đang xử lý', value: 'Processing' },
-        { label: 'Chờ duyệt', value: 'Pending' },
-        { label: 'Đã lưu kho', value: 'Completed' },
-        { label: 'Từ chối (Khách nhận)', value: 'Rejected' },
-      ],
     },
   ];
 
@@ -62,13 +53,15 @@ export function useReturnsTable() {
     try {
       const filters = [];
       if (searchForm.orderCode) filters.push(`OrderCode@=*${searchForm.orderCode}`);
-      if (searchForm.status) filters.push(`Status==${searchForm.status}`);
+      if (allowedStatuses.value.length > 0) {
+        filters.push(`Status==${allowedStatuses.value.join('|')}`);
+      }
 
       const res = await getReturnRequests({
         Page: pagination.current,
         PageSize: pagination.size,
         Filters: filters.join(','),
-      } as any);
+      });
 
       if (res && res.items) {
         data.value = res.items;
@@ -91,7 +84,6 @@ export function useReturnsTable() {
 
   const handleReset = () => {
     searchForm.orderCode = '';
-    searchForm.status = '';
     handleSearch();
   };
 
@@ -108,6 +100,14 @@ export function useReturnsTable() {
   onMounted(() => {
     refreshData();
   });
+
+  watch(
+    () => allowedStatuses.value.join('|'),
+    () => {
+      pagination.current = 1;
+      refreshData();
+    }
+  );
 
   return {
     loading,
