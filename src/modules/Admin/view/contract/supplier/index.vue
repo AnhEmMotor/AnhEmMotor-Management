@@ -1,152 +1,202 @@
 <template>
-  <div class="resp-page reporting-page contract-supplier-container">
-    <ReportPageHeader
-      title="Hợp đồng Nhà cung cấp"
-      description="Theo dõi hiệu lực hợp đồng, hạn mức công nợ, chiết khấu và các hợp đồng cần phê duyệt trong một màn hình."
-      icon="ri:truck-line"
-    >
-      <template #actions>
-        <ElButton type="primary" v-ripple class="supplier-create-button" @click="handleAdd">
-          <ElIcon><Plus /></ElIcon>
-          Tạo hợp đồng mới
-        </ElButton>
-      </template>
-    </ReportPageHeader>
-
-    <div class="supplier-kpi-grid reporting-kpi-grid">
-      <ArtStatsCard
-        title="Tổng hợp đồng"
-        :count="stats.totalContracts"
-        icon="ri:file-list-3-line"
-        iconStyle="bg-primary"
-      />
-      <ArtStatsCard
-        title="Đang hiệu lực"
-        :count="stats.activeContracts"
-        icon="ri:checkbox-circle-line"
-        iconStyle="bg-success"
-      />
-      <ArtStatsCard
-        title="Chờ phê duyệt"
-        :count="stats.pendingApproval"
-        icon="ri:time-line"
-        iconStyle="bg-warning"
-      />
-      <ArtStatsCard
-        title="Sắp hết hạn"
-        :count="stats.expiringContracts"
-        icon="ri:alarm-warning-line"
-        iconStyle="bg-warning"
-      />
-      <ArtStatsCard
-        title="Đã hết hạn"
-        :count="stats.expiredContracts"
-        icon="ri:error-warning-line"
-        iconStyle="bg-danger"
-      />
+  <div class="resp-page contract-supplier-container">
+    <div class="supplier-kpi-grid">
+      <ElCard shadow="hover" class="kpi-card">
+        <div class="kpi-card__content">
+          <div>
+            <div class="kpi-card__label">Tổng hợp đồng</div>
+            <div class="kpi-card__value text-primary">{{ stats.totalContracts }}</div>
+            <div class="kpi-card__hint">Tất cả trạng thái</div>
+          </div>
+          <ElIcon class="kpi-card__icon text-primary"><Document /></ElIcon>
+        </div>
+      </ElCard>
+      <ElCard shadow="hover" class="kpi-card">
+        <div class="kpi-card__content">
+          <div>
+            <div class="kpi-card__label">Đang hiệu lực</div>
+            <div class="kpi-card__value text-success">{{ stats.activeContracts }}</div>
+            <div class="kpi-card__hint">Hợp đồng đang chạy</div>
+          </div>
+          <ElIcon class="kpi-card__icon text-success"><CircleCheck /></ElIcon>
+        </div>
+      </ElCard>
+      <ElCard shadow="hover" class="kpi-card">
+        <div class="kpi-card__content">
+          <div>
+            <div class="kpi-card__label">Chờ duyệt</div>
+            <div class="kpi-card__value text-warning">{{ stats.pendingApproval }}</div>
+            <div class="kpi-card__hint">Cần xem xét</div>
+          </div>
+          <ElIcon class="kpi-card__icon text-warning"><Timer /></ElIcon>
+        </div>
+      </ElCard>
+      <ElCard shadow="hover" class="kpi-card">
+        <div class="kpi-card__content">
+          <div>
+            <div class="kpi-card__label">Sắp/Đã hết hạn</div>
+            <div class="kpi-card__value text-danger">
+              {{ stats.expiringContracts + stats.expiredContracts }}
+            </div>
+            <div class="kpi-card__hint">Cần gia hạn/kết thúc</div>
+          </div>
+          <ElIcon class="kpi-card__icon text-danger"><Warning /></ElIcon>
+        </div>
+      </ElCard>
     </div>
 
-    <ElCard class="reporting-card supplier-filter-card supplier-filter-card--compact">
-      <ArtSearchBar
-        v-model="searchForm"
-        :items="searchItems"
-        :label-width="0"
-        label-position="top"
-        :gutter="14"
-        :span="8"
-        @search="handleSearch"
-        @reset="handleReset"
-      />
-    </ElCard>
-
-    <ElCard class="reporting-card supplier-table-card art-table-card">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="loadData">
-        <template #left>
-          <div class="supplier-table-heading">
-            <span>Danh sách hợp đồng</span>
+    <ElCard shadow="never" class="supplier-list-card">
+      <template #header>
+        <div class="card-header">
+          <div>
+            <strong>Hợp đồng nhà cung cấp</strong>
             <small>{{ pagination.total }} hợp đồng</small>
           </div>
-        </template>
-      </ArtTableHeader>
+          <ElButton
+            type="primary"
+            :icon="Plus"
+            @click="handleAdd"
+            v-auth="'Permissions.Accountant.SupplierContractManagement.Create'"
+          >
+            Thêm hợp đồng
+          </ElButton>
+        </div>
+      </template>
 
-      <ArtTable
-        ref="tableRef"
-        :loading="loading"
-        :data="data"
-        :columns="columns"
-        :pagination="pagination"
-        @pagination:size-change="handleSizeChange"
-        @pagination:current-change="handleCurrentChange"
-      >
-        <template #supplierName="{ row }">
-          <span class="supplier-name-cell">{{ getSupplierName(row) }}</span>
-        </template>
-        <template #contractValue="{ row }">
-          <span class="font-medium">{{
-            formatCurrency((row as SupplierContractDto).contractValue)
-          }}</span>
-        </template>
-        <template #creditLimit="{ row }">
-          <span class="font-medium text-primary">{{
-            formatCurrency((row as SupplierContractDto).creditLimit || 0)
-          }}</span>
-        </template>
-        <template #discountRate="{ row }">
-          <span>{{
-            (row as SupplierContractDto).discountRate
-              ? (row as SupplierContractDto).discountRate + '%'
-              : '-'
-          }}</span>
-        </template>
-        <template #status="{ row }">
-          <ElTag :type="getStatusType(row.status)" size="small">{{
-            getStatusLabel(row.status)
-          }}</ElTag>
-        </template>
-        <template #effectiveDate="{ row }">
-          {{ formatDate(row.effectiveDate) }}
-        </template>
-        <template #expirationDate="{ row }">
-          {{ row.expirationDate ? formatDate(row.expirationDate) : '-' }}
-        </template>
-        <template #operation="{ row }">
-          <div class="supplier-operation-cell">
-            <ElTooltip content="Xem chi tiết" placement="top">
-              <ArtButtonTable
-                type="view"
-                class="supplier-operation-icon"
-                @click="handleView(row)"
-              />
-            </ElTooltip>
-            <ElTooltip
-              v-if="row.status === 'PendingApproval' || row.status === 'Draft'"
-              content="Duyệt hợp đồng"
-              placement="top"
-            >
-              <ArtButtonTable
-                icon="ri:check-line"
-                icon-class="bg-success/12 text-success"
-                class="supplier-operation-icon"
-                @click="handleApprove(row)"
-              />
-            </ElTooltip>
-            <ElTooltip content="Chỉnh sửa" placement="top">
-              <ArtButtonTable
-                type="edit"
-                class="supplier-operation-icon"
-                @click="handleEdit(row)"
-              />
-            </ElTooltip>
-            <ElTooltip v-if="row.status !== 'Active'" content="Xóa" placement="top">
-              <ArtButtonTable
-                type="delete"
-                class="supplier-operation-icon"
-                @click="handleDelete(row)"
-              />
-            </ElTooltip>
-          </div>
-        </template>
-      </ArtTable>
+      <div class="supplier-filter-grid">
+        <ElInput
+          v-model="searchForm.contractNumber"
+          placeholder="Nhập số hợp đồng..."
+          clearable
+          :prefix-icon="Search"
+          @keyup.enter="handleSearch"
+        />
+        <ElSelect
+          v-model="searchForm.status"
+          placeholder="Trạng thái"
+          clearable
+          multiple
+          collapse-tags
+        >
+          <ElOption label="Bản nháp" value="Draft" />
+          <ElOption label="Chờ duyệt" value="PendingApproval" />
+          <ElOption label="Đang hiệu lực" value="Active" />
+          <ElOption label="Đã hết hạn" value="Expired" />
+          <ElOption label="Đã chấm dứt" value="Terminated" />
+          <ElOption label="Đã hoàn thành" value="Completed" />
+        </ElSelect>
+        <ElSelect v-model="searchForm.name" placeholder="Chọn nhà cung cấp..." clearable filterable>
+          <ElOption
+            v-for="supplier in allSupplierOptions"
+            :key="supplier.id"
+            :label="supplier.name"
+            :value="supplier.name"
+          />
+        </ElSelect>
+        <div class="supplier-filter-actions">
+          <ElButton @click="handleReset">Đặt lại</ElButton>
+          <ElButton type="primary" :icon="Search" @click="handleSearch">Tìm kiếm</ElButton>
+        </div>
+      </div>
+
+      <div class="supplier-table-scroll">
+        <ElTable :data="data" border style="width: 100%" v-loading="loading">
+          <ElTableColumn label="Số hợp đồng" min-width="160">
+            <template #default="{ row }">
+              <ElLink
+                type="primary"
+                :underline="false"
+                @click="handleView(row as SupplierContractDto)"
+              >
+                <span class="font-medium">{{ row.contractNumber }}</span>
+              </ElLink>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Nhà cung cấp" min-width="220">
+            <template #default="{ row }">{{
+              getSupplierName(row as SupplierContractDto)
+            }}</template>
+          </ElTableColumn>
+          <ElTableColumn label="Giá trị (VNĐ)" min-width="160" align="right">
+            <template #default="{ row }">
+              <span class="font-medium tabular-value">{{ formatCurrency(row.contractValue) }}</span>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Ngày hiệu lực" width="130" align="center">
+            <template #default="{ row }">{{ formatDate(row.effectiveDate) }}</template>
+          </ElTableColumn>
+          <ElTableColumn label="Ngày hết hạn" width="130" align="center">
+            <template #default="{ row }">{{ formatDate(row.expirationDate) }}</template>
+          </ElTableColumn>
+          <ElTableColumn label="Trạng thái" width="140" align="center">
+            <template #default="{ row }">
+              <ElTag :type="getStatusType(row.status)" effect="dark">
+                {{ getStatusLabel(row.status) }}
+              </ElTag>
+            </template>
+          </ElTableColumn>
+          <ElTableColumn label="Thao tác" width="170" align="center" fixed="right">
+            <template #default="{ row }">
+              <div class="supplier-operation-cell">
+                <ElTooltip content="Xem chi tiết" placement="top">
+                  <ElButton
+                    type="primary"
+                    size="small"
+                    circle
+                    :icon="View"
+                    @click="handleView(row as SupplierContractDto)"
+                  />
+                </ElTooltip>
+                <ElTooltip
+                  v-if="row.status === 'PendingApproval' || row.status === 'Draft'"
+                  content="Duyệt hợp đồng"
+                  placement="top"
+                >
+                  <ElButton
+                    type="success"
+                    size="small"
+                    circle
+                    :icon="Check"
+                    @click="handleApprove(row as SupplierContractDto)"
+                  />
+                </ElTooltip>
+                <ElTooltip content="Chỉnh sửa" placement="top">
+                  <ElButton
+                    type="warning"
+                    size="small"
+                    circle
+                    :icon="Edit"
+                    @click="handleEdit(row as SupplierContractDto)"
+                    v-auth="'Permissions.Accountant.SupplierContractManagement.Edit'"
+                  />
+                </ElTooltip>
+                <ElTooltip v-if="row.status !== 'Active'" content="Xóa" placement="top">
+                  <ElButton
+                    type="danger"
+                    size="small"
+                    circle
+                    :icon="Delete"
+                    @click="handleDelete(row as SupplierContractDto)"
+                    v-auth="'Permissions.Accountant.SupplierContractManagement.Delete'"
+                  />
+                </ElTooltip>
+              </div>
+            </template>
+          </ElTableColumn>
+        </ElTable>
+      </div>
+
+      <div class="supplier-pagination">
+        <ElPagination
+          v-model:current-page="pagination.current"
+          v-model:page-size="pagination.size"
+          :total="pagination.total"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
     </ElCard>
 
     <ElDialog
@@ -354,7 +404,19 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, UploadFilled } from '@element-plus/icons-vue';
+import {
+  Check,
+  CircleCheck,
+  Delete,
+  Document,
+  Edit,
+  Plus,
+  Search,
+  Timer,
+  UploadFilled,
+  View,
+  Warning,
+} from '@element-plus/icons-vue';
 import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
@@ -364,8 +426,6 @@ import {
   type UploadRequestOptions,
   type UploadUserFile,
 } from 'element-plus';
-import type { ColumnOption } from '@/types/component';
-import ReportPageHeader from '@/modules/Accountant/view/reporting/ReportPageHeader.vue';
 import type {
   SupplierContractDto,
   SupplierContractListParams,
@@ -409,7 +469,6 @@ const dialogVisible = ref(false);
 const dialogTitle = ref('Tạo hợp đồng mới');
 const submitting = ref(false);
 const formRef = ref<FormInstance>();
-const tableRef = ref();
 const supplierLoading = ref(false);
 interface SupplierOption {
   id: number;
@@ -459,143 +518,6 @@ const searchForm = ref({
   effectiveDateRange: [] as string[],
   expirationDateRange: [] as string[],
 });
-
-const searchItems = ref([
-  {
-    key: 'name',
-    label: 'Tên nhà cung cấp',
-    type: 'input',
-    props: {
-      placeholder: 'Nhập tên nhà cung cấp',
-      clearable: true,
-    },
-  },
-  {
-    key: 'contractNumber',
-    label: 'Số hợp đồng',
-    type: 'input',
-    props: {
-      placeholder: 'Nhập số hợp đồng',
-      clearable: true,
-    },
-  },
-  {
-    key: 'status',
-    label: 'Trạng thái',
-    type: 'select',
-    props: {
-      options: [
-        { label: 'Nháp', value: 'Draft' },
-        { label: 'Chờ phê duyệt', value: 'PendingApproval' },
-        { label: 'Đang hiệu lực', value: 'Active' },
-        { label: 'Đã hết hạn', value: 'Expired' },
-        { label: 'Đã thanh lý', value: 'Terminated' },
-        { label: 'Đã hoàn thành', value: 'Completed' },
-      ],
-      multiple: true,
-      collapseTags: true,
-      placeholder: 'Chọn trạng thái...',
-    },
-  },
-  {
-    key: 'effectiveDateRange',
-    label: 'Ngày hiệu lực',
-    type: 'daterange',
-    props: {
-      startPlaceholder: 'Từ ngày',
-      endPlaceholder: 'Đến ngày',
-      valueFormat: 'YYYY-MM-DD',
-      clearable: true,
-    },
-  },
-  {
-    key: 'expirationDateRange',
-    label: 'Ngày hết hạn',
-    type: 'daterange',
-    props: {
-      startPlaceholder: 'Từ ngày',
-      endPlaceholder: 'Đến ngày',
-      valueFormat: 'YYYY-MM-DD',
-      clearable: true,
-    },
-  },
-]);
-
-const columns = ref<ColumnOption[]>([
-  {
-    label: 'Số hợp đồng',
-    prop: 'contractNumber',
-    minWidth: 150,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    label: 'Nhà cung cấp',
-    prop: 'supplierName',
-    minWidth: 180,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Giá trị',
-    prop: 'contractValue',
-    width: 130,
-    align: 'right',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Hạn mức nợ',
-    prop: 'creditLimit',
-    width: 130,
-    align: 'right',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Chiết khấu',
-    prop: 'discountRate',
-    width: 100,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Trạng thái',
-    prop: 'status',
-    width: 130,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Ngày hiệu lực',
-    prop: 'effectiveDate',
-    width: 120,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Ngày hết hạn',
-    prop: 'expirationDate',
-    width: 120,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-  },
-  {
-    label: 'Thao tác',
-    prop: 'operation',
-    width: 190,
-    align: 'center',
-    headerAlign: 'center',
-    useSlot: true,
-    fixed: 'right',
-  },
-]);
-const columnChecks = columns;
 
 const isFormLocked = computed(() => {
   return formData.value.status === 'Active';
@@ -1052,7 +974,6 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-
 .supplier-create-button {
   height: 40px;
   padding: 0 18px;
@@ -1377,5 +1298,192 @@ html.dark .contract-supplier-container :deep(.el-tag) {
   padding: 8px 10px;
   margin-top: 8px;
   border-radius: 8px;
+}
+
+.contract-supplier-container {
+  min-height: 100%;
+  padding: 16px;
+  color: var(--el-text-color-primary);
+}
+
+.supplier-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  border-radius: 8px;
+}
+
+.kpi-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.kpi-card__label {
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+.kpi-card__value {
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card__hint {
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kpi-card__icon {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 38px;
+  opacity: 0.28;
+}
+
+.supplier-list-card {
+  border-color: var(--el-border-color-light);
+}
+
+.card-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-header strong {
+  font-size: 18px;
+}
+
+.card-header small {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.supplier-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.supplier-filter-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.supplier-table-scroll {
+  overflow-x: auto;
+}
+
+.supplier-operation-cell {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.supplier-operation-cell :deep(.el-button) {
+  margin: 0;
+}
+
+.supplier-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.tabular-value {
+  font-variant-numeric: tabular-nums;
+}
+
+:global(html.dark .contract-supplier-container .kpi-card),
+:global(html.dark .contract-supplier-container .supplier-list-card) {
+  color: var(--el-text-color-primary);
+  background: var(--el-bg-color);
+  border-color: var(--el-border-color-light);
+}
+
+:global(html.dark .contract-supplier-container .el-table),
+:global(html.dark .contract-supplier-container .el-table tr),
+:global(html.dark .contract-supplier-container .el-table th.el-table__cell) {
+  color: var(--el-text-color-primary);
+  background: var(--el-bg-color);
+}
+
+@media (width <= 1024px) {
+  .supplier-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .supplier-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 640px) {
+  .contract-supplier-container {
+    padding: 8px;
+  }
+
+  .supplier-kpi-grid,
+  .supplier-filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .card-header .el-button,
+  .supplier-filter-actions,
+  .supplier-filter-actions .el-button {
+    width: 100%;
+  }
+
+  .supplier-pagination {
+    justify-content: flex-start;
+  }
+
+  :global(.contract-supplier-dialog) {
+    width: calc(100vw - 16px) !important;
+  }
+
+  :global(.contract-supplier-dialog .el-row) {
+    display: block;
+  }
+
+  :global(.contract-supplier-dialog .el-col) {
+    max-width: 100%;
+  }
+
+  :global(.contract-supplier-dialog .border-l) {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 </style>
