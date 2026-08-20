@@ -142,3 +142,9 @@ export function fetchGetMenuList() {
     url: '/api/v3/system/menus',
   });
 }
+
+export function fetchGetUserById(userId: string) {
+  return request.get<any>({
+    url: `/api/v1/UserManager/${userId}`,
+  });
+}

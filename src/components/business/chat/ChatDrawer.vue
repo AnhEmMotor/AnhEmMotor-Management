@@ -11,7 +11,7 @@ import {
   type ChatPlanDto,
   type SteeringResultDto,
 } from '@/api/chat/chat.api';
-import PlanCard from './PlanCard.vue';
+
 import {
   getSuggestedPages,
   getFollowUpSuggestions,
@@ -1288,7 +1288,7 @@ const formatTime = (isoString: string) => {
                     </button>
                     <div v-if="isReasoningPanelOpen(msg)" class="flex flex-col gap-1 px-3 pb-2">
                       <div class="text-[11px] italic text-gray-400">
-                        Đây là diễn giải của AI, không phải nhật ký hệ thống
+                        Đây là thông tin lấy dữ liệu của AI, không phải nhật ký hệ thống
                       </div>
                       <template v-for="(step, idx) in msg.reasoningSteps" :key="idx">
                         <div
@@ -1518,14 +1518,8 @@ const formatTime = (isoString: string) => {
           <el-button size="small" text @click="planPanelOpen = false">✕</el-button>
         </div>
         <div class="flex-1 overflow-y-auto p-3">
-          <PlanCard
-            :plan="currentPlan"
-            @update:plan="
-              (p) => {
-                if (activeSessionId) activePlans[activeSessionId] = p;
-              }
-            "
-          />
+          :plan="currentPlan" @update:plan=" (p) => { if (activeSessionId)
+          activePlans[activeSessionId] = p; } " />
         </div>
       </div>
     </div>
