@@ -198,9 +198,6 @@
                   Hạng mục sửa chữa & Vật tư thay thế
                 </h3>
                 <div class="flex gap-2" v-if="calculatedStatus !== 'QcPending'">
-                  <ElButton size="small" type="primary" plain @click="openServiceDialog"
-                    >+ Thêm dịch vụ</ElButton
-                  >
                   <ElButton size="small" type="primary" plain @click="openPartsDialog"
                     >+ Thêm phụ tùng</ElButton
                   >
@@ -290,6 +287,10 @@
                     <span class="text-slate-500">Tiền phụ tùng:</span>
                     <span class="font-bold">{{ formatCurrency(totalPartsCost) }}</span>
                   </div>
+                  <div class="flex justify-between text-sm" v-if="voucherDiscount > 0">
+                    <span class="text-slate-500">Giảm giá (Voucher):</span>
+                    <span class="font-bold text-emerald-600">-{{ formatCurrency(voucherDiscount) }}</span>
+                  </div>
                   <div class="flex justify-between text-base border-t pt-2 mt-2">
                     <span class="font-bold uppercase text-slate-800">Tổng cộng:</span>
                     <span class="font-bold text-red-600 text-lg">{{
@@ -332,19 +333,31 @@
                 <ElCol :span="24" class="mb-4">
                   <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
                   <div class="flex items-start gap-3">
-                    <ElInput
+                    <ElSelect
                       v-model="voucherCode"
-                      placeholder="Nhập mã voucher..."
+                      placeholder="Chọn mã giảm giá..."
                       class="flex-1"
-                      @keyup.enter="applyVoucher"
+                      clearable
+                      filterable
                       :disabled="voucherApplying"
                     >
-                      <template #append>
-                        <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher">
-                          Áp dụng
-                        </ElButton>
-                      </template>
-                    </ElInput>
+                      <ElOption
+                        v-for="v in availableVouchers"
+                        :key="v.id"
+                        :label="`${v.code} - ${v.name}`"
+                        :value="v.code"
+                      >
+                        <div class="flex flex-col py-1 h-auto leading-tight">
+                          <span class="text-sm font-bold text-slate-800">{{ v.code }} - {{ v.name }}</span>
+                          <span class="text-xs text-slate-500" v-if="v.minOrderValue > 0">
+                            Đơn tối thiểu: {{ formatCurrency(v.minOrderValue) }}
+                          </span>
+                        </div>
+                      </ElOption>
+                    </ElSelect>
+                    <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher" class="ml-2">
+                      Áp dụng
+                    </ElButton>
                   </div>
                   <div
                     v-if="appliedVoucher"
@@ -581,6 +594,8 @@ import { ProductApi } from '@/api/product';
 import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/api/product';
 import { useVoucher } from '@/common/composables/useVoucher';
 import { EmployeeApi, type EmployeeResponse } from '@/api/operations';
+import { VoucherApi } from '@/api/voucher.api';
+import type { VoucherItem } from '@/domain/voucher/voucher.types';
 
 defineOptions({ name: 'ServiceWorkshopRepairOrderDetail' });
 
@@ -720,6 +735,11 @@ const loadOrderDetail = async () => {
     }
     localItems.value = itemsList;
     assignForm.value.technicianId = (res as any).technicianId || undefined;
+    if ((res as any).technicianId && (res as any).technicianName) {
+      if (!technicians.value.some(t => t.id === (res as any).technicianId)) {
+        technicians.value.push({ id: (res as any).technicianId, fullName: (res as any).technicianName } as any);
+      }
+    }
   } catch (err: any) {
     ElMessage.error(err?.message || 'Không thể tải thông tin phiếu');
   } finally {
@@ -889,7 +909,7 @@ const confirmAddService = () => {
 
 const openPartsDialog = async () => {
   try {
-    const res = await ProductApi.getVariantsForInput({ current: 1, size: 100 });
+    const res = await ProductApi.getVariantsForInput({ current: 1, size: 100, filters: 'managementType==sku' });
     availableParts.value = res.items || [];
   } catch (err) {
     ElMessage.error('Không thể tải danh sách phụ tùng');
@@ -1017,8 +1037,24 @@ const getStatusText = (status: string) => {
   return map[status] || status;
 };
 
+const availableVouchers = ref<VoucherItem[]>([]);
+
+const fetchVouchers = async () => {
+  try {
+    const res = await VoucherApi.getList({
+      current: 1,
+      size: 100,
+      Filters: 'IsActive==true'
+    });
+    availableVouchers.value = res.items || [];
+  } catch (err) {
+    console.error('Không thể tải danh sách voucher:', err);
+  }
+};
+
 onMounted(() => {
   loadOrderDetail();
+  fetchVouchers();
 });
 </script>
 

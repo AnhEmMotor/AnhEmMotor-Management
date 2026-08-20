@@ -538,7 +538,7 @@ export function useWarrantyCategoryTable() {
 
   const handleSearch = () => {
     const filters: string[] = [];
-    if (searchForm.value.searchTerm) filters.push(`TermName@=${searchForm.value.searchTerm}`);
+    if (searchForm.value.searchTerm) filters.push(`searchterm==${searchForm.value.searchTerm}`);
     if (searchForm.value.brandId) filters.push(`BrandId==${searchForm.value.brandId}`);
     if (searchForm.value.status.length > 0)
       filters.push(`Status==${searchForm.value.status.join('|')}`);

@@ -32,6 +32,17 @@ export const salesRoutes: AppRouteRecord = {
       },
     },
     {
+      path: 'invoices/:id/edit',
+      name: 'SalesInvoiceEdit',
+      component: '/Admin/view/sales/invoices/edit',
+      meta: {
+        title: 'Chỉnh sửa hóa đơn',
+        icon: 'ri:edit-box-line',
+        isHide: true,
+        activePath: '/sales/invoices',
+      },
+    },
+    {
       path: 'sales-report',
       name: 'SalesAnalyticsReport',
       component: '/Admin/view/sales/sales-report/index',

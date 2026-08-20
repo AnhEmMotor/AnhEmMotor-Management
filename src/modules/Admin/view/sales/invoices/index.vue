@@ -128,268 +128,6 @@
     </ElCard>
 
     <ElDialog
-      v-model="dialog.visible"
-      :title="dialog.title"
-      width="65%"
-      class="resp-dialog"
-      :close-on-click-modal="false"
-      destroy-on-close
-    >
-      <ElForm v-if="dialog.invoice" :model="dialog.form" label-width="160px" label-position="right">
-        <ElDivider content-position="left">📋 Thông tin khách hàng</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Họ tên" required>
-            <ElInput v-model="dialog.form.customerName" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Số điện thoại" required>
-            <ElInput v-model="dialog.form.customerPhone" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Số CCCD">
-            <ElInput v-model="dialog.form.customerIdCard" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Địa chỉ">
-            <ElInput v-model="dialog.form.customerAddress" :disabled="dialog.readonly" />
-          </ElFormItem>
-        </div>
-
-        <ElDivider content-position="left">🏍️ Thông tin xe</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Dòng xe" required>
-            <ElInput v-model="dialog.form.vehicleModel" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Màu sơn">
-            <ElInput v-model="dialog.form.vehicleColor" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Số khung" required>
-            <ElInput v-model="dialog.form.chassisNo" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Số máy" required>
-            <ElInput v-model="dialog.form.engineNo" :disabled="dialog.readonly" />
-          </ElFormItem>
-        </div>
-
-        <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-3 gap-4">
-          <ElFormItem label="Giá xe (đã gồm VAT)">
-            <ElInputNumber
-              v-model="dialog.form.vehiclePrice"
-              :disabled="dialog.readonly"
-              :min="0"
-              class="w-full"
-            />
-          </ElFormItem>
-          <ElFormItem label="Phí đăng ký biển số">
-            <ElInputNumber
-              v-model="dialog.form.registrationFee"
-              :disabled="dialog.readonly"
-              :min="0"
-              class="w-full"
-            />
-          </ElFormItem>
-          <ElFormItem label="Phí bảo hiểm TNDS">
-            <ElInputNumber
-              v-model="dialog.form.insuranceFee"
-              :disabled="dialog.readonly"
-              :min="0"
-              class="w-full"
-            />
-          </ElFormItem>
-        </div>
-
-        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
-        <ElFormItem label="Nhập mã voucher">
-          <ElInput
-            v-model="invoiceVoucherCode"
-            placeholder="Nhập mã voucher..."
-            @keyup.enter="applyInvoiceVoucher"
-            clearable
-          >
-            <template #append>
-              <ElButton
-                :loading="invoiceVoucherApplying"
-                type="primary"
-                @click="applyInvoiceVoucher"
-                >Áp dụng</ElButton
-              >
-            </template>
-          </ElInput>
-        </ElFormItem>
-        <div
-          v-if="appliedInvoiceVoucher"
-          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
-        >
-          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-emerald-700">{{ appliedInvoiceVoucher.code }}</span>
-            <span class="text-xs text-emerald-600"
-              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
-            >
-          </div>
-          <ElButton
-            v-if="!dialog.readonly"
-            link
-            type="danger"
-            size="small"
-            :loading="invoiceVoucherApplying"
-            @click="removeInvoiceVoucher"
-            class="ml-auto"
-          >
-            <ElIcon><Close /></ElIcon>
-          </ElButton>
-        </div>
-        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
-          {{ invoiceVoucherError }}
-        </p>
-
-        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
-        <ElFormItem label="Nhập mã voucher">
-          <ElInput
-            v-model="invoiceVoucherCode"
-            placeholder="Nhập mã voucher..."
-            @keyup.enter="applyInvoiceVoucher"
-            clearable
-          >
-            <template #append>
-              <ElButton
-                :loading="invoiceVoucherApplying"
-                type="primary"
-                @click="applyInvoiceVoucher"
-                >Áp dụng</ElButton
-              >
-            </template>
-          </ElInput>
-        </ElFormItem>
-        <div
-          v-if="appliedInvoiceVoucher"
-          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
-        >
-          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-emerald-700">{{ appliedInvoiceVoucher.code }}</span>
-            <span class="text-xs text-emerald-600"
-              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
-            >
-          </div>
-          <ElButton
-            v-if="!dialog.readonly"
-            link
-            type="danger"
-            size="small"
-            :loading="invoiceVoucherApplying"
-            @click="removeInvoiceVoucher"
-            class="ml-auto"
-          >
-            <ElIcon><Close /></ElIcon>
-          </ElButton>
-        </div>
-        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
-          {{ invoiceVoucherError }}
-        </p>
-
-        <ElDivider content-position="left">🎫 Mã giảm giá (Voucher)</ElDivider>
-        <ElFormItem label="Nhập mã voucher">
-          <ElInput
-            v-model="invoiceVoucherCode"
-            placeholder="Nhập mã voucher..."
-            @keyup.enter="applyInvoiceVoucher"
-            clearable
-          >
-            <template #append>
-              <ElButton
-                :loading="invoiceVoucherApplying"
-                type="primary"
-                @click="applyInvoiceVoucher"
-                >Áp dụng</ElButton
-              >
-            </template>
-          </ElInput>
-        </ElFormItem>
-        <div
-          v-if="appliedInvoiceVoucher"
-          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
-        >
-          <ElIcon class="text-emerald-600"><Ticket /></ElIcon>
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-emerald-700">{{ appliedInvoiceVoucher.code }}</span>
-            <span class="text-xs text-emerald-600"
-              >-{{ formatCurrency(appliedInvoiceVoucher.discountAmount) }}</span
-            >
-          </div>
-          <ElButton
-            v-if="!dialog.readonly"
-            link
-            type="danger"
-            size="small"
-            :loading="invoiceVoucherApplying"
-            @click="removeInvoiceVoucher"
-            class="ml-auto"
-          >
-            <ElIcon><Close /></ElIcon>
-          </ElButton>
-        </div>
-        <p v-if="invoiceVoucherError" class="text-xs text-red-500 mt-1">
-          {{ invoiceVoucherError }}
-        </p>
-        <ElDivider content-position="left">💳 Thanh toán</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Phương thức">
-            <ElSelect
-              v-model="dialog.form.paymentMethod"
-              :disabled="dialog.readonly"
-              class="w-full"
-            >
-              <ElOption label="Tiền mặt" value="cash" />
-              <ElOption label="Chuyển khoản" value="transfer" />
-              <ElOption label="Trả góp" value="installment" />
-              <ElOption label="Kết hợp" value="mixed" />
-            </ElSelect>
-          </ElFormItem>
-          <ElFormItem label="Ngân hàng tài trợ">
-            <ElInput v-model="dialog.form.bankName" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem v-if="!dialog.readonly" label="Trạng thái">
-            <ElSelect v-model="dialog.form.status" class="w-full">
-              <ElOption label="📝 Chờ thanh toán" value="pending" />
-              <ElOption label="✅ Đã hoàn tất" value="completed" />
-              <ElOption label="🔄 Đang xử lý" value="processing" />
-              <ElOption label="❌ Đã hủy" value="cancelled" />
-            </ElSelect>
-          </ElFormItem>
-        </div>
-
-        <ElDivider content-position="left">👤 Thông tin bán hàng</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Nhân viên bán hàng">
-            <ElInput v-model="dialog.form.salesPerson" :disabled="dialog.readonly" />
-          </ElFormItem>
-          <ElFormItem label="Ngày bàn giao dự kiến">
-            <ElDatePicker
-              v-model="dialog.form.deliveryDate"
-              type="date"
-              :disabled="dialog.readonly"
-              class="w-full"
-              value-format="YYYY-MM-DD"
-            />
-          </ElFormItem>
-        </div>
-      </ElForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <ElButton @click="dialog.visible = false">Đóng</ElButton>
-          <ElButton
-            v-if="!dialog.readonly"
-            type="primary"
-            @click="handleSave"
-            :loading="actionLoading"
-          >
-            💾 Lưu
-          </ElButton>
-        </div>
-      </template>
-    </ElDialog>
-
-    <ElDialog
       v-model="createDialog.visible"
       title="Tạo hóa đơn mới"
       width="65%"
@@ -436,21 +174,18 @@
         </div>
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Giá xe (đã gồm VAT)">
-            <ElInputNumber v-model="createDialog.form.vehiclePrice" :min="0" class="w-full" />
+            <ElInputNumber v-model="createDialog.form.vehiclePrice" :min="0" class="w-full" style="width: 100%" />
           </ElFormItem>
-          <ElFormItem label="Phí đăng ký biển số">
-            <ElInputNumber v-model="createDialog.form.registrationFee" :min="0" class="w-full" />
-          </ElFormItem>
-          <ElFormItem label="Phí bảo hiểm TNDS">
-            <ElInputNumber v-model="createDialog.form.insuranceFee" :min="0" class="w-full" />
+          <ElFormItem label="Phí khấu trừ">
+            <ElInputNumber v-model="createDialog.form.registrationFee" :min="0" class="w-full" style="width: 100%" />
           </ElFormItem>
         </div>
 
         <ElDivider content-position="left">💳 Thanh toán</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Phương thức">
+        <div class="grid grid-cols-3 gap-4">
+          <ElFormItem label="Phương thức" label-width="100px">
             <ElSelect v-model="createDialog.form.paymentMethod" class="w-full">
               <ElOption label="Tiền mặt" value="cash" />
               <ElOption label="Chuyển khoản" value="transfer" />
@@ -458,7 +193,7 @@
               <ElOption label="Kết hợp" value="mixed" />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem label="Ngân hàng tài trợ">
+          <ElFormItem label="Ngân hàng tài trợ" label-width="140px">
             <ElInput v-model="createDialog.form.bankName" />
           </ElFormItem>
         </div>
@@ -468,7 +203,7 @@
           <ElFormItem label="Nhân viên bán hàng">
             <ElInput v-model="createDialog.form.salesPerson" />
           </ElFormItem>
-          <ElFormItem label="Ngày bàn giao dự kiến">
+          <ElFormItem label="Ngày bàn giao dự kiến" label-width="180px">
             <ElDatePicker
               v-model="createDialog.form.deliveryDate"
               type="date"
@@ -493,6 +228,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search, Plus, Ticket, Close } from '@element-plus/icons-vue';
 import { VoucherApi } from '@/api/voucher.api';
@@ -505,6 +241,8 @@ import {
 } from '@/api/sales/invoice.api';
 
 defineOptions({ name: 'SalesInvoices' });
+
+const router = useRouter();
 
 interface InvoiceRow {
   id: number;
@@ -539,20 +277,6 @@ const searchQuery = ref('');
 const filterStatus = ref<string>('');
 const totalCount = ref(0);
 const pagination = reactive({ current: 1, size: 10 });
-const invoiceVoucherCode = ref('');
-const appliedInvoiceVoucher = ref<any>(null);
-const invoiceVoucherApplying = ref(false);
-const invoiceVoucherError = ref('');
-const invoiceVoucherDiscount = ref(0);
-
-const dialog = reactive({
-  visible: false,
-  readonly: true,
-  title: '',
-  invoice: null as AdminInvoiceDetailResponse | null,
-  form: {} as UpdateAdminInvoiceRequest,
-});
-
 const createDialog = reactive({
   visible: false,
   form: {
@@ -637,55 +361,13 @@ function handleCurrentChange() {
 }
 
 function handleRowClick(row: any) {
-  dialog.readonly = true;
-  dialog.title = `Hóa đơn ${row.invoiceNumber}`;
-  dialog.invoice = row as unknown as AdminInvoiceDetailResponse;
-  dialog.form = {
-    customerName: row.customerName,
-    customerPhone: row.customerPhone,
-    customerIdCard: row.customerIdCard,
-    customerAddress: row.customerAddress,
-    vehicleModel: row.vehicleModel,
-    vehicleColor: row.vehicleColor,
-    chassisNo: row.chassisNo,
-    engineNo: row.engineNo,
-    vehiclePrice: row.vehiclePrice,
-    registrationFee: row.registrationFee,
-    insuranceFee: row.insuranceFee,
-    paymentMethod: row.paymentMethod,
-    bankName: row.bankName,
-    status: row.status,
-    salesPerson: row.salesPerson,
-    deliveryDate: row.deliveryDate,
-    paymentBreakdown: [],
-  };
-  dialog.visible = true;
+  router.push(`/sales/invoices/${row.id}/edit`);
 }
 
 function handleEdit(row: any) {
-  dialog.readonly = false;
-  dialog.title = `Chỉnh sửa hóa đơn ${row.invoiceNumber}`;
-  dialog.form = {
-    customerName: row.customerName,
-    customerPhone: row.customerPhone,
-    customerIdCard: row.customerIdCard,
-    customerAddress: row.customerAddress,
-    vehicleModel: row.vehicleModel,
-    vehicleColor: row.vehicleColor,
-    chassisNo: row.chassisNo,
-    engineNo: row.engineNo,
-    vehiclePrice: row.vehiclePrice,
-    registrationFee: row.registrationFee,
-    insuranceFee: row.insuranceFee,
-    paymentMethod: row.paymentMethod,
-    bankName: row.bankName,
-    status: row.status,
-    salesPerson: row.salesPerson,
-    deliveryDate: row.deliveryDate,
-    paymentBreakdown: [],
-  };
-  dialog.visible = true;
+  router.push(`/sales/invoices/${row.id}/edit`);
 }
+
 
 function handleCreateNew() {
   createDialog.form = {
@@ -707,22 +389,6 @@ function handleCreateNew() {
     paymentBreakdown: [],
   };
   createDialog.visible = true;
-}
-
-async function handleSave() {
-  if (!dialog.invoice) return;
-  try {
-    actionLoading.value = true;
-    await invoiceApi.updateAdmin(dialog.invoice.id, dialog.form);
-    ElMessage.success('Đã cập nhật hóa đơn');
-    dialog.visible = false;
-    fetchInvoices();
-  } catch (error) {
-    console.error(error);
-    ElMessage.error('Cập nhật hóa đơn thất bại');
-  } finally {
-    actionLoading.value = false;
-  }
 }
 
 async function handleCreate() {
@@ -758,82 +424,6 @@ async function handleMarkCompleted(row: any) {
     }
   } finally {
     actionLoading.value = false;
-  }
-}
-
-async function applyInvoiceVoucher() {
-  invoiceVoucherError.value = '';
-  const code = invoiceVoucherCode.value.trim().toUpperCase();
-  if (!code) {
-    invoiceVoucherError.value = 'Vui lòng nhập mã voucher';
-    return;
-  }
-  const oid = dialog.invoice?.id || createDialog.form;
-  if (!oid || typeof oid !== 'number') {
-    invoiceVoucherError.value = 'Vui lòng lưu hóa đơn trước khi áp dụng voucher';
-    return;
-  }
-  invoiceVoucherApplying.value = true;
-  try {
-    const voucher = await VoucherApi.getByCode(code);
-    if (!voucher) {
-      invoiceVoucherError.value = 'Mã voucher không tồn tại';
-      return;
-    }
-    const totalAmount =
-      Number(dialog.form.vehiclePrice || 0) +
-      Number(dialog.form.registrationFee || 0) +
-      Number(dialog.form.insuranceFee || 0);
-    if (voucher.minOrderValue > 0 && totalAmount < voucher.minOrderValue) {
-      invoiceVoucherError.value = `Hóa đơn tối thiểu ${voucher.minOrderValue.toLocaleString()}đ để áp dụng voucher này`;
-      return;
-    }
-    const validation = await VoucherApi.validate(voucher.id, oid);
-    if (!validation.isValid) {
-      invoiceVoucherError.value = validation.message || 'Voucher không hợp lệ';
-      return;
-    }
-    const applied = await VoucherApi.apply(voucher.id, oid);
-    let disc =
-      voucher.discountType === 'PERCENT'
-        ? Math.round((totalAmount * voucher.discountValue) / 100)
-        : Math.round(voucher.discountValue);
-    if (voucher.maxDiscountAmount && disc > voucher.maxDiscountAmount) {
-      disc = voucher.maxDiscountAmount;
-    }
-    invoiceVoucherDiscount.value = disc;
-    appliedInvoiceVoucher.value = {
-      orderVoucherId: applied.orderVoucherId,
-      voucherId: voucher.id,
-      code: voucher.code,
-      name: voucher.name,
-      discountType: voucher.discountType,
-      discountValue: voucher.discountValue,
-      maxDiscountAmount: voucher.maxDiscountAmount,
-      discountAmount: disc,
-      minOrderValue: voucher.minOrderValue,
-    };
-    ElMessage.success('Đã áp dụng voucher ' + voucher.code);
-  } catch (err: any) {
-    invoiceVoucherError.value = err?.message || 'Không thể áp dụng voucher';
-  } finally {
-    invoiceVoucherApplying.value = false;
-  }
-}
-
-async function removeInvoiceVoucher() {
-  if (!appliedInvoiceVoucher.value) return;
-  invoiceVoucherApplying.value = true;
-  try {
-    await VoucherApi.remove(appliedInvoiceVoucher.value.orderVoucherId);
-    ElMessage.success('Đã bỏ voucher ' + appliedInvoiceVoucher.value.code);
-    appliedInvoiceVoucher.value = null;
-    invoiceVoucherDiscount.value = 0;
-    invoiceVoucherCode.value = '';
-  } catch (err: any) {
-    ElMessage.error(err?.message || 'Không thể bỏ voucher');
-  } finally {
-    invoiceVoucherApplying.value = false;
   }
 }
 

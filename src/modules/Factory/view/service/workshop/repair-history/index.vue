@@ -131,20 +131,34 @@
               </ElInput>
             </div>
 
-            <ElSelect
-              v-model="statusFilter"
-              placeholder="Bộ lọc trạng thái"
-              clearable
-              @change="handleFilterChange"
-              class="w-48 combat-select"
-            >
-              <ElOption label="Tất cả trạng thái" value="" />
-              <ElOption label="Chờ phân công (Pending)" value="Pending" />
-              <ElOption label="Đang sửa chữa (InProgress)" value="InProgress" />
-              <ElOption label="Chờ kiểm định (QcPending)" value="QcPending" />
-              <ElOption label="Đã hoàn thành (Completed)" value="Completed" />
-              <ElOption label="Đã hủy (Cancelled)" value="Cancelled" />
-            </ElSelect>
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+              <ElSelect
+                v-model="statusFilter"
+                placeholder="Bộ lọc trạng thái"
+                clearable
+                @change="handleFilterChange"
+                class="flex-1 min-w-[160px] sm:w-48 combat-select"
+              >
+                <ElOption label="Tất cả trạng thái" value="" />
+                <ElOption label="Chờ phân công (Pending)" value="Pending" />
+                <ElOption label="Đang sửa chữa (InProgress)" value="InProgress" />
+                <ElOption label="Chờ kiểm định (QcPending)" value="QcPending" />
+                <ElOption label="Đã hoàn thành (Completed)" value="Completed" />
+                <ElOption label="Đã hủy (Cancelled)" value="Cancelled" />
+              </ElSelect>
+
+              <ElSelect
+                v-model="serviceTypeFilter"
+                placeholder="Bộ lọc dịch vụ"
+                clearable
+                @change="handleFilterChange"
+                class="flex-1 min-w-[160px] sm:w-48 combat-select"
+              >
+                <ElOption label="Tất cả dịch vụ" value="" />
+                <ElOption label="Sửa chữa" value="Sửa chữa" />
+                <ElOption label="Bảo hành" value="Bảo hành" />
+              </ElSelect>
+            </div>
           </div>
 
           <div class="flex items-center gap-3">
@@ -199,11 +213,20 @@
                     >
                       {{ row.customerName }}
                     </span>
-                    <span
-                      class="font-mono font-bold text-slate-400 dark:text-slate-500 text-[11px] mt-0.5"
-                    >
-                      RO-{{ String(row.id).padStart(5, '0') }}
-                    </span>
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <span
+                        class="font-mono font-bold text-slate-400 dark:text-slate-500 text-[11px]"
+                      >
+                        RO-{{ String(row.id).padStart(5, '0') }}
+                      </span>
+                      <span
+                        v-if="row.serviceType"
+                        class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase border"
+                        :class="row.serviceType === 'Bảo hành' ? 'bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800/50' : 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:border-slate-700'"
+                      >
+                        {{ row.serviceType }}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div class="shrink-0 text-right">
@@ -364,6 +387,7 @@ const pageSize = ref(10);
 const allValidItems = ref<any[]>([]);
 const searchQuery = ref('');
 const statusFilter = ref('');
+const serviceTypeFilter = ref('');
 
 const stats = reactive({
   inProgress: 0,
@@ -428,6 +452,10 @@ const applyLocalFilterAndPagination = () => {
 
   if (statusFilter.value) {
     filtered = filtered.filter((x: any) => x.status === statusFilter.value);
+  }
+
+  if (serviceTypeFilter.value) {
+    filtered = filtered.filter((x: any) => x.serviceType === serviceTypeFilter.value);
   }
 
   if (searchQuery.value) {

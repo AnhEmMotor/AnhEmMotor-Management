@@ -18,16 +18,6 @@
           </div>
         </div>
 
-        <button
-          v-if="order"
-          class="print-button"
-          type="button"
-          aria-label="In hồ sơ sửa chữa"
-          @click="printRecord"
-        >
-          <ArtSvgIcon icon="ri:printer-line" />
-          <span>In hồ sơ</span>
-        </button>
       </header>
 
       <section v-if="loading" class="loading-layout" aria-label="Đang tải hồ sơ sửa chữa">
@@ -211,9 +201,38 @@
                   <dt>Số điện thoại</dt>
                   <dd>{{ order.customerPhone || 'Chưa cập nhật' }}</dd>
                 </div>
+                <div v-if="order.vehicle?.imageUrl || order.vehicle?.image">
+                  <dt>Hình ảnh xe</dt>
+                  <dd>
+                    <el-image
+                      style="width: 80px; height: 80px; border-radius: 6px"
+                      :src="order.vehicle?.imageUrl || order.vehicle?.image"
+                      :preview-src-list="[order.vehicle?.imageUrl || order.vehicle?.image]"
+                      fit="cover"
+                    >
+                      <template #error>
+                        <div class="flex items-center justify-center w-full h-full bg-gray-100 text-gray-400">
+                          <ArtSvgIcon icon="ri:image-line" />
+                        </div>
+                      </template>
+                    </el-image>
+                  </dd>
+                </div>
                 <div>
                   <dt>Thông tin xe</dt>
                   <dd class="mono-value">{{ order.vehicleInfo || 'Chưa cập nhật' }}</dd>
+                </div>
+                <div>
+                  <dt>Phiên bản</dt>
+                  <dd>{{ order.vehicle?.versionName || order.vehicle?.version || 'Chưa cập nhật' }}</dd>
+                </div>
+                <div>
+                  <dt>Màu sắc</dt>
+                  <dd>{{ order.vehicle?.colorName || order.vehicle?.color || 'Chưa cập nhật' }}</dd>
+                </div>
+                <div>
+                  <dt>Loại xe</dt>
+                  <dd>{{ order.vehicle?.categoryName || order.vehicle?.category || order.vehicle?.type || 'Chưa cập nhật' }}</dd>
                 </div>
                 <div>
                   <dt>Mã phương tiện</dt>
@@ -335,9 +354,6 @@ const goBack = () => {
   router.push(props.backPath);
 };
 
-const printRecord = () => {
-  window.print();
-};
 
 const formatCurrency = (value?: number | null) => {
   return new Intl.NumberFormat('vi-VN', {
@@ -384,14 +400,7 @@ onMounted(loadOrderDetail);
 
   min-height: 100%;
   padding: 20px;
-  color: var(--el-text-color-primary);
-  background:
-    radial-gradient(
-      circle at 94% 4%,
-      color-mix(in srgb, var(--report-red) 7%, transparent),
-      transparent 24rem
-    ),
-    var(--el-bg-color-page);
+
 }
 
 .page-shell {

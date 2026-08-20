@@ -117,7 +117,7 @@
             >
               <img
                 v-if="ogImage"
-                :src="ogImage"
+                :src="formatImageUrl(ogImage)"
                 class="w-full h-full object-cover transition-transform group-hover:scale-105"
               />
               <div v-else class="w-full h-full flex-cc flex-col gap-2 text-slate-400">

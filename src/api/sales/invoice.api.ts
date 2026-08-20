@@ -33,7 +33,10 @@ export interface AdminInvoiceSummaryResponse {
   customerIdCard: string;
   customerAddress: string;
   vehicleModel: string;
+  vehicleVersion?: string;
   vehicleColor: string;
+  vehicleType?: string;
+  vehicleImage?: string;
   chassisNo: string;
   engineNo: string;
   vehiclePrice: number;
@@ -59,7 +62,10 @@ export interface AdminInvoiceDetailResponse {
   customerIdCard: string;
   customerAddress: string;
   vehicleModel: string;
+  vehicleVersion?: string;
   vehicleColor: string;
+  vehicleType?: string;
+  vehicleImage?: string;
   chassisNo: string;
   engineNo: string;
   vehiclePrice: number;
@@ -83,7 +89,10 @@ export interface CreateAdminInvoiceRequest {
   customerIdCard: string;
   customerAddress: string;
   vehicleModel: string;
+  vehicleVersion?: string;
   vehicleColor: string;
+  vehicleType?: string;
+  vehicleImage?: string;
   chassisNo: string;
   engineNo: string;
   vehiclePrice: number;
@@ -102,7 +111,10 @@ export interface UpdateAdminInvoiceRequest {
   customerIdCard: string;
   customerAddress: string;
   vehicleModel: string;
+  vehicleVersion?: string;
   vehicleColor: string;
+  vehicleType?: string;
+  vehicleImage?: string;
   chassisNo: string;
   engineNo: string;
   vehiclePrice: number;
