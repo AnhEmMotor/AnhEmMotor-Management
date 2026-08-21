@@ -333,7 +333,7 @@
             <ElTableColumn label="Trạng thái" width="110">
               <template #default="scope">
                 <ElTag size="small" :type="mapStatusType(scope.row.status)">{{
-                  scope.row.status
+                  translateStatus(scope.row.status)
                 }}</ElTag>
               </template>
             </ElTableColumn>
@@ -736,13 +736,30 @@ function formatDate(ts: string) {
 function mapStatusType(status: string) {
   switch (status) {
     case 'Completed':
+    case 'Hoàn thành':
       return 'success';
     case 'Pending':
+    case 'Đang chờ':
       return 'warning';
     case 'Cancelled':
+    case 'Đã hủy':
+    case 'Đã huỷ':
       return 'danger';
     default:
       return 'info';
+  }
+}
+
+function translateStatus(status: string) {
+  switch (status) {
+    case 'Completed':
+      return 'Hoàn thành';
+    case 'Pending':
+      return 'Đang chờ';
+    case 'Cancelled':
+      return 'Đã hủy';
+    default:
+      return status;
   }
 }
 

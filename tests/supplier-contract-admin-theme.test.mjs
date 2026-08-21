@@ -5,6 +5,7 @@ import test from 'node:test';
 import { compileStyle, parse } from '@vue/compiler-sfc';
 
 const componentPath = '../src/modules/Admin/view/contract/supplier/index.vue';
+const detailComponentPath = '../src/modules/Admin/view/contract/supplier/contract-preview.vue';
 
 const darkPaletteDeclaration =
   /(?:^|[;\s])(?:(?:color|--el-(?:table-)?(?:header-)?text-color[\w-]*|--el-text-color[\w-]*)\s*:\s*#f8fafc|(?:background|background-color|border|border-color|--el-bg-color[\w-]*|--el-fill-color[\w-]*|--el-border-color[\w-]*)\s*:[^;]*(?:#(?:161618|111214|101114|050506|202126)|rgb\(255 255 255\s*\/\s*(?:9|10|12|14|18|24|28)%\)))/i;
@@ -46,4 +47,31 @@ test('admin supplier contract page gates dark palette behind html.dark', async (
       `dark palette selector must be gated by html.dark: ${selector.trim()}`
     );
   }
+});
+
+test('admin supplier contract list follows the warehouse list composition', async () => {
+  const source = await readFile(new URL(componentPath, import.meta.url), 'utf8');
+
+  assert.match(source, /class="supplier-kpi-grid"/);
+  assert.match(source, /class="supplier-list-card"/);
+  assert.match(source, /class="supplier-filter-grid"/);
+  assert.match(source, /<ElTable :data="data"/);
+  assert.match(source, /stats\.expiringContracts \+ stats\.expiredContracts/);
+  assert.match(source, /layout="total, sizes, prev, pager, next"/);
+});
+
+test('admin supplier contract detail follows the warehouse form and A4 composition', async () => {
+  const detailUrl = new URL(detailComponentPath, import.meta.url);
+  const source = await readFile(detailUrl, 'utf8');
+  const { descriptor, errors } = parse(source, { filename: detailUrl.pathname });
+
+  assert.deepEqual(errors, []);
+  assert.equal(descriptor.styles.length, 1, 'detail must keep exactly one style block');
+  assert.match(source, /class="contract-document-layout"/);
+  assert.match(source, /Thông tin thanh toán &amp; Điều khoản|Thông tin thanh toán & Điều khoản/);
+  assert.match(source, /Trình Xem Trước Bản In \(A4\)/);
+  assert.match(source, /class="a4-paper"/);
+  assert.match(source, /class="supplemental-section"/);
+  assert.match(source, /handleSaveContract/);
+  assert.match(source, /handleDirectStatusChange\('PendingApproval'/);
 });

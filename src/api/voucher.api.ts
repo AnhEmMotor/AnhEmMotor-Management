@@ -19,10 +19,10 @@ export const VoucherApi = {
   getByCode(code: string) {
     return request.get<VoucherItem>({ url: `/api/v1/voucher/code/${code}` });
   },
-  validate(voucherId: number, outputId: number) {
+  validate(voucherId: number, outputId?: number, orderTotal?: number) {
     return request.post<VoucherValidateResponse>({
       url: '/api/v1/voucher/validate',
-      data: { voucherId, outputId },
+      data: { voucherId, outputId, orderTotal },
     });
   },
   apply(voucherId: number, outputId: number) {

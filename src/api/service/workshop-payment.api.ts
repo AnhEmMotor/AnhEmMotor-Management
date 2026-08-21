@@ -58,8 +58,7 @@ export const PAYMENT_STATUSES = [
 
 export const SOURCE_TYPES = [
   { label: 'Phiếu sửa chữa', value: 'RepairOrder' },
-  { label: 'Phiếu bảo hành', value: 'Warranty' },
-  { label: 'Đặt dịch vụ', value: 'ServiceBooking' },
+  { label: 'Phiếu bảo hành', value: 'Maintenance' },
 ] as const;
 
 export const WorkshopPaymentApi = {

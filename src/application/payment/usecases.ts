@@ -33,16 +33,13 @@ export class RealGetPaymentsUseCase implements GetPaymentsUseCase {
   async call(input: GetPaymentsInput): Promise<PaymentListResult | null> {
     const { current, size, sourceType, paymentStatus, paymentMethod, search } = input;
 
-    const filters: string[] = [];
-    if (sourceType) filters.push(`SourceType==${sourceType}`);
-    if (paymentStatus) filters.push(`PaymentStatus==${paymentStatus}`);
-    if (paymentMethod) filters.push(`PaymentMethod==${paymentMethod}`);
-    if (search) filters.push(`PaymentNumber@=*${search}*`);
-
     const params: Record<string, unknown> = {
       current,
       size,
-      Filters: filters.join(','),
+      sourceType,
+      paymentStatus,
+      paymentMethod,
+      search,
       Sorts: '-CreatedAt',
     };
 

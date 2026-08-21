@@ -480,7 +480,7 @@ const columns = computed(() => {
     },
     {
       prop: 'voucherDiscount',
-      label: 'Phí sau voucher',
+      label: 'Giảm giá',
       width: 140,
       align: 'right',
       useSlot: true,

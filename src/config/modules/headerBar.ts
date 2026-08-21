@@ -30,7 +30,7 @@ export const headerBarConfig: HeaderBarFeatureConfig = {
     description: 'ThongBaoTrung tâm，Hiển thịHeThongThongBaovàTinNhan',
   },
   chat: {
-    enabled: true,
+    enabled: false,
     description: 'tròngàycôngnăng，gợicungthựcgiờgiaothông',
   },
   language: {

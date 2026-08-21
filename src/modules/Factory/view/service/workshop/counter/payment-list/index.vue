@@ -119,6 +119,9 @@
             {{ getSourceTypeLabel(row.sourceType) }}
           </ElTag>
         </template>
+        <template #paymentMethod="{ row }">
+          {{ getPaymentMethodLabel(row.paymentMethod) }}
+        </template>
         <template #paymentStatus="{ row }">
           <ElTag :type="paymentStatusTagType(row.paymentStatus)" effect="dark">
             {{ getPaymentStatusLabel(row.paymentStatus) }}
@@ -407,7 +410,13 @@ const columns = computed(() => [
     useSlot: true,
     slot: 'totalAmount',
   },
-  { prop: 'paymentMethod', label: 'HT thanh toán', width: 130 },
+  {
+    prop: 'paymentMethod',
+    label: 'HT thanh toán',
+    width: 130,
+    useSlot: true,
+    slot: 'paymentMethod',
+  },
   {
     prop: 'paymentStatus',
     label: 'Trạng thái',
@@ -441,39 +450,49 @@ const columns = computed(() => [
 ]);
 
 const getSourceTypeLabel = (val: string) => {
-  const found = SOURCE_TYPES.find((s) => s.value === val);
+  if (!val) return '';
+  const lowerVal = val.toLowerCase();
+  if (lowerVal === 'repair') return 'Phiếu sửa chữa';
+  if (lowerVal === 'maintenance') return 'Phiếu bảo hành';
+  const found = SOURCE_TYPES.find((s) => s.value.toLowerCase() === lowerVal);
   return found?.label || val;
 };
 
 const getPaymentStatusLabel = (val: string) => {
-  const found = PAYMENT_STATUSES.find((s) => s.value === val);
+  if (!val) return '';
+  const found = PAYMENT_STATUSES.find((s) => s.value.toLowerCase() === val.toLowerCase());
   return found?.label || val;
 };
 
 const getPaymentMethodLabel = (val: string) => {
-  const found = PAYMENT_METHODS.find((m) => m.value === val);
+  if (!val) return '';
+  const found = PAYMENT_METHODS.find((m) => m.value.toLowerCase() === val.toLowerCase());
   return found?.label || val;
 };
 
 const sourceTypeTagType = (val: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  if (!val) return 'primary';
   const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
-    RepairOrder: 'danger',
-    Warranty: 'info',
-    ServiceBooking: 'primary',
+    repairorder: 'danger',
+    repair: 'danger',
+    maintenance: 'info',
+    warranty: 'info',
+    servicebooking: 'primary',
   };
-  return map[val] || 'primary';
+  return map[val.toLowerCase()] || 'primary';
 };
 
 const paymentStatusTagType = (
   val: string
 ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  if (!val) return 'primary';
   const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
-    Paid: 'success',
-    Unpaid: 'danger',
-    Partial: 'warning',
-    Refunded: 'info',
+    paid: 'success',
+    unpaid: 'danger',
+    partial: 'warning',
+    refunded: 'info',
   };
-  return map[val] || 'primary';
+  return map[val.toLowerCase()] || 'primary';
 };
 
 const formatCurrency = (val: number) => {

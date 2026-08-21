@@ -25,7 +25,7 @@ export function useVoucher(
   const finalTotal = computed(() => Math.max(0, getTotal() - discountAmount.value));
 
   const validateMinSpend = (voucher: VoucherItem): boolean => {
-    if (isMock) return true; // Bypass min spend for new orders (total is not known yet)
+    if (isMock) return true; 
     if (voucher.minOrderValue > 0 && getTotal() < voucher.minOrderValue) {
       return false;
     }
@@ -68,15 +68,17 @@ export function useVoucher(
 
       const discount = calculateDiscount(voucher);
 
+      const total = getTotal();
       let finalOrderVoucherId = 0;
       const oid = getId();
-      if (!oid) {
+      if (!oid && !isMock) {
         errorMsg.value = 'Vui lòng lưu đơn hàng trước khi áp dụng voucher';
         appliedVoucher.value = null;
         return;
       }
 
-      const validated = await VoucherApi.validate(voucher.id, oid);
+      const outputId = isMock ? undefined : oid;
+      const validated = await VoucherApi.validate(voucher.id, outputId, total);
       if (!validated.isValid) {
         errorMsg.value = validated.message || 'Voucher không hợp lệ';
         appliedVoucher.value = null;
@@ -91,7 +93,7 @@ export function useVoucher(
           return;
         }
 
-        const validated = await VoucherApi.validate(voucher.id, oid);
+        const validated = await VoucherApi.validate(voucher.id, oid, total);
         if (!validated.isValid) {
           errorMsg.value = validated.message || "Voucher không hợp lệ";
           appliedVoucher.value = null;

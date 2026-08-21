@@ -1,8 +1,8 @@
 @use 'sass:map';
 
 $transition: (
-  duration: 0.12s,
-  distance: 10px,
+  duration: 0.05s,
+  distance: 5px,
   easing: cubic-bezier(0.25, 0.1, 0.25, 1),
   fade-easing: cubic-bezier(0.4, 0, 0.6, 1),
 );

@@ -256,7 +256,7 @@
         class="reporting-table"
         empty-text="Chưa có dữ liệu"
       >
-        <ElTableColumn prop="employeeName" label="Nhân viên" min-width="220">
+        <ElTableColumn prop="employeeName" label="Nhân viên" min-width="200">
           <template #default="{ row }">
             <div class="employee-report__employee-cell">
               <strong>{{ row.employeeName }}</strong>
@@ -264,8 +264,8 @@
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn prop="role" label="Vai trò" min-width="180" />
-        <ElTableColumn prop="totalSales" label="Doanh số mang về" min-width="170" align="right">
+        <ElTableColumn prop="role" label="Vai trò" min-width="160" />
+        <ElTableColumn prop="totalSales" label="Doanh số mang về" min-width="160" align="right">
           <template #default="{ row }">
             {{
               row.hasSalesData || row.hasKpiData ? formatCurrency(row.totalSales) : 'Chưa phát sinh'
@@ -275,7 +275,7 @@
         <ElTableColumn
           prop="commissionPaid"
           label="Hoa hồng được duyệt"
-          min-width="170"
+          min-width="160"
           align="right"
         >
           <template #default="{ row }">
@@ -284,9 +284,9 @@
             </span>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Nguồn dữ liệu" min-width="210">
+        <ElTableColumn label="Nguồn dữ liệu" min-width="180" align="center">
           <template #default="{ row }">
-            <div class="employee-report__source-tags">
+            <div class="employee-report__source-tags" style="justify-content: center;">
               <ElTag :type="row.hasSalesData ? 'success' : 'info'" effect="plain" size="small">
                 Đơn hàng
               </ElTag>
