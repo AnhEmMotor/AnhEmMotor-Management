@@ -56,7 +56,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { fetchRecentAuditLogs } from '@/api/dashboard.api';
 
-const CATEGORY_TAG: Record<string, string> = {
+const CATEGORY_TAG: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
   order: 'primary', inventory: 'warning', customer: 'success',
   operations: 'info', finance: 'danger',
 };

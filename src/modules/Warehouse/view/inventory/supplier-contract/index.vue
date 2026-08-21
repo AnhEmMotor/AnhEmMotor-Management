@@ -176,7 +176,7 @@
                     size="small"
                     circle
                     :icon="Edit"
-                    @click="handleEdit(scope.row)"
+                    @click="handleEdit(scope.row as any)"
                     v-auth="'Permissions.Accountant.SupplierContractManagement.Edit'"
                   />
                 </el-tooltip>
@@ -186,7 +186,7 @@
                     size="small"
                     circle
                     :icon="Delete"
-                    @click="handleDelete(scope.row)"
+                    @click="handleDelete(scope.row as any)"
                     v-auth="'Permissions.Accountant.SupplierContractManagement.Delete'"
                   />
                 </el-tooltip>
@@ -235,8 +235,8 @@
         <el-form-item label="Số hợp đồng" required>
           <el-input v-model="formData.contractNumber" placeholder="Nhập số hợp đồng" />
         </el-form-item>
-        
-        <el-row :gutter="20">
+
+                <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Ngày hiệu lực" required>
               <el-date-picker
@@ -262,8 +262,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
-        <el-row :gutter="20">
+
+                <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Giá trị hợp đồng">
               <el-input-number 
@@ -287,12 +287,12 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
-        <el-form-item label="Điều khoản">
+
+                <el-form-item label="Điều khoản">
           <el-input v-model="formData.terms" type="textarea" :rows="2" />
         </el-form-item>
-        
-        <el-form-item label="Ghi chú">
+
+                <el-form-item label="Ghi chú">
           <el-input v-model="formData.note" type="textarea" :rows="2" />
         </el-form-item>
       </el-form>
@@ -380,8 +380,8 @@ const {
   stats,
   suppliers,
   searchForm,
-  
-  restoreDialogVisible,
+
+    restoreDialogVisible,
   deletedContractsData,
   deletedContractsLoading,
   selectedDeletedContracts,
@@ -422,7 +422,7 @@ const formatDateTime = (val: string | null | undefined) => {
 };
 
 const getStatusTag = (status: SupplierContractStatus) => {
-  const map: Record<SupplierContractStatus, string> = {
+  const map: Record<SupplierContractStatus, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
     Draft: 'info',
     PendingApproval: 'warning',
     Active: 'success',

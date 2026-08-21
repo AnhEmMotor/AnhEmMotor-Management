@@ -29,7 +29,7 @@ import { fetchDashboardKpis } from '@/api/dashboard.api';
 
 const props = defineProps<{
   timeFilter: string;
-  dateRange?: [Date, Date] | null;
+  dateRange?: [Date, Date] | string[] | null;
 }>();
 
 const PERIOD_LABELS: Record<string, string> = {
@@ -58,9 +58,7 @@ function fmt(v: number): string {
 }
 
 function resolveIcon(apiIcon: string): string {
-  // If already has iconify prefix, keep it
   if (apiIcon && apiIcon.includes(':')) return apiIcon;
-  // Map short names to ri: icons
   const iconMap: Record<string, string> = {
     orders: 'ri:shopping-bag-3-line',
     users: 'ri:group-line',
