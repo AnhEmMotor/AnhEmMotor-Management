@@ -430,6 +430,10 @@ function translateContractStatus(status: string) {
   return labels[status] ?? status;
 }
 
+function shortenChartLabel(value: string, maxLength = 18) {
+  return value.length > maxLength ? `${value.slice(0, maxLength - 1)}…` : value;
+}
+
 function renderCharts() {
   if (trendChartRef.value) {
     if (!trendChart) trendChart = echarts.init(trendChartRef.value);
@@ -438,9 +442,9 @@ function renderCharts() {
         backgroundColor: 'transparent',
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
         grid: {
-          left: '3%',
-          right: '6%',
-          bottom: '3%',
+          left: 128,
+          right: 36,
+          bottom: 18,
           containLabel: true,
         },
         xAxis: {
@@ -451,8 +455,12 @@ function renderCharts() {
         },
         yAxis: {
           type: 'category',
-          data: statusData.value.map((item) => item.name),
-          axisLabel: { color: chartTextColor.value },
+          data: statusData.value.map((item) => shortenChartLabel(item.name)),
+          axisLabel: {
+            color: chartTextColor.value,
+            width: 112,
+            overflow: 'truncate',
+          },
           axisLine: { lineStyle: { color: chartAxisLineColor.value } },
         },
         series: [
@@ -468,6 +476,7 @@ function renderCharts() {
             label: {
               show: true,
               position: 'right',
+              distance: 8,
               color: chartTextColor.value,
               formatter: '{c}',
               fontWeight: 'bold',
@@ -484,17 +493,24 @@ function renderCharts() {
     topSuppliersChart.setOption(
       {
         backgroundColor: 'transparent',
-        tooltip: { trigger: 'item' },
+        tooltip: {
+          trigger: 'item',
+          formatter: (params: any) => `${params.name}: <strong>${params.value}</strong> hợp đồng`,
+        },
         legend: {
-          orient: 'vertical',
-          left: 'left',
+          type: 'scroll',
+          orient: 'horizontal',
+          left: 12,
+          right: 12,
+          bottom: 4,
+          itemGap: 12,
           textStyle: { color: chartTextColor.value },
         },
         series: [
           {
             type: 'pie',
             radius: ['40%', '70%'],
-            center: ['60%', '50%'],
+            center: ['50%', '43%'],
             data: supplierContractStatusData.value.map((item) => ({
               name: item.name,
               value: item.value,
@@ -505,11 +521,7 @@ function renderCharts() {
               borderWidth: 2,
             },
             label: {
-              show: true,
-              color: chartTextColor.value,
-              formatter: '{b}: {c}',
-              fontSize: 13,
-              fontWeight: 'bold',
+              show: false,
             },
           },
         ],
@@ -524,17 +536,24 @@ function renderCharts() {
     statusChart.setOption(
       {
         backgroundColor: 'transparent',
-        tooltip: { trigger: 'item' },
+        tooltip: {
+          trigger: 'item',
+          formatter: (params: any) => `${params.name}: <strong>${params.value}</strong> hợp đồng`,
+        },
         legend: {
-          orient: 'vertical',
-          left: 'left',
+          type: 'scroll',
+          orient: 'horizontal',
+          left: 12,
+          right: 12,
+          bottom: 4,
+          itemGap: 12,
           textStyle: { color: chartTextColor.value },
         },
         series: [
           {
             type: 'pie',
             radius: ['40%', '70%'],
-            center: ['60%', '50%'],
+            center: ['50%', '43%'],
             data: salesContractStatusData.value.map((item) => ({
               name: item.name,
               value: item.value,
@@ -618,7 +637,7 @@ function formatNumber(val: number) {
 }
 
 .reporting-chart {
-  @apply h-[300px] w-full;
+  @apply h-75 w-full;
 }
 
 .reporting-section-grid {
