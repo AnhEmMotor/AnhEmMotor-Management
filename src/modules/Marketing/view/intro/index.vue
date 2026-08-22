@@ -65,7 +65,7 @@
 
       <div class="info-card">
         <div class="card-header">
-          <div class="card-badge bg-blue">MARKETING & SEO</div>
+          <div class="card-badge bg-blue">MARKETING</div>
           <div class="website-link"><ArtSvgIcon icon="ri:global-line" /> anhemmotor.com</div>
         </div>
 

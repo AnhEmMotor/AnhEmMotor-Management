@@ -23,35 +23,41 @@
 
     <div class="reporting-kpi-grid dashboard-report__kpis">
       <ArtStatsCard
-        title="Doanh thu thực tế"
-        :count="formatCurrency(summary.todayRevenue)"
-        :description="`${summary.revenueChangePercentage >= 0 ? 'Tăng' : 'Giảm'} ${Math.abs(summary.revenueChangePercentage).toFixed(1)}% so với hôm qua`"
+        :title="kpiRevenue.title"
+        :count="kpiRevenue.count"
+        :description="kpiRevenue.description"
         icon="ri:money-dollar-circle-line"
-        :icon-style="summary.revenueChangePercentage < 0 ? 'bg-report-red-dark' : 'bg-report-red'"
+        :icon-style="kpiRevenue.style"
         :loading="loading"
       />
       <ArtStatsCard
-        title="Lợi nhuận ròng"
-        :count="formatCurrency(summary.todayProfit)"
-        :description="`Tháng này: ${formatCurrency(summary.monthlyProfit)}`"
+        :title="kpiProfit.title"
+        :count="kpiProfit.count"
+        :description="kpiProfit.description"
         icon="ri:line-chart-line"
-        icon-style="bg-report-red-light"
+        :icon-style="kpiProfit.style"
         :loading="loading"
       />
       <ArtStatsCard
         title="Đơn hàng chờ xử lý"
-        :count="summary.pendingOrdersCount"
-        :description="`Quá hạn: ${summary.overdueOrdersCount}`"
+        :count="String(summary.pendingOrdersCount)"
+        :description="`Quá hạn: ${summary.overdueOrdersCount} đơn`"
         icon="ri:timer-line"
-        icon-style="bg-report-red-dark"
+        :icon-style="summary.overdueOrdersCount > 0 ? 'bg-report-red-dark' : 'bg-report-red-light'"
         :loading="loading"
       />
       <ArtStatsCard
         title="Cảnh báo tồn kho"
-        :count="summary.lowStockCount"
-        description="Sản phẩm cần kiểm tra tồn kho"
+        :count="`Hết hàng: ${summary.outOfStockCount ?? 0}`"
+        :description="`Sắp hết: ${summary.lowStockCount ?? 0} sản phẩm`"
         icon="ri:alarm-warning-line"
-        :icon-style="summary.lowStockCount > 0 ? 'bg-report-red-dark' : 'bg-report-gray'"
+        :icon-style="
+          (summary.outOfStockCount ?? 0) > 0
+            ? 'bg-report-red-dark'
+            : (summary.lowStockCount ?? 0) > 0
+              ? 'bg-report-red-light'
+              : 'bg-report-gray'
+        "
         :loading="loading"
       />
     </div>
@@ -64,7 +70,16 @@
             <span>{{ selectedRangeLabel }}</span>
           </div>
         </template>
-        <div ref="revenueChartRef" class="reporting-chart dashboard-report__chart"></div>
+        <div
+          v-show="dailyRevenue.length > 0"
+          ref="revenueChartRef"
+          class="reporting-chart dashboard-report__chart"
+        ></div>
+        <ElEmpty
+          v-if="dailyRevenue.length === 0"
+          description="Chưa có dữ liệu doanh thu trong kỳ này"
+          :image-size="72"
+        />
       </ElCard>
       <ElCard class="reporting-card dashboard-report__summary-card">
         <template #header>
@@ -73,22 +88,39 @@
             <span>{{ selectedRangeLabel }}</span>
           </div>
         </template>
-        <div class="reporting-page__summary-grid">
-          <div class="reporting-page__summary-row">
-            <span class="reporting-muted">Doanh thu tháng:</span>
-            <strong>{{ formatCurrency(summary.monthlyRevenue) }}</strong>
+        <div class="dashboard-report__summary-grid">
+          <div class="dashboard-report__summary-item dashboard-report__summary-item--revenue">
+            <div class="dashboard-report__summary-icon">
+              <ArtSvgIcon icon="ri:money-dollar-circle-line" />
+            </div>
+            <div>
+              <span>Doanh thu kỳ này</span>
+              <strong>{{ formatCurrency(operationalSummary.revenue) }}</strong>
+            </div>
           </div>
-          <div class="reporting-page__summary-row">
-            <span class="reporting-muted">Tháng trước:</span>
-            <strong>{{ formatCurrency(summary.lastMonthRevenue) }}</strong>
+          <div class="dashboard-report__summary-item">
+            <div>
+              <span>{{ operationalSummary.comparisonLabel }}</span>
+              <strong>{{ formatCurrency(operationalSummary.comparisonRevenue) }}</strong>
+            </div>
           </div>
-          <div class="reporting-page__summary-row">
-            <span>Xe bán tháng này:</span>
-            <strong class="text-report-red">{{ summary.monthlyVehiclesSold }}</strong>
+          <div class="dashboard-report__summary-item">
+            <div>
+              <span>Xe bán trong kỳ</span>
+              <strong>{{ operationalSummary.vehiclesSold }}</strong>
+            </div>
           </div>
-          <div class="reporting-page__summary-row">
-            <span class="reporting-muted">Tổng SKU:</span>
-            <strong>{{ summary.totalSKUCount }}</strong>
+          <div class="dashboard-report__summary-item">
+            <div>
+              <span>Tồn kho khả dụng</span>
+              <strong>{{ summary.currentInventoryCount }}</strong>
+            </div>
+          </div>
+          <div class="dashboard-report__summary-item">
+            <div>
+              <span>Tổng sản phẩm đang bán</span>
+              <strong>{{ summary.totalSKUCount }}</strong>
+            </div>
           </div>
         </div>
       </ElCard>
@@ -96,13 +128,32 @@
 
     <div class="reporting-section-grid two-columns dashboard-report__analysis">
       <ElCard class="reporting-card dashboard-report__chart-card">
-        <template #header>Doanh thu theo thương hiệu</template>
-        <div ref="brandChartRef" class="reporting-chart dashboard-report__chart"></div>
+        <template #header>
+          <div class="dashboard-report__card-header">
+            <span>Doanh thu theo thương hiệu</span>
+            <span>{{ selectedRangeLabel }}</span>
+          </div>
+        </template>
+        <div
+          v-show="brandDistributionData.length > 0"
+          ref="brandChartRef"
+          class="reporting-chart dashboard-report__chart"
+        ></div>
+        <ElEmpty
+          v-if="brandDistributionData.length === 0"
+          description="Chưa có dữ liệu theo thương hiệu trong kỳ này"
+          :image-size="72"
+        />
       </ElCard>
       <ElCard class="reporting-card dashboard-report__table-card">
-        <template #header>Hiệu suất Sale (Top Ranking)</template>
+        <template #header>
+          <div class="dashboard-report__card-header">
+            <span>Hiệu suất Sale (Top Ranking)</span>
+            <span>{{ selectedRangeLabel }}</span>
+          </div>
+        </template>
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[520px] text-left text-sm">
+          <table class="w-full min-w-130 text-left text-sm">
             <thead>
               <tr
                 class="border-b border-(--el-border-color-light) text-(--el-text-color-secondary)"
@@ -136,7 +187,7 @@
     <ElCard class="reporting-card dashboard-report__transactions">
       <template #header>Luồng nhật ký giao dịch gần nhất</template>
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[680px] text-left text-sm">
+        <table class="w-full min-w-170 text-left text-sm">
           <thead>
             <tr class="border-b border-(--el-border-color-light) text-(--el-text-color-secondary)">
               <th class="pb-2">Mốc giờ</th>
@@ -180,7 +231,7 @@
         </ElTableColumn>
         <ElTableColumn prop="statusId" label="Trạng thái" min-width="130">
           <template #default="{ row }">
-            <ElTag size="small" effect="light" round>{{ row.statusId || '-' }}</ElTag>
+            <ElTag size="small" effect="light" round>{{ getOrderStatusLabel(row.statusId) }}</ElTag>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="createdAt" label="Thời gian" min-width="170">
@@ -196,6 +247,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import * as echarts from 'echarts';
 import { storeToRefs } from 'pinia';
 import ArtStatsCard from '@/components/core/cards/art-stats-card/index.vue';
+import ArtSvgIcon from '@/components/core/base/art-svg-icon/index.vue';
 import { statisticsApi } from '@/api/operations';
 import { useSettingStore } from '@/application/store/setting';
 import { exportReportWorkbook } from '@/utils/report-excel';
@@ -205,6 +257,13 @@ import type { StaffPerformance, TransactionLog } from '@/services/analytics.type
 import type * as Statistical from '@/types/api/statistical';
 
 type Period = 'today' | 'month' | 'year' | 'custom';
+
+interface KpiCardData {
+  title: string;
+  count: string;
+  description: string;
+  style: string;
+}
 
 const settingStore = useSettingStore();
 const { isDark } = storeToRefs(settingStore);
@@ -224,16 +283,23 @@ const periodEnd = ref(toDateInput(new Date()));
 const summary = ref<Statistical.DashboardStatsResponse>({
   todayRevenue: 0,
   revenueChangePercentage: 0,
+  periodRevenue: 0,
+  periodProfit: 0,
   monthlyRevenue: 0,
   todayProfit: 0,
   monthlyProfit: 0,
   lastMonthRevenue: 0,
   lastMonthProfit: 0,
+  yearlyRevenue: 0,
+  yearlyProfit: 0,
+  lastYearRevenue: 0,
+  lastYearProfit: 0,
   total7dRevenue: 0,
   total7dProfit: 0,
   bestDayRevenue: 0,
   overdueOrdersCount: 0,
   lowStockCount: 0,
+  outOfStockCount: 0,
   overstockCount: 0,
   overdueDebtAmount: 0,
   todayVehiclesSold: 0,
@@ -256,6 +322,151 @@ const transactions = ref<TransactionLog[]>([]);
 const selectedRangeLabel = computed(
   () => `${formatDate(periodStart.value)} - ${formatDate(periodEnd.value)}`
 );
+
+const brandDistributionData = computed(() => summary.value.brandRevenueDistribution || []);
+
+const kpiRevenue = computed<KpiCardData>(() => {
+  const p = currentPeriod.value;
+  if (p === 'today') {
+    const change = summary.value.revenueChangePercentage;
+    const desc =
+      change === 0
+        ? 'Tương đương hôm qua'
+        : `${change > 0 ? 'Tăng' : 'Giảm'} ${Math.abs(change).toFixed(1)}% so với hôm qua`;
+    return {
+      title: 'Doanh thu hôm nay',
+      count: formatCurrency(summary.value.todayRevenue),
+      description: desc,
+      style: change < 0 ? 'bg-report-red-dark' : 'bg-report-red',
+    };
+  }
+  if (p === 'month') {
+    const cur = summary.value.monthlyRevenue;
+    const prev = summary.value.lastMonthRevenue;
+    let desc = `Tháng trước: ${formatCurrency(prev)}`;
+    if (prev > 0) {
+      const pct = ((cur - prev) / prev) * 100;
+      desc = `Tháng trước: ${formatCurrency(prev)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+    }
+    return {
+      title: 'Doanh thu tháng này',
+      count: formatCurrency(cur),
+      description: desc,
+      style: cur >= prev ? 'bg-report-red' : 'bg-report-red-dark',
+    };
+  }
+  if (p === 'year') {
+    const cur = summary.value.yearlyRevenue ?? 0;
+    const prev = summary.value.lastYearRevenue ?? 0;
+    let desc = `Năm trước: ${formatCurrency(prev)}`;
+    if (prev > 0) {
+      const pct = ((cur - prev) / prev) * 100;
+      desc = `Năm trước: ${formatCurrency(prev)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+    }
+    return {
+      title: 'Doanh thu năm nay',
+      count: formatCurrency(cur),
+      description: desc,
+      style: cur >= prev ? 'bg-report-red' : 'bg-report-red-dark',
+    };
+  }
+  const cur = summary.value.periodRevenue ?? 0;
+  return {
+    title: 'Doanh thu kỳ chọn',
+    count: formatCurrency(cur),
+    description: `Kỳ: ${selectedRangeLabel.value}`,
+    style: 'bg-report-red',
+  };
+});
+
+const kpiProfit = computed<KpiCardData>(() => {
+  const p = currentPeriod.value;
+  if (p === 'today') {
+    const prof = summary.value.todayProfit;
+    const rev = summary.value.todayRevenue;
+    const margin = rev > 0 ? ((prof / rev) * 100).toFixed(1) : '0.0';
+    return {
+      title: 'Lợi nhuận hôm nay',
+      count: formatCurrency(prof),
+      description: `Biên lợi nhuận: ${margin}%`,
+      style: prof >= 0 ? 'bg-report-red' : 'bg-report-red-dark',
+    };
+  }
+  if (p === 'month') {
+    const prof = summary.value.monthlyProfit;
+    const prevProf = summary.value.lastMonthProfit;
+    let desc = `Tháng trước: ${formatCurrency(prevProf)}`;
+    if (prevProf > 0) {
+      const pct = ((prof - prevProf) / prevProf) * 100;
+      desc = `Tháng trước: ${formatCurrency(prevProf)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+    }
+    return {
+      title: 'Lợi nhuận tháng này',
+      count: formatCurrency(prof),
+      description: desc,
+      style: prof >= 0 ? 'bg-report-red' : 'bg-report-red-dark',
+    };
+  }
+  if (p === 'year') {
+    const prof = summary.value.yearlyProfit ?? 0;
+    const prevProf = summary.value.lastYearProfit ?? 0;
+    let desc = `Năm trước: ${formatCurrency(prevProf)}`;
+    if (prevProf > 0) {
+      const pct = ((prof - prevProf) / prevProf) * 100;
+      desc = `Năm trước: ${formatCurrency(prevProf)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)`;
+    }
+    return {
+      title: 'Lợi nhuận năm nay',
+      count: formatCurrency(prof),
+      description: desc,
+      style: prof >= 0 ? 'bg-report-red' : 'bg-report-red-dark',
+    };
+  }
+  const prof = summary.value.periodProfit ?? 0;
+  const rev = summary.value.periodRevenue ?? 0;
+  const margin = rev > 0 ? ((prof / rev) * 100).toFixed(1) : '0.0';
+  return {
+    title: 'Lợi nhuận kỳ chọn',
+    count: formatCurrency(prof),
+    description: `Biên lợi nhuận: ${margin}%`,
+    style: prof >= 0 ? 'bg-report-red' : 'bg-report-red-dark',
+  };
+});
+
+const operationalSummary = computed(() => {
+  const p = currentPeriod.value;
+  if (p === 'today') {
+    return {
+      revenue: summary.value.todayRevenue,
+      comparisonLabel: 'Lợi nhuận hôm nay',
+      comparisonRevenue: summary.value.todayProfit,
+      vehiclesSold: summary.value.todayVehiclesSold,
+    };
+  }
+  if (p === 'year') {
+    return {
+      revenue: summary.value.yearlyRevenue ?? 0,
+      comparisonLabel: 'Doanh thu năm trước',
+      comparisonRevenue: summary.value.lastYearRevenue ?? 0,
+      vehiclesSold: summary.value.monthlyVehiclesSold,
+    };
+  }
+  if (p === 'custom') {
+    return {
+      revenue: summary.value.periodRevenue ?? 0,
+      comparisonLabel: 'Lợi nhuận kỳ chọn',
+      comparisonRevenue: summary.value.periodProfit ?? 0,
+      vehiclesSold: summary.value.monthlyVehiclesSold,
+    };
+  }
+  return {
+    revenue: summary.value.monthlyRevenue,
+    comparisonLabel: 'Doanh thu tháng trước',
+    comparisonRevenue: summary.value.lastMonthRevenue,
+    vehiclesSold: summary.value.monthlyVehiclesSold,
+  };
+});
+
 function onPeriodChange(period?: Period) {
   if (period && period !== 'custom') setDateRange(period);
   void loadData();
@@ -271,16 +482,36 @@ function exportDashboardExcel() {
           {
             'Từ ngày': periodStart.value,
             'Đến ngày': periodEnd.value,
+            'Doanh thu kỳ chọn':
+              currentPeriod.value === 'today'
+                ? summary.value.todayRevenue
+                : currentPeriod.value === 'month'
+                  ? summary.value.monthlyRevenue
+                  : currentPeriod.value === 'year'
+                    ? (summary.value.yearlyRevenue ?? 0)
+                    : (summary.value.periodRevenue ?? 0),
+            'Lợi nhuận kỳ chọn':
+              currentPeriod.value === 'today'
+                ? summary.value.todayProfit
+                : currentPeriod.value === 'month'
+                  ? summary.value.monthlyProfit
+                  : currentPeriod.value === 'year'
+                    ? (summary.value.yearlyProfit ?? 0)
+                    : (summary.value.periodProfit ?? 0),
             'Doanh thu hôm nay': summary.value.todayRevenue,
             'Doanh thu tháng': summary.value.monthlyRevenue,
+            'Doanh thu năm': summary.value.yearlyRevenue ?? 0,
             'Lợi nhuận hôm nay': summary.value.todayProfit,
             'Lợi nhuận tháng': summary.value.monthlyProfit,
+            'Lợi nhuận năm': summary.value.yearlyProfit ?? 0,
             'Xe bán hôm nay': summary.value.todayVehiclesSold,
             'Xe bán trong tháng': summary.value.monthlyVehiclesSold,
             'Đơn chờ xử lý': summary.value.pendingOrdersCount,
-            'Công nợ quá hạn': summary.value.overdueDebtAmount,
-            'Tồn kho hiện tại': summary.value.currentInventoryCount,
-            'SKU sắp hết': summary.value.lowStockCount,
+            'Đơn quá hạn': summary.value.overdueOrdersCount,
+            'Tồn kho khả dụng': summary.value.currentInventoryCount,
+            'SKU hết hàng': summary.value.outOfStockCount ?? 0,
+            'SKU sắp hết': summary.value.lowStockCount ?? 0,
+            'Tổng sản phẩm': summary.value.totalSKUCount,
           },
         ],
       },
@@ -289,6 +520,14 @@ function exportDashboardExcel() {
         rows: dailyRevenue.value.map((item) => ({
           Ngày: item.reportDay,
           'Doanh thu': item.totalRevenue,
+        })),
+      },
+      {
+        name: 'Doanh thu thương hiệu',
+        rows: brandDistributionData.value.map((item: any) => ({
+          'Thương hiệu': item.brandName || 'Khác',
+          'Doanh thu': item.totalRevenue ?? item.revenue ?? 0,
+          'Số lượng bán': item.quantitySold ?? 0,
         })),
       },
       {
@@ -357,7 +596,14 @@ function updateCharts() {
     revenueChart.setOption({
       backgroundColor: 'transparent',
       textStyle: { color: chartTextColor() },
-      tooltip: { trigger: 'axis' },
+      tooltip: {
+        trigger: 'axis',
+        formatter: (params: any) => {
+          if (!Array.isArray(params) || params.length === 0) return '';
+          const item = params[0];
+          return `<div style="font-weight:600;margin-bottom:4px;">${item.name}</div>${item.marker} ${item.seriesName}: <b>${formatCurrency(Number(item.value) || 0)}</b>`;
+        },
+      },
       grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
       xAxis: {
         type: 'category',
@@ -368,7 +614,15 @@ function updateCharts() {
       },
       yAxis: {
         type: 'value',
-        axisLabel: { color: chartTextColor() },
+        axisLabel: {
+          color: chartTextColor(),
+          formatter: (val: number) => {
+            if (val >= 1_000_000_000) return `${(val / 1_000_000_000).toFixed(1)} tỷ`;
+            if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)} tr`;
+            if (val >= 1_000) return `${(val / 1_000).toFixed(0)}k`;
+            return `${val}đ`;
+          },
+        },
         splitLine: { lineStyle: { color: chartGridLineColor() } },
       },
       series: [
@@ -378,11 +632,11 @@ function updateCharts() {
           smooth: true,
           data: data.map((d) => d.totalRevenue),
           itemStyle: { color: '#e84a4a' },
-          lineStyle: { color: '#e84a4a' },
+          lineStyle: { color: '#e84a4a', width: 2.5 },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: 'rgba(232, 74, 74, 0.32)' },
-              { offset: 1, color: 'rgba(232, 74, 74, 0)' },
+              { offset: 1, color: 'rgba(232, 74, 74, 0.02)' },
             ]),
           },
         },
@@ -391,12 +645,17 @@ function updateCharts() {
   }
   if (brandChartRef.value) {
     if (!brandChart) brandChart = echarts.init(brandChartRef.value);
-    const data = (summary.value.brandRevenueDistribution || []).slice(0, 6);
+    const data = brandDistributionData.value.slice(0, 6);
     brandChart.setOption({
       backgroundColor: 'transparent',
       color: ['#e84a4a', '#ff6b6b', '#f97316', '#22c55e', '#3b82f6', '#a855f7'],
       textStyle: { color: chartTextColor() },
-      tooltip: { trigger: 'item' },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          return `<div style="font-weight:600;margin-bottom:4px;">${params.name}</div>${params.marker} Doanh thu: <b>${formatCurrency(Number(params.value) || 0)}</b> (${params.percent}%)`;
+        },
+      },
       legend: { bottom: 0, textStyle: { color: chartTextColor() } },
       series: [
         {
@@ -404,7 +663,7 @@ function updateCharts() {
           radius: ['40%', '70%'],
           data: data.map((d: any) => ({
             name: d.brandName || 'Khác',
-            value: d.revenue,
+            value: d.totalRevenue ?? d.revenue ?? 0,
           })),
           emphasis: {
             itemStyle: {
@@ -432,6 +691,26 @@ function formatTime(ts: string) {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+function getOrderStatusLabel(statusId?: string) {
+  if (!statusId) return '-';
+  const labels: Record<string, string> = {
+    pending: 'Chờ xác nhận',
+    confirmed_cod: 'Đã xác nhận (COD)',
+    paid_processing: 'Đang xử lý',
+    waiting_deposit: 'Chờ đặt cọc',
+    deposit_paid: 'Đã đặt cọc',
+    waiting_installment: 'Chờ duyệt trả góp',
+    installment_approved: 'Đã duyệt trả góp',
+    delivering: 'Đang giao hàng',
+    waiting_pickup: 'Chờ lấy hàng',
+    completed: 'Đã hoàn thành',
+    cancelled: 'Đã hủy',
+    refunding: 'Đang hoàn tiền',
+    refunded: 'Đã hoàn tiền',
+  };
+  return labels[statusId.toLowerCase()] || statusId;
 }
 
 function getKpiClass(status: string) {
@@ -535,6 +814,89 @@ onUnmounted(() => {
   margin-bottom: 16px;
 }
 
+.dashboard-report__kpis :deep(.art-card) {
+  min-height: 126px;
+}
+
+.dashboard-report__kpis :deep(.art-stats-card__count) {
+  font-size: 18px !important;
+  line-height: 1.25;
+}
+
+.dashboard-report__summary-card :deep(.el-card__body) {
+  padding: 14px;
+}
+
+.dashboard-report__summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-report__summary-item {
+  display: flex;
+  min-width: 0;
+  min-height: 76px;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  background: var(--el-fill-color-lighter);
+
+  &:first-child {
+    grid-column: 1 / -1;
+  }
+
+  > div:last-child {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  span {
+    overflow: hidden;
+    color: var(--report-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    overflow: hidden;
+    color: var(--el-text-color-primary);
+    font-size: 16px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.dashboard-report__summary-item--revenue {
+  border-color: rgb(232 74 74 / 24%);
+  background: linear-gradient(135deg, rgb(232 74 74 / 10%), var(--el-fill-color-lighter));
+
+  strong {
+    color: #d63f3f;
+    font-size: 20px;
+  }
+}
+
+.dashboard-report__summary-icon {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: #e84a4a;
+  background: rgb(232 74 74 / 12%);
+  font-size: 18px;
+}
+
 .dashboard-report__card-header {
   display: flex;
   flex-wrap: nowrap;
@@ -569,6 +931,14 @@ onUnmounted(() => {
 @media (width <= 767px) {
   .dashboard-report__chart {
     min-height: 240px;
+  }
+
+  .dashboard-report__summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-report__summary-item:first-child {
+    grid-column: auto;
   }
 }
 </style>
