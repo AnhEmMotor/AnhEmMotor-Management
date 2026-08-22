@@ -1,6 +1,6 @@
 <template>
   <div
-    class="art-card min-h-[100px] py-3 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
+    class="art-card min-h-25 py-3 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
     :class="boxStyle"
   >
     <div
@@ -21,7 +21,7 @@
       <template v-if="count !== undefined">
         <ArtCountTo
           v-if="typeof count === 'number'"
-          class="m-0 text-xl font-semibold"
+          class="art-stats-card__count m-0 text-xl font-semibold"
           :target="count"
           :duration="2000"
           :decimals="decimals"
@@ -29,7 +29,7 @@
         />
         <p
           v-else
-          class="m-0 font-semibold text-black dark:text-white leading-tight"
+          class="art-stats-card__count m-0 font-semibold text-black dark:text-white leading-tight"
           :class="typeof count === 'string' && count.length > 15 ? 'text-sm' : 'text-xl'"
           :style="{ color: textColor }"
         >

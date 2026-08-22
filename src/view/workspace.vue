@@ -240,7 +240,6 @@ const workspaces = computed(() => {
   flex-direction: column;
   height: 100vh;
 
-
   .portal-video-bg {
     position: fixed;
     top: 0;
