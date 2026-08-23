@@ -1,10 +1,11 @@
 ﻿import request from '@/common/utils/http';
 
 export interface InventoryIndexResponse {
-  totalProducts: number;
-  totalVariants: number;
-  lowStockCount: number;
-  outOfStockCount: number;
+  summary: {
+    totalStock: number;
+    lowStockCount: number;
+    outOfStockCount: number;
+  };
 }
 
 export const inventoryApi = {
