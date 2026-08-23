@@ -556,6 +556,19 @@ type OrderFormProduct = {
   assignedVehicles?: VehicleAssignmentOption[];
 };
 
+const confirmedStatusIds = new Set([
+  'completed',
+  'confirmed_cod',
+  'delivering',
+  'deposit_paid',
+  'paid_processing',
+  'refunded',
+  'refunding',
+  'waiting_pickup',
+  'cancelled',
+  'installment_approved',
+]);
+
 const loading = ref(false);
 const saving = ref(false);
 const orders = ref<SalesOrder[]>([]);
@@ -619,10 +632,12 @@ const searchItems = computed(() => [
     props: {
       clearable: true,
       placeholder: 'Tất cả',
-      options: statusMap.value.map((item) => ({
-        label: getStatusLabel(item.id),
-        value: item.id,
-      })),
+      options: statusMap.value
+        .filter((item) => confirmedStatusIds.has(item.id))
+        .map((item) => ({
+          label: getStatusLabel(item.id),
+          value: item.id,
+        })),
     },
   },
 ]);
@@ -723,7 +738,7 @@ const canCopyPaymentLink = (row: SalesOrder) => {
 };
 
 onMounted(async () => {
-  await Promise.all([
+  await Promise.allSettled([
     fetchStatuses(),
     fetchOrders(),
     searchCustomers(''),

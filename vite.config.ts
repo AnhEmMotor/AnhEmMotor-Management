@@ -41,7 +41,7 @@ export default ({ mode }: { mode: string }) => {
       host: false,
       proxy: {
         '/api': {
-          target: 'http://localhost:5000',
+          target: 'http://127.0.0.1:5000',
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, '/api'), // Đảm bảo giữ nguyên /api cho Backend

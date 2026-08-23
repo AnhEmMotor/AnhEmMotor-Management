@@ -578,6 +578,8 @@ type OrderFormProduct = {
   assignedVehicles?: VehicleAssignmentOption[];
 };
 
+const draftStatusIds = new Set(['pending', 'waiting_deposit', 'waiting_installment']);
+
 const loading = ref(false);
 const saving = ref(false);
 const orders = ref<SalesOrder[]>([]);
@@ -642,10 +644,12 @@ const searchItems = computed(() => [
     props: {
       clearable: true,
       placeholder: 'Tất cả',
-      options: statusMap.value.map((item) => ({
-        label: getStatusLabel(item.id),
-        value: item.id,
-      })),
+      options: statusMap.value
+        .filter((item) => draftStatusIds.has(item.id))
+        .map((item) => ({
+          label: getStatusLabel(item.id),
+          value: item.id,
+        })),
     },
   },
 ]);
@@ -738,7 +742,7 @@ const statusChangeOptions = computed(() => {
 });
 
 onMounted(async () => {
-  await Promise.all([
+  await Promise.allSettled([
     fetchStatuses(),
     fetchOrders(),
     searchCustomers(''),
