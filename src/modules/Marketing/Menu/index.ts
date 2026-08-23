@@ -269,6 +269,16 @@ export const marketingMenu: AppRouteRecord[] = [
           isHide: true,
         },
       },
+      {
+        path: 'google-analytics',
+        name: 'GoogleAnalyticsDashboard',
+        component: '/Marketing/view/google-analytics/index',
+        meta: {
+          title: 'Google Analytics',
+          icon: 'ri:bar-chart-fill',
+          keepAlive: true,
+        },
+      },
       ...marketingManualRoutes,
     ],
   },

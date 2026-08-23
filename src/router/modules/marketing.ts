@@ -31,6 +31,16 @@ export const marketingRoutes: AppRouteRecord[] = [
           keepAlive: true,
         },
       },
+      {
+        path: 'google-analytics',
+        name: 'GoogleAnalytics',
+        component: '/Marketing/view/google-analytics/index',
+        meta: {
+          title: 'Google Analytics',
+          icon: 'ri:bar-chart-2-line',
+          keepAlive: true,
+        },
+      },
     ],
   },
 ];
