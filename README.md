@@ -51,7 +51,7 @@ Update the information in `.env`:
 
 ```properties
 # Backend API URL (Production or Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=http://localhost:5000
 
 # Public URL of the Store frontend — used to link staff to a live product
 # page from the store-chat handoff view (Marketing > Customer > Store Chat)
@@ -149,7 +149,7 @@ Cập nhật thông tin trong `.env`:
 
 ```properties
 # URL của Backend API (Production hoặc Local)
-VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=https://localhost:5000
+VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT=http://localhost:5000
 
 # URL public của Store (trang khách hàng) — dùng để tạo link mở trang sản
 # phẩm thật từ màn Store Chat (Marketing > Khách hàng > Store Chat)

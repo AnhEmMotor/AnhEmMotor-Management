@@ -10,21 +10,21 @@
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.stock')"
-        :count="1250"
+        :count="inventorySummary.totalStock"
         description="Tổng số lượng hàng trong kho"
         icon="ri:database-2-line"
         iconStyle="bg-success"
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.active')"
-        :count="pagination.total - 2"
+        :count="activeProductCount"
         description="Sản phẩm đang hiển thị trên web"
         icon="ri:eye-line"
         iconStyle="bg-info"
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.outOfStock')"
-        :count="2"
+        :count="inventorySummary.outOfStockCount"
         description="Sản phẩm hiện đang hết hàng"
         icon="ri:error-warning-line"
         iconStyle="bg-warning"
@@ -2089,12 +2089,49 @@ import {
 } from '@element-plus/icons-vue';
 import { useProductTable } from '@/modules/Order/logic/product/list/hooks/useProductTable';
 import { FileApi } from '@/api/operations';
+import { inventoryApi } from '@/api/inventory/inventory.api';
+import { ProductApi } from '@/api/product';
 import { formatImageUrl } from '@/common/utils/image';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 defineOptions({ name: 'ProductList' });
 
 const { VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT } = import.meta.env;
+
+const inventorySummary = ref({
+  totalStock: 0,
+  lowStockCount: 0,
+  outOfStockCount: 0,
+});
+const inventorySummaryLoading = ref(false);
+const inventorySummaryError = ref(false);
+const activeProductCount = ref(0);
+
+const loadInventorySummary = async () => {
+  inventorySummaryLoading.value = true;
+  inventorySummaryError.value = false;
+  try {
+    const response = await inventoryApi.getIndex();
+    inventorySummary.value = response.summary;
+  } catch (_error) {
+    inventorySummaryError.value = true;
+  } finally {
+    inventorySummaryLoading.value = false;
+  }
+};
+
+const loadActiveProductCount = async () => {
+  try {
+    const response = await ProductApi.getList({
+      current: 1,
+      size: 1,
+      Filters: 'StatusId==for-sale',
+    });
+    activeProductCount.value = response.totalCount || 0;
+  } catch (_error) {
+    activeProductCount.value = 0;
+  }
+};
 
 const activeTab = ref('common');
 const activePricingPanels = ref<string[]>([]);
@@ -2476,7 +2513,10 @@ watch(
   }
 );
 
-onMounted(() => {});
+onMounted(() => {
+  loadInventorySummary();
+  loadActiveProductCount();
+});
 </script>
 
 <style scoped>

@@ -16,9 +16,18 @@ export const SalesContractApi = {
     vehicleModel?: string;
   }) {
     const { current, size, ...rest } = params;
+    const filters = [
+      rest.status ? `Status==${rest.status}` : '',
+      rest.vehicleModel ? `VehicleModel@=*${rest.vehicleModel}` : '',
+    ].filter(Boolean);
     return request.get<{ items: SalesContractListDto[]; totalCount: number }>({
       url: '/api/v1/contracts/sales',
-      params: { Page: current, PageSize: size, ...rest },
+      params: {
+        Page: current,
+        PageSize: size,
+        keyword: rest.keyword,
+        Filters: filters.length > 0 ? filters.join(',') : undefined,
+      },
     });
   },
 

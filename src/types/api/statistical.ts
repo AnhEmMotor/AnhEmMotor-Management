@@ -11,17 +11,24 @@ export interface AdminDashboardOverviewResponse {
 export interface DashboardStatsResponse {
   todayRevenue: number;
   revenueChangePercentage: number;
+  periodRevenue?: number;
+  periodProfit?: number;
   monthlyRevenue: number;
   todayProfit: number;
   monthlyProfit: number;
   lastMonthRevenue: number;
   lastMonthProfit: number;
+  yearlyRevenue?: number;
+  yearlyProfit?: number;
+  lastYearRevenue?: number;
+  lastYearProfit?: number;
   total7dRevenue: number;
   total7dProfit: number;
   bestDayRevenue: number;
   bestDayDate?: string;
   overdueOrdersCount: number;
   lowStockCount: number;
+  outOfStockCount?: number;
   overstockCount: number;
   overdueDebtAmount: number;
   todayVehiclesSold: number;
