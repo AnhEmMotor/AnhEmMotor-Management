@@ -3,28 +3,28 @@
     <div class="resp-stats-4 grid grid-cols-1 md:grid-cols-4 gap-4">
       <ArtStatsCard
         :title="$t('menus.product.list.stats.total')"
-        :count="pagination.total"
+        :count="productStats.totalProducts ?? '—'"
         description="Tổng số sản phẩm trong hệ thống"
         icon="ri:box-3-line"
         iconStyle="bg-primary"
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.stock')"
-        :count="1250"
+        :count="productStats.totalStock ?? '—'"
         description="Tổng số lượng hàng trong kho"
         icon="ri:database-2-line"
         iconStyle="bg-success"
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.active')"
-        :count="pagination.total - 2"
+        :count="productStats.activeProductCount ?? '—'"
         description="Sản phẩm đang hiển thị trên web"
         icon="ri:eye-line"
         iconStyle="bg-info"
       />
       <ArtStatsCard
         :title="$t('menus.product.list.stats.outOfStock')"
-        :count="2"
+        :count="productStats.outOfStockCount ?? '—'"
         description="Sản phẩm hiện đang hết hàng"
         icon="ri:error-warning-line"
         iconStyle="bg-warning"
@@ -89,14 +89,33 @@
         <template #name="{ row }">
           <div class="flex flex-col">
             <span
-              class="font-bold text-gray-800 leading-tight text-left"
-              :class="{ 'text-xs text-gray-600 font-normal': row.isVariant }"
+              class="font-bold leading-tight text-left"
+              :class="
+                row.isVariant
+                  ? 'text-xs text-[var(--el-text-color-regular)] font-normal'
+                  : 'text-[var(--el-text-color-primary)]'
+              "
               >{{ row.name }}</span
             >
             <span class="text-[11px] text-gray-400 mt-1 text-left">
               <span v-if="row.isVariant">SKU: {{ row.sku }}</span>
             </span>
           </div>
+        </template>
+
+        <template #stock_quantity="{ row }">
+          <span v-if="row.stock_quantity === null" class="text-[var(--el-text-color-secondary)]">
+            —
+          </span>
+          <span
+            v-else
+            class="font-semibold"
+            :class="
+              row.stock_quantity === 0 ? 'text-red-500' : 'text-[var(--el-text-color-primary)]'
+            "
+          >
+            {{ row.stock_quantity }}
+          </span>
         </template>
 
         <template #inventory_status="{ row }">
@@ -2088,7 +2107,7 @@
 
 <script setup lang="ts">
 import { Permissions } from '@/domain/constants/permissions';
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import {
   Plus,
   Picture,
@@ -2160,6 +2179,7 @@ const {
   fetchSelectorBrands,
   data,
   loading,
+  productStats,
   pagination,
   columns,
   columnChecks,
@@ -2492,8 +2512,6 @@ watch(
     syncPricingPanels();
   }
 );
-
-onMounted(() => {});
 </script>
 
 <style scoped>

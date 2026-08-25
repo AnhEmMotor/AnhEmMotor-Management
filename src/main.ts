@@ -12,6 +12,7 @@ import { setupErrorHandle } from '@/common/utils/sys/error-handle';
 import { StorageKeyManager } from '@/common/utils/storage/storage-key-manager';
 import axios from 'axios';
 import { useUserStore } from '@/application/store/user';
+import { installEChartsThemeSync } from '@/common/utils/ui/echarts-theme';
 
 document.addEventListener('touchstart', function () {}, { passive: false });
 
@@ -40,6 +41,7 @@ async function bootstrap() {
   setupErrorHandle(app);
   app.use(VueQueryPlugin);
   app.use(i18n);
+  installEChartsThemeSync();
   app.mount('#app');
 }
 

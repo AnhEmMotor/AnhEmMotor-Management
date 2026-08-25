@@ -68,7 +68,7 @@
           }"
         >
           <div
-            class="px-5 flex-cc border-r border-gray-50 dark:border-slate-800 h-full min-h-[100px]"
+            class="checkbox-column px-5 flex-cc border-r border-gray-50 dark:border-slate-800 h-full min-h-[100px]"
           >
             <ElCheckbox
               :model-value="selectedIds.includes(lead.id)"
@@ -77,7 +77,7 @@
             />
           </div>
 
-          <div class="flex flex-1 items-center p-5 gap-6">
+          <div class="lead-row-content flex flex-1 min-w-0 items-center p-5 gap-6">
             <div class="priority-column flex-shrink-0 relative">
               <div v-if="isNeglected(lead)" class="neglected-ribbon">Chăm sóc chậm</div>
               <div class="flex flex-col items-center gap-1.5">
@@ -140,7 +140,7 @@
             </div>
 
             <div
-              class="interest-column flex-1 px-4 border-l border-r border-gray-50 dark:border-slate-800"
+              class="interest-column flex-1 min-w-0 px-4 border-l border-r border-gray-50 dark:border-slate-800"
             >
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-2 w-full">
@@ -210,7 +210,7 @@
               </div>
             </div>
 
-            <div class="action-column flex-shrink-0 flex gap-2">
+            <div class="action-column ml-auto flex-shrink-0 flex gap-2">
               <ElButton
                 type="danger"
                 circle
@@ -414,6 +414,70 @@ const isToday = (date: string) => dayjs(date).isSame(dayjs(), 'day');
       :deep(.el-input__wrapper) {
         background-color: var(--el-color-danger-light-9);
       }
+    }
+
+    .action-column :deep(.el-button + .el-button) {
+      margin-left: 0;
+    }
+  }
+}
+
+@media (width <= 1440px) {
+  .lead-management {
+    .checkbox-column {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+
+    .lead-row-content {
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .priority-badge {
+      width: 90px;
+    }
+
+    .identity-column {
+      width: 15rem;
+    }
+
+    .status-column,
+    .time-column {
+      width: 10rem;
+    }
+  }
+}
+
+@media (width <= 1280px) {
+  .lead-management {
+    .checkbox-column {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .lead-row-content {
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .priority-badge {
+      width: 84px;
+    }
+
+    .identity-column {
+      width: 14rem;
+    }
+
+    .interest-column,
+    .status-column {
+      padding-right: 10px;
+      padding-left: 10px;
+    }
+
+    .status-column,
+    .time-column {
+      width: 9rem;
     }
   }
 }

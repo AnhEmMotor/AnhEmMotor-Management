@@ -1,14 +1,14 @@
 <template>
-  <div class="resp-page p-6 bg-slate-50 min-h-screen">
+  <div class="resp-page p-6 bg-[var(--default-bg-color)] min-h-screen text-g-900">
     <div
-      class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100"
+      class="flex items-center justify-between mb-6 flex-wrap gap-4 bg-box p-6 rounded-xl shadow-sm border-full-d"
     >
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-g-900 flex items-center gap-2">
           <el-icon class="text-primary"><Tickets /></el-icon>
           {{ $t('menus.service.warrantyAndComplaints.warrantyRequests') }}
         </h1>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-g-600">
           Quản lý danh sách, tra cứu điều kiện bảo hành của khách hàng và tạo phiếu bảo hành mới.
         </p>
       </div>
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
+    <div class="bg-box p-6 rounded-xl shadow-sm border-full-d mb-6">
       <el-form :inline="true" :model="filters" class="flex flex-wrap gap-4 items-center">
         <el-form-item label="Tìm kiếm" class="mb-0">
           <el-input
@@ -63,13 +63,13 @@
       </el-form>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-box rounded-xl shadow-sm border-full-d overflow-hidden">
       <el-table
         :data="tableData"
         border
         style="width: 100%"
         v-loading="loading"
-        header-cell-class-name="bg-slate-50 text-slate-700 font-semibold"
+        header-cell-class-name="bg-g-200 text-g-800 font-semibold"
       >
         <el-table-column prop="claimNumber" label="Mã Phiếu" min-width="150">
           <template #default="{ row }">
@@ -83,7 +83,7 @@
         </el-table-column>
         <el-table-column prop="customerName" label="Khách Hàng" min-width="160">
           <template #default="{ row }">
-            <div class="font-medium text-slate-800">
+            <div class="font-medium text-g-900">
               {{ row.customerName || 'N/A' }}
             </div>
           </template>
@@ -91,7 +91,7 @@
         <el-table-column prop="customerPhone" label="Số Điện Thoại" min-width="130" />
         <el-table-column prop="vehiclePlate" label="Biển Số Xe" min-width="130">
           <template #default="{ row }">
-            <el-tag effect="plain" class="font-bold border-slate-300 text-slate-700">
+            <el-tag effect="plain" class="font-bold border-g-300 text-g-800">
               {{ row.vehiclePlate || generateMockPlate(row.id) }}
             </el-tag>
           </template>
@@ -136,7 +136,7 @@
         </el-table-column>
       </el-table>
 
-      <div class="flex justify-end p-4 border-t border-slate-100">
+      <div class="flex justify-end p-4 border-t border-g-300">
         <el-pagination
           v-model:current-page="pagination.current"
           v-model:page-size="pagination.size"
@@ -163,9 +163,9 @@
         label-position="top"
         class="space-y-6"
       >
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="p-4 bg-g-200 rounded-lg border border-g-300">
           <h3
-            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
+            class="text-sm font-semibold text-g-800 uppercase tracking-wider mb-4 flex items-center gap-2"
           >
             <el-icon class="text-primary"><User /></el-icon>
             Thông tin khách hàng
@@ -190,12 +190,12 @@
 
           <div
             v-if="customerHistory.length > 0"
-            class="mt-4 p-3 bg-white rounded border border-slate-100"
+            class="mt-4 p-3 bg-box rounded border border-g-300"
           >
-            <div class="text-xs font-semibold text-slate-500 mb-2">
+            <div class="text-xs font-semibold text-g-600 mb-2">
               TÓM TẮT LỊCH SỬ BẢO HÀNH KHÁCH HÀNG (SĐT):
             </div>
-            <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+            <ul class="text-xs text-g-700 list-disc pl-4 space-y-1">
               <li v-for="h in customerHistory" :key="h.id">
                 Mã xe: <span class="font-medium">{{ h.licensePlate }}</span> - Vin:
                 {{ h.vinNumber }} - Mua ngày:
@@ -205,9 +205,9 @@
           </div>
         </div>
 
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="p-4 bg-g-200 rounded-lg border border-g-300">
           <h3
-            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
+            class="text-sm font-semibold text-g-800 uppercase tracking-wider mb-4 flex items-center gap-2"
           >
             <el-icon class="text-primary"><Setting /></el-icon>
             Thông tin xe
@@ -229,11 +229,8 @@
             </el-form-item>
           </div>
 
-          <div
-            v-if="vehicleHistory.length > 0"
-            class="mt-4 p-3 bg-white rounded border border-slate-100"
-          >
-            <div class="text-xs font-semibold text-slate-500 mb-2">
+          <div v-if="vehicleHistory.length > 0" class="mt-4 p-3 bg-box rounded border border-g-300">
+            <div class="text-xs font-semibold text-g-600 mb-2">
               LỊCH SỬ SỬA CHỮA / BẢO DƯỠNG XE NÀY:
             </div>
             <el-timeline class="mt-2 max-h-40 overflow-y-auto pl-1">
@@ -243,10 +240,10 @@
                 :timestamp="formatDateOnly(h.createdAt)"
                 type="primary"
               >
-                <div class="text-xs font-medium text-slate-700">
+                <div class="text-xs font-medium text-g-800">
                   Mã lệnh: {{ h.repairOrderNumber }} - ODO: {{ h.mileage }} km
                 </div>
-                <div class="text-xs text-slate-500 mt-0.5">
+                <div class="text-xs text-g-600 mt-0.5">
                   Nội dung:
                   {{ h.description || h.issueDescription || 'Bảo dưỡng định kỳ' }}
                 </div>
@@ -255,15 +252,15 @@
           </div>
           <div
             v-else-if="vehicleSearched && vehicleHistory.length === 0"
-            class="mt-2 text-xs text-slate-400 italic"
+            class="mt-2 text-xs text-g-500 italic"
           >
             Không có lịch sử sửa chữa/bảo hành nào được ghi nhận trước đó.
           </div>
         </div>
 
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="p-4 bg-g-200 rounded-lg border border-g-300">
           <h3
-            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
+            class="text-sm font-semibold text-g-800 uppercase tracking-wider mb-4 flex items-center gap-2"
           >
             <el-icon class="text-primary"><Warning /></el-icon>
             Kiểm tra thông số kỹ thuật bảo hành
@@ -304,7 +301,7 @@
           <div v-if="vehicleSearched" class="mt-4">
             <div
               v-if="isWarrantyValid"
-              class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3"
+              class="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-start gap-3"
             >
               <el-icon class="text-emerald-600 text-xl mt-0.5"><Check /></el-icon>
               <div>
@@ -319,7 +316,10 @@
                 </div>
               </div>
             </div>
-            <div v-else class="p-4 bg-rose-50 border border-rose-200 rounded-lg">
+            <div
+              v-else
+              class="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg"
+            >
               <div class="flex items-start gap-3">
                 <el-icon class="text-rose-600 text-xl mt-0.5"><Warning /></el-icon>
                 <div>
@@ -338,7 +338,7 @@
                   </div>
                 </div>
               </div>
-              <div class="mt-4 pt-3 border-t border-rose-200">
+              <div class="mt-4 pt-3 border-t border-rose-200 dark:border-rose-800">
                 <el-form-item prop="confirmExpiredWarranty" class="mb-0">
                   <el-checkbox v-model="form.confirmExpiredWarranty">
                     <span class="text-xs font-bold text-rose-800"
@@ -352,9 +352,11 @@
           </div>
         </div>
 
-        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div
+          class="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800"
+        >
           <h3
-            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2"
+            class="text-sm font-semibold text-g-800 uppercase tracking-wider mb-3 flex items-center gap-2"
           >
             <el-icon class="text-primary"><Flag /></el-icon>
             Loại bảo hành
@@ -365,9 +367,9 @@
           </el-radio-group>
         </div>
 
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="p-4 bg-g-200 rounded-lg border border-g-300">
           <h3
-            class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2"
+            class="text-sm font-semibold text-g-800 uppercase tracking-wider mb-4 flex items-center gap-2"
           >
             <el-icon class="text-primary"><Edit /></el-icon>
             Thông tin tiếp nhận & Chi phí
@@ -400,7 +402,7 @@
 
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider"
+                <span class="text-xs font-bold text-g-800 uppercase tracking-wider"
                   >Danh sách phụ tùng thay thế (nếu có)</span
                 >
                 <el-button
@@ -478,7 +480,7 @@
                 </el-table-column>
                 <el-table-column label="Thành tiền" width="120" align="right">
                   <template #default="{ row }">
-                    <span class="font-semibold text-slate-700">{{
+                    <span class="font-semibold text-g-800">{{
                       formatPrice(row.total || row.unitPrice * row.quantity)
                     }}</span>
                   </template>
@@ -499,24 +501,24 @@
             </div>
 
             <div
-              class="mt-4 p-4 bg-white rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4"
+              class="mt-4 p-4 bg-box rounded-lg border border-g-300 grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <div>
-                <div class="text-xs text-slate-500 font-medium">Chi phí sửa chữa (Công thợ)</div>
-                <div class="text-lg font-bold text-slate-400 mt-1 line-through">0 đ</div>
-                <div class="text-[10px] text-slate-400 italic mt-0.5">(Được miễn phí 100%)</div>
+                <div class="text-xs text-g-600 font-medium">Chi phí sửa chữa (Công thợ)</div>
+                <div class="text-lg font-bold text-g-500 mt-1 line-through">0 đ</div>
+                <div class="text-[10px] text-g-500 italic mt-0.5">(Được miễn phí 100%)</div>
               </div>
               <div>
-                <div class="text-xs text-slate-500 font-medium">Chi phí linh kiện phát sinh</div>
+                <div class="text-xs text-g-600 font-medium">Chi phí linh kiện phát sinh</div>
                 <div class="text-lg font-bold text-amber-600 mt-1">
                   {{ formatPrice(totalPartsCost) }}
                 </div>
-                <div class="text-[10px] text-slate-500 italic mt-0.5">
+                <div class="text-[10px] text-g-600 italic mt-0.5">
                   (Chỉ tính phụ tùng ngoài diện bảo hành)
                 </div>
               </div>
-              <div class="border-l border-slate-200 pl-4">
-                <div class="text-xs text-slate-500 font-medium">Khách hàng cần trả</div>
+              <div class="border-l border-g-300 pl-4">
+                <div class="text-xs text-g-600 font-medium">Khách hàng cần trả</div>
                 <div class="text-xl font-extrabold text-primary mt-1">
                   {{ formatPrice(totalPartsCost) }}
                 </div>
@@ -527,7 +529,7 @@
       </el-form>
 
       <template #footer>
-        <div class="flex justify-end gap-3 p-4 border-t border-slate-100">
+        <div class="flex justify-end gap-3 p-4 border-t border-g-300">
           <el-button
             @click="drawerVisible = false"
             v-auth="Permissions.Factory.CustomerManagement.View"
@@ -934,8 +936,7 @@ function handlePlateInput() {
   }
 }
 
-function calculateWarrantyStatus() {
-}
+function calculateWarrantyStatus() {}
 
 const availableParts = ref<any[]>([]);
 

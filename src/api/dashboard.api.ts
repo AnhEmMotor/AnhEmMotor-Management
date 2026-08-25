@@ -89,10 +89,10 @@ export const fetchRevenueByCategory = (start: string, end: string) => {
   });
 };
 
-export const fetchDailyCategoryRevenue = (days?: number) => {
+export const fetchDailyCategoryRevenue = (days?: number, start?: string, end?: string) => {
   return request.get<{ reportDay: string; categoryName: string; revenue: number }[]>({
     url: '/api/v1/Statistics/daily-category-revenue',
-    params: { days },
+    params: { days, start, end },
   });
 };
 

@@ -47,9 +47,9 @@
             <span class="alert-row__time">{{ item.timeAgo }}</span>
           </div>
         </div>
-        <a :href="item.actionUrl" class="alert-row__action">
+        <RouterLink :to="item.actionUrl" class="alert-row__action">
           Xử lý <ArtSvgIcon icon="ri:arrow-right-line" class="text-xs" />
-        </a>
+        </RouterLink>
       </div>
     </ElScrollbar>
   </div>
@@ -57,6 +57,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue';
+import { RouterLink } from 'vue-router';
 import { fetchDashboardKpis } from '@/api/dashboard.api';
 
 const props = defineProps<{ timeFilter?: string }>();
@@ -110,15 +111,15 @@ function buildAlerts(alerts: any) {
   if (alerts.financial.delayedLoans > 0)
     list.push(buildTodoItem('financial', alerts.financial.delayedLoans, 'Trả góp trễ hạn', '/admin/finance/delayed'));
   if (alerts.inventory.lowStockVehicles > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockVehicles, 'Tồn kho xe thấp', '/admin/inventory/vehicles'));
+    list.push(buildTodoItem('inventory', alerts.inventory.lowStockVehicles, 'Tồn kho xe thấp', '/Warehouse/inventory-settings'));
   if (alerts.inventory.lowStockParts > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockParts, 'Tồn kho phụ tùng thấp', '/admin/inventory/parts'));
+    list.push(buildTodoItem('inventory', alerts.inventory.lowStockParts, 'Tồn kho phụ tùng thấp', '/Warehouse/inventory-settings'));
   if (alerts.customer.newComplaints > 0)
-    list.push(buildTodoItem('customer', alerts.customer.newComplaints, 'Khiếu nại mới', '/admin/customer/complaints'));
+    list.push(buildTodoItem('customer', alerts.customer.newComplaints, 'Khiếu nại mới', '/Marketing/contact?tab=feedback'));
   if (alerts.customer.missedAppointments > 0)
     list.push(buildTodoItem('customer', alerts.customer.missedAppointments, 'Lịch hẹn bị bỏ lỡ', '/admin/appointments'));
   if (alerts.operations.pendingOrders > 0)
-    list.push(buildTodoItem('operations', alerts.operations.pendingOrders, 'Đơn hàng chưa xử lý', '/admin/orders'));
+    list.push(buildTodoItem('operations', alerts.operations.pendingOrders, 'Đơn hàng chưa xử lý', '/Order/management/order'));
 }
 
 async function setFilter(f: 'day' | 'week' | 'month') {

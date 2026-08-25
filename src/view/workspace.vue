@@ -151,8 +151,8 @@ const workspaces = computed(() => {
       path: '/admin/dashboard/intro',
     },
     {
-      title: 'Marketing',
-      subtitle: 'MARKETING WORKSPACE',
+      title: 'Marketing & SEO',
+      subtitle: 'MARKETING & SEO WORKSPACE',
       icon: markRaw(UserFilled),
       color: '#059669',
       shadowColor: 'rgba(5, 150, 105, 0.25)',

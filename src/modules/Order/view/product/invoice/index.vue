@@ -78,7 +78,9 @@
         </ElTableColumn>
         <ElTableColumn label="Tổng tiền" width="140" align="right">
           <template #default="{ row }">
-            <span class="font-bold text-gray-800">{{ formatCurrency(row.totalAmount) }}</span>
+            <span class="font-bold text-gray-800 dark:text-gray-100">
+              {{ formatCurrency(row.totalAmount) }}
+            </span>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Thanh toán" width="130" align="center">
