@@ -640,7 +640,8 @@ onBeforeUnmount(() => {
               <el-image
                 v-if="scope.row.productImageUrl"
                 :src="scope.row.productImageUrl"
-                class="h-12 w-12 shrink-0 rounded border border-gray-100 bg-gray-50 object-cover"
+                fit="cover"
+                class="h-12 w-12 shrink-0 rounded border border-gray-100 bg-gray-50"
               />
               <div
                 v-else
