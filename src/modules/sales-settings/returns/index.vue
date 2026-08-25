@@ -104,9 +104,8 @@ const workflowMode = computed<WorkflowMode>(() => {
 const allowedStatuses = computed<ReturnRequestDetail['status'][]>(() => {
   switch (workflowMode.value) {
     case 'classification':
-      return ['pending'];
     case 'approval':
-      return ['inspecting', 'rejected'];
+      return [];
     case 'warehouse':
       return ['completed'];
     default:

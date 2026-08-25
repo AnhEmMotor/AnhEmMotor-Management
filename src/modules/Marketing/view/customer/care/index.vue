@@ -439,6 +439,7 @@
 
     <ElDialog
       v-model="addCustomerDialogVisible"
+      class="customer-care-dialog"
       title="Thêm khách hàng"
       width="min(620px, calc(100vw - 32px))"
       destroy-on-close
@@ -494,6 +495,7 @@
 
     <ElDialog
       v-model="careDialogVisible"
+      class="customer-care-dialog"
       title="Ghi nhận chăm sóc"
       width="min(520px, calc(100vw - 32px))"
       destroy-on-close
@@ -537,6 +539,7 @@
 
     <ElDialog
       v-model="supportDialogVisible"
+      class="customer-care-dialog"
       title="Tạo phiên hỗ trợ"
       width="min(560px, calc(100vw - 32px))"
       destroy-on-close
@@ -1128,13 +1131,30 @@ onMounted(refreshAll);
 .customer-care-page {
   --care-accent: #e84a4a;
   --care-accent-soft: color-mix(in srgb, var(--care-accent) 10%, transparent);
-  --care-border: var(--el-border-color-lighter);
-  --care-surface: var(--el-bg-color);
-  --care-surface-soft: var(--el-fill-color-lighter);
-  --care-text: var(--el-text-color-primary);
-  --care-muted: var(--el-text-color-secondary);
+  --care-page-bg: #f8fafc;
+  --care-border: #e2e8f0;
+  --care-surface: #fff;
+  --care-surface-soft: #f1f5f9;
+  --care-text: #0f172a;
+  --care-muted: #64748b;
+  --care-shadow: 0 16px 44px rgb(15 23 42 / 4%);
 
   color: var(--care-text);
+  background: var(--care-page-bg);
+
+  :deep(.el-input__wrapper),
+  :deep(.el-select__wrapper),
+  :deep(.el-textarea__inner) {
+    background: var(--care-surface-soft);
+    box-shadow: 0 0 0 1px var(--care-border) inset;
+  }
+
+  :deep(.el-input__inner),
+  :deep(.el-select__placeholder),
+  :deep(.el-select__selected-item),
+  :deep(.el-textarea__inner) {
+    color: var(--care-text);
+  }
 }
 
 .page-heading {
@@ -1301,7 +1321,7 @@ onMounted(refreshAll);
   border: 1px solid var(--care-border);
   border-radius: 20px;
   background: var(--care-surface);
-  box-shadow: 0 16px 44px rgb(15 23 42 / 4%);
+  box-shadow: var(--care-shadow);
 }
 
 .filter-bar {
@@ -1320,6 +1340,14 @@ onMounted(refreshAll);
 }
 
 .customer-table {
+  --el-table-bg-color: var(--care-surface);
+  --el-table-border-color: var(--care-border);
+  --el-table-header-bg-color: var(--care-surface-soft);
+  --el-table-header-text-color: var(--care-muted);
+  --el-table-row-hover-bg-color: color-mix(in srgb, var(--care-accent) 3%, var(--care-surface));
+  --el-table-text-color: var(--care-text);
+  --el-table-tr-bg-color: var(--care-surface);
+
   width: 100%;
 
   :deep(.el-table__header th) {
@@ -1337,7 +1365,11 @@ onMounted(refreshAll);
   }
 
   :deep(.el-table__body tr:hover > td.el-table__cell) {
-    background: color-mix(in srgb, var(--care-accent) 3%, var(--care-surface));
+    background: var(--el-table-row-hover-bg-color);
+  }
+
+  :deep(.el-table__inner-wrapper::before) {
+    background: var(--care-border);
   }
 }
 
@@ -1880,6 +1912,29 @@ onMounted(refreshAll);
     color: var(--care-muted);
     font-size: 0.72rem;
   }
+}
+
+:global(.customer-care-dialog) {
+  --care-border: #e2e8f0;
+  --care-surface: #fff;
+  --care-surface-soft: #f1f5f9;
+  --care-text: #0f172a;
+  --care-muted: #64748b;
+
+  color: var(--care-text);
+  background: var(--care-surface);
+  border: 1px solid var(--care-border);
+}
+
+:global(html.dark .customer-care-page),
+:global(html.dark .customer-care-dialog) {
+  --care-page-bg: #05070b;
+  --care-border: rgb(255 255 255 / 12%);
+  --care-surface: #10141c;
+  --care-surface-soft: #111827;
+  --care-text: #f8fafc;
+  --care-muted: #94a3b8;
+  --care-shadow: 0 18px 45px rgb(0 0 0 / 28%);
 }
 
 @media (width <= 1023px) {

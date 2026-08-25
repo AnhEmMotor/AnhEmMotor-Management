@@ -45,8 +45,11 @@ assert.match(
 
 assert.match(workflowPageSource, /startsWith\('\/order\/'\)/);
 assert.match(workflowPageSource, /startsWith\('\/warehouse\/'\)/);
-assert.match(workflowPageSource, /case 'classification':\s*return \['pending'\]/);
-assert.match(workflowPageSource, /case 'approval':\s*return \['inspecting', 'rejected'\]/);
+assert.match(
+  workflowPageSource,
+  /case 'classification':\s*case 'approval':\s*return \[\]/,
+  'Order and Sales must show the same return-request dataset and total count'
+);
 assert.match(workflowPageSource, /case 'warehouse':\s*return \['completed'\]/);
 assert.match(
   sieveSource,

@@ -1,17 +1,29 @@
 ﻿import request from '@/common/utils/http';
 
-export interface InventoryIndexResponse {
-  summary: {
-    totalStock: number;
-    lowStockCount: number;
-    outOfStockCount: number;
-  };
+export interface ProductInventoryVariant {
+  variantId: number;
+  inventoryQty: number;
+}
+
+export interface ProductInventorySnapshot {
+  productId: number;
+  inventoryQty: number;
+  variants: ProductInventoryVariant[];
+}
+
+export interface ProductInventorySnapshotResponse {
+  items: ProductInventorySnapshot[];
+  totalCount: number;
 }
 
 export const inventoryApi = {
-  getIndex() {
-    return request.get<InventoryIndexResponse>({
-      url: '/api/v1/statistics/warehouse-report',
+  getProductSnapshot() {
+    return request.get<ProductInventorySnapshotResponse>({
+      url: '/api/v1/InventoryReport',
+      params: {
+        pageNumber: 1,
+        pageSize: 10000,
+      },
     });
   },
 };

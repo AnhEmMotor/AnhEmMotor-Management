@@ -920,6 +920,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { useContactStore } from '@/application/store/contact';
@@ -935,11 +936,15 @@ import { resolveContactId, type Contact } from '@/types';
 import SupportWorkflowPanel from './components/SupportWorkflowPanel.vue';
 
 defineOptions({ name: 'ContactManagement' });
+const route = useRoute();
 const contactStore = useContactStore();
 const userStore = useUserStore();
 const { isDark } = storeToRefs(useSettingStore());
 
-const activeTab = ref('support');
+const requestedTab = String(route.query.tab ?? 'support');
+const activeTab = ref(
+  ['support', 'feedback', 'candidate'].includes(requestedTab) ? requestedTab : 'support'
+);
 const searchQuery = ref('');
 const statusFilter = ref('');
 const replyDraft = ref('');

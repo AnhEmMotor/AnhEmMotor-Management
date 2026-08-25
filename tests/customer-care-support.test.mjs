@@ -72,4 +72,20 @@ assert.doesNotMatch(
 const styleBlocks = carePageSource.match(/<style\b/g) ?? [];
 assert.equal(styleBlocks.length, 1, 'Vue SFC must contain exactly one style block');
 
+assert.match(
+  carePageSource,
+  /:global\(html\.dark \.customer-care-page\)/,
+  'Customer care must define an explicit dark palette'
+);
+assert.match(
+  carePageSource,
+  /--el-table-bg-color:\s*var\(--care-surface\)/,
+  'Customer table surfaces must follow the page theme'
+);
+assert.equal(
+  (carePageSource.match(/class="customer-care-dialog"/g) ?? []).length,
+  3,
+  'Every teleported customer care dialog must inherit the page theme variables'
+);
+
 console.log('Customer care support regression checks passed.');

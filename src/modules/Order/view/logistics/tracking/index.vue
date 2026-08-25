@@ -23,11 +23,20 @@
                 :placeholder="t('logistics.tracking.searchPlaceholder', 'Tìm SĐT, Vận đơn...')"
                 class="flex-1"
                 clearable
+                @keyup.enter="searchShipment"
               >
                 <template #prefix>
                   <el-icon><Search /></el-icon>
                 </template>
               </el-input>
+              <el-button
+                type="primary"
+                :loading="loadingDetails"
+                aria-label="Tra cứu vận đơn"
+                @click="searchShipment"
+              >
+                <el-icon><Search /></el-icon>
+              </el-button>
             </div>
           </div>
 
@@ -262,14 +271,18 @@
       </transition>
     </div>
 
-    <div class="flex-1 h-full relative z-0 bg-gray-100 dark:bg-gray-900">
-      <div id="map" class="absolute inset-0 w-full h-full"></div>
+    <div
+      v-loading="loadingDetails"
+      element-loading-text="Đang tải tuyến đường..."
+      class="flex-1 h-full relative z-0 bg-gray-100 dark:bg-gray-900"
+    >
+      <div ref="mapContainer" class="absolute inset-0 w-full h-full"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatImageUrl } from '@/common/utils/image';
 import L from 'leaflet';
@@ -310,16 +323,19 @@ L.Icon.Default.mergeOptions({
 
 const { t } = useI18n();
 
-const map = ref<L.Map | null>(null);
-const markersLayer = ref<L.LayerGroup | null>(null);
-const polylineLayer = ref<L.LayerGroup | null>(null);
+const map = shallowRef<L.Map | null>(null);
+const mapContainer = ref<HTMLElement | null>(null);
+const markersLayer = shallowRef<L.LayerGroup | null>(null);
+const polylineLayer = shallowRef<L.LayerGroup | null>(null);
+let mapResizeObserver: ResizeObserver | null = null;
+let mapResizeFrame: number | null = null;
 
 const searchQuery = ref('');
 const loadingList = ref(false);
 const loadingDetails = ref(false);
 
 const inTransitOrders = ref<ActiveShipmentItem[]>([]);
-const selectedOrder = ref<ActiveShipmentItem | null>(null);
+const selectedOrder = ref<string | null>(null);
 const trackingData = ref<TrackingResponse | null>(null);
 
 const filteredOrders = computed(() => {
@@ -340,32 +356,58 @@ const sortedMilestones = computed(() => {
   );
 });
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
   initMap();
   fetchActiveShipments();
 });
 
 onUnmounted(() => {
+  mapResizeObserver?.disconnect();
+  if (mapResizeFrame !== null) cancelAnimationFrame(mapResizeFrame);
   if (map.value) {
     map.value.remove();
   }
 });
 
 function initMap() {
-  map.value = L.map('map', {
+  if (!mapContainer.value || map.value) return;
+
+  map.value = L.map(mapContainer.value, {
     zoomControl: false,
   }).setView([10.9576, 106.8427], 9);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    subdomains: 'abc',
+  const openStreetMapLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors',
-  }).addTo(map.value as any);
+  });
+
+  openStreetMapLayer.once('tileerror', () => {
+    if (!map.value || !map.value.hasLayer(openStreetMapLayer)) return;
+
+    map.value.removeLayer(openStreetMapLayer);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: '© OpenStreetMap contributors © CARTO',
+    }).addTo(map.value as any);
+  });
+
+  openStreetMapLayer.addTo(map.value as any);
 
   L.control.zoom({ position: 'bottomright' }).addTo(map.value as any);
 
   markersLayer.value = L.layerGroup().addTo(map.value as any);
   polylineLayer.value = L.layerGroup().addTo(map.value as any);
+
+  mapResizeObserver = new ResizeObserver(() => {
+    if (mapResizeFrame !== null) cancelAnimationFrame(mapResizeFrame);
+    mapResizeFrame = requestAnimationFrame(() => {
+      map.value?.invalidateSize({ pan: false, debounceMoveend: true });
+      mapResizeFrame = null;
+    });
+  });
+  mapResizeObserver.observe(mapContainer.value);
 }
 
 async function fetchActiveShipments() {
@@ -381,20 +423,32 @@ async function fetchActiveShipments() {
   }
 }
 
+async function searchShipment() {
+  const query = searchQuery.value.trim();
+  if (!query) {
+    ElMessage.warning('Vui lòng nhập mã vận đơn, mã đơn hàng hoặc số điện thoại khách hàng.');
+    return;
+  }
+
+  await loadTracking(query, 'Không tìm thấy thông tin vận chuyển phù hợp.');
+}
+
 async function selectOrder(order: ActiveShipmentItem) {
-  selectedOrder.value = order;
+  await loadTracking(order.trackingNumber, 'Không tải được hành trình chi tiết của kiện hàng này.');
+}
+
+async function loadTracking(query: string, errorMessage: string) {
+  selectedOrder.value = query;
   loadingDetails.value = true;
 
   try {
-    const res = await getShipmentTracking(order.trackingNumber);
-    trackingData.value = (res as any).data || res;
-
-    nextTick(() => {
-      void drawTrackingData();
-    });
+    trackingData.value = await getShipmentTracking(query);
+    await nextTick();
+    await drawTrackingData();
   } catch (error) {
     console.error(error);
-    ElMessage.error('Không tải được hành trình chi tiết của kiện hàng này.');
+    ElMessage.error(errorMessage);
+    selectedOrder.value = null;
     trackingData.value = null;
     clearMap();
   } finally {
@@ -406,7 +460,9 @@ function deselectOrder() {
   selectedOrder.value = null;
   trackingData.value = null;
   clearMap();
-  if (map.value) map.value.setView([10.9576, 106.8427], 9, { animate: true });
+  if (map.value) {
+    map.value.setView([10.9576, 106.8427], 9, { animate: false });
+  }
 }
 
 function clearMap() {
@@ -415,11 +471,16 @@ function clearMap() {
 }
 
 const MAX_SNAP_DISTANCE_METERS = 2000;
+const roadRouteCache = new Map<string, [number, number][]>();
 
 async function fetchRoadRoute(
   from: [number, number],
   to: [number, number]
 ): Promise<[number, number][] | null> {
+  const cacheKey = `${from[0]},${from[1]}:${to[0]},${to[1]}`;
+  const cachedRoute = roadRouteCache.get(cacheKey);
+  if (cachedRoute) return cachedRoute;
+
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
     const res = await fetch(url);
@@ -433,7 +494,9 @@ async function fetchRoadRoute(
 
     const coords = data?.routes?.[0]?.geometry?.coordinates as number[][] | undefined;
     if (!coords?.length) return null;
-    return coords.map(([lng, lat]) => [lat, lng]);
+    const route = coords.map(([lng, lat]) => [lat, lng] as [number, number]);
+    roadRouteCache.set(cacheKey, route);
+    return route;
   } catch (error) {
     console.error('OSRM route fetch failed, falling back to straight line', error);
     return null;
@@ -444,32 +507,36 @@ async function drawTrackingData() {
   clearMap();
   if (!trackingData.value || !map.value || !markersLayer.value || !polylineLayer.value) return;
 
-  const startCoords: any = [
+  const startCoords: [number, number] = [
     trackingData.value.originLatitude || 10.9576,
     trackingData.value.originLongitude || 106.8427,
   ];
 
-  const destCoords: any = [
+  const destCoords: [number, number] = [
     trackingData.value.destinationLatitude || startCoords[0] + 0.05,
     trackingData.value.destinationLongitude || startCoords[1] + 0.05,
   ];
 
   const requestedTrackingNumber = trackingData.value.trackingNumber;
   const fullPath = await fetchRoadRoute(startCoords, destCoords);
-
   if (
     !map.value ||
+    !markersLayer.value ||
     !polylineLayer.value ||
     trackingData.value?.trackingNumber !== requestedTrackingNumber
   )
     return;
 
-  L.polyline(fullPath || [startCoords, destCoords], {
-    color: '#3b82f6',
-    weight: 5,
-    opacity: 0.9,
-    lineJoin: 'round',
-  }).addTo(polylineLayer.value as any);
+  if (fullPath) {
+    L.polyline(fullPath, {
+      color: '#3b82f6',
+      weight: 5,
+      opacity: 0.9,
+      lineJoin: 'round',
+    }).addTo(polylineLayer.value as any);
+  } else {
+    ElMessage.warning('Không thể tải tuyến đường thực tế. Vui lòng thử lại.');
+  }
 
   const startIcon = L.divIcon({
     className: 'custom-marker',
@@ -491,8 +558,8 @@ async function drawTrackingData() {
     .bindTooltip('Địa chỉ nhận hàng', { direction: 'top' })
     .addTo(markersLayer.value as any);
 
-  const bounds = L.latLngBounds([startCoords, destCoords]);
-  map.value.flyToBounds(bounds, { padding: [80, 80], duration: 1.2 });
+  const bounds = L.latLngBounds(fullPath || [startCoords, destCoords]);
+  map.value.fitBounds(bounds, { padding: [64, 64], maxZoom: 15, animate: false });
 }
 
 function getMilestoneColor(milestone: TrackingMilestone) {

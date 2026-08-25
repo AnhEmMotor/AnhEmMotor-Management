@@ -15,7 +15,8 @@
         <div class="kpi-card__meta">
           <span class="kpi-card__badge">{{ PERIOD_LABELS[timeFilter] ?? 'Kỳ này' }}</span>
           <span v-if="item.change !== null" class="kpi-card__change" :class="item.change >= 0 ? 'up' : 'down'">
-            {{ item.change >= 0 ? '▲' : '▼' }} {{ Math.abs(item.change) }}%
+            So với kỳ trước: {{ item.change >= 0 ? '▲' : '▼' }}
+            {{ Math.abs(item.change).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) }}%
           </span>
         </div>
       </div>

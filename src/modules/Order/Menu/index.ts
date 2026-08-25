@@ -90,7 +90,7 @@ export const orderMenu: AppRouteRecord[] = [
           {
             path: 'returns',
             name: 'OrderReturnManagement',
-            component: '/sales/returns/index',
+            component: '/sales-settings/returns/index',
             meta: {
               title: 'Quản lý trả hàng',
               icon: 'ri:arrow-go-back-line',

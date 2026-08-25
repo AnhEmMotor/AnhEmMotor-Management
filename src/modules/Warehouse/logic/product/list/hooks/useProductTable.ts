@@ -5,6 +5,7 @@ import { ProductApi } from '@/api/product';
 import { CategoryApi } from '@/api/product';
 import { BrandApi } from '@/api/product';
 import { SupplierApi } from '@/api/supplier';
+import { inventoryApi, type ProductInventorySnapshot } from '@/api/inventory/inventory.api';
 import { useTable } from '@/common/composables/useTable';
 import type { Product } from '@/domain/product/product.types';
 import type { ProductCategory } from '@/domain/product/category.types';
@@ -35,6 +36,89 @@ export function useProductTable() {
   const suppliersList = ref<any[]>([]);
 
   const brandCache = reactive(new Map<number, Brand>());
+
+  const productStats = ref<{
+    totalProducts: number | null;
+    totalStock: number | null;
+    activeProductCount: number | null;
+    outOfStockCount: number | null;
+  }>({
+    totalProducts: null,
+    totalStock: null,
+    activeProductCount: null,
+    outOfStockCount: null,
+  });
+  let productInventoryById = new Map<number, ProductInventorySnapshot>();
+  let isInventorySnapshotAvailable = false;
+  let inventorySnapshotPromise: Promise<void> | null = null;
+
+  const loadProductInventorySnapshot = async () => {
+    const [inventoryResult, totalProductsResult, activeProductsResult] = await Promise.allSettled([
+      inventoryApi.getProductSnapshot(),
+      ProductApi.getList({ current: 1, size: 1 }),
+      ProductApi.getList({
+        current: 1,
+        size: 1,
+        Filters: 'StatusId==for-sale',
+      }),
+    ]);
+
+    const totalProducts =
+      totalProductsResult.status === 'fulfilled' ? totalProductsResult.value.totalCount : null;
+    const activeProductCount =
+      activeProductsResult.status === 'fulfilled' ? activeProductsResult.value.totalCount : null;
+
+    if (inventoryResult.status !== 'fulfilled') {
+      productInventoryById = new Map();
+      isInventorySnapshotAvailable = false;
+      productStats.value = {
+        totalProducts,
+        totalStock: null,
+        activeProductCount,
+        outOfStockCount: null,
+      };
+      return;
+    }
+
+    productInventoryById = new Map(
+      inventoryResult.value.items.map((item) => [item.productId, item])
+    );
+    isInventorySnapshotAvailable = true;
+    const totalStock = inventoryResult.value.items.reduce(
+      (sum, item) => sum + item.inventoryQty,
+      0
+    );
+    const productsInStock = inventoryResult.value.items.filter(
+      (item) => item.inventoryQty > 0
+    ).length;
+
+    productStats.value = {
+      totalProducts,
+      totalStock,
+      activeProductCount,
+      outOfStockCount: totalProducts === null ? null : Math.max(0, totalProducts - productsInStock),
+    };
+  };
+
+  const ensureProductInventorySnapshot = () => {
+    inventorySnapshotPromise ??= loadProductInventorySnapshot();
+    return inventorySnapshotPromise;
+  };
+
+  const getProductStock = (productId: number) => {
+    if (!isInventorySnapshotAvailable) return null;
+    return productInventoryById.get(productId)?.inventoryQty ?? 0;
+  };
+
+  const getVariantStock = (productId: number, variantId?: number | null) => {
+    if (!isInventorySnapshotAvailable) return null;
+    if (!variantId) return 0;
+    const productInventory = productInventoryById.get(productId);
+    return (
+      productInventory?.variants.find((variant) => variant.variantId === variantId)?.inventoryQty ??
+      0
+    );
+  };
 
   const cacheBrands = (items: Brand[]) => {
     items.forEach((item) => {
@@ -246,16 +330,20 @@ export function useProductTable() {
     handleSizeChange,
     handleCurrentChange,
     getData,
-    refreshData,
+    refreshData: refreshTableData,
     replaceSearchParams,
     searchParams,
   } = useTable({
     core: {
       apiFn: async (params: any) => {
-        const res = await ProductApi.getList(params);
+        const [res] = await Promise.all([
+          ProductApi.getList(params),
+          ensureProductInventorySnapshot(),
+        ]);
         if (res && res.items) {
           res.items = res.items.map((product: any) => {
             const children = (product.variants || []).map((variant: any, idx: number) => {
+              const stockQuantity = getVariantStock(product.id, variant.id);
               return {
                 id: `variant-${variant.id || idx}-${product.id}`,
                 name: variant.variant_name || `Biến thể ${idx + 1}`,
@@ -263,11 +351,18 @@ export function useProductTable() {
                 brand: '',
                 category: '',
                 sku: variant.sku || '',
+                stock_quantity: stockQuantity,
+                inventory_status:
+                  stockQuantity === null ? undefined : stockQuantity > 0 ? 'InStock' : 'OutOfStock',
                 isVariant: true,
               };
             });
+            const stockQuantity = getProductStock(product.id);
             return {
               ...product,
+              stock_quantity: stockQuantity,
+              inventory_status:
+                stockQuantity === null ? undefined : stockQuantity > 0 ? 'InStock' : 'OutOfStock',
               children: children.length > 0 ? children : undefined,
             };
           });
@@ -289,6 +384,13 @@ export function useProductTable() {
           useSlot: true,
         },
         { prop: 'name', label: 'Sản phẩm', minWidth: 250, useSlot: true },
+        {
+          prop: 'stock_quantity',
+          label: 'Tồn kho',
+          width: 110,
+          align: 'center',
+          useSlot: true,
+        },
         { prop: 'brand', label: 'Thương hiệu', width: 150 },
         { prop: 'category', label: 'Thể loại', width: 180 },
         { prop: 'origin', label: 'Xuất xứ', width: 120 },
@@ -303,6 +405,11 @@ export function useProductTable() {
       ],
     },
   });
+
+  const refreshData = async () => {
+    inventorySnapshotPromise = null;
+    await refreshTableData();
+  };
 
   const handleAdd = () => {
     dialogTitle.value = 'Thêm sản phẩm mới';
@@ -1073,6 +1180,7 @@ export function useProductTable() {
     suppliersList,
     selectedTechIds,
     loadingTechs,
+    productStats,
     data,
     loading,
     pagination,

@@ -66,8 +66,10 @@ function itemMatches(card: DashboardKpisCard, key: string): boolean {
 async function load() {
   try {
     const userRes = await fetchGetUserList({ Page: 1, PageSize: 1 });
-    if (userRes && typeof userRes.total === 'number') {
-      list[0].num = fmt(userRes.total);
+    const totalUsers =
+      (userRes as typeof userRes & { totalCount?: number }).totalCount ?? userRes.total;
+    if (typeof totalUsers === 'number') {
+      list[0].num = fmt(totalUsers);
     }
   } catch (e) {
     console.error('Lỗi khi lấy tổng tài khoản', e);

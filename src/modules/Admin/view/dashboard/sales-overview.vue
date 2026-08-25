@@ -32,6 +32,7 @@ const isLoading = ref(false);
 const months = ref<string[]>([]);
 const revenueData = ref<number[]>([]);
 const profitData = ref<number[]>([]);
+const MILLION_VND = 1_000_000;
 
 async function fetchData() {
   isLoading.value = true;
@@ -64,9 +65,12 @@ function initChart() {
       formatter(params: any) {
         let html = `<div style="font-weight:600;margin-bottom:6px">${params[0].name}</div>`;
         params.forEach((p: any) => {
-          const val = (p.value / 1e9).toFixed(2);
+          const val = (p.value / MILLION_VND).toLocaleString('vi-VN', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          });
           html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-            ${p.marker}<span>${p.seriesName}:</span><strong>${val} tỷ VNĐ</strong>
+            ${p.marker}<span>${p.seriesName}:</span><strong>${val} triệu VNĐ</strong>
           </div>`;
         });
         const rev = params[0]?.value ?? 0;
@@ -86,10 +90,15 @@ function initChart() {
     }],
     yAxis: [{
       type: 'value',
-      name: 'Tỷ VNĐ',
+      name: 'Triệu VNĐ',
       nameTextStyle: { color: '#9ca3af', fontSize: 11 },
       splitLine: { lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.25)' } },
-      axisLabel: { color: '#9ca3af', fontSize: 11, formatter: (v: number) => (v / 1e9).toFixed(1) },
+      axisLabel: {
+        color: '#9ca3af',
+        fontSize: 11,
+        formatter: (v: number) =>
+          (v / MILLION_VND).toLocaleString('vi-VN', { maximumFractionDigits: 1 }),
+      },
     }],
     series: [
       {

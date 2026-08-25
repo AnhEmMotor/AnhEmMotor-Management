@@ -396,7 +396,7 @@ const currentPeriod = ref('today');
 const customRange = ref<[string, string] | null>(null);
 const chartLoading = ref(false);
 
-const summary = ref<DashboardSummary>({
+const emptySummary: DashboardSummary = {
   totalRevenue: 0,
   revenueChangePercentage: 0,
   revenueVsYesterdayPercentage: 0,
@@ -423,7 +423,8 @@ const summary = ref<DashboardSummary>({
   totalExpense: 0,
   grossProfit: 0,
   alertsCount: 0,
-});
+};
+const summary = ref<DashboardSummary>({ ...emptySummary });
 const sources = ref<{ name: string; amount: number; percent: number }[]>([]);
 const topStaff = ref<StaffPerformance[]>([]);
 const transactions = ref<TransactionLog[]>([]);
@@ -479,129 +480,35 @@ async function loadAll() {
       AnalyticsService.getStaffPerformance(start, end),
       AnalyticsService.getRecentTransactions(),
       fetchRevenueByCategory(start, end),
-      fetchDailyCategoryRevenue(getDays()),
+      fetchDailyCategoryRevenue(getDays(), start, end),
     ]);
 
     if (summaryRes.status === 'fulfilled' && summaryRes.value) {
       summary.value = normalizeSummary(summaryRes.value);
-      if (summary.value.totalRevenue === 0) {
-        summary.value.totalRevenue = 245500000;
-        summary.value.revenueVsYesterdayPercentage = 12.5;
-        summary.value.dailyTarget = 200000000;
-
-        summary.value.netProfit = 45000000;
-        summary.value.profitMargin = 18.3;
-        summary.value.profitVsYesterdayPercentage = 5.2;
-
-        summary.value.monthTarget = 5000000000;
-        summary.value.monthAchieved = 1450000000;
-        summary.value.monthRemaining = 3550000000;
-        summary.value.monthForecast = 5200000000;
-      }
+    } else {
+      summary.value = { ...emptySummary };
     }
 
     if (staffRes.status === 'fulfilled' && staffRes.value) {
-      let staffs = Array.isArray(staffRes.value)
+      const staffs = Array.isArray(staffRes.value)
         ? staffRes.value
         : (staffRes.value as any).data || [];
-      if (!staffs.length || staffs.every((s: any) => !s.totalSales)) {
-        staffs = [
-          {
-            employeeName: 'Nguyễn Văn A',
-            totalSales: 150000000,
-            targetSales: 120000000,
-            isTopSeller: true,
-          },
-          {
-            employeeName: 'Trần Thị B',
-            totalSales: 120000000,
-            targetSales: 150000000,
-            kpiStatus: 'Đạt',
-          },
-          {
-            employeeName: 'Lê Văn C',
-            totalSales: 95000000,
-            targetSales: 100000000,
-            kpiStatus: 'Đạt',
-          },
-          {
-            employeeName: 'Phạm Thị D',
-            totalSales: 45000000,
-            targetSales: 80000000,
-            kpiStatus: 'Chưa đạt',
-          },
-          {
-            employeeName: 'Hoàng Văn E',
-            totalSales: 32000000,
-            targetSales: 70000000,
-            kpiStatus: 'Chưa đạt',
-          },
-        ];
-      }
       topStaff.value = staffs;
+    } else {
+      topStaff.value = [];
     }
 
     if (txRes.status === 'fulfilled' && txRes.value) {
-      let txs = Array.isArray(txRes.value) ? txRes.value : (txRes.value as any).data || [];
-      if (!txs.length) {
-        txs = [
-          {
-            timestamp: new Date().toISOString(),
-            customerName: 'Nguyễn Trường Giang',
-            productName: 'Honda Vision 2023',
-            amount: 35000000,
-            isRevenue: true,
-            status: 'Hoàn thành',
-          },
-          {
-            timestamp: new Date(Date.now() - 3600000).toISOString(),
-            customerName: 'Trần Thị Thu',
-            productName: 'Thay nhớt Motul',
-            amount: 350000,
-            isRevenue: true,
-            status: 'Hoàn thành',
-          },
-          {
-            timestamp: new Date(Date.now() - 7200000).toISOString(),
-            customerName: 'Lê Hoàng Phát',
-            productName: 'Yamaha Exciter 155',
-            amount: 50000000,
-            isRevenue: true,
-            status: 'Đang chờ',
-          },
-          {
-            timestamp: new Date(Date.now() - 86400000).toISOString(),
-            customerName: 'Phạm Minh Trí',
-            productName: 'Bảo dưỡng định kỳ',
-            amount: 1500000,
-            isRevenue: true,
-            status: 'Hoàn thành',
-          },
-          {
-            timestamp: new Date(Date.now() - 90000000).toISOString(),
-            customerName: 'Ngô Thanh Vân',
-            productName: 'Hoàn cọc xe',
-            amount: 2000000,
-            isRevenue: false,
-            status: 'Đã hoàn',
-            isRefund: true,
-          },
-        ];
-      }
+      const txs = Array.isArray(txRes.value) ? txRes.value : (txRes.value as any).data || [];
       transactions.value = txs;
+    } else {
+      transactions.value = [];
     }
 
     if (sourcesRes.status === 'fulfilled' && sourcesRes.value) {
-      let sourceList = Array.isArray(sourcesRes.value)
+      const sourceList = Array.isArray(sourcesRes.value)
         ? sourcesRes.value
         : (sourcesRes.value as any).data || [];
-      if (!sourceList.length) {
-        sourceList = [
-          { categoryName: 'Bán Xe máy', revenue: 850000000 },
-          { categoryName: 'Sửa chữa Dịch vụ', revenue: 450000000 },
-          { categoryName: 'Bán Phụ tùng', revenue: 150000000 },
-        ];
-      }
       const total = sourceList.reduce((s: number, i: any) => s + (i.revenue ?? i.amount ?? 0), 0);
       sources.value = sourceList.map((i: any) => ({
         name: i.categoryName ?? i.name,
@@ -614,8 +521,12 @@ async function loadAll() {
 
     if (chartData.status === 'fulfilled') renderChart(chartData.value ?? []);
     else renderChart([]);
-  } catch (err) {
-    console.error('Ecommerce load error:', err);
+  } catch {
+    summary.value = { ...emptySummary };
+    topStaff.value = [];
+    transactions.value = [];
+    sources.value = [];
+    renderChart([]);
   } finally {
     chartLoading.value = false;
   }

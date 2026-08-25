@@ -1,13 +1,13 @@
 <template>
   <div class="resp-page flex flex-col gap-4 pb-5">
     <div
-      class="flex items-start justify-between gap-4 flex-wrap bg-white p-6 rounded-xl shadow-sm border border-slate-100"
+      class="flex items-start justify-between gap-4 flex-wrap bg-box p-6 rounded-xl shadow-sm border-full-d"
     >
       <div>
-        <h1 class="text-2xl font-bold">
+        <h1 class="text-2xl font-bold text-g-900">
           {{ $t('menus.service.workshop.counter.title') }}
         </h1>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-g-600">
           Quản lý thu tiền dịch vụ xưởng: Sửa chữa, Bảo trì, Bảo hành, Đặt dịch vụ. Xưởng in phiếu →
           Khách mang đến quầy → Thu ngân thu tiền.
         </p>
@@ -178,7 +178,7 @@
         :rules="paymentFormRules"
         label-position="top"
       >
-        <div class="bg-blue-50/60 rounded-xl p-4 mb-4 space-y-2">
+        <div class="bg-blue-50/60 dark:bg-blue-950/30 rounded-xl p-4 mb-4 space-y-2">
           <div class="flex justify-between text-sm">
             <span class="text-slate-500">Khách hàng:</span>
             <b>{{ paymentForm.customerName }}</b>
