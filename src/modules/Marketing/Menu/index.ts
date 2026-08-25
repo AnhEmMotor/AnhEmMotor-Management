@@ -16,6 +16,16 @@ export const marketingMenu: AppRouteRecord[] = [
     redirect: '/Marketing/dashboard',
     children: [
       {
+        path: 'user-analytics',
+        name: 'UserAnalytics',
+        component: '/Marketing/view/user-analytics/index',
+        meta: {
+          title: 'Theo dõi người dùng',
+          icon: 'ri:bar-chart-fill',
+          keepAlive: true,
+        },
+      },
+      {
         path: 'dashboard',
         name: 'MarketingDashboard',
         component: '/Marketing/view/dashboard/index',
@@ -237,6 +247,7 @@ export const marketingMenu: AppRouteRecord[] = [
           },
         ],
       },
+
       {
         path: 'booking',
         name: 'CustomerBooking',
@@ -248,37 +259,7 @@ export const marketingMenu: AppRouteRecord[] = [
           permissions: [Permissions.Marketing.BookingManagement.View],
         },
       },
-      {
-        path: 'visitor-tracking',
-        name: 'VisitorTracking',
-        component: '/Marketing/view/visitor-tracking/index',
-        meta: {
-          title: 'Theo dõi truy cập',
-          icon: 'ri:eye-line',
-          keepAlive: true,
-        },
-      },
-      {
-        path: 'google-ads',
-        name: 'GoogleAdsIntegration',
-        component: '/Marketing/view/google-ads/index',
-        meta: {
-          title: 'Google Ads',
-          icon: 'ri:google-fill',
-          keepAlive: true,
-          isHide: true,
-        },
-      },
-      {
-        path: 'google-analytics',
-        name: 'GoogleAnalyticsDashboard',
-        component: '/Marketing/view/google-analytics/index',
-        meta: {
-          title: 'Google Analytics',
-          icon: 'ri:bar-chart-fill',
-          keepAlive: true,
-        },
-      },
+
       ...marketingManualRoutes,
     ],
   },
