@@ -66,7 +66,7 @@
           @click="handleUpdateStatus(5)"
           v-auth="Permissions.Factory.CustomerManagement.View"
         >
-          💾 Hoàn tất & Đóng hồ sơ
+          💾 Xác nhận & Hoàn tất
         </el-button>
 
         <span
@@ -459,11 +459,14 @@
             <div class="border-t border-slate-800 pt-3 flex justify-between items-baseline">
               <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>
               <span class="text-xl font-extrabold text-primary">{{
-                formatPrice(totalPartsCost)
+                formatPrice(finalCustomerCost)
               }}</span>
             </div>
             <div class="text-[10px] text-slate-400 italic text-center mt-2">
-              (Áp dụng chính sách miễn phí 100% công sửa chữa bảo hành)
+              <span v-if="finalCustomerCost === 0">
+                (Lỗi NSX: Miễn phí 100% linh kiện & công sửa chữa)
+              </span>
+              <span v-else> (Lỗi khách: Tính tiền phụ tùng, miễn phí công sửa chữa) </span>
             </div>
           </div>
         </el-card>
@@ -545,8 +548,8 @@ const currentStatusValue = computed(() => {
 
 const activeStepIndex = computed(() => {
   const val = currentStatusValue.value;
-  if (val === 6) return 0; 
-  return val - 1; 
+  if (val === 6) return 0;
+  return val - 1;
 });
 
 const canReject = computed(() => {
@@ -568,6 +571,14 @@ const totalPartsCost = computed(() => {
   return claim.value.parts.reduce((sum, part) => {
     return sum + (part.unitPrice || 0);
   }, 0);
+});
+
+const finalCustomerCost = computed(() => {
+  const s = claim.value?.status ? String(claim.value.status).toLowerCase() : '';
+  if (s === '6' || s === 'rejected') {
+    return totalPartsCost.value;
+  }
+  return 0;
 });
 
 const historyClaims = ref<any[]>([]);
@@ -718,7 +729,7 @@ async function handleApproveClaim() {
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 3, 
+      status: 3,
       manufacturerDecision: decisionText,
     });
     ElMessage.success('Đã duyệt bồi hoàn bảo hành thành công!');
@@ -747,7 +758,7 @@ async function handleRecall() {
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
-      status: 5, 
+      status: 5,
       isRecall: true,
       manufacturerDecision: 'Hãng phê duyệt triệu hồi xe lỗi và cấp xe mới.',
     });

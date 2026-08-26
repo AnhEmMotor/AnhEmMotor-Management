@@ -289,7 +289,9 @@
                   </div>
                   <div class="flex justify-between text-sm" v-if="voucherDiscount > 0">
                     <span class="text-slate-500">Giảm giá (Voucher):</span>
-                    <span class="font-bold text-emerald-600">-{{ formatCurrency(voucherDiscount) }}</span>
+                    <span class="font-bold text-emerald-600"
+                      >-{{ formatCurrency(voucherDiscount) }}</span
+                    >
                   </div>
                   <div class="flex justify-between text-base border-t pt-2 mt-2">
                     <span class="font-bold uppercase text-slate-800">Tổng cộng:</span>
@@ -322,7 +324,7 @@
               class="bg-white rounded-xl border border-gray-100 p-5"
             >
               <h3 class="text-sm font-bold m-0 mb-4 text-slate-800">
-                Nghiệm thu QC & Thanh toán hóa đơn
+                Nghiệm thu QC & Xác nhận hóa đơn
               </h3>
               <p class="text-sm text-slate-500 mb-4">
                 Xe đã hoàn thành sửa chữa kỹ thuật và đã vượt qua bài kiểm tra chất lượng (QC). Tiến
@@ -348,14 +350,21 @@
                         :value="v.code"
                       >
                         <div class="flex flex-col py-1 h-auto leading-tight">
-                          <span class="text-sm font-bold text-slate-800">{{ v.code }} - {{ v.name }}</span>
+                          <span class="text-sm font-bold text-slate-800"
+                            >{{ v.code }} - {{ v.name }}</span
+                          >
                           <span class="text-xs text-slate-500" v-if="v.minOrderValue > 0">
                             Đơn tối thiểu: {{ formatCurrency(v.minOrderValue) }}
                           </span>
                         </div>
                       </ElOption>
                     </ElSelect>
-                    <ElButton :loading="voucherApplying" type="primary" @click="applyVoucher" class="ml-2">
+                    <ElButton
+                      :loading="voucherApplying"
+                      type="primary"
+                      @click="applyVoucher"
+                      class="ml-2"
+                    >
                       Áp dụng
                     </ElButton>
                   </div>
@@ -379,23 +388,7 @@
                   </p>
                 </ElCol>
 
-                <ElCol :span="8">
-                  <ElFormItem label="Phương thức thanh toán" label-position="top">
-                    <ElSelect v-model="paymentMethod" class="w-full">
-                      <ElOption label="Tiền mặt" value="Cash" />
-                      <ElOption label="Chuyển khoản" value="BankTransfer" />
-                    </ElSelect>
-                  </ElFormItem>
-                </ElCol>
-                <ElCol :span="8">
-                  <ElFormItem label="Trạng thái thanh toán" label-position="top">
-                    <ElSelect v-model="paymentStatus" class="w-full">
-                      <ElOption label="Đã thanh toán" value="Paid" />
-                      <ElOption label="Chưa thanh toán" value="Unpaid" />
-                    </ElSelect>
-                  </ElFormItem>
-                </ElCol>
-                <ElCol :span="8">
+                <ElCol :span="24">
                   <ElFormItem label="Ghi chú bàn giao" label-position="top">
                     <ElInput v-model="checkoutNotes" placeholder="Nhập ghi chú" />
                   </ElFormItem>
@@ -404,7 +397,7 @@
 
               <div class="flex justify-end mt-4 pt-4 border-t">
                 <ElButton type="success" :disabled="submitting" @click="completeRepairOrder">
-                  Thanh toán & Hoàn tất
+                  Xác nhận & Hoàn tất
                 </ElButton>
               </div>
             </div>
@@ -625,7 +618,7 @@ const checkoutNotes = ref('');
 const steps = [
   { title: 'Sửa chữa', description: 'Đang khảo sát, lắp phụ tùng' },
   { title: 'Kiểm định QC', description: 'Kiểm tra chất lượng xe' },
-  { title: 'Hoàn tất & Bàn giao', description: 'Thanh toán hóa đơn' },
+  { title: 'Hoàn tất & Bàn giao', description: 'Chuyển thanh toán' },
 ];
 
 const calculatedStatus = computed(() => {
@@ -736,8 +729,11 @@ const loadOrderDetail = async () => {
     localItems.value = itemsList;
     assignForm.value.technicianId = (res as any).technicianId || undefined;
     if ((res as any).technicianId && (res as any).technicianName) {
-      if (!technicians.value.some(t => t.id === (res as any).technicianId)) {
-        technicians.value.push({ id: (res as any).technicianId, fullName: (res as any).technicianName } as any);
+      if (!technicians.value.some((t) => t.id === (res as any).technicianId)) {
+        technicians.value.push({
+          id: (res as any).technicianId,
+          fullName: (res as any).technicianName,
+        } as any);
       }
     }
   } catch (err: any) {
@@ -900,7 +896,7 @@ const confirmAddService = () => {
       id: srv.id,
       name: srv.name,
       count: 1,
-      price: 0, 
+      price: 0,
       notes: '',
     });
   }
@@ -909,7 +905,11 @@ const confirmAddService = () => {
 
 const openPartsDialog = async () => {
   try {
-    const res = await ProductApi.getVariantsForInput({ current: 1, size: 100, filters: 'managementType==sku' });
+    const res = await ProductApi.getVariantsForInput({
+      current: 1,
+      size: 100,
+      filters: 'managementType==sku',
+    });
     availableParts.value = res.items || [];
   } catch (err) {
     ElMessage.error('Không thể tải danh sách phụ tùng');
@@ -975,8 +975,8 @@ const completeRepairOrder = async () => {
   try {
     await (RepairOrderApi.complete as any)({
       repairOrderId: orderId,
-      paymentMethod: paymentMethod.value,
-      paymentStatus: paymentStatus.value,
+      paymentMethod: 'None',
+      paymentStatus: 'Unpaid',
       notes: checkoutNotes.value || undefined,
       voucherId: appliedVoucher.value?.voucherId,
       discountAmount: appliedVoucher.value?.discountAmount || 0,
@@ -1044,7 +1044,7 @@ const fetchVouchers = async () => {
     const res = await VoucherApi.getList({
       current: 1,
       size: 100,
-      Filters: 'IsActive==true'
+      Filters: 'IsActive==true',
     });
     availableVouchers.value = res.items || [];
   } catch (err) {
