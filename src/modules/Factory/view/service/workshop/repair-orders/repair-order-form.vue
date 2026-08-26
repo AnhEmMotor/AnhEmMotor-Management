@@ -286,7 +286,7 @@
 
             <div class="flex justify-end gap-2 border-b border-slate-100 pb-3">
               <ElButton type="primary" @click="handleComplete">
-                <ArtSvgIcon icon="ri:check-double-line" /> Hoàn tất sửa chữa
+                <ArtSvgIcon icon="ri:check-double-line" /> Xác nhận & Hoàn tất
               </ElButton>
             </div>
 
@@ -365,43 +365,15 @@
 
       <div v-if="order" class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mt-4">
         <h4
+          v-if="false"
           class="text-xs font-black uppercase text-slate-400 tracking-wider mb-3 flex items-center gap-2"
         >
           <Icon name="fa6-solid:ticket" class="text-primary" />
           Mã giảm giá
         </h4>
 
-        <div
-          v-if="appliedVoucher"
-          class="flex items-center justify-between rounded-xl border border-green-200 bg-green-50 p-4"
-        >
-          <div class="flex items-center gap-3">
-            <Icon name="fa6-solid:circle-check" class="text-green-600" />
-            <div>
-              <span class="text-sm font-bold text-green-800">{{ appliedVoucher.code }}</span>
-              <span class="text-xs text-green-600 ml-2"
-                >-{{ formatCurrency(voucherDiscount) }}</span
-              >
-            </div>
-          </div>
-          <ElButton
-            link
-            type="danger"
-            size="small"
-            :loading="voucherApplying"
-            @click="removeVoucher"
-            >Hủy</ElButton
-          >
-        </div>
-
-        <div v-else class="flex gap-3">
-          <ElInput
-            v-model="voucherCode"
-            placeholder="Nhập mã giảm giá"
-            class="flex-1"
-            :disabled="submitting"
-            @keyup.enter="handleApplyVoucher"
-          />
+        <div v-if="false">
+          class="flex-1" :disabled="submitting" @keyup.enter="handleApplyVoucher" />
           <ElButton type="primary" :loading="voucherApplying" @click="handleApplyVoucher">
             Áp dụng
           </ElButton>
@@ -412,7 +384,7 @@
         </p>
 
         <div
-          v-if="voucherDiscount > 0"
+          v-if="false && voucherDiscount > 0"
           class="flex justify-between items-center mt-3 pt-3 border-t border-slate-100"
         >
           <span class="text-sm font-bold text-green-600">Giảm giá voucher</span>
@@ -434,7 +406,10 @@
             <span>Tổng trước giảm:</span>
             <span class="font-bold text-slate-700">{{ formatCurrency(repairOrderTotal) }}</span>
           </div>
-          <div v-if="voucherDiscount > 0" class="flex justify-between text-xs text-green-600">
+          <div
+            v-if="false && voucherDiscount > 0"
+            class="flex justify-between text-xs text-green-600"
+          >
             <span>Giảm giá voucher:</span>
             <span class="font-bold">-{{ formatCurrency(voucherDiscount) }}</span>
           </div>
@@ -680,8 +655,8 @@ const handleComplete = async () => {
     submitting.value = true;
     await RepairOrderApi.complete({
       repairOrderId: orderId,
-      paymentMethod: 'Cash',
-      paymentStatus: 'Paid',
+      paymentMethod: 'None',
+      paymentStatus: 'Unpaid',
     });
     ElMessage.success('Đã hoàn tất phiếu sửa chữa!');
     await loadOrder();
