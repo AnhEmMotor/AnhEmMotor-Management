@@ -123,9 +123,9 @@ const form = reactive({
 });
 
 const isActionable = computed(() => {
-  const status = props.returnRequest?.status?.toLowerCase();
-  if (props.mode === 'classification') return status === 'pending';
-  if (props.mode === 'approval') return status === 'inspecting';
+  const status = props.returnRequest?.status?.toLowerCase() || '';
+  if (props.mode === 'classification') return status === 'pending' || status === 'processing';
+  if (props.mode === 'approval') return ['inspecting', 'pending', 'processing'].includes(status);
   return false;
 });
 
@@ -154,9 +154,11 @@ const submitButtonText = computed(() => {
 });
 
 const dialogTitle = computed(() => {
-  const status = props.returnRequest?.status?.toLowerCase();
-  if (props.mode === 'classification' && status === 'pending') return 'Phân loại lỗi trả hàng';
-  if (props.mode === 'approval' && status === 'inspecting') {
+  const status = props.returnRequest?.status?.toLowerCase() || '';
+  if (props.mode === 'classification' && (status === 'pending' || status === 'processing')) {
+    return 'Phân loại lỗi trả hàng';
+  }
+  if (props.mode === 'approval' && ['inspecting', 'pending', 'processing'].includes(status)) {
     return 'Duyệt / Từ chối Yêu cầu Trả hàng';
   }
   if (status === 'completed') return 'Chi tiết — Đã duyệt & Lưu kho';

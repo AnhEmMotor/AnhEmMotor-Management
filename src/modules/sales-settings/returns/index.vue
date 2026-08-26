@@ -40,7 +40,10 @@
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center flex-wrap">
             <ElButton
-              v-if="workflowMode === 'classification' && row.status?.toLowerCase() === 'pending'"
+              v-if="
+                workflowMode === 'classification' &&
+                ['pending', 'processing'].includes(row.status?.toLowerCase())
+              "
               type="warning"
               @click="openProcessModal(row)"
             >
@@ -48,7 +51,10 @@
             </ElButton>
 
             <ElButton
-              v-else-if="workflowMode === 'approval' && row.status?.toLowerCase() === 'inspecting'"
+              v-else-if="
+                workflowMode === 'approval' &&
+                ['inspecting', 'pending', 'processing'].includes(row.status?.toLowerCase())
+              "
               type="primary"
               @click="openProcessModal(row)"
             >

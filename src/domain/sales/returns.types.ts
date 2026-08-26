@@ -38,17 +38,24 @@ export interface ReturnRequestListResponse {
   totalPages?: number;
 }
 
+export interface ReturnRequestItemPayload {
+  productId: number;
+  variantId?: number;
+  productName?: string;
+  quantity: number;
+  unitPrice?: number;
+}
+
 export interface CreateReturnRequestCommand {
   orderId: number;
-  type: 'return';
+  type: string;
   reason: string;
+  customerName?: string;
+  customerPhone?: string;
+  carrier?: string;
+  originalTrackingNumber?: string;
   note?: string;
-  evidenceImages?: string[];
-  items: Array<{
-    productId: number;
-    returnQuantity: number;
-  }>;
-  returnAction: 'restock' | 'defect' | 'refund';
+  items: ReturnRequestItemPayload[];
 }
 
 export interface CreateCancelRequestCommand {
