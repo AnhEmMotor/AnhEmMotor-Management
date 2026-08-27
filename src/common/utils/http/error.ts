@@ -80,7 +80,15 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   }
 
   const statusCode = error.response?.status;
-  const errorMessage = error.response?.data?.msg || error.message;
+  const rawData = error.response?.data as any;
+  const backendMsg =
+    (typeof rawData === 'string' && rawData.trim() ? rawData : undefined) ||
+    rawData?.message ||
+    rawData?.Message ||
+    rawData?.msg ||
+    (typeof rawData?.error === 'string' ? rawData?.error : undefined) ||
+    rawData?.title;
+  const errorMessage = backendMsg || error.response?.data?.msg || error.message;
   const requestConfig = error.config;
 
   if (!error.response) {
@@ -90,9 +98,9 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
     });
   }
 
-  const message = statusCode
-    ? getErrorMessage(statusCode)
-    : errorMessage || $t('httpMsg.requestFailed');
+  const message =
+    backendMsg ||
+    (statusCode ? getErrorMessage(statusCode) : errorMessage || $t('httpMsg.requestFailed'));
   throw new HttpError(message, statusCode || ApiStatus.error, {
     data: error.response.data,
     url: requestConfig?.url,

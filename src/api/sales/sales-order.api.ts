@@ -34,6 +34,12 @@ export const SalesOrderApi = {
     });
   },
 
+  getReturnableById(id: number) {
+    return request.get<SalesOrder>({
+      url: `/api/v1/SalesOrders/${id}/returnable-items`,
+    });
+  },
+
   getStatuses() {
     return request.get<Record<string, string>>({
       url: '/api/v1/SalesOrders/status',

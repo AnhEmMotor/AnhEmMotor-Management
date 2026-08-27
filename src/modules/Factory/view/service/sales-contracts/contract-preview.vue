@@ -257,28 +257,30 @@
               <div class="section mb-4">
                 <h3 class="font-bold mb-2">ĐIỀU 1: THÔNG TIN PHƯƠNG TIỆN GIAO DỊCH</h3>
                 <table class="w-full border-collapse border mb-2">
-                  <tr>
-                    <td class="border p-1">
-                      <strong>Dòng xe:</strong> {{ contractData.vehicleModel }}
-                    </td>
-                    <td class="border p-1">
-                      <strong>Phiên bản:</strong>
-                      {{ contractData.vehicleVersion }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="border p-1">
-                      <strong>Màu sắc:</strong> {{ contractData.vehicleColor }}
-                    </td>
-                    <td class="border p-1">
-                      <strong>Số khung:</strong> {{ contractData.frameNumber }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="border p-1" colspan="2">
-                      <strong>Số máy:</strong> {{ contractData.engineNumber }}
-                    </td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td class="border p-1">
+                        <strong>Dòng xe:</strong> {{ contractData.vehicleModel }}
+                      </td>
+                      <td class="border p-1">
+                        <strong>Phiên bản:</strong>
+                        {{ contractData.vehicleVersion }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="border p-1">
+                        <strong>Màu sắc:</strong> {{ contractData.vehicleColor }}
+                      </td>
+                      <td class="border p-1">
+                        <strong>Số khung:</strong> {{ contractData.frameNumber }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="border p-1" colspan="2">
+                        <strong>Số máy:</strong> {{ contractData.engineNumber }}
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
                 <p>
                   <strong>Đơn giá bán:</strong>

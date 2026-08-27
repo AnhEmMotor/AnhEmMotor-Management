@@ -133,11 +133,13 @@
         @pagination:current-change="handleCurrentChange"
       >
         <template #createdAt="{ row }">
-          <span>{{ formatDateTime(row.createdAt) }}</span>
+          <span class="text-gray-900 dark:text-white font-medium">{{
+            formatDateTime(row.createdAt)
+          }}</span>
         </template>
 
         <template #productSummary="{ row }">
-          <div class="text-xs text-gray-500 max-w-[400px] truncate">
+          <div class="text-xs text-gray-800 dark:text-white max-w-[400px] truncate">
             {{ getProductSummaryText(row.products) }}
           </div>
         </template>

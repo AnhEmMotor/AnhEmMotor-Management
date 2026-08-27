@@ -2564,59 +2564,69 @@ watch(
 </style>
 
 <style>
-.premium-dialog {
+.premium-dialog,
+.premium-dialog-nested {
   display: flex !important;
   flex-direction: column !important;
   height: 85vh !important;
   margin: auto !important;
   overflow: hidden !important;
   border-radius: 16px !important;
+  background-color: var(--default-box-color) !important;
 }
 
-.premium-dialog .el-dialog__header {
+.premium-dialog .el-dialog__header,
+.premium-dialog-nested .el-dialog__header {
   padding: 20px 24px !important;
   margin-right: 0 !important;
-  background: #fff !important;
-  border-bottom: 1px solid #f0f0f0 !important;
+  background: var(--default-box-color) !important;
+  border-bottom: 1px solid var(--default-border) !important;
 }
 
-.premium-dialog .el-dialog__title {
+.premium-dialog .el-dialog__title,
+.premium-dialog-nested .el-dialog__title {
   font-size: 16px !important;
   font-weight: 700 !important;
-  color: #1f2937 !important;
+  color: var(--art-gray-900) !important;
 }
 
-.premium-dialog .el-dialog__body {
+.premium-dialog .el-dialog__body,
+.premium-dialog-nested .el-dialog__body {
   flex: 1 !important;
   padding: 24px !important;
   overflow-y: auto !important;
-  background: #f9fafb !important;
+  background: var(--default-bg-color) !important;
 }
 
-.premium-dialog .el-dialog__footer {
+.premium-dialog .el-dialog__footer,
+.premium-dialog-nested .el-dialog__footer {
   display: flex !important;
   gap: 12px !important;
   justify-content: flex-end !important;
   padding: 16px 24px !important;
-  background: #fff !important;
-  border-top: 1px solid #e5e7eb !important;
+  background: var(--default-box-color) !important;
+  border-top: 1px solid var(--default-border) !important;
 }
 
-.premium-dialog .el-tabs--border-card {
+.premium-dialog .el-tabs--border-card,
+.premium-dialog-nested .el-tabs--border-card {
   overflow: hidden !important;
-  background: #fff !important;
-  border: 1px solid #e5e7eb !important;
+  background: var(--default-box-color) !important;
+  border: 1px solid var(--default-border) !important;
   border-radius: 12px !important;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%) !important;
 }
 
-.premium-dialog .el-tabs--border-card > .el-tabs__header {
-  background-color: #f3f4f6 !important;
-  border-bottom: 1px solid #e5e7eb !important;
+.premium-dialog .el-tabs--border-card > .el-tabs__header,
+.premium-dialog-nested .el-tabs--border-card > .el-tabs__header {
+  background-color: var(--art-gray-200) !important;
+  border-bottom: 1px solid var(--default-border) !important;
   border-radius: 11px 11px 0 0 !important;
 }
 
-.premium-dialog .el-tabs--border-card > .el-tabs__content {
+.premium-dialog .el-tabs--border-card > .el-tabs__content,
+.premium-dialog-nested .el-tabs--border-card > .el-tabs__content {
   padding: 20px !important;
+  background-color: var(--default-box-color) !important;
 }
 </style>
