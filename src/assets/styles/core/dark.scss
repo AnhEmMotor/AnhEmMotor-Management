@@ -13,6 +13,148 @@ html.dark {
   --w-e-textarea-slight-bg-color: #090909;
   --w-e-modal-button-bg-color: #090909;
   --w-e-toolbar-active-color: var(--art-gray-800);
+
+  --el-table-text-color: #ffffff;
+  --el-table-header-text-color: #ffffff;
+
+  .el-table {
+    --el-table-text-color: #ffffff !important;
+    --el-table-header-text-color: #ffffff !important;
+    color: #ffffff !important;
+
+    td.el-table__cell,
+    th.el-table__cell {
+      color: #ffffff !important;
+    }
+
+    .el-table__body {
+      color: #ffffff !important;
+    }
+
+    .cell {
+      color: #ffffff !important;
+    }
+  }
+
+  .text-black:not([class*='dark:text-']) {
+    color: #ffffff !important;
+  }
+
+  .text-gray-950:not([class*='dark:text-']),
+  .text-slate-950:not([class*='dark:text-']),
+  .text-zinc-950:not([class*='dark:text-']),
+  .text-neutral-950:not([class*='dark:text-']),
+  .text-gray-900:not([class*='dark:text-']),
+  .text-slate-900:not([class*='dark:text-']),
+  .text-zinc-900:not([class*='dark:text-']),
+  .text-neutral-900:not([class*='dark:text-']) {
+    color: #ffffff !important;
+  }
+
+  .text-gray-800:not([class*='dark:text-']),
+  .text-slate-800:not([class*='dark:text-']),
+  .text-zinc-800:not([class*='dark:text-']),
+  .text-neutral-800:not([class*='dark:text-']) {
+    color: #ffffff !important;
+  }
+
+  .text-gray-700:not([class*='dark:text-']),
+  .text-slate-700:not([class*='dark:text-']),
+  .text-zinc-700:not([class*='dark:text-']),
+  .text-neutral-700:not([class*='dark:text-']) {
+    color: #f8fafc !important;
+  }
+
+  .text-gray-600:not([class*='dark:text-']),
+  .text-slate-600:not([class*='dark:text-']),
+  .text-zinc-600:not([class*='dark:text-']),
+  .text-neutral-600:not([class*='dark:text-']) {
+    color: #f1f5f9 !important;
+  }
+
+  .text-gray-500:not([class*='dark:text-']),
+  .text-slate-500:not([class*='dark:text-']),
+  .text-zinc-500:not([class*='dark:text-']),
+  .text-neutral-500:not([class*='dark:text-']) {
+    color: #f1f5f9 !important;
+  }
+
+  .text-gray-400:not([class*='dark:text-']),
+  .text-slate-400:not([class*='dark:text-']),
+  .text-zinc-400:not([class*='dark:text-']),
+  .text-neutral-400:not([class*='dark:text-']) {
+    color: #cbd5e1 !important;
+  }
+
+  .text-gray-300:not([class*='dark:text-']),
+  .text-slate-300:not([class*='dark:text-']),
+  .text-zinc-300:not([class*='dark:text-']),
+  .text-neutral-300:not([class*='dark:text-']) {
+    color: #94a3b8 !important;
+  }
+
+  .text-g-900,
+  .text-g-800,
+  .text-g-700,
+  .text-g-600,
+  .text-g-500 {
+    color: #f8fafc !important;
+  }
+
+  .bg-white:not([class*='dark:bg-']) {
+    background-color: var(--default-box-color) !important;
+  }
+
+  [class*='bg-gray-50']:not([class*='dark:bg-']),
+  [class*='bg-slate-50']:not([class*='dark:bg-']),
+  [class*='bg-zinc-50']:not([class*='dark:bg-']),
+  [class*='bg-neutral-50']:not([class*='dark:bg-']) {
+    background-color: var(--art-gray-200, #17171c) !important;
+  }
+
+  [class*='bg-gray-100']:not([class*='dark:bg-']),
+  [class*='bg-slate-100']:not([class*='dark:bg-']),
+  [class*='bg-zinc-100']:not([class*='dark:bg-']),
+  [class*='bg-neutral-100']:not([class*='dark:bg-']) {
+    background-color: var(--art-gray-300, #393946) !important;
+  }
+
+  [class*='border-gray-']:not([class*='dark:border-']),
+  [class*='border-slate-']:not([class*='dark:border-']),
+  [class*='border-zinc-']:not([class*='dark:border-']),
+  [class*='border-neutral-']:not([class*='dark:border-']) {
+    border-color: var(--default-border, rgba(255, 255, 255, 0.1)) !important;
+  }
+
+  .el-tabs--border-card {
+    background-color: var(--default-box-color) !important;
+    border-color: var(--default-border) !important;
+
+    > .el-tabs__header {
+      background-color: var(--art-gray-200) !important;
+      border-bottom-color: var(--default-border) !important;
+
+      .el-tabs__item {
+        color: var(--art-gray-600) !important;
+
+        &.is-active {
+          color: var(--theme-color) !important;
+          background-color: var(--default-box-color) !important;
+          border-right-color: var(--default-border) !important;
+          border-left-color: var(--default-border) !important;
+        }
+
+        &:hover:not(.is-active) {
+          color: var(--theme-color) !important;
+        }
+      }
+    }
+
+    > .el-tabs__content {
+      background-color: var(--default-box-color) !important;
+      color: var(--art-gray-800) !important;
+    }
+  }
 }
 
 .dark {

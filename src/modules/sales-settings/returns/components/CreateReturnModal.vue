@@ -154,7 +154,7 @@ const searchOrders = async (query: string) => {
     const res = await SalesOrderApi.getConfirmedList({
       current: 1,
       size: 50,
-      Filters: 'Status==completed',
+      Filters: 'StatusId==completed',
       ...(query ? { search: query } : {}),
     });
     orderOptions.value = res?.items ?? [];
@@ -173,7 +173,7 @@ const handleOrderChange = async (orderId?: number) => {
   if (!orderId) return;
 
   try {
-    const order = await SalesOrderApi.getById(orderId);
+    const order = await SalesOrderApi.getReturnableById(orderId);
     form.customerName = order.customerName || order.buyerName || '';
     form.customerPhone = order.customerPhone || order.buyerPhone || '';
     products.value = (order.products ?? []).map((p) => ({
@@ -185,6 +185,11 @@ const handleOrderChange = async (orderId?: number) => {
       price: p.price,
       returnQuantity: p.count,
     }));
+    if (products.value.length === 0) {
+      ElMessage.warning(
+        'Đơn hàng không có sản phẩm nào đủ điều kiện hoàn trả (không áp dụng cho xe máy hoặc sản phẩm đã gán số VIN).'
+      );
+    }
     await nextTick();
     products.value.forEach((row) => productTableRef.value?.toggleRowSelection(row, true));
   } catch (e) {
@@ -229,10 +234,8 @@ const submitForm = async () => {
       ElMessage.success('Tiếp nhận thành công! Yêu cầu đã chuyển sang Order phân loại lỗi.');
       visible.value = false;
       emit('success');
-    } catch (error) {
-      ElMessage.error(
-        'Có lỗi xảy ra, có thể đơn hàng không hợp lệ (không phải online hoặc chưa giao)'
-      );
+    } catch (error: any) {
+      console.error('Lỗi khi tạo yêu cầu trả hàng:', error);
     } finally {
       loading.value = false;
     }

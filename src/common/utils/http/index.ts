@@ -207,6 +207,24 @@ axiosInstance.interceptors.response.use(
         }
       }
 
+      if (!backendMsg) {
+        if (typeof data === 'string' && data.trim()) {
+          backendMsg = data;
+        } else if (data && typeof data === 'object') {
+          if (data.message && typeof data.message === 'string') {
+            backendMsg = data.message;
+          } else if (data.Message && typeof data.Message === 'string') {
+            backendMsg = data.Message;
+          } else if (data.msg && typeof data.msg === 'string') {
+            backendMsg = data.msg;
+          } else if (data.error && typeof data.error === 'string') {
+            backendMsg = data.error;
+          } else if (data.title && typeof data.title === 'string') {
+            backendMsg = data.title;
+          }
+        }
+      }
+
       if (backendMsg) {
         return Promise.reject(new HttpError(backendMsg, status, { data }));
       }

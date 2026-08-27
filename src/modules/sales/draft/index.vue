@@ -63,10 +63,10 @@
         </template>
         <template #customer="{ row }">
           <div class="flex flex-col">
-            <span class="font-medium text-gray-800">{{
+            <span class="font-medium text-g-800">{{
               row.customerName || row.buyerName || '---'
             }}</span>
-            <span class="text-xs text-gray-500">{{
+            <span class="text-xs text-g-500">{{
               row.customerPhone || row.buyerEmail || '---'
             }}</span>
           </div>
@@ -77,7 +77,7 @@
           </ElTag>
         </template>
         <template #total="{ row }">
-          <span class="font-semibold text-gray-800">{{ formatCurrency(row.total || 0) }}</span>
+          <span class="font-semibold text-g-800">{{ formatCurrency(row.total || 0) }}</span>
         </template>
         <template #operation="{ row }">
           <div class="flex gap-2 justify-center">
@@ -250,9 +250,9 @@
           </ElCol>
         </ElRow>
 
-        <div class="border-t border-gray-100 pt-4 mt-2">
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
           <div class="flex justify-between items-center mb-3">
-            <span class="text-sm font-semibold text-gray-700">Sản phẩm bán ra</span>
+            <span class="text-sm font-semibold text-g-700">Sản phẩm bán ra</span>
             <ElButton
               type="success"
               size="small"
@@ -286,9 +286,7 @@
                   >
                     <div class="flex items-center justify-between gap-3">
                       <span class="truncate">{{ item.displayName }}</span>
-                      <span class="text-xs text-gray-500">{{
-                        formatCurrency(item.price || 0)
-                      }}</span>
+                      <span class="text-xs text-g-500">{{ formatCurrency(item.price || 0) }}</span>
                     </div>
                   </ElOption>
                 </ElSelect>
@@ -348,7 +346,7 @@
                     {{ vehicle.vinNumber }}
                   </ElTag>
                 </div>
-                <span v-else class="text-xs text-gray-400">---</span>
+                <span v-else class="text-xs text-g-400">---</span>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Thao tác" width="100" align="center">
@@ -396,11 +394,13 @@
         </div>
         <div
           v-if="appliedVoucher"
-          class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg"
+          class="flex items-center gap-2 p-2 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg"
         >
-          <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600" />
-          <span class="text-sm font-bold text-emerald-700">{{ appliedVoucher.code }}</span>
-          <span class="text-xs text-emerald-600"
+          <ArtSvgIcon icon="ri:coupon-3-fill" class="text-emerald-600 dark:text-emerald-400" />
+          <span class="text-sm font-bold text-emerald-700 dark:text-emerald-300">{{
+            appliedVoucher.code
+          }}</span>
+          <span class="text-xs text-emerald-600 dark:text-emerald-400"
             >-{{ formatCurrency(appliedVoucher.discountAmount) }}</span
           >
           <ElButton
@@ -416,7 +416,9 @@
         <p v-if="voucherError" class="text-xs text-red-500 mt-1">
           {{ voucherError }}
         </p>
-        <div class="bg-gray-50 rounded-lg p-4 flex flex-col gap-2 text-sm">
+        <div
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex flex-col gap-2 text-sm border border-gray-100 dark:border-gray-700"
+        >
           <div class="flex justify-between">
             <span>Tạm tính</span>
             <span class="font-semibold">{{ formatCurrency(formTotal) }}</span>
@@ -426,7 +428,7 @@
             <span>{{ formatCurrency(depositAmount) }}</span>
           </div>
           <div
-            class="flex justify-between text-base text-primary font-bold border-t border-gray-200 pt-2"
+            class="flex justify-between text-base text-primary font-bold border-t border-gray-200 dark:border-gray-700 pt-2"
           >
             <span>Còn lại</span>
             <span>{{ formatCurrency(remainingAmount) }}</span>

@@ -329,9 +329,13 @@ const setFullEditorDemo = () => {
   <li>gợicungĐầy đủcủaChỉnh sửathểnghiệm</li>
 </ul>
 <table style="border-collapse: collapse; width: 100%;" border="1">
-  <tr><th>đặctính</th><th>Trạng thái</th></tr>
-  <tr><td>hoànchỉnhcôngcụthanh</td><td>✅ ĐãBật</td></tr>
-  <tr><td>caocấpcôngnăng</td><td>✅ ĐãBật</td></tr>
+  <thead>
+    <tr><th>đặctính</th><th>Trạng thái</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>hoànchỉnhcôngcụthanh</td><td>✅ ĐãBật</td></tr>
+    <tr><td>caocấpcôngnăng</td><td>✅ ĐãBật</td></tr>
+  </tbody>
 </table>`;
 
   fullEditorRef.value?.setHtml(demoContent);
