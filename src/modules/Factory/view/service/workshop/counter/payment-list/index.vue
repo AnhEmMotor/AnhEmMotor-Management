@@ -208,7 +208,7 @@
               @change="calcTotal"
             />
           </ElFormItem>
-          <ElFormItem label="Giảm giá" prop="discountAmount">
+          <ElFormItem v-if="false" label="Giảm giá" prop="discountAmount">
             <ElInputNumber
               v-model="paymentForm.discountAmount"
               :min="0"
@@ -370,7 +370,7 @@ const paymentStatus = ref<string | undefined>(undefined);
 const sourceTypeOptions = SOURCE_TYPES;
 const paymentStatusOptions = PAYMENT_STATUSES;
 const paymentMethods = PAYMENT_METHODS;
-const paymentStatuses = PAYMENT_STATUSES;
+const paymentStatuses = PAYMENT_STATUSES.filter((s) => ['Paid', 'Unpaid'].includes(s.value));
 
 const pagination = ref({ current: 1, size: 10, total: 0 });
 const data = ref<any[]>([]);
@@ -588,9 +588,17 @@ async function handlePaymentSubmit() {
         paymentStatus: paymentForm.paymentStatus,
         notes: paymentForm.notes || undefined,
       };
-      const id = await useCases.create.call(payload as any);
+
+      let id;
+      if (editingPaymentId.value) {
+        await WorkshopPaymentApi.update(editingPaymentId.value, payload);
+        id = editingPaymentId.value;
+      } else {
+        id = await useCases.create.call(payload as any);
+      }
+
       if (id) {
-        ElMessage.success('Thu tiền thành công!');
+        ElMessage.success(editingPaymentId.value ? 'Cập nhật thành công!' : 'Thu tiền thành công!');
         paymentDialogVisible.value = false;
         await refreshData();
       }
