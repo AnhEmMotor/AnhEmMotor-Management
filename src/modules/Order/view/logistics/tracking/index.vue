@@ -271,18 +271,14 @@
       </transition>
     </div>
 
-    <div
-      v-loading="loadingDetails"
-      element-loading-text="Đang tải tuyến đường..."
-      class="flex-1 h-full relative z-0 bg-gray-100 dark:bg-gray-900"
-    >
+    <div class="flex-1 h-full relative z-0 bg-gray-100 dark:bg-gray-900">
       <div ref="mapContainer" class="absolute inset-0 w-full h-full"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, onUnmounted, computed, nextTick } from 'vue';
+import { shallowRef, ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatImageUrl } from '@/common/utils/image';
 import L from 'leaflet';
@@ -323,19 +319,17 @@ L.Icon.Default.mergeOptions({
 
 const { t } = useI18n();
 
-const map = shallowRef<L.Map | null>(null);
 const mapContainer = ref<HTMLElement | null>(null);
+const map = shallowRef<L.Map | null>(null);
 const markersLayer = shallowRef<L.LayerGroup | null>(null);
 const polylineLayer = shallowRef<L.LayerGroup | null>(null);
-let mapResizeObserver: ResizeObserver | null = null;
-let mapResizeFrame: number | null = null;
 
 const searchQuery = ref('');
 const loadingList = ref(false);
 const loadingDetails = ref(false);
 
 const inTransitOrders = ref<ActiveShipmentItem[]>([]);
-const selectedOrder = ref<string | null>(null);
+const selectedOrder = ref<ActiveShipmentItem | string | null>(null);
 const trackingData = ref<TrackingResponse | null>(null);
 
 const filteredOrders = computed(() => {
@@ -356,58 +350,37 @@ const sortedMilestones = computed(() => {
   );
 });
 
-onMounted(async () => {
-  await nextTick();
+onMounted(() => {
   initMap();
   fetchActiveShipments();
 });
 
 onUnmounted(() => {
-  mapResizeObserver?.disconnect();
-  if (mapResizeFrame !== null) cancelAnimationFrame(mapResizeFrame);
   if (map.value) {
     map.value.remove();
   }
 });
 
 function initMap() {
-  if (!mapContainer.value || map.value) return;
-
-  map.value = L.map(mapContainer.value, {
+  if (!mapContainer.value) return;
+  const instance = L.map(mapContainer.value, {
     zoomControl: false,
   }).setView([10.9576, 106.8427], 9);
 
-  const openStreetMapLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors',
-  });
+  L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    attribution: '© Google Maps',
+  }).addTo(instance);
 
-  openStreetMapLayer.once('tileerror', () => {
-    if (!map.value || !map.value.hasLayer(openStreetMapLayer)) return;
+  L.control.zoom({ position: 'bottomright' }).addTo(instance);
 
-    map.value.removeLayer(openStreetMapLayer);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
-      maxZoom: 20,
-      attribution: '© OpenStreetMap contributors © CARTO',
-    }).addTo(map.value as any);
-  });
+  const mLayer = L.layerGroup().addTo(instance);
+  const pLayer = L.layerGroup().addTo(instance);
 
-  openStreetMapLayer.addTo(map.value as any);
-
-  L.control.zoom({ position: 'bottomright' }).addTo(map.value as any);
-
-  markersLayer.value = L.layerGroup().addTo(map.value as any);
-  polylineLayer.value = L.layerGroup().addTo(map.value as any);
-
-  mapResizeObserver = new ResizeObserver(() => {
-    if (mapResizeFrame !== null) cancelAnimationFrame(mapResizeFrame);
-    mapResizeFrame = requestAnimationFrame(() => {
-      map.value?.invalidateSize({ pan: false, debounceMoveend: true });
-      mapResizeFrame = null;
-    });
-  });
-  mapResizeObserver.observe(mapContainer.value);
+  map.value = instance;
+  markersLayer.value = mLayer;
+  polylineLayer.value = pLayer;
 }
 
 async function fetchActiveShipments() {
@@ -460,9 +433,7 @@ function deselectOrder() {
   selectedOrder.value = null;
   trackingData.value = null;
   clearMap();
-  if (map.value) {
-    map.value.setView([10.9576, 106.8427], 9, { animate: false });
-  }
+  if (map.value) map.value.setView([10.9576, 106.8427], 9, { animate: true });
 }
 
 function clearMap() {
@@ -470,33 +441,19 @@ function clearMap() {
   if (polylineLayer.value) polylineLayer.value.clearLayers();
 }
 
-const MAX_SNAP_DISTANCE_METERS = 2000;
-const roadRouteCache = new Map<string, [number, number][]>();
-
 async function fetchRoadRoute(
   from: [number, number],
   to: [number, number]
 ): Promise<[number, number][] | null> {
-  const cacheKey = `${from[0]},${from[1]}:${to[0]},${to[1]}`;
-  const cachedRoute = roadRouteCache.get(cacheKey);
-  if (cachedRoute) return cachedRoute;
-
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
     const res = await fetch(url);
     const data = await res.json();
     if (data?.code !== 'Ok') return null;
 
-    const badSnap = (data.waypoints as { distance: number }[] | undefined)?.some(
-      (wp) => wp.distance > MAX_SNAP_DISTANCE_METERS
-    );
-    if (badSnap) return null;
-
     const coords = data?.routes?.[0]?.geometry?.coordinates as number[][] | undefined;
     if (!coords?.length) return null;
-    const route = coords.map(([lng, lat]) => [lat, lng] as [number, number]);
-    roadRouteCache.set(cacheKey, route);
-    return route;
+    return coords.map(([lng, lat]) => [lat, lng]);
   } catch (error) {
     console.error('OSRM route fetch failed, falling back to straight line', error);
     return null;
@@ -507,67 +464,88 @@ async function drawTrackingData() {
   clearMap();
   if (!trackingData.value || !map.value || !markersLayer.value || !polylineLayer.value) return;
 
-  const startCoords: [number, number] = [
+  const startCoords: any = [
     trackingData.value.originLatitude || 10.9576,
     trackingData.value.originLongitude || 106.8427,
   ];
 
-  const destCoords: [number, number] = [
+  const destCoords: any = [
     trackingData.value.destinationLatitude || startCoords[0] + 0.05,
     trackingData.value.destinationLongitude || startCoords[1] + 0.05,
   ];
 
   const requestedTrackingNumber = trackingData.value.trackingNumber;
   const fullPath = await fetchRoadRoute(startCoords, destCoords);
+
   if (
     !map.value ||
-    !markersLayer.value ||
     !polylineLayer.value ||
     trackingData.value?.trackingNumber !== requestedTrackingNumber
   )
     return;
 
-  if (fullPath) {
-    L.polyline(fullPath, {
-      color: '#3b82f6',
-      weight: 5,
-      opacity: 0.9,
-      lineJoin: 'round',
-    }).addTo(polylineLayer.value as any);
-  } else {
-    ElMessage.warning('Không thể tải tuyến đường thực tế. Vui lòng thử lại.');
-  }
+  L.polyline(fullPath || [startCoords, destCoords], {
+    color: '#3b82f6',
+    weight: 5,
+    opacity: 0.9,
+    lineJoin: 'round',
+  }).addTo(polylineLayer.value as any);
+
+  const isReturn =
+    (trackingData.value as any).shipmentType === 'ReturnDelivery' ||
+    (trackingData.value as any).type === 'ReturnDelivery';
+
+  const startTooltip = isReturn
+    ? (trackingData.value as any).originAddress || 'Địa chỉ khách hàng (Gửi hoàn)'
+    : (trackingData.value as any).originAddress || 'Kho / Showroom AnhEmMotor Biên Hòa';
+
+  const destTooltip = isReturn
+    ? (trackingData.value as any).destinationAddress ||
+      'Kho / Showroom AnhEmMotor Biên Hòa (Nhận hoàn)'
+    : trackingData.value.customerAddress ||
+      (trackingData.value as any).destinationAddress ||
+      'Địa chỉ nhận hàng';
+
+  const warehouseIconHtml = `<div class="w-8 h-8 bg-blue-800 text-white rounded-md flex items-center justify-center shadow-lg border-2 border-white font-bold text-xs"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>`;
+  const customerIconHtml = `<div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`;
 
   const startIcon = L.divIcon({
     className: 'custom-marker',
-    html: `<div class="w-8 h-8 bg-blue-800 text-white rounded-md flex items-center justify-center shadow-lg border-2 border-white font-bold text-xs"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>`,
+    html: isReturn ? customerIconHtml : warehouseIconHtml,
     iconSize: [32, 32],
-    iconAnchor: [16, 32],
+    iconAnchor: isReturn ? [16, 16] : [16, 32],
   });
   L.marker(startCoords, { icon: startIcon })
-    .bindTooltip('Showroom Biên Hòa', { direction: 'top' })
+    .bindTooltip(startTooltip, { direction: 'top' })
     .addTo(markersLayer.value as any);
 
   const endIcon = L.divIcon({
     className: 'custom-marker',
-    html: `<div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`,
+    html: isReturn ? warehouseIconHtml : customerIconHtml,
     iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    iconAnchor: isReturn ? [16, 32] : [16, 16],
   });
   L.marker(destCoords, { icon: endIcon })
-    .bindTooltip('Địa chỉ nhận hàng', { direction: 'top' })
+    .bindTooltip(destTooltip, { direction: 'top' })
     .addTo(markersLayer.value as any);
 
-  const bounds = L.latLngBounds(fullPath || [startCoords, destCoords]);
-  map.value.fitBounds(bounds, { padding: [64, 64], maxZoom: 15, animate: false });
+  const bounds = L.latLngBounds([startCoords, destCoords]);
+  map.value.flyToBounds(bounds, { padding: [80, 80], duration: 1.2 });
 }
 
 function getMilestoneColor(milestone: TrackingMilestone) {
   if (milestone.isCurrent) {
     return '#3b82f6';
   }
+  if (
+    milestone.statusType === 'delivered' ||
+    milestone.statusType === 'picked_up' ||
+    milestone.statusType === 'in_transit'
+  ) {
+    return '#10b981';
+  }
   const isDark = document.documentElement.classList.contains('dark');
-  return isDark ? '#374151' : '#e5e7eb';
+  return isDark ? '#4b5563' : '#cbd5e1';
 }
 
 function formatCurrency(amount: number) {

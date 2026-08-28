@@ -478,7 +478,7 @@
             <ElTableColumn label="Tên sản phẩm" minWidth="220">
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
-                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <span class="font-medium text-gray-800">{{ formatReceiptProductName(row) }}</span>
                   <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
                     Màu: {{ row.productVariantColorName }}
                   </ElTag>
@@ -1228,9 +1228,19 @@ const getStatusTagType = (statusId?: string) => {
   }
 };
 
+const formatReceiptProductName = (item?: { name?: string; variantName?: string }) => {
+  if (!item) return '';
+  if (item.name && item.variantName) {
+    return `${item.name} - ${item.variantName}`;
+  }
+  return item.name || item.variantName || '';
+};
+
 const getProductSummaryText = (products?: InputInfo[]) => {
   if (!products || products.length === 0) return 'Không có sản phẩm';
-  return products.map((p) => `${p.name} (SL: ${p.quantity})`).join(', ');
+  return products
+    .map((p) => `${formatReceiptProductName(p) || 'Sản phẩm'} (SL: ${p.quantity})`)
+    .join(', ');
 };
 
 const handleViewDetail = async (row: InventoryReceipt) => {
@@ -1288,7 +1298,7 @@ const handleEdit = async (row: InventoryReceipt) => {
           const isVin =
             (p.vehicles && p.vehicles.length > 0) || (prItem && prItem.needVin) || false;
           productCache.set(p.productVariantId, {
-            displayName: p.name || `Sản phẩm #${p.productVariantId}`,
+            displayName: formatReceiptProductName(p) || `Sản phẩm #${p.productVariantId}`,
             colorName: p.productVariantColorName,
           });
 

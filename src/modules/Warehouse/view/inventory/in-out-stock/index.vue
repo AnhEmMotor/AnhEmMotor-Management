@@ -213,7 +213,9 @@
             <ElTableColumn label="Tên sản phẩm" min-width="200">
               <template #default="{ row }">
                 <div class="flex flex-col gap-1">
-                  <span class="font-medium text-gray-800">{{ row.name }}</span>
+                  <span class="font-medium text-gray-800">
+                    {{ row.variantName ? `${row.name} - ${row.variantName}` : row.name || 'N/A' }}
+                  </span>
                   <ElTag v-if="row.productVariantColorName" size="small" type="info" class="w-fit">
                     Màu: {{ row.productVariantColorName }}
                   </ElTag>

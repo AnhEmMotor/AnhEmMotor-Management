@@ -4,6 +4,7 @@ export interface InputInfo {
   productVariantColorId?: number;
   productVariantColorName?: string;
   name?: string;
+  variantName?: string;
   quantity: number;
   remainingCount?: number;
   purchaseRequestItemId?: number;
