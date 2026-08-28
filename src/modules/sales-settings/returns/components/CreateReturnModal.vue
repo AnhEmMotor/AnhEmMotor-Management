@@ -155,6 +155,7 @@ const searchOrders = async (query: string) => {
       current: 1,
       size: 50,
       Filters: 'StatusId==completed',
+      Sorts: '-Id',
       ...(query ? { search: query } : {}),
     });
     orderOptions.value = res?.items ?? [];
