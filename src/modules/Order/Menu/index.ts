@@ -141,6 +141,17 @@ export const orderMenu: AppRouteRecord[] = [
               permissions: [Permissions.Order.ProductManagement.View],
             },
           },
+          {
+            path: 'category',
+            name: 'OrderProductCategory',
+            component: '/Order/view/product/type/index',
+            meta: {
+              title: 'Quản lý danh mục',
+              icon: 'ri:folders-line',
+              keepAlive: true,
+              permissions: [Permissions.Order.ProductManagement.View],
+            },
+          },
         ],
       },
       {

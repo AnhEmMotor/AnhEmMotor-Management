@@ -281,6 +281,15 @@
             </ElButton>
           </div>
 
+          <ElAlert
+            v-if="hasInsufficientStock"
+            title="Một số sản phẩm trong danh sách chưa đủ tồn kho khả dụng. Vui lòng điều chỉnh lại số lượng hoặc đổi sản phẩm khác."
+            type="warning"
+            show-icon
+            :closable="false"
+            class="!mb-3"
+          />
+
           <ElTable :data="formData.products" border size="small" class="w-full" max-height="320">
             <ElTableColumn label="Sản phẩm" min-width="280">
               <template #default="{ row }">
@@ -307,6 +316,18 @@
                     </div>
                   </ElOption>
                 </ElSelect>
+                <div
+                  v-if="row.productVariantId && getRowAvailableStock(row) !== null"
+                  class="text-[11px] text-g-500 mt-1"
+                >
+                  Tồn kho khả dụng:
+                  <span
+                    class="font-bold"
+                    :class="getRowAvailableStock(row) === 0 ? 'text-red-500' : 'text-emerald-600'"
+                  >
+                    {{ getRowAvailableStock(row) }}
+                  </span>
+                </div>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Màu" width="180">
@@ -327,7 +348,7 @@
                 </ElSelect>
               </template>
             </ElTableColumn>
-            <ElTableColumn label="SL" width="150" align="center">
+            <ElTableColumn label="SL" width="160" align="center">
               <template #default="{ row }">
                 <ElInputNumber
                   v-model="row.count"
@@ -337,6 +358,14 @@
                   class="w-full"
                   :disabled="isBuyerProductLocked"
                 />
+                <div
+                  v-if="isRowInsufficientStock(row)"
+                  class="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-700 mt-1 text-left leading-tight"
+                >
+                  <ArtSvgIcon icon="ri:alert-fill" class="text-amber-500 shrink-0 text-xs" />
+                  <span v-if="getRowAvailableStock(row) === 0">Hết hàng</span>
+                  <span v-else>Kho còn: {{ getRowAvailableStock(row) }}</span>
+                </div>
               </template>
             </ElTableColumn>
             <ElTableColumn label="Đơn giá" width="150" align="right">
@@ -414,11 +443,26 @@
       </ElForm>
 
       <template #footer>
-        <div class="flex justify-end gap-2">
-          <ElButton @click="dialogVisible = false">Hủy</ElButton>
-          <ElButton type="primary" :loading="saving" @click="handleSubmit">
-            {{ editingOrder ? 'Lưu phiếu' : 'Tạo phiếu' }}
-          </ElButton>
+        <div class="flex justify-between items-center w-full">
+          <div
+            v-if="hasInsufficientStock"
+            class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-bold bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800"
+          >
+            <ArtSvgIcon icon="ri:alert-line" class="text-amber-500 text-sm shrink-0" />
+            <span>Chưa đủ tồn kho để {{ editingOrder ? 'lưu phiếu' : 'tạo phiếu' }}</span>
+          </div>
+          <div v-else />
+          <div class="flex justify-end gap-2">
+            <ElButton @click="dialogVisible = false">Hủy</ElButton>
+            <ElButton
+              v-if="!hasInsufficientStock"
+              type="primary"
+              :loading="saving"
+              @click="handleSubmit"
+            >
+              {{ editingOrder ? 'Lưu phiếu' : 'Tạo phiếu' }}
+            </ElButton>
+          </div>
         </div>
       </template>
     </ElDialog>
@@ -826,6 +870,8 @@ function handleAdd() {
   editingOrder.value = null;
   originalStatusId.value = '';
   resetForm();
+  searchProducts('');
+  searchCustomers('');
   dialogVisible.value = true;
 }
 
@@ -836,6 +882,8 @@ async function handleEdit(row: SalesOrder) {
     editingOrder.value = detail;
     originalStatusId.value = detail.statusId || 'pending';
     fillForm(detail);
+    searchProducts('');
+    searchCustomers('');
     dialogVisible.value = true;
   } finally {
     loading.value = false;
@@ -977,6 +1025,9 @@ async function handleSubmit() {
   if (!formData.products.length) return ElMessage.warning('Phiếu bán phải có ít nhất một sản phẩm');
   if (formData.products.some((item) => !item.productVariantId || !item.count)) {
     return ElMessage.warning('Vui lòng chọn sản phẩm và số lượng hợp lệ');
+  }
+  if (hasInsufficientStock.value) {
+    return ElMessage.warning('Một số sản phẩm chưa đủ tồn kho khả dụng để tạo phiếu');
   }
 
   const payload: any = {
@@ -1223,6 +1274,30 @@ function formatCurrency(val?: number) {
 function getProductColors(row: any) {
   return productOptions.value.find((item) => item.id === row.productVariantId)?.colors || [];
 }
+
+function getRowAvailableStock(row: any): number | null {
+  if (!row.productVariantId) return null;
+  const product = productOptions.value.find((item) => item.id === row.productVariantId);
+  if (!product) return null;
+  if (row.productVariantColorId) {
+    const color = (product.colors || []).find((c) => c.id === row.productVariantColorId);
+    if (color && typeof color.stock === 'number') {
+      return color.stock;
+    }
+  }
+  return typeof product.stock === 'number' ? product.stock : null;
+}
+
+function isRowInsufficientStock(row: any): boolean {
+  if (!row.productVariantId) return false;
+  const stock = getRowAvailableStock(row);
+  if (stock === null) return false;
+  return stock <= 0 || (row.count || 0) > stock;
+}
+
+const hasInsufficientStock = computed(() => {
+  return formData.products.some((row) => isRowInsufficientStock(row));
+});
 
 function formatDateTime(value?: string) {
   if (!value) return '---';

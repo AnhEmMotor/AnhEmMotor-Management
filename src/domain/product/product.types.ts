@@ -124,11 +124,13 @@ export interface ProductVariantLiteForInput {
   price: number;
   categoryId: number;
   managementType?: string;
+  stock?: number;
   colors?: Array<{
     id: number;
     colorName?: string;
     colorCode?: string;
     coverImageUrl?: string;
+    stock?: number;
   }>;
 }
 
