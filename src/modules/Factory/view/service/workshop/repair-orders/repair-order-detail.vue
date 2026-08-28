@@ -277,31 +277,6 @@
                 </ElTableColumn>
               </ElTable>
 
-              <div class="flex justify-end pt-4">
-                <div class="w-72 space-y-2">
-                  <div class="flex justify-between text-sm">
-                    <span class="text-slate-500">Tiền công sửa chữa:</span>
-                    <span class="font-bold">{{ formatCurrency(totalLaborCost) }}</span>
-                  </div>
-                  <div class="flex justify-between text-sm">
-                    <span class="text-slate-500">Tiền phụ tùng:</span>
-                    <span class="font-bold">{{ formatCurrency(totalPartsCost) }}</span>
-                  </div>
-                  <div class="flex justify-between text-sm" v-if="voucherDiscount > 0">
-                    <span class="text-slate-500">Giảm giá (Voucher):</span>
-                    <span class="font-bold text-emerald-600"
-                      >-{{ formatCurrency(voucherDiscount) }}</span
-                    >
-                  </div>
-                  <div class="flex justify-between text-base border-t pt-2 mt-2">
-                    <span class="font-bold uppercase text-slate-800">Tổng cộng:</span>
-                    <span class="font-bold text-red-600 text-lg">{{
-                      formatCurrency(discountedTotal)
-                    }}</span>
-                  </div>
-                </div>
-              </div>
-
               <div
                 class="flex justify-end gap-3 mt-5 pt-4 border-t"
                 v-if="calculatedStatus === 'InProgress'"
@@ -394,6 +369,31 @@
                   </ElFormItem>
                 </ElCol>
               </ElRow>
+
+              <div class="flex justify-end pt-4 pb-2">
+                <div class="w-72 space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Tiền công sửa chữa:</span>
+                    <span class="font-bold">{{ formatCurrency(totalLaborCost) }}</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Tiền phụ tùng:</span>
+                    <span class="font-bold">{{ formatCurrency(totalPartsCost) }}</span>
+                  </div>
+                  <div class="flex justify-between text-sm" v-if="voucherDiscount > 0">
+                    <span class="text-slate-500">Giảm giá (Voucher):</span>
+                    <span class="font-bold text-emerald-600"
+                      >-{{ formatCurrency(voucherDiscount) }}</span
+                    >
+                  </div>
+                  <div class="flex justify-between text-base border-t border-slate-200 pt-2 mt-2">
+                    <span class="font-bold uppercase text-slate-800">Tổng cộng:</span>
+                    <span class="font-bold text-red-600 text-lg">{{
+                      formatCurrency(discountedTotal)
+                    }}</span>
+                  </div>
+                </div>
+              </div>
 
               <div class="flex justify-end mt-4 pt-4 border-t">
                 <ElButton type="success" :disabled="submitting" @click="completeRepairOrder">
@@ -583,7 +583,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { ArrowLeft, Printer, Delete, Edit, User } from '@element-plus/icons-vue';
 
 import { RepairOrderApi, type RepairOrder, type RepairOrderDetail } from '@/api/sales';
-import { ProductApi } from '@/api/product';
+import { ProductApi, CategoryApi } from '@/api/product';
 import { ServiceCategoryApi, type ServiceCategoryResponse } from '@/api/product';
 import { useVoucher } from '@/common/composables/useVoucher';
 import { EmployeeApi, type EmployeeResponse } from '@/api/operations';
@@ -905,12 +905,32 @@ const confirmAddService = () => {
 
 const openPartsDialog = async () => {
   try {
-    const res = await ProductApi.getVariantsForInput({
-      current: 1,
-      size: 100,
-      filters: 'managementType==sku',
-    });
-    availableParts.value = res.items || [];
+    const [res, catRes] = await Promise.all([
+      ProductApi.getVariantsForInput({
+        current: 1,
+        size: 100,
+        filters: 'managementType==sku',
+      }),
+      CategoryApi.getList({
+        current: 1,
+        size: 100,
+      }),
+    ]);
+
+    const categories = catRes.items || [];
+    const phuKienCat = categories.find((c: any) => c.slug === 'phu-kien' || c.name === 'Phụ kiện');
+
+    let excludedCategoryIds: number[] = [];
+    if (phuKienCat) {
+      excludedCategoryIds.push(phuKienCat.id);
+      const subCats = categories.filter((c: any) => c.parentId === phuKienCat.id);
+      excludedCategoryIds.push(...subCats.map((c: any) => c.id));
+    }
+
+    const allVariants = res.items || [];
+    availableParts.value = allVariants.filter(
+      (v: any) => !excludedCategoryIds.includes(v.categoryId)
+    );
   } catch (err) {
     ElMessage.error('Không thể tải danh sách phụ tùng');
   }

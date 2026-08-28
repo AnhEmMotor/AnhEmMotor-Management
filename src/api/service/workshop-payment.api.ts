@@ -87,6 +87,13 @@ export const WorkshopPaymentApi = {
     });
   },
 
+  update(id: number, data: any) {
+    return request.put<any>({
+      url: `/api/v1/WorkshopPayments/${id}`,
+      data: { id, ...data },
+    });
+  },
+
   getStats() {
     return request.get<any>({
       url: '/api/v1/WorkshopPayments/stats',

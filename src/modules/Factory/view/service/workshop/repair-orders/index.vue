@@ -134,9 +134,7 @@
           <span v-else-if="row.technicianId" class="font-medium text-gray-700">{{
             getTechnicianName(row.technicianId)
           }}</span>
-          <span v-else class="italic text-slate-400">
-            Chưa phân công
-          </span>
+          <span v-else class="italic text-slate-400"> Chưa phân công </span>
         </template>
 
         <template #status="{ row }">
@@ -305,7 +303,7 @@
           </div>
         </div>
 
-        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-if="false" class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
@@ -434,10 +432,8 @@ const tableRef = ref();
 
 const pagination = ref<any>({ current: 1, size: 10, total: 0 });
 
-
 const allValidItems = ref<any[]>([]);
-const data = ref<RepairOrder[]>([]); 
-
+const data = ref<RepairOrder[]>([]);
 
 const searchParams = ref<any>({});
 
@@ -560,15 +556,11 @@ const applyLocalFilterAndPagination = () => {
 
   if (searchParams.value.licensePlate) {
     const term = searchParams.value.licensePlate.toLowerCase();
-    filtered = filtered.filter((x) =>
-      (x.vehicleInfo || "").toLowerCase().includes(term),
-    );
+    filtered = filtered.filter((x) => (x.vehicleInfo || '').toLowerCase().includes(term));
   }
   if (searchParams.value.customerPhone) {
     const term = searchParams.value.customerPhone.toLowerCase();
-    filtered = filtered.filter((x) =>
-      (x.customerPhone || "").toLowerCase().includes(term),
-    );
+    filtered = filtered.filter((x) => (x.customerPhone || '').toLowerCase().includes(term));
   }
   if (searchParams.value.status) {
     filtered = filtered.filter((x) => x.status === searchParams.value.status);
@@ -611,14 +603,11 @@ const fetchData = async () => {
     const rawItems = res.items || [];
 
     const validItems = rawItems.filter(
-      (item: any) =>
-        item.customerName &&
-        item.customerPhone &&
-        item.customerName !== "Khách lẻ",
+      (item: any) => item.customerName && item.customerPhone && item.customerName !== 'Khách lẻ'
     );
 
     allValidItems.value = validItems.map((item: any) => {
-      let calcStatus = "InProgress";
+      let calcStatus = 'InProgress';
       if (item.status) calcStatus = item.status;
       else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
       else if (item.totalCost > 0) calcStatus = 'Completed';
@@ -764,9 +753,7 @@ const submitCreate = async () => {
   submitting.value = true;
   try {
     const payload = {
-      vehicleId: createForm.value.isNewCustomer
-        ? undefined
-        : createForm.value.vehicleId,
+      vehicleId: createForm.value.isNewCustomer ? undefined : createForm.value.vehicleId,
       customerPhone: createForm.value.customerPhone,
       customerName: createForm.value.customerName,
       mileage: createForm.value.mileage,
@@ -803,7 +790,7 @@ const fetchVouchers = async () => {
     const res = await VoucherApi.getList({
       current: 1,
       size: 100,
-      Filters: 'IsActive==true'
+      Filters: 'IsActive==true',
     });
     availableVouchers.value = res.items || [];
   } catch (err) {
