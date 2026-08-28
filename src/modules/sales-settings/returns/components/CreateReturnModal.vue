@@ -154,7 +154,8 @@ const searchOrders = async (query: string) => {
     const res = await SalesOrderApi.getConfirmedList({
       current: 1,
       size: 50,
-      Filters: 'Status==completed',
+      Filters: 'StatusId==completed',
+      Sorts: '-Id',
       ...(query ? { search: query } : {}),
     });
     orderOptions.value = res?.items ?? [];
