@@ -2,7 +2,9 @@
   <div class="resp-page order-statistics-page flex flex-col gap-4 pb-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h2 class="m-0 text-xl font-bold uppercase tracking-wide flex items-center gap-2 text-[var(--el-text-color-primary)]">
+        <h2
+          class="m-0 text-xl font-bold uppercase tracking-wide flex items-center gap-2 text-[var(--el-text-color-primary)]"
+        >
           <ArtSvgIcon icon="ri:bar-chart-box-line" class="text-primary text-2xl" />
           Trung Tâm Điều Phối & Thống Kê Đơn Hàng (Admin)
         </h2>
@@ -12,7 +14,9 @@
       </div>
 
       <div class="flex items-center gap-2 flex-wrap">
-        <div class="flex items-center bg-[var(--el-fill-color-light)] px-3 py-1.5 rounded-lg border border-[var(--el-border-color-light)] text-xs text-[var(--el-text-color-regular)] gap-2">
+        <div
+          class="flex items-center bg-[var(--el-fill-color-light)] px-3 py-1.5 rounded-lg border border-[var(--el-border-color-light)] text-xs text-[var(--el-text-color-regular)] gap-2"
+        >
           <span class="flex items-center gap-1 font-medium">
             <ArtSvgIcon icon="ri:time-line" />
             Tự động làm mới:
@@ -33,12 +37,7 @@
           </span>
         </div>
 
-        <ElButton
-          type="primary"
-          plain
-          :loading="loadingStats"
-          @click="handleManualRefresh"
-        >
+        <ElButton type="primary" plain :loading="loadingStats" @click="handleManualRefresh">
           <ArtSvgIcon icon="ri:refresh-line" class="mr-1" />
           Làm mới
         </ElButton>
@@ -48,7 +47,9 @@
     <ElCard class="art-table-card !border-[var(--el-border-color-lighter)] shadow-sm">
       <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-semibold text-[var(--el-text-color-secondary)] uppercase">Khoảng thời gian:</span>
+          <span class="text-xs font-semibold text-[var(--el-text-color-secondary)] uppercase"
+            >Khoảng thời gian:</span
+          >
           <ElRadioGroup v-model="timePreset" size="small" @change="handleTimePresetChange">
             <ElRadioButton label="today">Hôm nay</ElRadioButton>
             <ElRadioButton label="last7days">7 ngày qua</ElRadioButton>
@@ -117,7 +118,9 @@
 
     <div>
       <div class="flex items-center justify-between mb-2">
-        <span class="font-bold text-base uppercase tracking-wide flex items-center gap-1.5 text-[var(--el-text-color-primary)]">
+        <span
+          class="font-bold text-base uppercase tracking-wide flex items-center gap-1.5 text-[var(--el-text-color-primary)]"
+        >
           <ArtSvgIcon icon="ri:alarm-warning-line" class="text-danger" />
           Hàng Đợi Công Việc Cần Xử Lý Ngay
         </span>
@@ -134,7 +137,10 @@
           iconStyle="bg-blue-500"
           textColor="#409eff"
           class="cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-          :class="{ '!border-2 !border-primary ring-2 ring-blue-100 dark:ring-blue-900': activeFilter === 'pending' }"
+          :class="{
+            '!border-2 !border-primary ring-2 ring-blue-100 dark:ring-blue-900':
+              activeFilter === 'pending',
+          }"
           @click="handleFilter('pending')"
         />
         <ArtStatsCard
@@ -145,7 +151,11 @@
           textColor="#f56c6c"
           boxStyle="border border-red-200 dark:border-red-900/60 bg-red-50/60 dark:bg-red-900/20"
           class="cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-          :class="{ '!border-2 !border-red-500 ring-2 ring-red-100 dark:ring-red-900': activeFilter === 'sla', 'animate-pulse': workload.slaDelayed > 0 }"
+          :class="{
+            '!border-2 !border-red-500 ring-2 ring-red-100 dark:ring-red-900':
+              activeFilter === 'sla',
+            'animate-pulse': workload.slaDelayed > 0,
+          }"
           @click="handleFilter('sla')"
         />
         <ArtStatsCard
@@ -155,7 +165,10 @@
           iconStyle="bg-amber-500"
           textColor="#e6a23c"
           class="cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-          :class="{ '!border-2 !border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900': activeFilter === 'payment' }"
+          :class="{
+            '!border-2 !border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900':
+              activeFilter === 'payment',
+          }"
           @click="handleFilter('payment')"
         />
         <ArtStatsCard
@@ -165,7 +178,10 @@
           iconStyle="bg-purple-500"
           textColor="#9c27b0"
           class="cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-          :class="{ '!border-2 !border-purple-500 ring-2 ring-purple-100 dark:ring-purple-900': activeFilter === 'return' }"
+          :class="{
+            '!border-2 !border-purple-500 ring-2 ring-purple-100 dark:ring-purple-900':
+              activeFilter === 'return',
+          }"
           @click="handleFilter('return')"
         />
       </div>
@@ -174,8 +190,12 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <ElCard class="art-table-card !border-l-4 !border-l-blue-500">
         <div class="flex flex-col">
-          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold">Tổng đơn trong kỳ</span>
-          <span class="text-2xl font-bold text-[var(--el-text-color-primary)] mt-1">{{ formatNumber(summaryStats.totalOrders) }}</span>
+          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold"
+            >Tổng đơn trong kỳ</span
+          >
+          <span class="text-2xl font-bold text-[var(--el-text-color-primary)] mt-1">{{
+            formatNumber(summaryStats.totalOrders)
+          }}</span>
           <span class="text-xs text-blue-500 mt-1 flex items-center gap-1">
             <ArtSvgIcon icon="ri:file-list-3-line" /> Bao gồm tất cả các trạng thái
           </span>
@@ -184,8 +204,12 @@
 
       <ElCard class="art-table-card !border-l-4 !border-l-green-500">
         <div class="flex flex-col">
-          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold">Tổng doanh thu</span>
-          <span class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ formatCurrency(summaryStats.totalRevenue) }}</span>
+          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold"
+            >Tổng doanh thu</span
+          >
+          <span class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{
+            formatCurrency(summaryStats.totalRevenue)
+          }}</span>
           <span class="text-xs text-green-500 mt-1 flex items-center gap-1">
             <ArtSvgIcon icon="ri:funds-line" /> Đơn hợp lệ / hoàn tất
           </span>
@@ -194,8 +218,12 @@
 
       <ElCard class="art-table-card !border-l-4 !border-l-indigo-500">
         <div class="flex flex-col">
-          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold">Giá trị TB / Đơn (AOV)</span>
-          <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ formatCurrency(summaryStats.averageOrderValue) }}</span>
+          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold"
+            >Giá trị TB / Đơn (AOV)</span
+          >
+          <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{
+            formatCurrency(summaryStats.averageOrderValue)
+          }}</span>
           <span class="text-xs text-indigo-500 mt-1 flex items-center gap-1">
             <ArtSvgIcon icon="ri:shopping-cart-2-line" /> Trung bình trên mỗi đơn
           </span>
@@ -204,8 +232,17 @@
 
       <ElCard class="art-table-card !border-l-4 !border-l-orange-500">
         <div class="flex flex-col">
-          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold">Tỷ lệ hủy đơn</span>
-          <span class="text-2xl font-bold" :class="summaryStats.cancellationRate > 10 ? 'text-red-500' : 'text-[var(--el-text-color-primary)]'">
+          <span class="text-xs text-[var(--el-text-color-secondary)] uppercase font-semibold"
+            >Tỷ lệ hủy đơn</span
+          >
+          <span
+            class="text-2xl font-bold"
+            :class="
+              summaryStats.cancellationRate > 10
+                ? 'text-red-500'
+                : 'text-[var(--el-text-color-primary)]'
+            "
+          >
             {{ summaryStats.cancellationRate }}%
           </span>
           <span class="text-xs text-gray-500 mt-1 flex items-center gap-1">
@@ -219,13 +256,24 @@
       <ElCard class="art-table-card lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="font-bold text-sm uppercase flex items-center gap-2 text-[var(--el-text-color-primary)]">
+            <span
+              class="font-bold text-sm uppercase flex items-center gap-2 text-[var(--el-text-color-primary)]"
+            >
               <ArtSvgIcon icon="ri:line-chart-line" class="text-primary text-lg" />
-              {{ timePreset === 'today' ? '📈 Đồ Thị Lượng Đơn & Doanh Thu Theo Giờ (In-Day)' : '📈 Xu Hướng Lượng Đơn & Doanh Thu Theo Thời Gian' }}
+              {{
+                timePreset === 'today'
+                  ? '📈 Đồ Thị Lượng Đơn & Doanh Thu Theo Giờ (In-Day)'
+                  : '📈 Xu Hướng Lượng Đơn & Doanh Thu Theo Thời Gian'
+              }}
             </span>
             <div class="flex items-center gap-3 text-xs">
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#409eff] inline-block"></span> Số đơn hàng</span>
-              <span class="flex items-center gap-1"><span class="w-3 h-1.5 rounded bg-[#67c23a] inline-block"></span> Doanh thu (VNĐ)</span>
+              <span class="flex items-center gap-1"
+                ><span class="w-3 h-3 rounded bg-[#409eff] inline-block"></span> Số đơn hàng</span
+              >
+              <span class="flex items-center gap-1"
+                ><span class="w-3 h-1.5 rounded bg-[#67c23a] inline-block"></span> Doanh thu
+                (VNĐ)</span
+              >
             </div>
           </div>
         </template>
@@ -236,7 +284,9 @@
         <ElCard class="art-table-card">
           <template #header>
             <div class="flex items-center justify-between">
-              <span class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]">
+              <span
+                class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]"
+              >
                 <ArtSvgIcon icon="ri:medal-line" class="text-amber-500 text-base" />
                 Hiệu Suất Trực Đơn Hôm Nay
               </span>
@@ -248,16 +298,22 @@
           <div class="flex flex-col gap-3 py-1">
             <div class="flex justify-between items-center text-sm">
               <span class="text-[var(--el-text-color-secondary)]">Mục tiêu ngày:</span>
-              <span class="font-bold text-[var(--el-text-color-primary)]">{{ productivity.target }} đơn</span>
+              <span class="font-bold text-[var(--el-text-color-primary)]"
+                >{{ productivity.target }} đơn</span
+              >
             </div>
             <div class="flex justify-between items-center text-sm">
               <span class="text-[var(--el-text-color-secondary)]">Đã duyệt hoàn tất:</span>
-              <span class="font-bold text-green-600 dark:text-green-400">{{ productivity.completed }} đơn</span>
+              <span class="font-bold text-green-600 dark:text-green-400"
+                >{{ productivity.completed }} đơn</span
+              >
             </div>
             <div class="mt-1">
               <div class="flex justify-between items-center mb-1 text-xs">
                 <span class="text-[var(--el-text-color-secondary)]">Tiến độ hoàn thành</span>
-                <span class="font-bold text-green-600 dark:text-green-400">{{ productivityProgress }}%</span>
+                <span class="font-bold text-green-600 dark:text-green-400"
+                  >{{ productivityProgress }}%</span
+                >
               </div>
               <ElProgress
                 :percentage="Math.min(100, productivityProgress)"
@@ -271,7 +327,9 @@
 
         <ElCard class="art-table-card flex-1">
           <template #header>
-            <span class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]">
+            <span
+              class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]"
+            >
               <ArtSvgIcon icon="ri:truck-line" class="text-primary text-base" />
               Tỷ Lệ Phương Thức Nhận Hàng
             </span>
@@ -284,7 +342,9 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <ElCard class="art-table-card">
         <template #header>
-          <span class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]">
+          <span
+            class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]"
+          >
             <ArtSvgIcon icon="ri:pie-chart-line" class="text-indigo-500 text-base" />
             Cơ Cấu Trạng Thái Đơn Hàng
           </span>
@@ -294,7 +354,9 @@
 
       <ElCard class="art-table-card">
         <template #header>
-          <span class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]">
+          <span
+            class="font-bold text-sm uppercase flex items-center gap-1.5 text-[var(--el-text-color-primary)]"
+          >
             <ArtSvgIcon icon="ri:bank-card-line" class="text-emerald-500 text-base" />
             Cơ Cấu Phương Thức Thanh Toán
           </span>
@@ -307,8 +369,13 @@
       <template #header>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <span class="font-bold text-red-600 dark:text-red-400 uppercase text-sm flex items-center gap-1.5">
-              <ArtSvgIcon icon="ri:alarm-warning-fill" class="text-red-500 text-lg animate-bounce" />
+            <span
+              class="font-bold text-red-600 dark:text-red-400 uppercase text-sm flex items-center gap-1.5"
+            >
+              <ArtSvgIcon
+                icon="ri:alarm-warning-fill"
+                class="text-red-500 text-lg animate-bounce"
+              />
               Danh Sách Đơn Hàng Cần Chú Ý Đặc Biệt (CRITICAL ORDERS)
             </span>
             <ElTag type="danger" size="small" effect="dark" round>
@@ -317,12 +384,12 @@
           </div>
 
           <div class="flex items-center gap-1">
-            <ElRadioGroup v-model="activeFilter" size="small">
-              <ElRadioButton label="">Tất cả</ElRadioButton>
-              <ElRadioButton label="pending">Chờ duyệt</ElRadioButton>
-              <ElRadioButton label="sla">Trễ SLA</ElRadioButton>
-              <ElRadioButton label="payment">Lỗi tiền / Cọc</ElRadioButton>
-              <ElRadioButton label="return">Đổi trả</ElRadioButton>
+            <ElRadioGroup v-model="activeFilter" size="small" @change="pagination.current = 1">
+              <ElRadioButton label="" value="">Tất cả</ElRadioButton>
+              <ElRadioButton label="pending" value="pending">Chờ duyệt</ElRadioButton>
+              <ElRadioButton label="sla" value="sla">Trễ SLA</ElRadioButton>
+              <ElRadioButton label="payment" value="payment">Lỗi tiền / Cọc</ElRadioButton>
+              <ElRadioButton label="return" value="return">Đổi trả</ElRadioButton>
             </ElRadioGroup>
           </div>
         </div>
@@ -344,7 +411,11 @@
           stripe
           border
           style="width: 100%"
-          :header-cell-style="{ background: 'var(--el-fill-color-light)', color: 'var(--el-text-color-primary)', fontWeight: '600' }"
+          :header-cell-style="{
+            background: 'var(--el-fill-color-light)',
+            color: 'var(--el-text-color-primary)',
+            fontWeight: '600',
+          }"
         >
           <ElTableColumn label="Mã đơn" min-width="130">
             <template #default="{ row }">
@@ -359,7 +430,9 @@
           <ElTableColumn label="Khách hàng" min-width="200">
             <template #default="{ row }">
               <div class="flex flex-col">
-                <span class="font-medium text-[var(--el-text-color-primary)]">{{ row.customerName || 'Khách vãng lai' }}</span>
+                <span class="font-medium text-[var(--el-text-color-primary)]">{{
+                  row.customerName || 'Khách vãng lai'
+                }}</span>
                 <span class="text-xs text-[var(--el-text-color-secondary)] flex items-center gap-1">
                   <ArtSvgIcon icon="ri:phone-line" class="text-[11px]" />
                   {{ row.customerPhone || '---' }}
@@ -371,7 +444,9 @@
           <ElTableColumn label="Tổng tiền" min-width="150" align="right">
             <template #default="{ row }">
               <div class="flex flex-col items-end">
-                <span class="font-bold text-[var(--el-text-color-primary)]">{{ formatCurrency(row.totalAmount) }}</span>
+                <span class="font-bold text-[var(--el-text-color-primary)]">{{
+                  formatCurrency(row.totalAmount)
+                }}</span>
                 <span v-if="row.paidAmount > 0" class="text-xs text-green-600 dark:text-green-400">
                   Đã trả: {{ formatCurrency(row.paidAmount) }}
                 </span>
@@ -412,7 +487,9 @@
           <ElTableColumn label="Thời gian chờ" min-width="140" align="center">
             <template #default="{ row }">
               <ElTooltip :content="formatDateTime(row.createdAt)" placement="top">
-                <span class="text-xs font-medium px-2 py-1 rounded bg-[var(--el-fill-color-light)] text-[var(--el-text-color-regular)]">
+                <span
+                  class="text-xs font-medium px-2 py-1 rounded bg-[var(--el-fill-color-light)] text-[var(--el-text-color-regular)]"
+                >
                   ⏱️ {{ row.waitTime || '---' }}
                 </span>
               </ElTooltip>
@@ -422,20 +499,10 @@
           <ElTableColumn label="Thao tác" width="200" min-width="200" align="center" fixed="right">
             <template #default="{ row }">
               <div class="flex items-center justify-center gap-2 whitespace-nowrap">
-                <ElButton
-                  size="small"
-                  type="primary"
-                  plain
-                  @click="handleProcessOrder(row as any)"
-                >
+                <ElButton size="small" type="primary" plain @click="handleProcessOrder(row as any)">
                   Xử lý ngay
                 </ElButton>
-                <ElButton
-                  size="small"
-                  type="info"
-                  plain
-                  @click="handleViewDetail(row as any)"
-                >
+                <ElButton size="small" type="info" plain @click="handleViewDetail(row as any)">
                   Chi tiết
                 </ElButton>
               </div>
@@ -445,7 +512,8 @@
 
         <div class="flex justify-between items-center mt-4 px-2">
           <span class="text-xs text-[var(--el-text-color-secondary)]">
-            Hiển thị {{ paginatedExceptions.length }} / {{ filteredExceptions.length }} đơn hàng cần xử lý
+            Hiển thị {{ paginatedExceptions.length }} / {{ filteredExceptions.length }} đơn hàng cần
+            xử lý
           </span>
           <ElPagination
             v-model:current-page="pagination.current"
@@ -467,10 +535,14 @@
       destroy-on-close
     >
       <div v-if="detailDialog.order" class="flex flex-col gap-3 py-1">
-        <div class="p-3 rounded-lg bg-[var(--el-fill-color-light)] flex justify-between items-center">
+        <div
+          class="p-3 rounded-lg bg-[var(--el-fill-color-light)] flex justify-between items-center"
+        >
           <div>
             <span class="text-xs text-gray-500 uppercase font-semibold">Mã đơn hàng</span>
-            <div class="text-base font-bold font-mono text-primary">{{ detailDialog.order.orderCode || `ORD-${detailDialog.order.id}` }}</div>
+            <div class="text-base font-bold font-mono text-primary">
+              {{ detailDialog.order.orderCode || `ORD-${detailDialog.order.id}` }}
+            </div>
           </div>
           <ElTag :type="getStatusTagType(detailDialog.order.statusId)">
             {{ detailDialog.order.statusName }}
@@ -480,19 +552,27 @@
         <div class="grid grid-cols-2 gap-3 text-sm">
           <div>
             <span class="text-xs text-gray-500">Khách hàng:</span>
-            <div class="font-medium text-[var(--el-text-color-primary)]">{{ detailDialog.order.customerName }}</div>
+            <div class="font-medium text-[var(--el-text-color-primary)]">
+              {{ detailDialog.order.customerName }}
+            </div>
           </div>
           <div>
             <span class="text-xs text-gray-500">Số điện thoại:</span>
-            <div class="font-medium text-[var(--el-text-color-primary)]">{{ detailDialog.order.customerPhone || '---' }}</div>
+            <div class="font-medium text-[var(--el-text-color-primary)]">
+              {{ detailDialog.order.customerPhone || '---' }}
+            </div>
           </div>
           <div>
             <span class="text-xs text-gray-500">Tổng giá trị đơn:</span>
-            <div class="font-bold text-green-600">{{ formatCurrency(detailDialog.order.totalAmount) }}</div>
+            <div class="font-bold text-green-600">
+              {{ formatCurrency(detailDialog.order.totalAmount) }}
+            </div>
           </div>
           <div>
             <span class="text-xs text-gray-500">Đã thanh toán / Cọc:</span>
-            <div class="font-bold text-blue-600">{{ formatCurrency(detailDialog.order.paidAmount) }}</div>
+            <div class="font-bold text-blue-600">
+              {{ formatCurrency(detailDialog.order.paidAmount) }}
+            </div>
           </div>
           <div>
             <span class="text-xs text-gray-500">Phương thức nhận:</span>
@@ -504,7 +584,9 @@
           </div>
         </div>
 
-        <div class="mt-2 p-3 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50/50 dark:bg-red-900/20">
+        <div
+          class="mt-2 p-3 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50/50 dark:bg-red-900/20"
+        >
           <span class="text-xs font-bold text-red-500 uppercase flex items-center gap-1">
             <ArtSvgIcon icon="ri:error-warning-line" />
             Vấn đề cần giải quyết:
@@ -513,7 +595,8 @@
             {{ detailDialog.order.issue }}
           </div>
           <div class="text-xs text-gray-500 mt-1">
-            Thời gian chờ: {{ detailDialog.order.waitTime }} (Tạo lúc: {{ formatDateTime(detailDialog.order.createdAt) }})
+            Thời gian chờ: {{ detailDialog.order.waitTime }} (Tạo lúc:
+            {{ formatDateTime(detailDialog.order.createdAt) }})
           </div>
         </div>
       </div>
@@ -861,10 +944,17 @@ const getIssueIcon = (type: string) => {
 };
 
 const handleProcessOrder = (order: ExceptionOrder) => {
-  router.push({
-    path: '/sales/invoices',
-    query: { search: order.orderCode || String(order.id) },
-  });
+  if (order.type === 'return') {
+    router.push({
+      path: '/sales-settings/returns',
+      query: { search: order.orderCode || String(order.id) },
+    });
+  } else {
+    router.push({
+      path: '/sales/invoices',
+      query: { search: order.orderCode || String(order.id) },
+    });
+  }
 };
 
 const handleViewDetail = (order: ExceptionOrder) => {
@@ -875,8 +965,14 @@ const handleViewDetail = (order: ExceptionOrder) => {
 };
 
 const handleNavigateToOrder = (orderId?: number) => {
+  const currentOrder = detailDialog.value.order;
   detailDialog.value.visible = false;
-  if (orderId) {
+  if (currentOrder?.type === 'return') {
+    router.push({
+      path: '/sales-settings/returns',
+      query: { search: currentOrder.orderCode || String(orderId) },
+    });
+  } else if (orderId) {
     router.push({
       path: '/sales/invoices',
       query: { search: String(orderId) },
@@ -941,9 +1037,7 @@ const renderTrendChart = () => {
   const colors = getThemeColors();
   const isHourly = timePreset.value === 'today';
 
-  const xData = isHourly
-    ? hourlyData.value.map((h) => h.hour)
-    : dailyData.value.map((d) => d.date);
+  const xData = isHourly ? hourlyData.value.map((h) => h.hour) : dailyData.value.map((d) => d.date);
 
   const countData = isHourly
     ? hourlyData.value.map((h) => h.count)
@@ -1097,10 +1191,13 @@ const renderMethodChart = () => {
             formatter: '{d}%',
           },
         },
-        data: pieData.length > 0 ? pieData : [
-          { value: 0, name: 'Giao tận nhà' },
-          { value: 0, name: 'Nhận tại showroom' },
-        ],
+        data:
+          pieData.length > 0
+            ? pieData
+            : [
+                { value: 0, name: 'Giao tận nhà' },
+                { value: 0, name: 'Nhận tại showroom' },
+              ],
       },
     ],
   };
