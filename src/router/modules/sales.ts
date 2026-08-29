@@ -12,6 +12,16 @@ export const salesRoutes: AppRouteRecord = {
   },
   children: [
     {
+      path: 'statistics',
+      name: 'SalesStatistics',
+      component: '/Admin/view/sales/statistics/index',
+      meta: {
+        title: 'Thống kê đơn hàng',
+        icon: 'ri:bar-chart-line',
+        keepAlive: true,
+      },
+    },
+    {
       path: 'returns',
       name: 'SalesReturns',
       component: '/sales-settings/returns/index',

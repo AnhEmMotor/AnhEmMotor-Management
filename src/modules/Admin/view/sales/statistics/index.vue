@@ -4,7 +4,7 @@
       <div>
         <h2 class="m-0 text-xl font-bold uppercase tracking-wide flex items-center gap-2 text-[var(--el-text-color-primary)]">
           <ArtSvgIcon icon="ri:bar-chart-box-line" class="text-primary text-2xl" />
-          Trung Tâm Điều Phối & Thống Kê Đơn Hàng
+          Trung Tâm Điều Phối & Thống Kê Đơn Hàng (Admin)
         </h2>
         <p class="text-xs text-[var(--el-text-color-secondary)] mt-1 mb-0">
           Giám sát thời gian thực số lượng đơn, doanh thu, hàng đợi SLA và các đơn hàng ngoại lệ
@@ -564,7 +564,7 @@ import {
   PaymentMethodStatData,
 } from '@/api/operations/order-statistics.api';
 
-defineOptions({ name: 'OrderStatisticsDashboard' });
+defineOptions({ name: 'AdminOrderStatisticsDashboard' });
 
 const router = useRouter();
 const settingStore = useSettingStore();
@@ -862,7 +862,7 @@ const getIssueIcon = (type: string) => {
 
 const handleProcessOrder = (order: ExceptionOrder) => {
   router.push({
-    path: '/Order/management/order',
+    path: '/sales/invoices',
     query: { search: order.orderCode || String(order.id) },
   });
 };
@@ -878,7 +878,7 @@ const handleNavigateToOrder = (orderId?: number) => {
   detailDialog.value.visible = false;
   if (orderId) {
     router.push({
-      path: '/Order/management/order',
+      path: '/sales/invoices',
       query: { search: String(orderId) },
     });
   }
