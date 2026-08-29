@@ -96,20 +96,43 @@
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Thao tác" width="120" align="center" fixed="right">
+        <ElTableColumn label="Thao tác" width="220" align="center" fixed="right">
           <template #default="{ row }">
-            <ElButton
-              v-if="row.status === 'pending'"
-              type="success"
-              size="small"
-              link
-              @click.stop="handleMarkCompleted(row)"
-            >
-              ✓ Xác nhận
-            </ElButton>
-            <ElButton type="primary" size="small" link @click.stop="handleEdit(row)">
-              ✏️ Sửa
-            </ElButton>
+            <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
+              <ElButton
+                v-if="row.status === 'pending' || row.status === 'processing'"
+                type="success"
+                size="small"
+                plain
+                @click="handleMarkCompleted(row)"
+              >
+                ✓ Duyệt đơn
+              </ElButton>
+              <ElDropdown trigger="click" @command="(cmd: string) => handleQuickChangeStatus(row, cmd)">
+                <ElButton size="small" type="info" plain>
+                  Đổi TT <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
+                </ElButton>
+                <template #dropdown>
+                  <ElDropdownMenu>
+                    <ElDropdownItem command="pending" :disabled="row.status === 'pending'">
+                      📝 Chờ xử lý
+                    </ElDropdownItem>
+                    <ElDropdownItem command="processing" :disabled="row.status === 'processing'">
+                      ⏳ Chờ Admin duyệt
+                    </ElDropdownItem>
+                    <ElDropdownItem command="completed" :disabled="row.status === 'completed'">
+                      ✅ Đã hoàn tất
+                    </ElDropdownItem>
+                    <ElDropdownItem command="cancelled" divided :disabled="row.status === 'cancelled'">
+                      ❌ Hủy hóa đơn
+                    </ElDropdownItem>
+                  </ElDropdownMenu>
+                </template>
+              </ElDropdown>
+              <ElButton type="primary" size="small" link @click="handleEdit(row)">
+                ✏️ Sửa
+              </ElButton>
+            </div>
           </template>
         </ElTableColumn>
       </ElTable>
@@ -230,7 +253,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Search, Plus, Ticket, Close } from '@element-plus/icons-vue';
+import { Search, Plus, Ticket, Close, ArrowDown } from '@element-plus/icons-vue';
 import { VoucherApi } from '@/api/voucher.api';
 import {
   invoiceApi,
@@ -422,6 +445,20 @@ async function handleMarkCompleted(row: any) {
       console.error(error);
       ElMessage.error('Thao tác thất bại');
     }
+  } finally {
+    actionLoading.value = false;
+  }
+}
+
+async function handleQuickChangeStatus(row: any, newStatus: string) {
+  try {
+    actionLoading.value = true;
+    await invoiceApi.updateAdminStatus(row.id, { status: newStatus });
+    ElMessage.success(`Hóa đơn ${row.invoiceNumber} đã đổi sang "${getStatusLabel(newStatus)}"`);
+    fetchInvoices();
+  } catch (error) {
+    console.error(error);
+    ElMessage.error('Đổi trạng thái thất bại');
   } finally {
     actionLoading.value = false;
   }
