@@ -607,11 +607,7 @@ const fetchData = async () => {
     );
 
     allValidItems.value = validItems.map((item: any) => {
-      let calcStatus = 'InProgress';
-      if (item.status) calcStatus = item.status;
-      else if (!item.technicianId && !item.technicianName) calcStatus = 'Pending';
-      else if (item.totalCost > 0) calcStatus = 'Completed';
-
+      let calcStatus = item.status || 'Pending';
       return {
         ...item,
         status: calcStatus,
