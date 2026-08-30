@@ -571,6 +571,7 @@ import { WarrantyClaimApi } from '@/api/service/warranty-claim.api';
 import { VehicleApi } from '@/api/vehicle/vehicle.api';
 import { EmployeeApi } from '@/api/operations/employee.api';
 import { ProductApi } from '@/api/product/product.api';
+import { CategoryApi } from '@/api/product';
 import dayjs from 'dayjs';
 
 const router = useRouter();
@@ -942,13 +943,40 @@ const availableParts = ref<any[]>([]);
 
 async function loadAvailableParts() {
   try {
-    const res = await ProductApi.getVariantsForOutput({
-      current: 1,
-      size: 500,
-    });
-    if (res && res.items) {
-      availableParts.value = res.items;
+    const [res, catRes] = await Promise.all([
+      ProductApi.getVariantsForOutput({
+        current: 1,
+        size: 500,
+        filters: 'managementType==sku',
+      }),
+      CategoryApi.getList({
+        current: 1,
+        size: 100,
+      }),
+    ]);
+
+    const categories = catRes.items || [];
+    const phuKienCat = categories.find((c: any) => c.slug === 'phu-kien' || c.name === 'Phụ kiện');
+    const xeMayCat = categories.find((c: any) => c.slug === 'xe-may' || c.name === 'Xe máy');
+
+    let excludedCategoryIds: number[] = [];
+
+    if (phuKienCat) {
+      excludedCategoryIds.push(phuKienCat.id);
+      const subCats = categories.filter((c: any) => c.parentId === phuKienCat.id);
+      excludedCategoryIds.push(...subCats.map((c: any) => c.id));
     }
+
+    if (xeMayCat) {
+      excludedCategoryIds.push(xeMayCat.id);
+      const subCats = categories.filter((c: any) => c.parentId === xeMayCat.id);
+      excludedCategoryIds.push(...subCats.map((c: any) => c.id));
+    }
+
+    const allVariants = res.items || [];
+    availableParts.value = allVariants.filter(
+      (v: any) => !excludedCategoryIds.includes(v.categoryId)
+    );
   } catch (error) {
     console.error('Lỗi lấy danh sách phụ tùng:', error);
   }

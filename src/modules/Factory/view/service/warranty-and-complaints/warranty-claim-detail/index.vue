@@ -454,7 +454,15 @@
             </div>
             <div class="flex justify-between">
               <span class="text-slate-400">Tiền linh kiện phát sinh:</span>
-              <span class="text-amber-400 font-bold">{{ formatPrice(totalPartsCost) }}</span>
+              <span
+                :class="
+                  finalCustomerCost === 0
+                    ? 'line-through text-slate-500'
+                    : 'text-amber-400 font-bold'
+                "
+              >
+                {{ formatPrice(totalPartsCost) }}
+              </span>
             </div>
             <div class="border-t border-slate-800 pt-3 flex justify-between items-baseline">
               <span class="text-slate-300 font-bold">TỔNG THU KHÁCH:</span>

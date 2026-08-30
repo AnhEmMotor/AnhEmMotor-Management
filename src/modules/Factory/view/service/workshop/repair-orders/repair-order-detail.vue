@@ -624,10 +624,12 @@ const steps = [
 const calculatedStatus = computed(() => {
   if (!order.value) return 'InProgress';
   const stored = sessionStorage.getItem(`ro_status_${orderId}`);
-  if (stored) return stored;
+  if (order.value.status === 'Completed') {
+    sessionStorage.removeItem(`ro_status_${orderId}`);
+    return 'Completed';
+  }
+  if (stored && stored !== 'Completed') return stored;
   if (order.value.status) return order.value.status;
-  if (!order.value.technicianId && !order.value.technicianName) return 'Pending';
-  if (order.value.totalCost > 0) return 'Completed';
   return 'InProgress';
 });
 
@@ -641,11 +643,12 @@ const currentStepIndex = computed(() => {
 
 const combinedDetails = computed(() => localItems.value);
 
-const totalLaborCost = computed(() =>
-  localItems.value
+const totalLaborCost = computed(() => {
+  const serviceCost = localItems.value
     .filter((x) => x.type === 'Service')
-    .reduce((acc, item) => acc + item.price * item.count, 0)
-);
+    .reduce((acc, item) => acc + item.price * item.count, 0);
+  return serviceCost + 200000;
+});
 
 const totalPartsCost = computed(() =>
   localItems.value
@@ -776,8 +779,8 @@ const submitEdit = async () => {
       description: editForm.value.description,
       mileage: editForm.value.mileage,
       technicianId: editForm.value.technicianId,
-      partsCost: 0,
-      laborCost: 0,
+      partsCost: order.value.partsCost || 0,
+      laborCost: order.value.laborCost || 200000,
       nextMaintenanceDate: editForm.value.nextMaintenanceDate || undefined,
       nextMaintenanceOdo: editForm.value.nextMaintenanceOdo || undefined,
     });
@@ -852,8 +855,8 @@ const submitAssign = async () => {
       description: order.value.description || '',
       mileage: order.value.mileage || 0,
       technicianId: assignForm.value.technicianId,
-      partsCost: 0,
-      laborCost: 0,
+      partsCost: order.value.partsCost || 0,
+      laborCost: order.value.laborCost || 200000,
       nextMaintenanceDate: order.value.nextMaintenanceDate || undefined,
       nextMaintenanceOdo: order.value.nextMaintenanceOdo || undefined,
     });
@@ -919,11 +922,19 @@ const openPartsDialog = async () => {
 
     const categories = catRes.items || [];
     const phuKienCat = categories.find((c: any) => c.slug === 'phu-kien' || c.name === 'Phụ kiện');
+    const xeMayCat = categories.find((c: any) => c.slug === 'xe-may' || c.name === 'Xe máy');
 
     let excludedCategoryIds: number[] = [];
+
     if (phuKienCat) {
       excludedCategoryIds.push(phuKienCat.id);
       const subCats = categories.filter((c: any) => c.parentId === phuKienCat.id);
+      excludedCategoryIds.push(...subCats.map((c: any) => c.id));
+    }
+
+    if (xeMayCat) {
+      excludedCategoryIds.push(xeMayCat.id);
+      const subCats = categories.filter((c: any) => c.parentId === xeMayCat.id);
       excludedCategoryIds.push(...subCats.map((c: any) => c.id));
     }
 
