@@ -14,7 +14,7 @@ export interface Lead {
   ward: string;
   province: string;
   gender: string;
-  birthday?: string;
+  birthday?: string | null;
   identificationNumber: string;
   isVerified: boolean;
   tier: string;
