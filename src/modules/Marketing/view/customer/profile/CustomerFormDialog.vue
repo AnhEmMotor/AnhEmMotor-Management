@@ -90,6 +90,30 @@
           />
         </ElFormItem>
 
+        <ElFormItem label="Ngày sinh">
+          <ElDatePicker
+            v-model="form.birthday"
+            type="date"
+            value-format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
+            class="w-full premium-input"
+            placeholder="Chọn ngày sinh"
+          />
+        </ElFormItem>
+
+        <ElFormItem label="Giới tính">
+          <ElSelect
+            v-model="form.gender"
+            class="w-full premium-select"
+            clearable
+            placeholder="Chọn giới tính"
+          >
+            <ElOption label="Nam" value="Male" />
+            <ElOption label="Nữ" value="Female" />
+            <ElOption label="Khác" value="Other" />
+          </ElSelect>
+        </ElFormItem>
+
         <ElFormItem label="Ghi chú ban đầu" class="col-span-2">
           <ElInput
             v-model="form.note"
@@ -214,47 +238,40 @@ const handleSubmit = async () => {
     return;
   }
 
+  const payload = {
+    fullName: form.value.fullName,
+    phoneNumber: form.value.phoneNumber,
+    email: form.value.email,
+    source: form.value.source,
+    status: form.value.status,
+    interestedVehicle: form.value.interestedVehicle,
+    gender: form.value.gender,
+    birthday: form.value.birthday || null,
+    identificationNumber: form.value.identificationNumber,
+    addressDetail: form.value.addressDetail,
+    ward: form.value.ward,
+    province: form.value.province,
+    score: form.value.score,
+    isVerified: form.value.isVerified,
+  };
+
   try {
     if (form.value.id) {
-      await fetchUpdateLead(form.value.id, {
-        fullName: form.value.fullName,
-        phoneNumber: form.value.phoneNumber,
-        email: form.value.email,
-        source: form.value.source,
-        status: form.value.status,
-        interestedVehicle: form.value.interestedVehicle,
-        gender: form.value.gender,
-        birthday: form.value.birthday,
-        identificationNumber: form.value.identificationNumber,
-        addressDetail: form.value.addressDetail,
-        ward: form.value.ward,
-        province: form.value.province,
-        score: form.value.score,
-        isVerified: form.value.isVerified,
-      });
+      await fetchUpdateLead(form.value.id, payload);
       ElMessage.success('Đã cập nhật thông tin khách hàng!');
     } else {
-      await fetchCreateLead({
-        fullName: form.value.fullName,
-        phoneNumber: form.value.phoneNumber,
-        email: form.value.email,
-        source: form.value.source,
-        status: form.value.status,
-        interestedVehicle: form.value.interestedVehicle,
-        gender: form.value.gender,
-        birthday: form.value.birthday,
-        identificationNumber: form.value.identificationNumber,
-        addressDetail: form.value.addressDetail,
-        ward: form.value.ward,
-        province: form.value.province,
-        score: form.value.score,
-      });
+      await fetchCreateLead(payload);
       ElMessage.success('Đã thêm khách hàng mới vào hệ thống!');
     }
     emit('success', { ...form.value });
     visible.value = false;
-  } catch {
-    ElMessage.error('Lỗi khi lưu hồ sơ khách hàng. Vui lòng thử lại.');
+  } catch (error: any) {
+    const msg =
+      error?.message ||
+      error?.data?.message ||
+      error?.data?.msg ||
+      'Lỗi khi lưu hồ sơ khách hàng. Vui lòng thử lại.';
+    ElMessage.error(msg);
   }
 };
 </script>
