@@ -1044,12 +1044,17 @@ const closeDetail = () => {
 
 const categoryStyle = (cat: string) => {
   const m: Record<string, string> = {
+    Technical: 'bg-violet-600 text-white',
+    Billing: 'bg-teal-600 text-white',
     Quality: 'bg-red-600 text-white',
     Service: 'bg-orange-500 text-white',
+    Speed: 'bg-cyan-600 text-white',
     Rating: 'bg-blue-600 text-white',
     General: 'bg-slate-500 text-white',
     Sales: 'bg-emerald-600 text-white',
     AfterSales: 'bg-amber-500 text-white',
+    Maintenance: 'bg-yellow-600 text-white',
+    Order: 'bg-indigo-600 text-white',
     Other: 'bg-gray-400 text-white',
   };
   return m[cat] || 'bg-slate-400 text-white';
