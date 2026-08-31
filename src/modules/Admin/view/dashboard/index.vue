@@ -1,12 +1,14 @@
 <template>
   <div class="resp-page console-dashboard">
-    <!-- Header -->
     <div class="dash-header mb-6">
       <div class="dash-header__left">
         <div class="dash-header__icon">📊</div>
         <div>
-          <h1 class="dash-header__title">Trung tâm Thống kê & Điều hành</h1>
-          <p class="dash-header__sub">Theo dõi hiệu suất kinh doanh theo thời gian thực</p>
+          <h1 class="dash-header__title">Trung tâm Thống kê & Điều hành Đa Phân hệ</h1>
+          <p class="dash-header__sub">
+            Giám sát toàn diện 5 phân hệ cốt lõi: Bán hàng, Kho vận, Xưởng dịch vụ, Tài chính &
+            Khách hàng
+          </p>
         </div>
       </div>
       <div class="dash-header__controls">
@@ -28,20 +30,19 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
     <CardList :time-filter="timeFilter" :date-range="dateRange" />
 
-    <!-- Row 1: Customer overview + Sales chart -->
+    <SubsystemsOverview :time-filter="timeFilter" />
+
     <ElRow :gutter="20" class="mb-5">
-      <ElCol :sm="24" :md="12" :lg="10">
-        <ActiveUser :time-filter="timeFilter" />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="14">
+      <ElCol :sm="24" :md="16" :lg="16">
         <SalesOverview />
+      </ElCol>
+      <ElCol :sm="24" :md="8" :lg="8">
+        <ActiveUser :time-filter="timeFilter" />
       </ElCol>
     </ElRow>
 
-    <!-- Row 2: Audit log + Alerts -->
     <ElRow :gutter="20">
       <ElCol :sm="24" :md="12" :lg="12">
         <Dynamic />
@@ -56,6 +57,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import CardList from './card-list.vue';
+import SubsystemsOverview from './subsystems-overview.vue';
 import ActiveUser from './active-user.vue';
 import SalesOverview from './sales-overview.vue';
 import Dynamic from './dynamic-stats.vue';
@@ -72,7 +74,7 @@ const dateRange = ref<[Date, Date] | null>(null);
   padding: 24px;
   max-width: 100%;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     padding: 12px;
   }
 }

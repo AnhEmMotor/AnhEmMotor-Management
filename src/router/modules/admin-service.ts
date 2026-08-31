@@ -13,7 +13,7 @@ export const adminServiceRoutes: AppRouteRecord = {
     {
       path: 'service-dashboard',
       name: 'AdminServiceDashboard',
-      component: '/Admin/view/service/workshop/dashboard/index',
+      component: '/Factory/view/service/workshop/statistics/index',
       meta: {
         title: 'Thống kê xưởng',
         icon: 'ri:dashboard-line',

@@ -657,7 +657,7 @@ export default {
       title: 'Quản lý dịch vụ',
       workshop: {
         title: 'Quản lý xưởng dịch vụ',
-        dashboard: 'Dashboard xưởng',
+        dashboard: 'Thống kê xưởng',
         repairOrders: 'Sửa chữa',
         historyByVin: 'Tra cứu hồ sơ xe',
         evaluation: 'Đánh giá dịch vụ',

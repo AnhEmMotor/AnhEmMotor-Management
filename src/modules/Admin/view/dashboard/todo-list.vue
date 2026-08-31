@@ -6,17 +6,23 @@
           <ArtSvgIcon icon="ri:alarm-warning-line" class="text-2xl" />
         </div>
         <div>
-          <h4 class="panel-title">Cảnh báo Hệ thống</h4>
+          <h4 class="panel-title">Cảnh báo Đa Phân hệ</h4>
           <p class="panel-desc">
             Cần xử lý gấp:
-            <span class="alert-total">{{ totalAlerts }}</span> vấn đề
+            <span class="alert-total">{{ totalAlerts }}</span> vấn đề trên 5 phân hệ
           </p>
         </div>
       </div>
       <ElButtonGroup size="small">
-        <ElButton :type="filter === 'day'   ? 'primary' : 'default'" @click="setFilter('day')">Hôm nay</ElButton>
-        <ElButton :type="filter === 'week'  ? 'primary' : 'default'" @click="setFilter('week')">Tuần này</ElButton>
-        <ElButton :type="filter === 'month' ? 'primary' : 'default'" @click="setFilter('month')">Tháng này</ElButton>
+        <ElButton :type="filter === 'day' ? 'primary' : 'default'" @click="setFilter('day')"
+          >Hôm nay</ElButton
+        >
+        <ElButton :type="filter === 'week' ? 'primary' : 'default'" @click="setFilter('week')"
+          >Tuần này</ElButton
+        >
+        <ElButton :type="filter === 'month' ? 'primary' : 'default'" @click="setFilter('month')"
+          >Tháng này</ElButton
+        >
       </ElButtonGroup>
     </div>
 
@@ -25,8 +31,8 @@
     </div>
     <div v-else-if="list.length === 0" class="empty-state">
       <ArtSvgIcon icon="ri:shield-check-line" class="text-4xl" />
-      <span>Không có cảnh báo nào</span>
-      <small>Hệ thống đang hoạt động bình thường</small>
+      <span>Không có cảnh báo tồn đọng nào</span>
+      <small>Tất cả 5 phân hệ đang vận hành ổn định</small>
     </div>
     <ElScrollbar v-else class="alert-scroll">
       <div
@@ -58,10 +64,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue';
 import { RouterLink } from 'vue-router';
-import { fetchDashboardKpis } from '@/api/dashboard.api';
+import { fetchDashboardKpis, fetchWorkshopDashboardOverview } from '@/api/dashboard.api';
 
 const props = defineProps<{ timeFilter?: string }>();
-
 
 interface TodoItem {
   category: string;
@@ -75,13 +80,27 @@ interface TodoItem {
 }
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  financial: '💰', inventory: '📦', customer: '👤', operations: '📋',
+  financial: '💰',
+  inventory: '📦',
+  service: '🔧',
+  customer: '👤',
+  operations: '📋',
 };
+
 const CATEGORY_LABELS: Record<string, string> = {
-  financial: 'Tài chính', inventory: 'Kho hàng', customer: 'Khách hàng', operations: 'Vận hành',
+  financial: 'Tài chính',
+  inventory: 'Kho hàng',
+  service: 'Xưởng DV',
+  customer: 'Khách hàng',
+  operations: 'Bán hàng',
 };
+
 const CATEGORY_COLORS: Record<string, TodoItem['priority']> = {
-  financial: 'danger', inventory: 'warning', customer: 'danger', operations: 'info',
+  financial: 'danger',
+  inventory: 'warning',
+  service: 'info',
+  customer: 'danger',
+  operations: 'warning',
 };
 
 const list = reactive<TodoItem[]>([]);
@@ -89,7 +108,10 @@ const isLoading = ref(false);
 const totalAlerts = ref(0);
 
 const FILTER_MAP: Record<string, 'day' | 'week' | 'month'> = {
-  today: 'day', week: 'week', month: 'month', year: 'month',
+  today: 'day',
+  week: 'week',
+  month: 'month',
+  year: 'month',
 };
 const filter = ref<'day' | 'week' | 'month'>('day');
 
@@ -106,20 +128,71 @@ function buildTodoItem(category: string, count: number, title: string, url: stri
   };
 }
 
-function buildAlerts(alerts: any) {
+function buildAlerts(alerts: any, workshopOverview?: any) {
   list.length = 0;
-  if (alerts.financial.delayedLoans > 0)
-    list.push(buildTodoItem('financial', alerts.financial.delayedLoans, 'Trả góp trễ hạn', '/admin/finance/delayed'));
-  if (alerts.inventory.lowStockVehicles > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockVehicles, 'Tồn kho xe thấp', '/Warehouse/inventory-settings'));
-  if (alerts.inventory.lowStockParts > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockParts, 'Tồn kho phụ tùng thấp', '/Warehouse/inventory-settings'));
-  if (alerts.customer.newComplaints > 0)
-    list.push(buildTodoItem('customer', alerts.customer.newComplaints, 'Khiếu nại mới', '/Marketing/contact?tab=feedback'));
-  if (alerts.customer.missedAppointments > 0)
-    list.push(buildTodoItem('customer', alerts.customer.missedAppointments, 'Lịch hẹn bị bỏ lỡ', '/admin/appointments'));
-  if (alerts.operations.pendingOrders > 0)
-    list.push(buildTodoItem('operations', alerts.operations.pendingOrders, 'Đơn hàng chưa xử lý', '/Order/management/order'));
+  if (alerts?.financial?.delayedLoans > 0)
+    list.push(
+      buildTodoItem(
+        'financial',
+        alerts.financial.delayedLoans,
+        'Trả góp trễ hạn',
+        '/admin/finance/delayed'
+      )
+    );
+  if (alerts?.inventory?.lowStockVehicles > 0)
+    list.push(
+      buildTodoItem(
+        'inventory',
+        alerts.inventory.lowStockVehicles,
+        'Tồn kho xe thấp',
+        '/Warehouse/inventory-settings'
+      )
+    );
+  if (alerts?.inventory?.lowStockParts > 0)
+    list.push(
+      buildTodoItem(
+        'inventory',
+        alerts.inventory.lowStockParts,
+        'Tồn kho phụ tùng thấp',
+        '/Warehouse/inventory-settings'
+      )
+    );
+  if (alerts?.customer?.newComplaints > 0)
+    list.push(
+      buildTodoItem(
+        'customer',
+        alerts.customer.newComplaints,
+        'Khiếu nại mới',
+        '/Marketing/contact?tab=feedback'
+      )
+    );
+  if (alerts?.customer?.missedAppointments > 0)
+    list.push(
+      buildTodoItem(
+        'customer',
+        alerts.customer.missedAppointments,
+        'Lịch hẹn bị bỏ lỡ',
+        '/admin/appointments'
+      )
+    );
+  if (workshopOverview?.inProgressTickets > 10)
+    list.push(
+      buildTodoItem(
+        'service',
+        workshopOverview.inProgressTickets,
+        'Xe đang bảo dưỡng quá tải',
+        '/Factory/service/service-ticket'
+      )
+    );
+  if (alerts?.operations?.pendingOrders > 0)
+    list.push(
+      buildTodoItem(
+        'operations',
+        alerts.operations.pendingOrders,
+        'Đơn hàng chưa xử lý',
+        '/Order/management/order'
+      )
+    );
 }
 
 async function setFilter(f: 'day' | 'week' | 'month') {
@@ -131,7 +204,11 @@ async function fetchData() {
   isLoading.value = true;
   try {
     const period = props.timeFilter ?? filter.value;
-    const data = await fetchDashboardKpis(period);
+    const [data, workshop] = await Promise.all([
+      fetchDashboardKpis(period).catch(() => null),
+      fetchWorkshopDashboardOverview().catch(() => null),
+    ]);
+
     if (data && data.alerts) {
       const total =
         (data.alerts.financial?.delayedLoans ?? 0) +
@@ -141,7 +218,7 @@ async function fetchData() {
         (data.alerts.customer?.missedAppointments ?? 0) +
         (data.alerts.operations?.pendingOrders ?? 0);
       totalAlerts.value = total;
-      buildAlerts(data.alerts);
+      buildAlerts(data.alerts, workshop);
     }
   } catch (error) {
     console.error('Failed to fetch todo alerts:', error);
@@ -151,10 +228,13 @@ async function fetchData() {
 }
 
 onMounted(fetchData);
-watch(() => props.timeFilter, (val) => {
-  if (val) filter.value = FILTER_MAP[val] ?? 'day';
-  fetchData();
-});
+watch(
+  () => props.timeFilter,
+  (val) => {
+    if (val) filter.value = FILTER_MAP[val] ?? 'day';
+    fetchData();
+  }
+);
 </script>
 
 <style scoped lang="scss">
@@ -163,7 +243,7 @@ watch(() => props.timeFilter, (val) => {
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -171,7 +251,7 @@ watch(() => props.timeFilter, (val) => {
 
 .panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
   gap: 16px;
@@ -193,7 +273,10 @@ watch(() => props.timeFilter, (val) => {
   font-size: 20px;
   flex-shrink: 0;
 
-  &--red { background: rgba(239,68,68,0.12); color: #ef4444; }
+  &--red {
+    background: rgb(239 68 68 / 12%);
+    color: #ef4444;
+  }
 }
 
 .panel-title {
@@ -227,9 +310,16 @@ watch(() => props.timeFilter, (val) => {
   border-bottom: 1px solid var(--el-border-color-lighter);
   transition: background 0.15s;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 
-  &:hover { background: var(--el-fill-color-light); border-radius: 10px; padding-left: 8px; padding-right: 8px; }
+  &:hover {
+    background: var(--el-fill-color-light);
+    border-radius: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 
   &__icon-wrap {
     width: 38px;
@@ -241,13 +331,27 @@ watch(() => props.timeFilter, (val) => {
     flex-shrink: 0;
     font-size: 18px;
 
-    &--danger  { background: rgba(239,68,68,0.1); }
-    &--warning { background: rgba(245,158,11,0.1); }
-    &--info    { background: rgba(59,130,246,0.1); }
-    &--success { background: rgba(16,185,129,0.1); }
+    &--danger {
+      background: rgb(239 68 68 / 10%);
+    }
+
+    &--warning {
+      background: rgb(245 158 11 / 10%);
+    }
+
+    &--info {
+      background: rgb(59 130 246 / 10%);
+    }
+
+    &--success {
+      background: rgb(16 185 129 / 10%);
+    }
   }
 
-  &__body { flex: 1; min-width: 0; }
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
 
   &__title {
     font-size: 14px;
@@ -303,8 +407,20 @@ watch(() => props.timeFilter, (val) => {
   color: var(--el-text-color-placeholder);
   padding: 40px 0;
 
-  :deep(svg), .text-4xl { font-size: 40px; color: #10b981; }
-  span { font-size: 14px; font-weight: 600; color: var(--el-text-color-secondary); }
-  small { font-size: 12px; }
+  :deep(svg),
+  .text-4xl {
+    font-size: 40px;
+    color: #10b981;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+  }
+
+  small {
+    font-size: 12px;
+  }
 }
 </style>

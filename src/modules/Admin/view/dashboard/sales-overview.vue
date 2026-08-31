@@ -6,56 +6,100 @@
           <ArtSvgIcon icon="ri:bar-chart-2-line" class="text-2xl" />
         </div>
         <div>
-          <h4 class="panel-title">Doanh thu & Lợi nhuận gộp</h4>
-          <p class="panel-desc">So sánh theo từng tháng trong 12 tháng gần nhất</p>
+          <h4 class="panel-title">Sức khỏe Tài chính & Hiệu suất Bán hàng</h4>
+          <p class="panel-desc">Theo dõi biến động doanh thu, lợi nhuận gộp & cơ cấu ngành hàng</p>
         </div>
       </div>
-      <div class="chart-legend">
-        <span class="legend-dot legend-dot--blue"></span><span>Doanh thu</span>
-        <span class="legend-dot legend-dot--green"></span><span>Lợi nhuận</span>
+      <div class="header-actions">
+        <ElRadioGroup v-model="viewMode" size="small" @change="onViewChange">
+          <ElRadioButton value="trend">Xu hướng 12 tháng</ElRadioButton>
+          <ElRadioButton value="category">Cơ cấu doanh thu</ElRadioButton>
+        </ElRadioGroup>
       </div>
     </div>
 
-    <div v-if="isLoading" class="mt-4"><ElSkeleton :rows="3" animated /></div>
-    <div v-else class="chart-wrap" ref="chartRef"></div>
+    <div v-if="isLoading" class="mt-4"><ElSkeleton :rows="4" animated /></div>
+    <div v-else-if="viewMode === 'trend' && months.length === 0" class="empty-state">
+      <ArtSvgIcon icon="ri:bar-chart-2-line" class="text-3xl text-gray-300 mb-2" />
+      <span>Chưa có dữ liệu doanh thu & lợi nhuận trong 12 tháng</span>
+    </div>
+    <div v-else-if="viewMode === 'category' && categoryData.length === 0" class="empty-state">
+      <ArtSvgIcon icon="ri:pie-chart-line" class="text-3xl text-gray-300 mb-2" />
+      <span>Chưa có dữ liệu phân loại cơ cấu ngành hàng</span>
+    </div>
+    <div v-else class="chart-content">
+      <div v-show="viewMode === 'trend'" class="chart-wrap" ref="trendChartRef"></div>
+      <div v-show="viewMode === 'category'" class="chart-wrap" ref="pieChartRef"></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
-import { fetchMonthlyRevenueProfit, type MonthlyRevenueProfit } from '@/api/dashboard.api';
+import {
+  fetchMonthlyRevenueProfit,
+  fetchRevenueByCategory,
+  type MonthlyRevenueProfit,
+} from '@/api/dashboard.api';
 
-const chartRef = ref<HTMLElement | null>(null);
-let chartInstance: echarts.ECharts | null = null;
+const viewMode = ref<'trend' | 'category'>('trend');
+const trendChartRef = ref<HTMLElement | null>(null);
+const pieChartRef = ref<HTMLElement | null>(null);
+
+let trendChartInstance: echarts.ECharts | null = null;
+let pieChartInstance: echarts.ECharts | null = null;
+
 const isLoading = ref(false);
 const months = ref<string[]>([]);
 const revenueData = ref<number[]>([]);
 const profitData = ref<number[]>([]);
+const categoryData = ref<{ name: string; value: number; percent: number }[]>([]);
+
 const MILLION_VND = 1_000_000;
 
 async function fetchData() {
   isLoading.value = true;
   try {
-    const data = await fetchMonthlyRevenueProfit(12);
-    months.value = data.map((item: MonthlyRevenueProfit) => {
-      const d = new Date(item.reportMonth);
-      return `T${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;
-    });
-    revenueData.value = data.map((item: MonthlyRevenueProfit) => item.totalRevenue);
-    profitData.value  = data.map((item: MonthlyRevenueProfit) => item.totalProfit);
+    const [monthlyRes, categoryRes] = await Promise.all([
+      fetchMonthlyRevenueProfit(12).catch(() => []),
+      fetchRevenueByCategory('', '').catch(() => []),
+    ]);
+
+    if (monthlyRes && monthlyRes.length > 0) {
+      months.value = monthlyRes.map((item: MonthlyRevenueProfit) => {
+        const d = new Date(item.reportMonth);
+        return `T${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;
+      });
+      revenueData.value = monthlyRes.map((item: MonthlyRevenueProfit) => item.totalRevenue ?? 0);
+      profitData.value = monthlyRes.map((item: MonthlyRevenueProfit) => item.totalProfit ?? 0);
+    } else {
+      months.value = [];
+      revenueData.value = [];
+      profitData.value = [];
+    }
+
+    if (categoryRes && categoryRes.length > 0) {
+      categoryData.value = categoryRes.map((item: any) => ({
+        name: item.categoryName || 'Khác',
+        value: item.revenue || 0,
+        percent: item.percentage || 0,
+      }));
+    } else {
+      categoryData.value = [];
+    }
   } catch (error) {
-    console.error('Failed to fetch monthly revenue profit:', error);
+    console.error('Failed to fetch sales overview data:', error);
   } finally {
     isLoading.value = false;
   }
 }
 
-function initChart() {
-  if (!chartRef.value) return;
-  if (!chartInstance) chartInstance = echarts.init(chartRef.value);
+function initTrendChart() {
+  if (!trendChartRef.value) return;
+  if (!trendChartInstance) trendChartInstance = echarts.init(trendChartRef.value);
 
-  chartInstance.setOption({
+  trendChartInstance.setOption({
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
@@ -63,49 +107,59 @@ function initChart() {
       borderColor: '#e5e7eb',
       textStyle: { color: '#111827' },
       formatter(params: any) {
-        let html = `<div style="font-weight:600;margin-bottom:6px">${params[0].name}</div>`;
+        let html = `<div style="font-weight:700;margin-bottom:6px">${params[0].name}</div>`;
         params.forEach((p: any) => {
           const val = (p.value / MILLION_VND).toLocaleString('vi-VN', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 2,
           });
-          html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+          html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
             ${p.marker}<span>${p.seriesName}:</span><strong>${val} triệu VNĐ</strong>
           </div>`;
         });
         const rev = params[0]?.value ?? 0;
         const prf = params[1]?.value ?? 0;
         const margin = rev > 0 ? ((prf / rev) * 100).toFixed(1) : '0';
-        html += `<div style="margin-top:6px;color:#6b7280;font-size:12px">Biên lợi nhuận: <strong style="color:#10b981">${margin}%</strong></div>`;
+        html += `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee;color:#4b5563;font-size:12px">Biên lợi nhuận gộp: <strong style="color:#10b981">${margin}%</strong></div>`;
         return html;
       },
     },
-    grid: { left: '2%', right: '2%', bottom: '8%', top: '8%', containLabel: true },
-    xAxis: [{
-      type: 'category',
-      data: months.value,
-      axisTick: { alignWithLabel: true },
-      axisLine: { lineStyle: { color: '#e5e7eb' } },
-      axisLabel: { color: '#9ca3af', fontSize: 11 },
-    }],
-    yAxis: [{
-      type: 'value',
-      name: 'Triệu VNĐ',
-      nameTextStyle: { color: '#9ca3af', fontSize: 11 },
-      splitLine: { lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.25)' } },
-      axisLabel: {
-        color: '#9ca3af',
-        fontSize: 11,
-        formatter: (v: number) =>
-          (v / MILLION_VND).toLocaleString('vi-VN', { maximumFractionDigits: 1 }),
+    legend: {
+      data: ['Doanh thu', 'Lợi nhuận gộp'],
+      bottom: 0,
+      icon: 'circle',
+      textStyle: { color: '#6b7280', fontSize: 12 },
+    },
+    grid: { left: '2%', right: '2%', bottom: '12%', top: '6%', containLabel: true },
+    xAxis: [
+      {
+        type: 'category',
+        data: months.value,
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: '#e5e7eb' } },
+        axisLabel: { color: '#9ca3af', fontSize: 11 },
       },
-    }],
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Triệu VNĐ',
+        nameTextStyle: { color: '#9ca3af', fontSize: 11 },
+        splitLine: { lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.25)' } },
+        axisLabel: {
+          color: '#9ca3af',
+          fontSize: 11,
+          formatter: (v: number) =>
+            (v / MILLION_VND).toLocaleString('vi-VN', { maximumFractionDigits: 1 }),
+        },
+      },
+    ],
     series: [
       {
         name: 'Doanh thu',
         type: 'bar',
-        barGap: '5%',
-        barMaxWidth: 28,
+        barGap: '15%',
+        barMaxWidth: 24,
         itemStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: '#60a5fa' },
@@ -119,7 +173,7 @@ function initChart() {
       {
         name: 'Lợi nhuận gộp',
         type: 'bar',
-        barMaxWidth: 28,
+        barMaxWidth: 24,
         itemStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: '#34d399' },
@@ -134,20 +188,89 @@ function initChart() {
   });
 }
 
-function resizeChart() { chartInstance?.resize(); }
+function initPieChart() {
+  if (!pieChartRef.value) return;
+  if (!pieChartInstance) pieChartInstance = echarts.init(pieChartRef.value);
+
+  pieChartInstance.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: any) => {
+        const val = (params.value / MILLION_VND).toLocaleString('vi-VN', {
+          maximumFractionDigits: 1,
+        });
+        return `<strong>${params.name}</strong><br/>${params.marker} Doanh số: ${val} tr VNĐ (${params.percent}%)`;
+      },
+    },
+    legend: {
+      orient: 'vertical',
+      right: '8%',
+      top: 'center',
+      icon: 'circle',
+      textStyle: { color: '#4b5563', fontSize: 13 },
+    },
+    color: ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#ec4899'],
+    series: [
+      {
+        name: 'Cơ cấu ngành hàng',
+        type: 'pie',
+        radius: ['45%', '72%'],
+        center: ['35%', '50%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 8,
+          borderColor: '#fff',
+          borderWidth: 2,
+        },
+        label: {
+          show: false,
+          position: 'center',
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 14,
+            fontWeight: 'bold',
+            formatter: '{b}\n{d}%',
+          },
+        },
+        labelLine: { show: false },
+        data: categoryData.value,
+      },
+    ],
+  });
+}
+
+function onViewChange() {
+  nextTick(() => {
+    if (viewMode.value === 'trend') {
+      initTrendChart();
+      trendChartInstance?.resize();
+    } else {
+      initPieChart();
+      pieChartInstance?.resize();
+    }
+  });
+}
+
+function resizeAll() {
+  trendChartInstance?.resize();
+  pieChartInstance?.resize();
+}
 
 onMounted(() => {
   nextTick(() => {
     fetchData().then(() => {
-      if (chartRef.value) initChart();
-      window.addEventListener('resize', resizeChart);
+      initTrendChart();
+      window.addEventListener('resize', resizeAll);
     });
   });
 });
 
 onUnmounted(() => {
-  if (chartInstance) chartInstance.dispose();
-  window.removeEventListener('resize', resizeChart);
+  trendChartInstance?.dispose();
+  pieChartInstance?.dispose();
+  window.removeEventListener('resize', resizeAll);
 });
 </script>
 
@@ -157,7 +280,7 @@ onUnmounted(() => {
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -165,10 +288,11 @@ onUnmounted(() => {
 
 .panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
   gap: 12px;
+  flex-wrap: wrap;
 
   &__left {
     display: flex;
@@ -187,7 +311,10 @@ onUnmounted(() => {
   font-size: 20px;
   flex-shrink: 0;
 
-  &--blue { background: rgba(59,130,246,0.12); color: #3b82f6; }
+  &--blue {
+    background: rgb(59 130 246 / 12%);
+    color: #3b82f6;
+  }
 }
 
 .panel-title {
@@ -203,28 +330,26 @@ onUnmounted(() => {
   margin: 0;
 }
 
-.chart-legend {
+.chart-content {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  flex-shrink: 0;
-}
-
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  display: inline-block;
-  margin-left: 8px;
-
-  &--blue  { background: #3b82f6; }
-  &--green { background: #10b981; }
+  flex-direction: column;
 }
 
 .chart-wrap {
+  width: 100%;
+  min-height: 290px;
   flex: 1;
-  min-height: 280px;
+}
+
+.empty-state {
+  flex: 1;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--el-text-color-placeholder);
+  font-size: 13px;
 }
 </style>
