@@ -425,25 +425,6 @@
             >
               📤 Gửi Admin duyệt
             </ElButton>
-            <!-- Nút duyệt đơn từ Modal -->
-            <ElButton
-              v-if="dialog.invoice?.status === 'processing' || dialog.invoice?.status === 'pending'"
-              type="success"
-              :loading="actionLoading"
-              @click="handleApproveInvoice(dialog.invoice)"
-            >
-              ✓ Duyệt hóa đơn
-            </ElButton>
-            <!-- Nút hủy hóa đơn -->
-            <ElButton
-              v-if="dialog.invoice?.status !== 'cancelled'"
-              type="danger"
-              plain
-              :loading="actionLoading"
-              @click="handleCancelInvoice(dialog.invoice)"
-            >
-              Hủy HĐ
-            </ElButton>
           </div>
 
           <div class="flex items-center gap-2">
