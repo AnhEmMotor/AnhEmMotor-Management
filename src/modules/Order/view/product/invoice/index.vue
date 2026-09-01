@@ -588,7 +588,14 @@
             />
           </ElFormItem>
           <ElFormItem label="NV bán hàng">
-            <ElInput v-model="createDialog.form.salesPerson" placeholder="Tên nhân viên phụ trách" />
+            <ElSelect v-model="createDialog.form.salesPerson" placeholder="Chọn nhân viên kinh doanh" class="w-full" clearable>
+              <ElOption
+                v-for="staff in salesStaffOptions"
+                :key="staff.id"
+                :label="staff.fullName"
+                :value="staff.fullName"
+              />
+            </ElSelect>
           </ElFormItem>
           <ElFormItem label="Ngày giao dự kiến">
             <ElDatePicker
@@ -624,6 +631,7 @@ import {
 import { ProductApi } from '@/api/product/product.api';
 import { VehicleApi, type Vehicle } from '@/api/vehicle/vehicle.api';
 import { VoucherApi } from '@/api/voucher.api';
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.api';
 
 defineOptions({ name: 'OrderProductInvoice' });
 
@@ -1013,6 +1021,7 @@ const handleCreate = () => {
   // Load initial vehicle list
   searchVehicles('');
   fetchVouchers();
+  fetchSalesStaff();
     
   createDialog.visible = true;
 };
@@ -1024,6 +1033,16 @@ async function fetchVouchers() {
     voucherOptions.value = res.items || [];
   } catch (error) {
     console.error('Lỗi tải danh sách voucher:', error);
+  }
+}
+
+const salesStaffOptions = ref<EmployeeResponse[]>([]);
+async function fetchSalesStaff() {
+  try {
+    const data = await EmployeeApi.getList();
+    salesStaffOptions.value = data.filter(e => e.jobTitle && e.jobTitle.toLowerCase().includes('kinh doanh'));
+  } catch (error) {
+    console.error('Lỗi tải danh sách nhân viên:', error);
   }
 }
 
