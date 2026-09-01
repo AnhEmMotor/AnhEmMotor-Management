@@ -718,8 +718,8 @@ const vehicleLoading = ref(false);
 async function searchVehicles(keyword: string = '') {
   vehicleLoading.value = true;
   try {
-    // Chỉ lọc các sản phẩm thuộc danh mục "Xe máy" (CategoryId = 8)
-    const filters = [`Product.CategoryId==8`];
+    // Chỉ lọc các sản phẩm được quản lý theo số khung/máy (xe máy)
+    const filters = [`managementType==vin_number`];
     if (keyword) {
       filters.push(`search@=${keyword}`);
     }
