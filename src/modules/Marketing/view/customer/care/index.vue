@@ -177,14 +177,6 @@
           </template>
         </ElTableColumn>
 
-        <ElTableColumn label="Phụ trách" min-width="170">
-          <template #default="{ row }">
-            <span class="table-primary">
-              {{ row.assignedToName || 'Chưa phân công' }}
-            </span>
-          </template>
-        </ElTableColumn>
-
         <ElTableColumn label="Ngày tạo" min-width="135">
           <template #default="{ row }">
             <span class="table-secondary">{{ formatDateTime(row.createdAt) }}</span>
@@ -226,11 +218,11 @@
                   <ArtSvgIcon icon="ri:heart-add-2-line" />
                 </button>
               </ElTooltip>
-              <ElTooltip content="Tạo phiên hỗ trợ">
+              <ElTooltip content="Tạo phiên chat hỗ trợ">
                 <button
                   type="button"
                   class="icon-action"
-                  aria-label="Tạo phiên hỗ trợ khách hàng"
+                  aria-label="Tạo phiên chat hỗ trợ khách hàng"
                   @click.stop="openSupportDialog(asLead(row))"
                 >
                   <ArtSvgIcon icon="ri:message-3-line" />
@@ -274,7 +266,7 @@
           <ElButton
             circle
             type="primary"
-            aria-label="Tạo phiên hỗ trợ"
+            aria-label="Tạo phiên chat hỗ trợ"
             @click="openSupportDialog()"
           >
             <ArtSvgIcon icon="ri:add-line" />
@@ -290,6 +282,7 @@
           <ElSelect v-model="sessionStatusFilter" aria-label="Lọc trạng thái phiên">
             <ElOption label="Tất cả trạng thái" value="all" />
             <ElOption label="Mới" value="New" />
+            <ElOption label="Đã phân công" value="Assigned" />
             <ElOption label="Đang xử lý" value="InProgress" />
             <ElOption label="Đã đóng" value="Closed" />
           </ElSelect>
@@ -364,9 +357,18 @@
               aria-label="Cập nhật trạng thái phiên hỗ trợ"
               @change="updateSessionStatus"
             >
-              <ElOption label="Mới" value="New" />
-              <ElOption label="Đang xử lý" value="InProgress" />
-              <ElOption label="Đã đóng" value="Closed" />
+              <ElOption label="Mới" value="New" disabled />
+              <ElOption label="Đã phân công" value="Assigned" disabled />
+              <ElOption
+                label="Đang xử lý"
+                value="InProgress"
+                :disabled="!['Assigned', 'InProgress'].includes(activeSession.status)"
+              />
+              <ElOption
+                label="Đã đóng"
+                value="Closed"
+                :disabled="!['InProgress', 'Closed'].includes(activeSession.status)"
+              />
             </ElSelect>
             <ElButton v-if="matchedLead" size="small" @click="openProfile(matchedLead)">
               Hồ sơ 360
@@ -405,10 +407,10 @@
             maxlength="2000"
             show-word-limit
             resize="none"
-            :disabled="activeSession.status === 'Closed'"
+            :disabled="activeSession.status !== 'InProgress'"
             :placeholder="
-              activeSession.status === 'Closed'
-                ? 'Mở lại phiên để tiếp tục phản hồi'
+              activeSession.status !== 'InProgress'
+                ? 'Bắt đầu hỗ trợ trước khi phản hồi'
                 : 'Nhập phản hồi cho khách hàng...'
             "
             @keydown.enter.exact.prevent="sendChatReply"
@@ -418,7 +420,7 @@
             <ElButton
               type="primary"
               :loading="replySending"
-              :disabled="activeSession.status === 'Closed' || !replyDraft.trim()"
+              :disabled="activeSession.status !== 'InProgress' || !replyDraft.trim()"
               @click="sendChatReply"
             >
               <ArtSvgIcon icon="ri:send-plane-fill" class="mr-1.5" />
@@ -511,11 +513,13 @@
       </div>
       <ElForm label-position="top">
         <ElFormItem label="Hình thức" required>
-          <ElSelect v-model="careForm.activityType" class="w-full">
-            <ElOption label="Gọi điện" value="Call" />
-            <ElOption label="Tin nhắn / Zalo" value="Message" />
-            <ElOption label="Đặt lịch hẹn" value="Booking" />
-            <ElOption label="Ghi chú" value="Note" />
+          <ElSelect v-model="careForm.category" class="w-full">
+            <ElOption
+              v-for="option in supportCategoryOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Nội dung" required>
@@ -532,7 +536,7 @@
       <template #footer>
         <ElButton @click="careDialogVisible = false">Hủy</ElButton>
         <ElButton type="primary" :loading="careSaving" @click="saveCareActivity">
-          Lưu tương tác
+          Chuyển sang yêu cầu hỗ trợ
         </ElButton>
       </template>
     </ElDialog>
@@ -540,7 +544,7 @@
     <ElDialog
       v-model="supportDialogVisible"
       class="customer-care-dialog"
-      title="Tạo phiên hỗ trợ"
+      title="Tạo phiên chat hỗ trợ"
       width="min(560px, calc(100vw - 32px))"
       destroy-on-close
     >
@@ -560,16 +564,34 @@
             />
           </ElSelect>
         </ElFormItem>
+        <ElFormItem label="Phân công nhân viên hỗ trợ" required>
+          <ElSelect
+            v-model="supportForm.assignedUserId"
+            filterable
+            class="w-full"
+            :loading="assignableUsersLoading"
+            placeholder="Chọn nhân viên hỗ trợ"
+            no-data-text="Không có nhân viên đủ quyền hỗ trợ"
+          >
+            <ElOption
+              v-for="user in assignableUsers"
+              :key="user.id"
+              :label="user.fullName || user.email || user.phoneNumber || user.id"
+              :value="user.id"
+            />
+          </ElSelect>
+        </ElFormItem>
         <ElFormItem label="Chủ đề" required>
           <ElInput v-model="supportForm.subject" placeholder="Ví dụ: Hỗ trợ lịch bảo dưỡng" />
         </ElFormItem>
         <ElFormItem label="Nhóm yêu cầu" required>
           <ElSelect v-model="supportForm.category" class="w-full">
-            <ElOption label="Tư vấn sản phẩm" value="ProductConsultation" />
-            <ElOption label="Đơn hàng" value="Order" />
-            <ElOption label="Bảo hành / bảo dưỡng" value="AfterSales" />
-            <ElOption label="Tài chính trả góp" value="Finance" />
-            <ElOption label="Hỗ trợ khác" value="Other" />
+            <ElOption
+              v-for="option in supportCategoryOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
           </ElSelect>
         </ElFormItem>
         <ElFormItem label="Nội dung yêu cầu ban đầu" required>
@@ -586,7 +608,7 @@
       <template #footer>
         <ElButton @click="supportDialogVisible = false">Hủy</ElButton>
         <ElButton type="primary" :loading="sessionCreating" @click="createSupportSession">
-          Tạo phiên
+          Tạo phiên chat
         </ElButton>
       </template>
     </ElDialog>
@@ -598,6 +620,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import dayjs from 'dayjs';
+import { useUserStore } from '@/application/store/user';
 import {
   fetchAddLeadActivity,
   fetchCreateLead,
@@ -606,7 +629,7 @@ import {
   type LeadActivity,
   type LeadPaginatedResponse,
 } from '@/api/customer/lead.api';
-import { ContactApi } from '@/api/customer/contact.api';
+import { ContactApi, type AssignableContactUser } from '@/api/customer/contact.api';
 import type { Contact } from '@/types';
 
 defineOptions({ name: 'CustomerCare' });
@@ -614,6 +637,17 @@ defineOptions({ name: 'CustomerCare' });
 type CustomerClassification = 'New' | 'Returning' | 'VIP' | 'NeedsAttention';
 type Workspace = 'customers' | 'support';
 type ChatDirection = 'incoming' | 'outgoing';
+type SupportCategory =
+  | 'Technical'
+  | 'Billing'
+  | 'Quality'
+  | 'Service'
+  | 'Speed'
+  | 'Rating'
+  | 'General'
+  | 'Sales'
+  | 'AfterSales'
+  | 'Other';
 
 interface ChatMessage {
   id: string;
@@ -625,6 +659,7 @@ interface ChatMessage {
 
 const CLASSIFICATION_ACTIVITY = 'CustomerClassification';
 const router = useRouter();
+const userStore = useUserStore();
 
 const classificationOptions: Array<{
   value: CustomerClassification;
@@ -634,6 +669,19 @@ const classificationOptions: Array<{
   { value: 'Returning', label: 'Khách quay lại' },
   { value: 'VIP', label: 'Khách VIP' },
   { value: 'NeedsAttention', label: 'Cần chăm sóc' },
+];
+
+const supportCategoryOptions: Array<{ value: SupportCategory; label: string }> = [
+  { value: 'Technical', label: 'Hỗ trợ kỹ thuật' },
+  { value: 'Billing', label: 'Thanh toán & Hóa đơn' },
+  { value: 'Quality', label: 'Chất lượng xe' },
+  { value: 'Service', label: 'Thái độ phục vụ' },
+  { value: 'Speed', label: 'Tốc độ phục vụ' },
+  { value: 'Rating', label: 'Đánh giá & Rating' },
+  { value: 'General', label: 'Chung' },
+  { value: 'Sales', label: 'Tư vấn bán hàng' },
+  { value: 'AfterSales', label: 'Hậu mãi' },
+  { value: 'Other', label: 'Khác' },
 ];
 
 const activeWorkspace = ref<Workspace>('customers');
@@ -654,6 +702,8 @@ const replyDraft = ref('');
 const replySending = ref(false);
 const sessionStatusUpdating = ref(false);
 const messageListRef = ref<HTMLElement | null>(null);
+const assignableUsers = ref<AssignableContactUser[]>([]);
+const assignableUsersLoading = ref(false);
 
 const addCustomerDialogVisible = ref(false);
 const customerCreating = ref(false);
@@ -662,7 +712,7 @@ const customerForm = ref(createEmptyCustomerForm());
 const careDialogVisible = ref(false);
 const careCustomer = ref<Lead | null>(null);
 const careSaving = ref(false);
-const careForm = ref({ activityType: 'Call', description: '' });
+const careForm = ref({ category: 'General' as SupportCategory, description: '' });
 
 const supportDialogVisible = ref(false);
 const sessionCreating = ref(false);
@@ -685,8 +735,9 @@ function createEmptySupportForm() {
   return {
     leadId: null as number | null,
     subject: '',
-    category: 'Other',
+    category: 'Other' as SupportCategory,
     content: '',
+    assignedUserId: '',
   };
 }
 
@@ -844,9 +895,18 @@ async function loadSupportSessions(preferredSessionId?: number) {
   sessionLoading.value = true;
   sessionError.value = '';
   const currentId = preferredSessionId ?? activeSession.value?.id;
+  const assignedUserId = userStore.getUserInfo.userId;
+  if (!assignedUserId) {
+    supportSessions.value = [];
+    activeSession.value = null;
+    sessionError.value = 'Không xác định được tài khoản nhân viên đang đăng nhập.';
+    sessionLoading.value = false;
+    return;
+  }
   try {
     const response = await ContactApi.getPaginated({
       contactType: 'support',
+      assignedUserId,
       page: 1,
       pageSize: 200,
     });
@@ -869,10 +929,21 @@ async function loadSupportSessions(preferredSessionId?: number) {
   }
 }
 
+async function loadAssignableUsers() {
+  assignableUsersLoading.value = true;
+  try {
+    assignableUsers.value = await ContactApi.getAssignableUsers();
+  } catch {
+    assignableUsers.value = [];
+  } finally {
+    assignableUsersLoading.value = false;
+  }
+}
+
 async function refreshAll() {
   refreshing.value = true;
   try {
-    await Promise.all([loadLeads(), loadSupportSessions()]);
+    await Promise.all([loadLeads(), loadSupportSessions(), loadAssignableUsers()]);
   } finally {
     refreshing.value = false;
   }
@@ -935,7 +1006,7 @@ async function updateClassification(lead: Lead, classification: CustomerClassifi
 
 function openCareDialog(lead: Lead) {
   careCustomer.value = lead;
-  careForm.value = { activityType: 'Call', description: '' };
+  careForm.value = { category: 'General', description: '' };
   careDialogVisible.value = true;
 }
 
@@ -944,17 +1015,28 @@ async function saveCareActivity() {
     ElMessage.warning('Vui lòng nhập nội dung tương tác');
     return;
   }
+  const customer = careCustomer.value;
+  if (!customer.email?.trim()) {
+    ElMessage.warning('Khách hàng cần có email trước khi chuyển sang yêu cầu hỗ trợ');
+    return;
+  }
   careSaving.value = true;
   try {
-    await fetchAddLeadActivity(careCustomer.value.id, {
-      activityType: careForm.value.activityType,
-      description: careForm.value.description.trim(),
+    const categoryLabel =
+      supportCategoryOptions.find((option) => option.value === careForm.value.category)?.label ??
+      'Chung';
+    await ContactApi.createSupportRequest({
+      fullName: customer.fullName,
+      phoneNumber: customer.phoneNumber,
+      email: customer.email.trim(),
+      subject: `Yêu cầu chăm sóc - ${categoryLabel}`,
+      category: careForm.value.category,
+      content: careForm.value.description.trim(),
     });
-    ElMessage.success('Đã lưu tương tác chăm sóc');
+    ElMessage.success('Đã chuyển khách hàng sang Yêu cầu hỗ trợ');
     careDialogVisible.value = false;
-    await loadLeads();
   } catch {
-    ElMessage.error('Không thể lưu tương tác chăm sóc');
+    ElMessage.error('Không thể chuyển khách hàng sang Yêu cầu hỗ trợ');
   } finally {
     careSaving.value = false;
   }
@@ -965,14 +1047,21 @@ function openSupportDialog(lead?: Lead) {
     ...createEmptySupportForm(),
     leadId: lead?.id ?? null,
   };
+  if (assignableUsers.value.length === 0 && !assignableUsersLoading.value) {
+    void loadAssignableUsers();
+  }
   supportDialogVisible.value = true;
 }
 
 async function createSupportSession() {
   const form = supportForm.value;
   const lead = leads.value.find((item) => item.id === form.leadId);
-  if (!lead || !form.subject.trim() || !form.content.trim()) {
-    ElMessage.warning('Vui lòng chọn khách hàng và nhập đầy đủ nội dung phiên');
+  if (!lead || !form.assignedUserId || !form.subject.trim() || !form.content.trim()) {
+    ElMessage.warning('Vui lòng chọn khách hàng, nhân viên và nhập đầy đủ nội dung phiên');
+    return;
+  }
+  if (!lead.email?.trim()) {
+    ElMessage.warning('Khách hàng cần có email trước khi tạo phiên chat hỗ trợ');
     return;
   }
 
@@ -986,16 +1075,25 @@ async function createSupportSession() {
       category: form.category,
       content: form.content.trim(),
     });
-    await fetchAddLeadActivity(lead.id, {
-      activityType: 'SupportSession',
-      description: `Đã tạo phiên hỗ trợ: ${form.subject.trim()}`,
-    });
+    try {
+      await ContactApi.assign(createdResponse.id, form.assignedUserId);
+    } catch {
+      supportDialogVisible.value = false;
+      ElMessage.warning(
+        'Phiên chat đã được tạo nhưng chưa phân công. Vui lòng phân công tại Quản lý Liên hệ.'
+      );
+      return;
+    }
     supportDialogVisible.value = false;
-    activeWorkspace.value = 'support';
-    await Promise.all([loadLeads(), loadSupportSessions(createdResponse.id)]);
-    ElMessage.success('Đã tạo phiên hỗ trợ');
+    const isAssignedToCurrentUser =
+      form.assignedUserId.toLowerCase() === userStore.getUserInfo.userId?.toLowerCase();
+    if (isAssignedToCurrentUser) {
+      activeWorkspace.value = 'support';
+    }
+    await loadSupportSessions(isAssignedToCurrentUser ? createdResponse.id : undefined);
+    ElMessage.success('Đã tạo và phân công phiên chat hỗ trợ');
   } catch {
-    ElMessage.error('Không thể tạo phiên hỗ trợ');
+    ElMessage.error('Không thể tạo phiên chat hỗ trợ');
   } finally {
     sessionCreating.value = false;
   }

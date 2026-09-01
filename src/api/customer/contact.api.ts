@@ -13,6 +13,13 @@ export interface PaginatedContactResponse {
   totalPages: number;
 }
 
+export interface AssignableContactUser {
+  id: string;
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
 export const ContactApi = {
   getPaginated(params: {
     contactType?: string;
@@ -41,7 +48,7 @@ export const ContactApi = {
   createSupportRequest(data: Contact.CreateSupportRequestPayload) {
     return request.post<Contact.CreateSupportRequestResponse>({
       url: '/api/v1/Contacts/support-request',
-      data,
+      data: { request: data },
     });
   },
   createFeedback(data: Contact.CreateFeedbackPayload) {
@@ -60,7 +67,7 @@ export const ContactApi = {
     });
   },
   getAssignableUsers() {
-    return request.get<{ id: string; fullName?: string; email?: string; phoneNumber?: string }[]>({
+    return request.get<AssignableContactUser[]>({
       url: '/api/v1/Contacts/assignable-users',
     });
   },
