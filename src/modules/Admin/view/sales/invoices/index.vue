@@ -1,13 +1,85 @@
 <template>
   <div class="resp-page invoices-page flex flex-col gap-4 pb-5">
-    <div class="flex items-center justify-between max-md:flex-wrap max-md:gap-3">
-      <div class="flex items-center gap-3">
+    <!-- Header & Quick KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <ElCard
+        shadow="hover"
+        class="cursor-pointer transition-all border-l-4 !border-l-blue-500"
+        :class="{ 'ring-2 ring-blue-400': filterStatus === '' }"
+        @click="filterStatus = ''; handleSearch();"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs text-gray-500 font-semibold uppercase">Tất cả hóa đơn</div>
+            <div class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-1">{{ totalCount }}</div>
+          </div>
+          <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-xl text-xl">
+            <ArtSvgIcon icon="ri:file-list-3-line" />
+          </div>
+        </div>
+      </ElCard>
+
+      <ElCard
+        shadow="hover"
+        class="cursor-pointer transition-all border-l-4 !border-l-amber-500"
+        :class="{ 'ring-2 ring-amber-400': filterStatus === 'pending' }"
+        @click="filterStatus = 'pending'; handleSearch();"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs text-gray-500 font-semibold uppercase">Chờ xử lý</div>
+            <div class="text-2xl font-bold text-amber-600 mt-1">{{ statusCounts.pending }}</div>
+          </div>
+          <div class="p-3 bg-amber-50 dark:bg-amber-900/30 text-amber-600 rounded-xl text-xl">
+            <ArtSvgIcon icon="ri:time-line" />
+          </div>
+        </div>
+      </ElCard>
+
+      <ElCard
+        shadow="hover"
+        class="cursor-pointer transition-all border-l-4 !border-l-indigo-500"
+        :class="{ 'ring-2 ring-indigo-400': filterStatus === 'processing' }"
+        @click="filterStatus = 'processing'; handleSearch();"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs text-gray-500 font-semibold uppercase">Chờ Admin duyệt</div>
+            <div class="text-2xl font-bold text-indigo-600 mt-1">{{ statusCounts.processing }}</div>
+          </div>
+          <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-xl text-xl">
+            <ArtSvgIcon icon="ri:user-shared-line" />
+          </div>
+        </div>
+      </ElCard>
+
+      <ElCard
+        shadow="hover"
+        class="cursor-pointer transition-all border-l-4 !border-l-emerald-500"
+        :class="{ 'ring-2 ring-emerald-400': filterStatus === 'completed' }"
+        @click="filterStatus = 'completed'; handleSearch();"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs text-gray-500 font-semibold uppercase">Đã duyệt / Hoàn tất</div>
+            <div class="text-2xl font-bold text-emerald-600 mt-1">{{ statusCounts.completed }}</div>
+          </div>
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-xl text-xl">
+            <ArtSvgIcon icon="ri:checkbox-circle-line" />
+          </div>
+        </div>
+      </ElCard>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
         <ElInput
           v-model="searchQuery"
-          placeholder="Tìm theo mã HĐ, tên KH, Số khung, Số máy..."
+          placeholder="Tìm theo mã HĐ, tên KH, SĐT, Số khung, Số máy..."
           clearable
           size="default"
-          style="width: 380px"
+          style="width: 360px"
           @input="handleSearch"
         >
           <template #prefix>
@@ -16,145 +88,332 @@
         </ElInput>
         <ElSelect
           v-model="filterStatus"
-          placeholder="Trạng thái"
+          placeholder="Trạng thái hóa đơn"
           size="default"
           clearable
+          style="width: 200px"
           @change="handleSearch"
         >
-          <ElOption label="📝 Chờ thanh toán" value="pending" />
-          <ElOption label="✅ Đã hoàn tất" value="completed" />
-          <ElOption label="🔄 Đang xử lý" value="processing" />
+          <ElOption label="📋 Tất cả trạng thái" value="" />
+          <ElOption label="📝 Chờ xử lý" value="pending" />
+          <ElOption label="⏳ Chờ Admin duyệt" value="processing" />
+          <ElOption label="✅ Đã duyệt / Hoàn tất" value="completed" />
           <ElOption label="❌ Đã hủy" value="cancelled" />
         </ElSelect>
+        <ElButton plain @click="handleResetFilters">
+          <ArtSvgIcon icon="ri:refresh-line" class="mr-1" />
+          Tải lại
+        </ElButton>
       </div>
-      <ElButton type="primary" @click="handleCreateNew">
+      <ElButton type="primary" @click="handleCreate">
         <ElIcon class="mr-1"><Plus /></ElIcon>
         Tạo hóa đơn mới
       </ElButton>
     </div>
 
+    <!-- Main Invoices Table -->
     <ElCard shadow="never" class="invoice-list-card">
       <ElTable
         :data="paginatedInvoices"
-        class="resp-table"
         style="width: 100%"
+        stripe
+        border
         v-loading="loadingList"
-        @row-click="handleRowClick"
+        :header-cell-style="{ background: 'var(--el-fill-color-light)', color: 'var(--el-text-color-primary)', fontWeight: '600' }"
+        @row-click="(row) => handleView(row)"
       >
-        <ElTableColumn label="Mã HĐ" width="130" align="center">
+        <ElTableColumn label="Mã HĐ" width="140" align="center">
           <template #default="{ row }">
-            <ElText type="primary" tag="b">{{ row.invoiceNumber }}</ElText>
+            <ElTag size="small" type="primary" effect="plain" class="font-mono font-bold">
+              {{ row.invoiceNumber }}
+            </ElTag>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Ngày lập" width="110" align="center">
           <template #default="{ row }">
-            {{ formatDate(row.issueDate) }}
+            <span class="text-xs">{{ formatDate(row.issueDate) }}</span>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Khách hàng" min-width="180">
           <template #default="{ row }">
             <div class="flex flex-col">
-              <span class="font-medium">{{ row.customerName }}</span>
-              <span class="text-xs text-gray-500">{{ row.customerPhone }}</span>
+              <span class="font-medium text-[var(--el-text-color-primary)]">{{ row.customerName }}</span>
+              <span class="text-xs text-gray-500 flex items-center gap-1">
+                <ArtSvgIcon icon="ri:phone-line" class="text-[11px]" />
+                {{ row.customerPhone }}
+              </span>
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Xe bán" min-width="200">
+        <ElTableColumn label="Xe bán" min-width="190">
           <template #default="{ row }">
             <div class="flex flex-col">
-              <span class="font-medium">{{ row.vehicleModel }}</span>
+              <span class="font-medium text-[var(--el-text-color-primary)]">{{ row.vehicleModel }}</span>
               <span class="text-xs text-gray-500">{{ row.vehicleColor }}</span>
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Số khung" width="140" align="center">
+        <ElTableColumn label="Số khung / Máy" width="150" align="center">
           <template #default="{ row }">
-            <span class="font-mono text-xs">{{ row.chassisNo }}</span>
-          </template>
-        </ElTableColumn>
-        <ElTableColumn label="Số máy" width="140" align="center">
-          <template #default="{ row }">
-            <span class="font-mono text-xs">{{ row.engineNo }}</span>
+            <div class="flex flex-col text-xs font-mono">
+              <span class="text-gray-700 dark:text-gray-300">K: {{ row.chassisNo }}</span>
+              <span class="text-gray-400">M: {{ row.engineNo }}</span>
+            </div>
           </template>
         </ElTableColumn>
         <ElTableColumn label="Tổng tiền" width="140" align="right">
           <template #default="{ row }">
-            <span class="font-bold text-gray-800">{{ formatCurrency(row.totalAmount) }}</span>
+            <span class="font-bold text-[var(--el-text-color-primary)]">
+              {{ formatCurrency(row.totalAmount) }}
+            </span>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Thanh toán" width="130" align="center">
+        <ElTableColumn label="Thanh toán" width="120" align="center">
           <template #default="{ row }">
             <ElTag :type="getPaymentTagType(row.paymentMethod)" size="small">
               {{ getPaymentLabel(row.paymentMethod) }}
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Trạng thái" width="130" align="center">
+        <ElTableColumn label="Trạng thái" width="140" align="center">
           <template #default="{ row }">
-            <ElTag :type="getStatusTagType(row.status)" size="small">
+            <ElTag :type="getStatusTagType(row.status)" size="small" effect="light" class="font-medium">
               {{ getStatusLabel(row.status) }}
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="Thao tác" width="220" align="center" fixed="right">
+        <ElTableColumn label="Thao tác" width="240" align="center" fixed="right">
           <template #default="{ row }">
             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
-              <ElButton
-                v-if="row.status === 'pending' || row.status === 'processing'"
-                type="success"
-                size="small"
-                plain
-                @click="handleMarkCompleted(row)"
-              >
-                ✓ Duyệt đơn
+
+
+              <ElButton plain type="primary" size="small" @click="handleEdit(row)">
+                <ArtSvgIcon icon="ri:edit-2-line" class="mr-1" />
+                Chỉnh sửa
               </ElButton>
-              <ElDropdown trigger="click" @command="(cmd: string) => handleQuickChangeStatus(row, cmd)">
-                <ElButton size="small" type="info" plain>
-                  Đổi TT <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                </ElButton>
-                <template #dropdown>
-                  <ElDropdownMenu>
-                    <ElDropdownItem command="pending" :disabled="row.status === 'pending'">
-                      📝 Chờ xử lý
-                    </ElDropdownItem>
-                    <ElDropdownItem command="processing" :disabled="row.status === 'processing'">
-                      ⏳ Chờ Admin duyệt
-                    </ElDropdownItem>
-                    <ElDropdownItem command="completed" :disabled="row.status === 'completed'">
-                      ✅ Đã hoàn tất
-                    </ElDropdownItem>
-                    <ElDropdownItem command="cancelled" divided :disabled="row.status === 'cancelled'">
-                      ❌ Hủy hóa đơn
-                    </ElDropdownItem>
-                  </ElDropdownMenu>
-                </template>
-              </ElDropdown>
-              <ElButton type="primary" size="small" link @click="handleEdit(row)">
-                ✏️ Sửa
+
+              <ElButton link type="primary" size="small" @click="handleView(row)">
+                Chi tiết
               </ElButton>
             </div>
           </template>
         </ElTableColumn>
       </ElTable>
-
-      <div class="flex justify-end mt-4">
-        <ElPagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :total="totalCount"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
     </ElCard>
 
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-2 px-1">
+      <span class="text-xs text-gray-500">
+        Hiển thị {{ paginatedInvoices.length }} / {{ filteredInvoices.length }} hóa đơn
+      </span>
+      <ElPagination
+        v-model:currentPage="pagination.current"
+        v-model:pageSize="pagination.size"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="filteredInvoices.length"
+        layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handlePageChange"
+        @size-change="handleSizeChange"
+      />
+    </div>
+
+    <!-- Invoice Detail Dialog -->
+    <ElDialog
+      v-model="dialog.visible"
+      width="820px"
+      :close-on-click-modal="false"
+      destroy-on-close
+      class="premium-invoice-modal"
+      :show-close="true"
+    >
+      <template #header>
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+            <ArtSvgIcon icon="ri:file-list-3-line" class="text-2xl" />
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 m-0 leading-tight">
+              Chi tiết Hóa Đơn Bán Xe
+            </h3>
+            <p class="text-sm text-primary font-mono font-bold m-0 mt-1">
+              {{ dialog.invoice?.invoiceNumber }}
+            </p>
+          </div>
+        </div>
+      </template>
+
+      <div v-if="dialog.invoice" class="premium-invoice-body">
+        <div
+          class="flex justify-between items-center bg-gray-50 dark:bg-gray-800/60 p-4 rounded-xl mb-5 border border-gray-100 dark:border-gray-700"
+        >
+          <div>
+            <div class="text-xs text-gray-500 uppercase font-semibold mb-1">Trạng thái Hóa đơn</div>
+            <ElTag
+              :type="getStatusTagType(dialog.invoice.status)"
+              effect="dark"
+              size="large"
+              class="font-bold px-4"
+            >
+              {{ getStatusLabel(dialog.invoice.status) }}
+            </ElTag>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-gray-500 uppercase font-semibold mb-1">Tổng thanh toán</div>
+            <div class="text-2xl font-black text-red-600 dark:text-red-400">
+              {{ formatCurrency(dialog.invoice.totalAmount) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-5">
+          <div class="info-card">
+            <div
+              class="card-header flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-3 pb-2 border-b"
+            >
+              <ArtSvgIcon icon="ri:user-smile-line" class="text-blue-500" />
+              <span>Thông tin Khách hàng</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Họ tên:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.customerName }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Điện thoại:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.customerPhone }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Số CCCD:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{
+                  dialog.invoice.customerIdCard || '-'
+                }}</span>
+              </div>
+              <div class="flex flex-col gap-0.5 mt-1">
+                <span class="text-gray-500">Địa chỉ:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200 text-xs leading-snug">{{
+                  dialog.invoice.customerAddress
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div
+              class="card-header flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-3 pb-2 border-b"
+            >
+              <ArtSvgIcon icon="ri:motorbike-fill" class="text-orange-500" />
+              <span>Thông tin Xe máy</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Dòng xe:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.vehicleModel }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Màu sơn:</span>
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.vehicleColor }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Số khung:</span>
+                <span class="font-mono text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300">{{
+                  dialog.invoice.chassisNo
+                }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Số máy:</span>
+                <span class="font-mono text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300">{{
+                  dialog.invoice.engineNo
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/40">
+          <div class="flex items-center gap-2 text-blue-800 dark:text-blue-300 font-semibold mb-3">
+            <ArtSvgIcon icon="ri:bill-line" />
+            <span>Chi tiết Thanh toán & Bàn giao</span>
+          </div>
+
+          <div class="space-y-2 mb-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Giá trị xe (đã gồm VAT):</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200">{{
+                formatCurrency(dialog.invoice.vehiclePrice)
+              }}</span>
+            </div>
+          </div>
+
+          <div class="border-t border-blue-200 dark:border-blue-800/60 pt-3 flex justify-between items-center text-sm">
+            <div>
+              <span class="text-gray-500 block text-xs mb-1">Phương thức TT</span>
+              <ElTag size="small" type="info">
+                {{ getPaymentLabel(dialog.invoice.paymentMethod) }}
+              </ElTag>
+            </div>
+            <div class="text-center">
+              <span class="text-gray-500 block text-xs mb-1">Nhân viên bán hàng</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.salesPerson || '---' }}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-gray-500 block text-xs mb-1">Ngày lập HĐ</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200">{{
+                formatDate(dialog.invoice.issueDate)
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-between items-center gap-3 px-2 pb-2">
+          <div class="flex items-center gap-2">
+            <!-- Nút gửi duyệt từ Modal -->
+            <ElButton
+              v-if="dialog.invoice?.status === 'pending'"
+              type="warning"
+              :loading="actionLoading"
+              @click="handleSendForApproval(dialog.invoice)"
+            >
+              📤 Gửi Admin duyệt
+            </ElButton>
+            <!-- Nút duyệt đơn từ Modal -->
+            <ElButton
+              v-if="dialog.invoice?.status === 'processing' || dialog.invoice?.status === 'pending'"
+              type="success"
+              :loading="actionLoading"
+              @click="handleApproveInvoice(dialog.invoice)"
+            >
+              ✓ Duyệt hóa đơn
+            </ElButton>
+            <!-- Nút hủy hóa đơn -->
+            <ElButton
+              v-if="dialog.invoice?.status !== 'cancelled'"
+              type="danger"
+              plain
+              :loading="actionLoading"
+              @click="handleCancelInvoice(dialog.invoice)"
+            >
+              Hủy HĐ
+            </ElButton>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <ElButton type="primary" plain @click="handlePrintInvoice(dialog.invoice)">
+              <ArtSvgIcon icon="ri:printer-line" class="mr-1" />
+              In Hóa Đơn
+            </ElButton>
+            <ElButton @click="dialog.visible = false" plain>Đóng lại</ElButton>
+          </div>
+        </div>
+      </template>
+    </ElDialog>
+
+    <!-- Create/Edit Invoice Dialog -->
     <ElDialog
       v-model="createDialog.visible"
-      title="Tạo hóa đơn mới"
+      :title="createDialog.isEdit ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn bán xe mới'"
       width="65%"
-      class="resp-dialog"
       :close-on-click-modal="false"
       destroy-on-close
     >
@@ -183,67 +442,153 @@
         <ElDivider content-position="left">🏍️ Thông tin xe</ElDivider>
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Dòng xe" required>
-            <ElInput v-model="createDialog.form.vehicleModel" />
+            <ElSelect
+              v-model="createDialog.selectedVehicleId"
+              filterable
+              remote
+              reserve-keyword
+              :remote-method="searchVehicles"
+              :loading="vehicleLoading"
+              placeholder="Tìm và chọn dòng xe"
+              class="w-full"
+              @change="handleVehicleChange"
+              @focus="() => searchVehicles('')"
+            >
+              <ElOption
+                v-for="v in vehicleOptions"
+                :key="v.id"
+                :label="(v.productName || v.variantName || '') + ' (' + v.vinNumber + ')'"
+                :value="v.id"
+              >
+                <div class="flex justify-between items-center w-full">
+                  <span>{{ v.productName || v.variantName }} ({{ v.colorName }}) - VIN: {{ v.vinNumber }}</span>
+                </div>
+              </ElOption>
+            </ElSelect>
           </ElFormItem>
           <ElFormItem label="Màu sơn">
-            <ElInput v-model="createDialog.form.vehicleColor" />
+            <ElInput v-model="createDialog.form.vehicleColor" placeholder="VD: Đen nhám" />
           </ElFormItem>
           <ElFormItem label="Số khung" required>
-            <ElInput v-model="createDialog.form.chassisNo" />
+            <ElInput v-model="createDialog.form.chassisNo" placeholder="VD: RLH12345678" />
           </ElFormItem>
           <ElFormItem label="Số máy" required>
-            <ElInput v-model="createDialog.form.engineNo" />
+            <ElInput v-model="createDialog.form.engineNo" placeholder="VD: E1234567" />
           </ElFormItem>
         </div>
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Giá xe (đã gồm VAT)">
-            <ElInputNumber v-model="createDialog.form.vehiclePrice" :min="0" class="w-full" style="width: 100%" />
+        <div class="grid grid-cols-12 gap-3 financial-grid">
+          <ElFormItem label="Giá xe" required label-width="auto" class="col-span-3">
+            <ElInputNumber
+              v-model="createDialog.form.vehiclePrice"
+              :min="0"
+              :step="1000000"
+              controls-position="right"
+              class="!w-full"
+              style="width: 100%"
+            />
           </ElFormItem>
-          <ElFormItem label="Phí khấu trừ">
-            <ElInputNumber v-model="createDialog.form.registrationFee" :min="0" class="w-full" style="width: 100%" />
-          </ElFormItem>
-        </div>
-
-        <ElDivider content-position="left">💳 Thanh toán</ElDivider>
-        <div class="grid grid-cols-3 gap-4">
-          <ElFormItem label="Phương thức" label-width="100px">
-            <ElSelect v-model="createDialog.form.paymentMethod" class="w-full">
-              <ElOption label="Tiền mặt" value="cash" />
-              <ElOption label="Chuyển khoản" value="transfer" />
-              <ElOption label="Trả góp" value="installment" />
-              <ElOption label="Kết hợp" value="mixed" />
+          <ElFormItem label="Mã voucher" label-width="auto" class="col-span-5">
+            <ElSelect v-model="createDialog.form.voucherCode" clearable placeholder="Chọn mã voucher" class="!w-full" style="width: 100%">
+              <ElOption
+                v-for="v in voucherOptions"
+                :key="v.id"
+                :label="v.code + ' - ' + (v.discountType === 'PERCENT' ? `Giảm ${v.discountValue}%` : `Giảm ${formatCurrency(v.discountValue)}`)"
+                :value="v.code"
+              />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem label="Ngân hàng tài trợ" label-width="140px">
-            <ElInput v-model="createDialog.form.bankName" />
+          <ElFormItem label="Tỷ lệ cọc" required label-width="auto" class="col-span-4">
+            <ElSelect v-model="createDialog.form.depositPercentage" class="!w-full" style="width: 100%">
+              <ElOption label="Thanh toán đủ (100%)" :value="100" />
+              <ElOption label="50%" :value="50" />
+              <ElOption label="30%" :value="30" />
+              <ElOption label="20%" :value="20" />
+              <ElOption label="10%" :value="10" />
+              <ElOption label="Không cọc (0%)" :value="0" />
+            </ElSelect>
           </ElFormItem>
         </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md mt-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600 dark:text-gray-400">Giá xe:</span>
+            <span class="font-medium text-gray-800 dark:text-gray-200">{{ formatCurrency(createDialog.form.vehiclePrice || 0) }}</span>
+          </div>
+          <div class="flex justify-between items-center mb-2 text-red-500" v-if="calculatedDiscount > 0">
+            <span>Giảm giá (Voucher):</span>
+            <span class="font-medium">-{{ formatCurrency(calculatedDiscount) }}</span>
+          </div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600 dark:text-gray-400">Tổng thanh toán:</span>
+            <span class="font-bold text-lg text-blue-600 dark:text-blue-400">{{ formatCurrency(calculatedTotalAmount) }}</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+            <span class="text-gray-600 dark:text-gray-400 font-medium">Số tiền cần cọc ({{ createDialog.form.depositPercentage }}%):</span>
+            <span class="font-bold text-lg text-orange-600 dark:text-orange-400">{{ formatCurrency(calculatedDeposit) }}</span>
+          </div>
+          <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 border-dashed" v-if="calculatedRemaining > 0">
+            <span class="text-gray-600 dark:text-gray-400 font-medium">Số tiền còn lại (khi nhận xe):</span>
+            <span class="font-bold text-lg text-green-600 dark:text-green-400">{{ formatCurrency(calculatedRemaining) }}</span>
+          </div>
+        </div>
 
-        <ElDivider content-position="left">👤 Thông tin bán hàng</ElDivider>
+        <ElDivider content-position="left">💳 Thanh toán & Giao nhận</ElDivider>
         <div class="grid grid-cols-2 gap-4">
-          <ElFormItem label="Nhân viên bán hàng">
-            <ElInput v-model="createDialog.form.salesPerson" />
+          <ElFormItem label="Phương thức" required>
+            <ElSelect v-model="createDialog.form.paymentMethod" class="w-full">
+              <ElOption label="Chuyển khoản" value="transfer" />
+              <ElOption label="Tiền mặt" value="cash" />
+              <ElOption label="Trả góp" value="installment" />
+            </ElSelect>
           </ElFormItem>
-          <ElFormItem label="Ngày bàn giao dự kiến" label-width="180px">
+          <ElFormItem label="Ngân hàng">
+            <ElInput
+              v-model="createDialog.form.bankName"
+              placeholder="VD: Vietcombank, MBBank..."
+            />
+          </ElFormItem>
+          <ElFormItem label="NV bán hàng">
+            <ElSelect v-model="createDialog.form.salesPerson" placeholder="Chọn nhân viên kinh doanh" class="w-full" clearable>
+              <ElOption
+                v-for="staff in salesStaffOptions"
+                :key="staff.id"
+                :label="staff.fullName"
+                :value="staff.fullName"
+              />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem label="Ngày giao dự kiến">
             <ElDatePicker
               v-model="createDialog.form.deliveryDate"
               type="date"
-              class="w-full"
+              placeholder="Chọn ngày giao xe"
+              format="DD/MM/YYYY"
               value-format="YYYY-MM-DD"
+              class="w-full"
             />
+          </ElFormItem>
+        </div>
+
+        <ElDivider content-position="left" v-if="createDialog.isEdit">Trạng thái Hóa đơn</ElDivider>
+        <div class="grid grid-cols-2 gap-4" v-if="createDialog.isEdit">
+          <ElFormItem label="Trạng thái hóa đơn">
+            <ElSelect v-model="createDialog.form.status" class="w-full">
+              <ElOption label="Chờ xử lý" value="pending" />
+              <ElOption label="Gửi Admin duyệt" value="processing" />
+              <ElOption label="Duyệt / Hoàn tất" value="completed" />
+              <ElOption label="Hủy hóa đơn" value="cancelled" />
+            </ElSelect>
           </ElFormItem>
         </div>
       </ElForm>
 
       <template #footer>
-        <div class="flex justify-end gap-2">
-          <ElButton @click="createDialog.visible = false">Hủy</ElButton>
-          <ElButton type="primary" @click="handleCreate" :loading="actionLoading">
-            💾 Tạo hóa đơn
-          </ElButton>
-        </div>
+        <ElButton @click="createDialog.visible = false">Hủy</ElButton>
+        <ElButton type="primary" :loading="actionLoading" @click="handleSave">
+          {{ createDialog.isEdit ? 'Lưu thay đổi' : 'Tạo hóa đơn' }}
+        </ElButton>
       </template>
     </ElDialog>
   </div>
@@ -251,21 +596,18 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Search, Plus, Ticket, Close, ArrowDown } from '@element-plus/icons-vue';
-import { VoucherApi } from '@/api/voucher.api';
+import { Search, Plus, ArrowDown } from '@element-plus/icons-vue';
 import {
   invoiceApi,
   type AdminInvoiceDetailResponse,
-  type AdminInvoiceSummaryResponse,
-  type CreateAdminInvoiceRequest,
-  type UpdateAdminInvoiceRequest,
 } from '@/api/sales/invoice.api';
+import { ProductApi } from '@/api/product/product.api';
+import { VehicleApi, type Vehicle } from '@/api/vehicle/vehicle.api';
+import { VoucherApi } from '@/api/voucher.api';
+import { EmployeeApi, type EmployeeResponse } from '@/api/operations/employee.api';
 
 defineOptions({ name: 'SalesInvoices' });
-
-const router = useRouter();
 
 interface InvoiceRow {
   id: number;
@@ -291,6 +633,7 @@ interface InvoiceRow {
   processedBy?: string;
   processedAt?: string;
   createdAt: string;
+  _loading?: boolean;
 }
 
 const invoices = ref<InvoiceRow[]>([]);
@@ -300,8 +643,19 @@ const searchQuery = ref('');
 const filterStatus = ref<string>('');
 const totalCount = ref(0);
 const pagination = reactive({ current: 1, size: 10 });
+
+const dialog = reactive({
+  visible: false,
+  readonly: true,
+  title: '',
+  invoice: null as any,
+});
+
 const createDialog = reactive({
   visible: false,
+  isEdit: false,
+  editId: undefined as number | undefined,
+  selectedVehicleId: undefined as number | undefined,
   form: {
     customerName: '',
     customerPhone: '',
@@ -314,22 +668,65 @@ const createDialog = reactive({
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
+    voucherCode: '',
+    depositPercentage: 100,
     paymentMethod: 'transfer',
     bankName: '',
     salesPerson: '',
     deliveryDate: '',
-    paymentBreakdown: [],
-  } as CreateAdminInvoiceRequest,
+  } as any,
+});
+
+const statusCounts = computed(() => {
+  const all = invoices.value;
+  return {
+    pending: all.filter((i) => i.status === 'pending').length,
+    processing: all.filter((i) => i.status === 'processing').length,
+    completed: all.filter((i) => i.status === 'completed').length,
+    cancelled: all.filter((i) => i.status === 'cancelled').length,
+  };
+});
+
+const calculatedDiscount = computed(() => {
+  if (!createDialog.form.voucherCode) return 0;
+  const voucher = voucherOptions.value.find(v => v.code === createDialog.form.voucherCode);
+  if (!voucher) return 0;
+
+  const vehiclePrice = createDialog.form.vehiclePrice || 0;
+
+  if (voucher.discountType === 'PERCENT') {
+    let discount = (vehiclePrice * voucher.discountValue) / 100;
+    if (voucher.maxDiscountAmount && discount > voucher.maxDiscountAmount) {
+      discount = voucher.maxDiscountAmount;
+    }
+    return discount;
+  }
+  
+  return voucher.discountValue || 0;
+});
+
+const calculatedTotalAmount = computed(() => {
+  return Math.max(0, (createDialog.form.vehiclePrice || 0) - calculatedDiscount.value);
+});
+
+const calculatedDeposit = computed(() => {
+  const percentage = createDialog.form.depositPercentage || 0;
+  return (calculatedTotalAmount.value * percentage) / 100;
+});
+
+const calculatedRemaining = computed(() => {
+  return Math.max(0, calculatedTotalAmount.value - calculatedDeposit.value);
 });
 
 const filteredInvoices = computed(() => {
   let result = invoices.value;
   if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
+    const q = searchQuery.value.toLowerCase().trim();
     result = result.filter(
       (inv) =>
         inv.invoiceNumber.toLowerCase().includes(q) ||
         inv.customerName.toLowerCase().includes(q) ||
+        inv.customerPhone.toLowerCase().includes(q) ||
         inv.chassisNo.toLowerCase().includes(q) ||
         inv.engineNo.toLowerCase().includes(q) ||
         inv.vehicleModel.toLowerCase().includes(q)
@@ -347,52 +744,237 @@ const paginatedInvoices = computed(() => {
   return filteredInvoices.value.slice(start, end);
 });
 
+const vehicleOptions = ref<Vehicle[]>([]);
+const vehicleLoading = ref(false);
+
+async function searchVehicles(keyword: string = '') {
+  vehicleLoading.value = true;
+  try {
+    const filters = [`Status==Available`];
+    if (keyword) {
+      filters.push(`VinNumber@=${keyword}`);
+    }
+    const res = await VehicleApi.getList({
+      current: 1,
+      size: 50,
+      Filters: filters.join(','),
+    });
+    vehicleOptions.value = res.items || [];
+  } catch (error) {
+    console.error('Lỗi tải danh sách xe:', error);
+  } finally {
+    vehicleLoading.value = false;
+  }
+}
+
+async function handleVehicleChange(variantId: number) {
+  const vehicle = vehicleOptions.value.find(v => v.id === variantId);
+  if (vehicle) {
+    createDialog.form.vehicleModel = vehicle.variantName || vehicle.productName || '';
+    createDialog.form.vehicleColor = vehicle.colorName || '';
+    createDialog.form.chassisNo = vehicle.vinNumber || '';
+    createDialog.form.engineNo = vehicle.engineNumber || '';
+    createDialog.form.vehiclePrice = 0;
+    
+    if (vehicle.productVariantId) {
+      try {
+        const variantData = await ProductApi.getVariantsForOutput({
+          current: 1,
+          size: 1,
+          Filters: `id==${vehicle.productVariantId}`
+        });
+        if (variantData.items && variantData.items.length > 0) {
+          createDialog.form.vehiclePrice = variantData.items[0].price || 0;
+        }
+      } catch (err) {
+        console.error('Lỗi lấy giá xe:', err);
+      }
+    }
+  } else {
+    createDialog.form.vehicleModel = '';
+    createDialog.form.vehicleColor = '';
+    createDialog.form.chassisNo = '';
+    createDialog.form.engineNo = '';
+    createDialog.form.vehiclePrice = 0;
+  }
+}
+
 async function fetchInvoices() {
   loadingList.value = true;
   try {
     const res = await invoiceApi.getAdminList({
-      Page: pagination.current,
-      PageSize: pagination.size,
-      Filters: filterStatus.value ? `Status eq '${filterStatus.value}'` : undefined,
+      Page: 1,
+      PageSize: 200,
     });
-    invoices.value = (res.items || []).map((inv) => ({
-      ...inv,
-      issueDate: inv.issueDate,
-      createdAt: inv.createdAt,
-    }));
-    totalCount.value = res.totalCount || 0;
-  } catch (error) {
-    console.error('Failed to fetch invoices:', error);
+    invoices.value = (res.items ?? []).map((i) => ({ ...i, _loading: false }));
+    totalCount.value = res.totalCount ?? res.items?.length ?? 0;
+  } catch (e) {
     ElMessage.error('Không thể tải danh sách hóa đơn');
   } finally {
     loadingList.value = false;
   }
 }
 
+function handlePageChange(page: number) {
+  pagination.current = page;
+}
+
+function handleSizeChange(size: number) {
+  pagination.size = size;
+  pagination.current = 1;
+}
+
 function handleSearch() {
   pagination.current = 1;
-  fetchInvoices();
 }
 
-function handleSizeChange() {
+function handleResetFilters() {
+  searchQuery.value = '';
+  filterStatus.value = '';
   pagination.current = 1;
   fetchInvoices();
 }
 
-function handleCurrentChange() {
-  fetchInvoices();
+function handleView(row: any) {
+  dialog.visible = true;
+  dialog.readonly = true;
+  dialog.title = `Chi tiết hóa đơn ${row.invoiceNumber}`;
+  dialog.invoice = { ...row };
 }
 
-function handleRowClick(row: any) {
-  router.push(`/sales/invoices/${row.id}/edit`);
+// Action: Gửi Admin duyệt (pending -> processing)
+async function handleSendForApproval(invoice: any) {
+  try {
+    await ElMessageBox.confirm(
+      `Gửi yêu cầu phê duyệt cho hóa đơn ${invoice.invoiceNumber} tới Admin?`,
+      'Xác nhận gửi duyệt',
+      {
+        confirmButtonText: 'Gửi duyệt ngay',
+        cancelButtonText: 'Hủy',
+        type: 'info',
+      }
+    );
+
+    invoice._loading = true;
+    actionLoading.value = true;
+    await invoiceApi.updateAdminStatus(invoice.id, {
+      status: 'processing',
+      processedBy: 'NV Quản lý đơn',
+    });
+
+    ElMessage.success(`Hóa đơn ${invoice.invoiceNumber} đã được gửi Admin duyệt thành công!`);
+    invoice.status = 'processing';
+    if (dialog.invoice && dialog.invoice.id === invoice.id) {
+      dialog.invoice.status = 'processing';
+    }
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error('Không thể gửi duyệt hóa đơn');
+    }
+  } finally {
+    invoice._loading = false;
+    actionLoading.value = false;
+  }
 }
 
-function handleEdit(row: any) {
-  router.push(`/sales/invoices/${row.id}/edit`);
+// Action: Duyệt hóa đơn (processing/pending -> completed)
+async function handleApproveInvoice(invoice: any) {
+  try {
+    await ElMessageBox.confirm(
+      `Xác nhận phê duyệt và hoàn tất hóa đơn ${invoice.invoiceNumber}?`,
+      'Phê duyệt hóa đơn',
+      {
+        confirmButtonText: 'Duyệt hoàn tất',
+        cancelButtonText: 'Đóng',
+        type: 'success',
+      }
+    );
+
+    invoice._loading = true;
+    actionLoading.value = true;
+    await invoiceApi.updateAdminStatus(invoice.id, {
+      status: 'completed',
+      processedBy: 'Admin Tổng',
+    });
+
+    ElMessage.success(`Hóa đơn ${invoice.invoiceNumber} đã được duyệt và hoàn tất thành công!`);
+    invoice.status = 'completed';
+    if (dialog.invoice && dialog.invoice.id === invoice.id) {
+      dialog.invoice.status = 'completed';
+    }
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error('Không thể phê duyệt hóa đơn');
+    }
+  } finally {
+    invoice._loading = false;
+    actionLoading.value = false;
+  }
 }
 
+// Action: Hủy hóa đơn (-> cancelled)
+async function handleCancelInvoice(invoice: any) {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc chắn muốn hủy hóa đơn ${invoice.invoiceNumber}?`,
+      'Cảnh báo hủy hóa đơn',
+      {
+        confirmButtonText: 'Đồng ý hủy',
+        cancelButtonText: 'Bỏ qua',
+        type: 'warning',
+      }
+    );
 
-function handleCreateNew() {
+    invoice._loading = true;
+    actionLoading.value = true;
+    await invoiceApi.updateAdminStatus(invoice.id, {
+      status: 'cancelled',
+      processedBy: 'NV Quản lý đơn',
+    });
+
+    ElMessage.info(`Hóa đơn ${invoice.invoiceNumber} đã chuyển sang trạng thái đã hủy.`);
+    invoice.status = 'cancelled';
+    if (dialog.invoice && dialog.invoice.id === invoice.id) {
+      dialog.invoice.status = 'cancelled';
+    }
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error('Không thể hủy hóa đơn');
+    }
+  } finally {
+    invoice._loading = false;
+    actionLoading.value = false;
+  }
+}
+
+// Action: Đổi nhanh trạng thái từ Dropdown
+async function handleQuickChangeStatus(invoice: any, newStatus: string) {
+  try {
+    invoice._loading = true;
+    await invoiceApi.updateAdminStatus(invoice.id, {
+      status: newStatus,
+      processedBy: 'NV Quản lý đơn',
+    });
+
+    ElMessage.success(`Hóa đơn ${invoice.invoiceNumber} đã đổi sang "${getStatusLabel(newStatus)}"`);
+    invoice.status = newStatus;
+    if (dialog.invoice && dialog.invoice.id === invoice.id) {
+      dialog.invoice.status = newStatus;
+    }
+  } catch (e) {
+    ElMessage.error('Không thể thay đổi trạng thái');
+  } finally {
+    invoice._loading = false;
+  }
+}
+
+const handlePrintInvoice = (invoice: any) => {
+  window.print();
+};
+
+const handleCreate = () => {
+  createDialog.isEdit = false;
+  createDialog.editId = undefined;
   createDialog.form = {
     customerName: '',
     customerPhone: '',
@@ -405,153 +987,158 @@ function handleCreateNew() {
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
+    voucherCode: '',
+    depositPercentage: 100,
     paymentMethod: 'transfer',
     bankName: '',
     salesPerson: '',
     deliveryDate: '',
-    paymentBreakdown: [],
   };
+  createDialog.selectedVehicleId = undefined;
+    
+  // Load initial vehicle list
+  searchVehicles('');
+  fetchVouchers();
+  fetchSalesStaff();
+    
   createDialog.visible = true;
+};
+
+const handleEdit = (row: any) => {
+  createDialog.isEdit = true;
+  createDialog.editId = row.id;
+  createDialog.form = {
+    customerName: row.customerName || '',
+    customerPhone: row.customerPhone || '',
+    customerIdCard: row.customerIdCard || '',
+    customerAddress: row.customerAddress || '',
+    vehicleModel: row.vehicleModel || '',
+    vehicleColor: row.vehicleColor || '',
+    chassisNo: row.chassisNo || '',
+    engineNo: row.engineNo || '',
+    vehiclePrice: row.vehiclePrice || 0,
+    registrationFee: row.registrationFee || 0,
+    insuranceFee: row.insuranceFee || 0,
+    voucherCode: row.voucherCode || '',
+    depositPercentage: row.depositPercentage ?? 100,
+    paymentMethod: row.paymentMethod || 'transfer',
+    bankName: row.bankName || '',
+    salesPerson: row.salesPerson || '',
+    deliveryDate: row.deliveryDate ? row.deliveryDate.substring(0, 10) : '',
+    status: row.status || 'pending',
+  };
+  createDialog.selectedVehicleId = undefined;
+    
+  // Load initial vehicle list
+  searchVehicles('');
+  fetchVouchers();
+  fetchSalesStaff();
+    
+  createDialog.visible = true;
+};
+
+const voucherOptions = ref<any[]>([]);
+async function fetchVouchers() {
+  try {
+    const res = await VoucherApi.getList({ current: 1, size: 50 });
+    voucherOptions.value = res.items || [];
+  } catch (error) {
+    console.error('Lỗi tải danh sách voucher:', error);
+  }
 }
 
-async function handleCreate() {
+const salesStaffOptions = ref<EmployeeResponse[]>([]);
+async function fetchSalesStaff() {
+  try {
+    const data = await EmployeeApi.getList();
+    salesStaffOptions.value = data.filter(e => e.jobTitle && e.jobTitle.toLowerCase().includes('kinh doanh'));
+  } catch (error) {
+    console.error('Lỗi tải danh sách nhân viên:', error);
+  }
+}
+
+async function handleSave() {
+  if (!createDialog.form.customerName) {
+    ElMessage.warning('Vui lòng nhập tên khách hàng');
+    return;
+  }
+  if (!createDialog.form.customerPhone) {
+    ElMessage.warning('Vui lòng nhập số điện thoại');
+    return;
+  }
+  if (!createDialog.form.vehicleModel) {
+    ElMessage.warning('Vui lòng nhập dòng xe');
+    return;
+  }
   try {
     actionLoading.value = true;
-    await invoiceApi.createAdmin(createDialog.form);
-    ElMessage.success('Đã tạo hóa đơn mới');
+    
+    if (createDialog.isEdit && createDialog.editId) {
+      await invoiceApi.updateAdmin(createDialog.editId, createDialog.form);
+      ElMessage.success('Cập nhật hóa đơn thành công');
+    } else {
+      await invoiceApi.createAdmin(createDialog.form);
+      ElMessage.success('Tạo hóa đơn thành công');
+    }
+    
     createDialog.visible = false;
     fetchInvoices();
-  } catch (error) {
-    console.error(error);
-    ElMessage.error('Tạo hóa đơn thất bại');
+  } catch (error: any) {
+    ElMessage.error(error.message || (createDialog.isEdit ? 'Lỗi khi cập nhật hóa đơn' : 'Lỗi khi tạo hóa đơn'));
   } finally {
     actionLoading.value = false;
   }
 }
 
-async function handleMarkCompleted(row: any) {
-  try {
-    await ElMessageBox.confirm(
-      `Xác nhận thanh toán hóa đơn ${row.invoiceNumber}?\n\nTổng tiền: ${formatCurrency(row.totalAmount)}`,
-      'Xác nhận',
-      { type: 'success', confirmButtonText: 'Xác nhận thanh toán' }
-    );
-    actionLoading.value = true;
-    await invoiceApi.updateAdminStatus(row.id, { status: 'completed' });
-    ElMessage.success('Đã xác nhận thanh toán - Hóa đơn đã hoàn tất');
-    fetchInvoices();
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error(error);
-      ElMessage.error('Thao tác thất bại');
-    }
-  } finally {
-    actionLoading.value = false;
-  }
+function formatDate(dateStr: string) {
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('vi-VN');
 }
 
-async function handleQuickChangeStatus(row: any, newStatus: string) {
-  try {
-    actionLoading.value = true;
-    await invoiceApi.updateAdminStatus(row.id, { status: newStatus });
-    ElMessage.success(`Hóa đơn ${row.invoiceNumber} đã đổi sang "${getStatusLabel(newStatus)}"`);
-    fetchInvoices();
-  } catch (error) {
-    console.error(error);
-    ElMessage.error('Đổi trạng thái thất bại');
-  } finally {
-    actionLoading.value = false;
-  }
-}
-
-function formatCurrency(value?: number): string {
-  if (value == null) return '0 đ';
+function formatCurrency(value: number) {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
+    minimumFractionDigits: 0,
   }).format(value);
 }
 
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return '---';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+function getStatusLabel(status: string) {
+  const map: Record<string, string> = {
+    pending: '📝 Chờ xử lý',
+    processing: '⏳ Chờ Admin duyệt',
+    completed: '✅ Đã hoàn tất',
+    cancelled: '❌ Đã hủy',
+  };
+  return map[status] || status;
 }
 
-function formatDateTime(dateStr?: string): string {
-  if (!dateStr) return '---';
-  const d = new Date(dateStr);
-  return d.toLocaleString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+function getStatusTagType(status: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    pending: 'warning',
+    processing: 'primary',
+    completed: 'success',
+    cancelled: 'danger',
+  };
+  return map[status] || 'info';
 }
 
-function getPaymentLabel(method: string): string {
-  switch (method) {
-    case 'cash':
-      return 'Tiền mặt';
-    case 'transfer':
-      return 'Chuyển khoản';
-    case 'installment':
-      return 'Trả góp';
-    case 'mixed':
-      return 'Kết hợp';
-    default:
-      return '---';
-  }
+function getPaymentLabel(method: string) {
+  const map: Record<string, string> = {
+    transfer: 'Chuyển khoản',
+    cash: 'Tiền mặt',
+    installment: 'Trả góp',
+  };
+  return map[method] || method;
 }
 
-function getPaymentTagType(method: string): 'success' | 'warning' | 'info' | 'primary' {
-  switch (method) {
-    case 'cash':
-      return 'success';
-    case 'transfer':
-      return 'info';
-    case 'installment':
-      return 'warning';
-    case 'mixed':
-      return 'primary';
-    default:
-      return 'info';
-  }
-}
-
-function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'pending':
-      return 'Chờ thanh toán';
-    case 'completed':
-      return 'Đã hoàn tất';
-    case 'processing':
-      return 'Đang xử lý';
-    case 'cancelled':
-      return 'Đã hủy';
-    default:
-      return '---';
-  }
-}
-
-function getStatusTagType(status: string): 'warning' | 'success' | 'info' | 'danger' {
-  switch (status) {
-    case 'pending':
-      return 'warning';
-    case 'completed':
-      return 'success';
-    case 'processing':
-      return 'info';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'info';
-  }
+function getPaymentTagType(method: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' {
+  const map: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
+    transfer: 'primary',
+    cash: 'success',
+    installment: 'warning',
+  };
+  return map[method] || 'info';
 }
 
 onMounted(() => {
@@ -559,7 +1146,30 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.premium-invoice-modal {
+  :deep(.el-dialog__header) {
+    margin-right: 0;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+  }
+
+  :deep(.el-dialog__body) {
+    padding: 20px;
+  }
+
+  :deep(.el-dialog__footer) {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+  }
+}
+
+.premium-invoice-body {
+  .info-card {
+    @apply bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm;
+  }
+}
+
 .invoices-page {
   padding: 16px;
 }
@@ -568,38 +1178,35 @@ onMounted(() => {
   border-radius: 8px;
 }
 
-:deep(.el-table th) {
-  background-color: var(--el-fill-color-light) !important;
-  font-weight: 600;
-  color: var(--el-text-color-regular) !important;
+.financial-grid :deep(.el-form-item__label) {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
 }
 
-:global(html.dark) {
-  .text-gray-900,
-  .text-gray-800,
-  .text-gray-700 {
-    color: var(--el-text-color-primary) !important;
+@media print {
+  @page {
+    margin: 5mm !important;
   }
 
-  .text-gray-600 {
-    color: var(--el-text-color-regular) !important;
+  body * {
+    visibility: hidden;
   }
 
-  .text-gray-500 {
-    color: var(--el-text-color-secondary) !important;
+  .premium-invoice-modal,
+  .premium-invoice-modal * {
+    visibility: visible;
   }
 
-  .text-gray-400,
-  .text-gray-300 {
-    color: var(--el-text-color-placeholder) !important;
+  .premium-invoice-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 
-  .bg-gray-50 {
-    background-color: var(--el-fill-color-light) !important;
-  }
-
-  .bg-white {
-    background-color: var(--el-bg-color-overlay) !important;
+  .premium-invoice-modal :deep(.el-dialog__headerbtn),
+  .premium-invoice-modal :deep(.el-dialog__footer) {
+    display: none !important;
   }
 }
 </style>
