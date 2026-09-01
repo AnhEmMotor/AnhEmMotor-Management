@@ -509,11 +509,11 @@
               <ElOption
                 v-for="v in vehicleOptions"
                 :key="v.id"
-                :label="v.vinNumber + ' - ' + (v.variantName || v.productName)"
+                :label="(v.productName || v.variantName || '') + ' (' + v.vinNumber + ')'"
                 :value="v.id"
               >
                 <div class="flex justify-between items-center w-full">
-                  <span>{{ v.vinNumber }} - {{ v.variantName || v.productName }} ({{ v.colorName }})</span>
+                  <span>{{ v.productName || v.variantName }} ({{ v.colorName }}) - VIN: {{ v.vinNumber }}</span>
                 </div>
               </ElOption>
             </ElSelect>
