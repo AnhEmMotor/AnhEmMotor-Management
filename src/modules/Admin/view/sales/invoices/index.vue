@@ -105,10 +105,6 @@
           Tải lại
         </ElButton>
       </div>
-      <ElButton type="primary" @click="handleCreate">
-        <ElIcon class="mr-1"><Plus /></ElIcon>
-        Tạo hóa đơn mới
-      </ElButton>
     </div>
 
     <!-- Main Invoices Table -->
