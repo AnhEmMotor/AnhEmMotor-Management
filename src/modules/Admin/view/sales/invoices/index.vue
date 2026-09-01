@@ -183,17 +183,16 @@
             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
 
 
-              <!-- Nút Duyệt hợp đồng -->
+              <!-- Nút Ký duyệt -->
               <ElButton
                 v-if="row.status === 'processing' || row.status === 'pending'"
-                type="success"
+                type="primary"
                 size="small"
                 plain
-                :loading="row._loading"
-                @click="handleApproveInvoice(row)"
+                @click="handleView(row)"
               >
-                <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />
-                Duyệt HĐ
+                <ArtSvgIcon icon="ri:edit-box-line" class="mr-1" />
+                Ký duyệt
               </ElButton>
 
               <ElTag
@@ -204,6 +203,16 @@
                 class="font-medium"
               >
                 Đã duyệt
+              </ElTag>
+
+              <ElTag
+                v-else-if="row.status === 'cancelled'"
+                type="danger"
+                size="small"
+                effect="light"
+                class="font-medium"
+              >
+                Từ chối
               </ElTag>
 
               <ElButton link type="primary" size="small" @click="handleView(row)">
@@ -430,34 +439,36 @@
       <template #footer>
         <div class="flex justify-between items-center gap-3 px-2 pb-2">
           <div class="flex items-center gap-2">
-            <!-- Nút gửi duyệt từ Modal -->
-            <ElButton
-              v-if="dialog.invoice?.status === 'pending'"
-              type="warning"
-              :loading="actionLoading"
-              @click="handleSendForApproval(dialog.invoice)"
-            >
-              📤 Gửi Admin duyệt
-            </ElButton>
-            <!-- Nút duyệt đơn từ Modal -->
-            <ElButton
-              v-if="dialog.invoice?.status === 'processing' || dialog.invoice?.status === 'pending'"
-              type="success"
-              :loading="actionLoading"
-              @click="handleApproveInvoice(dialog.invoice)"
-            >
-              ✓ Duyệt hóa đơn
-            </ElButton>
-            <!-- Nút hủy hóa đơn -->
-            <ElButton
-              v-if="dialog.invoice?.status !== 'cancelled'"
-              type="danger"
-              plain
-              :loading="actionLoading"
-              @click="handleCancelInvoice(dialog.invoice)"
-            >
-              Hủy HĐ
-            </ElButton>
+            <!-- 2 Nút Duyệt & Từ chối duyệt dành cho Admin khi đang pending / processing -->
+            <template v-if="dialog.invoice?.status === 'processing' || dialog.invoice?.status === 'pending'">
+              <ElButton
+                type="success"
+                :loading="actionLoading"
+                @click="handleApproveInvoice(dialog.invoice)"
+              >
+                <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />
+                Duyệt hợp đồng
+              </ElButton>
+              <ElButton
+                type="danger"
+                plain
+                :loading="actionLoading"
+                @click="handleRejectInvoice(dialog.invoice)"
+              >
+                <ArtSvgIcon icon="ri:close-circle-line" class="mr-1" />
+                Từ chối duyệt
+              </ElButton>
+            </template>
+
+            <!-- Khi đã duyệt hoặc đã từ chối -->
+            <div v-else-if="dialog.invoice?.status === 'completed'" class="flex items-center gap-1.5 text-emerald-600 font-semibold text-sm">
+              <ArtSvgIcon icon="ri:checkbox-circle-fill" class="text-base" />
+              <span>Hợp đồng đã được phê duyệt</span>
+            </div>
+            <div v-else-if="dialog.invoice?.status === 'cancelled'" class="flex items-center gap-1.5 text-red-500 font-semibold text-sm">
+              <ArtSvgIcon icon="ri:close-circle-fill" class="text-base" />
+              <span>Hợp đồng đã bị từ chối / hủy</span>
+            </div>
           </div>
 
           <div class="flex items-center gap-2">
@@ -968,6 +979,45 @@ async function handleApproveInvoice(invoice: any) {
   } catch (e: any) {
     if (e !== 'cancel') {
       ElMessage.error('Không thể phê duyệt hợp đồng');
+    }
+  } finally {
+    invoice._loading = false;
+    actionLoading.value = false;
+  }
+}
+
+// Action: Admin từ chối duyệt hợp đồng (-> cancelled)
+async function handleRejectInvoice(invoice: any) {
+  try {
+    const { value: reason } = await ElMessageBox.prompt(
+      `Nhập lý do từ chối phê duyệt hợp đồng ${invoice.invoiceNumber}:`,
+      'Từ chối duyệt hợp đồng',
+      {
+        confirmButtonText: 'Xác nhận từ chối',
+        cancelButtonText: 'Bỏ qua',
+        inputPlaceholder: 'Nhập lý do từ chối (ví dụ: Thiếu thông tin CCCD, giá không khớp...)',
+        inputType: 'textarea',
+        type: 'warning',
+      }
+    );
+
+    invoice._loading = true;
+    actionLoading.value = true;
+    await invoiceApi.updateAdminStatus(invoice.id, {
+      status: 'cancelled',
+      processedBy: reason ? `Admin (Từ chối: ${reason})` : 'Admin (Từ chối)',
+    });
+
+    ElMessage.warning(`Đã từ chối duyệt hợp đồng ${invoice.invoiceNumber}`);
+    invoice.status = 'cancelled';
+    if (dialog.invoice && dialog.invoice.id === invoice.id) {
+      dialog.invoice.status = 'cancelled';
+      dialog.invoice.processedBy = reason ? `Admin (Từ chối: ${reason})` : 'Admin (Từ chối)';
+    }
+    fetchInvoices();
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error('Không thể từ chối duyệt hợp đồng');
     }
   } finally {
     invoice._loading = false;
