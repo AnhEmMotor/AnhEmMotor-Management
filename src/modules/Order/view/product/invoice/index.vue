@@ -672,6 +672,8 @@ interface InvoiceRow {
   vehiclePrice: number;
   registrationFee: number;
   insuranceFee: number;
+  voucherCode?: string;
+  depositPercentage?: number;
   totalAmount: number;
   paymentMethod: string;
   bankName?: string;
