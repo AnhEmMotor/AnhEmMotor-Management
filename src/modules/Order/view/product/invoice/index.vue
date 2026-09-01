@@ -566,6 +566,10 @@
             <span class="text-gray-600 dark:text-gray-400 font-medium">Số tiền cần cọc ({{ createDialog.form.depositPercentage }}%):</span>
             <span class="font-bold text-lg text-orange-600 dark:text-orange-400">{{ formatCurrency(calculatedDeposit) }}</span>
           </div>
+          <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 border-dashed" v-if="calculatedRemaining > 0">
+            <span class="text-gray-600 dark:text-gray-400 font-medium">Số tiền còn lại (khi nhận xe):</span>
+            <span class="font-bold text-lg text-green-600 dark:text-green-400">{{ formatCurrency(calculatedRemaining) }}</span>
+          </div>
         </div>
 
         <ElDivider content-position="left">💳 Thanh toán & Giao nhận</ElDivider>
@@ -724,6 +728,10 @@ const calculatedTotalAmount = computed(() => {
 const calculatedDeposit = computed(() => {
   const percentage = createDialog.form.depositPercentage || 0;
   return (calculatedTotalAmount.value * percentage) / 100;
+});
+
+const calculatedRemaining = computed(() => {
+  return Math.max(0, calculatedTotalAmount.value - calculatedDeposit.value);
 });
 
 const filteredInvoices = computed(() => {
