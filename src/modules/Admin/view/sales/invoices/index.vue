@@ -346,35 +346,83 @@
         <div class="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/40">
           <div class="flex items-center gap-2 text-blue-800 dark:text-blue-300 font-semibold mb-3">
             <ArtSvgIcon icon="ri:bill-line" />
-            <span>Chi tiết Thanh toán & Bàn giao</span>
+            <span>Chi tiết Tài chính & Bàn giao</span>
           </div>
 
-          <div class="space-y-2 mb-3">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Giá trị xe (đã gồm VAT):</span>
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{
-                formatCurrency(dialog.invoice.vehiclePrice)
-              }}</span>
+          <div class="space-y-2 mb-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-400">Giá xe niêm yết:</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200">
+                {{ formatCurrency(dialog.invoice.vehiclePrice || dialog.invoice.totalAmount) }}
+              </span>
+            </div>
+
+            <div class="flex justify-between text-red-500" v-if="dialog.invoice.voucherCode">
+              <span>Mã giảm giá ({{ dialog.invoice.voucherCode }}):</span>
+              <span class="font-medium">
+                -{{ formatCurrency(Math.max(0, (dialog.invoice.vehiclePrice || 0) - dialog.invoice.totalAmount)) }}
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center py-1 border-t border-dashed border-gray-200 dark:border-gray-700">
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Tổng thanh toán:</span>
+              <span class="font-bold text-base text-blue-600 dark:text-blue-400">
+                {{ formatCurrency(dialog.invoice.totalAmount) }}
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center text-orange-600 dark:text-orange-400">
+              <span class="font-medium">Tiền đặt cọc ({{ dialog.invoice.depositPercentage ?? 100 }}%):</span>
+              <span class="font-bold">
+                {{ formatCurrency(((dialog.invoice.totalAmount || 0) * (dialog.invoice.depositPercentage ?? 100)) / 100) }}
+              </span>
+            </div>
+
+            <div
+              class="flex justify-between items-center text-green-600 dark:text-green-400 pt-1"
+              v-if="(dialog.invoice.depositPercentage ?? 100) < 100"
+            >
+              <span class="font-medium">Số tiền còn lại (khi nhận xe):</span>
+              <span class="font-bold">
+                {{ formatCurrency(Math.max(0, dialog.invoice.totalAmount - ((dialog.invoice.totalAmount * (dialog.invoice.depositPercentage || 0)) / 100))) }}
+              </span>
             </div>
           </div>
 
-          <div class="border-t border-blue-200 dark:border-blue-800/60 pt-3 flex justify-between items-center text-sm">
+          <div class="border-t border-blue-200 dark:border-blue-800/60 pt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <div>
               <span class="text-gray-500 block text-xs mb-1">Phương thức TT</span>
               <ElTag size="small" type="info">
                 {{ getPaymentLabel(dialog.invoice.paymentMethod) }}
               </ElTag>
+              <span v-if="dialog.invoice.bankName" class="block text-xs text-gray-500 mt-0.5">
+                {{ dialog.invoice.bankName }}
+              </span>
             </div>
-            <div class="text-center">
+            <div>
               <span class="text-gray-500 block text-xs mb-1">Nhân viên bán hàng</span>
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{ dialog.invoice.salesPerson || '---' }}</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200 text-xs">{{ dialog.invoice.salesPerson || '---' }}</span>
             </div>
-            <div class="text-right">
+            <div>
               <span class="text-gray-500 block text-xs mb-1">Ngày lập HĐ</span>
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{
+              <span class="font-medium text-gray-800 dark:text-gray-200 text-xs">{{
                 formatDate(dialog.invoice.issueDate)
               }}</span>
             </div>
+            <div>
+              <span class="text-gray-500 block text-xs mb-1">Ngày giao dự kiến</span>
+              <span class="font-medium text-gray-800 dark:text-gray-200 text-xs">
+                {{ dialog.invoice.deliveryDate ? formatDate(dialog.invoice.deliveryDate) : 'Chưa xếp' }}
+              </span>
+            </div>
+          </div>
+
+          <div
+            v-if="dialog.invoice.processedBy"
+            class="mt-3 pt-2 border-t border-blue-100 dark:border-blue-800/30 flex justify-between items-center text-xs text-gray-500"
+          >
+            <span>Người xử lý / duyệt: <b class="text-gray-700 dark:text-gray-300">{{ dialog.invoice.processedBy }}</b></span>
+            <span v-if="dialog.invoice.processedAt">Lúc: {{ formatDate(dialog.invoice.processedAt) }}</span>
           </div>
         </div>
       </div>
