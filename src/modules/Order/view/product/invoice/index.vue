@@ -548,6 +548,25 @@
             </ElSelect>
           </ElFormItem>
         </div>
+        
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md mt-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600 dark:text-gray-400">Giá xe:</span>
+            <span class="font-medium text-gray-800 dark:text-gray-200">{{ formatCurrency(createDialog.form.vehiclePrice || 0) }}</span>
+          </div>
+          <div class="flex justify-between items-center mb-2 text-red-500" v-if="calculatedDiscount > 0">
+            <span>Giảm giá (Voucher):</span>
+            <span class="font-medium">-{{ formatCurrency(calculatedDiscount) }}</span>
+          </div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600 dark:text-gray-400">Tổng thanh toán:</span>
+            <span class="font-bold text-lg text-blue-600 dark:text-blue-400">{{ formatCurrency(calculatedTotalAmount) }}</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+            <span class="text-gray-600 dark:text-gray-400 font-medium">Số tiền cần cọc ({{ createDialog.form.depositPercentage }}%):</span>
+            <span class="font-bold text-lg text-orange-600 dark:text-orange-400">{{ formatCurrency(calculatedDeposit) }}</span>
+          </div>
+        </div>
 
         <ElDivider content-position="left">💳 Thanh toán & Giao nhận</ElDivider>
         <div class="grid grid-cols-2 gap-4">
@@ -678,6 +697,21 @@ const statusCounts = computed(() => {
     completed: all.filter((i) => i.status === 'completed').length,
     cancelled: all.filter((i) => i.status === 'cancelled').length,
   };
+});
+
+const calculatedDiscount = computed(() => {
+  if (!createDialog.form.voucherCode) return 0;
+  const voucher = voucherOptions.value.find(v => v.code === createDialog.form.voucherCode);
+  return voucher?.discountAmount || 0;
+});
+
+const calculatedTotalAmount = computed(() => {
+  return Math.max(0, (createDialog.form.vehiclePrice || 0) - calculatedDiscount.value);
+});
+
+const calculatedDeposit = computed(() => {
+  const percentage = createDialog.form.depositPercentage || 0;
+  return (calculatedTotalAmount.value * percentage) / 100;
 });
 
 const filteredInvoices = computed(() => {
