@@ -193,7 +193,7 @@
                 @click="handleApproveInvoice(row)"
               >
                 <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />
-                Duyệt hợp đồng
+                Duyệt HĐ
               </ElButton>
 
               <ElTag
