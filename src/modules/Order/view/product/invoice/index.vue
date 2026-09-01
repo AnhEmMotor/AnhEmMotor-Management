@@ -478,8 +478,8 @@
         </div>
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-3 gap-3">
-          <ElFormItem label="Giá xe" required label-width="70px">
+        <div class="grid grid-cols-3 gap-3 financial-grid">
+          <ElFormItem label="Giá xe" required label-width="auto">
             <ElInputNumber
               v-model="createDialog.form.vehiclePrice"
               :min="0"
@@ -489,7 +489,7 @@
               style="width: 100%"
             />
           </ElFormItem>
-          <ElFormItem label="Mã voucher" label-width="90px">
+          <ElFormItem label="Mã voucher" label-width="auto">
             <ElSelect v-model="createDialog.form.voucherCode" clearable placeholder="Chọn mã voucher" class="!w-full" style="width: 100%">
               <ElOption
                 v-for="v in voucherOptions"
@@ -499,7 +499,7 @@
               />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem label="Tỷ lệ cọc" required label-width="80px">
+          <ElFormItem label="Tỷ lệ cọc" required label-width="auto">
             <ElSelect v-model="createDialog.form.depositPercentage" class="!w-full" style="width: 100%">
               <ElOption label="Thanh toán đủ (100%)" :value="100" />
               <ElOption label="50%" :value="50" />
@@ -1176,6 +1176,11 @@ onMounted(() => {
 
 .invoice-list-card {
   border-radius: 8px;
+}
+
+.financial-grid :deep(.el-form-item__label) {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
 }
 
 @media print {
