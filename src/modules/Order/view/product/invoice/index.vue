@@ -532,7 +532,7 @@
               <ElOption
                 v-for="v in voucherOptions"
                 :key="v.id"
-                :label="v.code + (v.discountAmount ? ` (-${formatCurrency(v.discountAmount)})` : '')"
+                :label="v.code + ' - ' + (v.discountType === 'PERCENT' ? `Giảm ${v.discountValue}%` : `Giảm ${formatCurrency(v.discountValue)}`)"
                 :value="v.code"
               />
             </ElSelect>
@@ -702,7 +702,19 @@ const statusCounts = computed(() => {
 const calculatedDiscount = computed(() => {
   if (!createDialog.form.voucherCode) return 0;
   const voucher = voucherOptions.value.find(v => v.code === createDialog.form.voucherCode);
-  return voucher?.discountAmount || 0;
+  if (!voucher) return 0;
+
+  const vehiclePrice = createDialog.form.vehiclePrice || 0;
+
+  if (voucher.discountType === 'PERCENT') {
+    let discount = (vehiclePrice * voucher.discountValue) / 100;
+    if (voucher.maxDiscountAmount && discount > voucher.maxDiscountAmount) {
+      discount = voucher.maxDiscountAmount;
+    }
+    return discount;
+  }
+  
+  return voucher.discountValue || 0;
 });
 
 const calculatedTotalAmount = computed(() => {
