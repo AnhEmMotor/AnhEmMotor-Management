@@ -185,29 +185,7 @@
         <ElTableColumn label="Thao tác" width="240" align="center" fixed="right">
           <template #default="{ row }">
             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
-              <!-- Nút Gửi duyệt khi đang pending -->
-              <ElButton
-                v-if="row.status === 'pending'"
-                type="warning"
-                size="small"
-                plain
-                :loading="row._loading"
-                @click="handleSendForApproval(row)"
-              >
-                📤 Gửi duyệt
-              </ElButton>
 
-              <!-- Nút Duyệt đơn khi đang processing -->
-              <ElButton
-                v-if="row.status === 'processing'"
-                type="success"
-                size="small"
-                plain
-                :loading="row._loading"
-                @click="handleApproveInvoice(row)"
-              >
-                ✓ Duyệt đơn
-              </ElButton>
 
               <!-- Nút Đổi trạng thái dropdown -->
               <ElDropdown trigger="click" @command="(cmd: string) => handleQuickChangeStatus(row, cmd)">
