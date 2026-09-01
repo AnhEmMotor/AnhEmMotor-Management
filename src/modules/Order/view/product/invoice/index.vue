@@ -509,12 +509,11 @@
               <ElOption
                 v-for="v in vehicleOptions"
                 :key="v.id"
-                :label="v.displayName"
+                :label="v.vinNumber + ' - ' + (v.variantName || v.productName)"
                 :value="v.id"
               >
                 <div class="flex justify-between items-center w-full">
-                  <span>{{ v.displayName }}</span>
-                  <span class="text-xs text-gray-400 ml-4">{{ v.price ? v.price.toLocaleString('vi-VN') + ' đ' : '' }}</span>
+                  <span>{{ v.vinNumber }} - {{ v.variantName || v.productName }} ({{ v.colorName }})</span>
                 </div>
               </ElOption>
             </ElSelect>
@@ -608,7 +607,7 @@ import {
   type AdminInvoiceDetailResponse,
 } from '@/api/sales/invoice.api';
 import { ProductApi } from '@/api/product/product.api';
-import type { ProductVariantLiteForInput } from '@/domain/product/product.types';
+import { VehicleApi, type Vehicle } from '@/api/vehicle/vehicle.api';
 
 defineOptions({ name: 'OrderProductInvoice' });
 
@@ -712,18 +711,17 @@ const paginatedInvoices = computed(() => {
   return filteredInvoices.value.slice(start, end);
 });
 
-const vehicleOptions = ref<ProductVariantLiteForInput[]>([]);
+const vehicleOptions = ref<Vehicle[]>([]);
 const vehicleLoading = ref(false);
 
 async function searchVehicles(keyword: string = '') {
   vehicleLoading.value = true;
   try {
-    // Chỉ lọc các sản phẩm được quản lý theo số khung/máy (xe máy)
-    const filters = [`managementType==vin_number`];
+    const filters = [`Status==Available`];
     if (keyword) {
-      filters.push(`search@=${keyword}`);
+      filters.push(`VinNumber@=${keyword}`);
     }
-    const res = await ProductApi.getVariantsForOutput({
+    const res = await VehicleApi.getList({
       current: 1,
       size: 50,
       Filters: filters.join(','),
@@ -736,19 +734,34 @@ async function searchVehicles(keyword: string = '') {
   }
 }
 
-function handleVehicleChange(variantId: number) {
-  const variant = vehicleOptions.value.find(v => v.id === variantId);
-  if (variant) {
-    createDialog.form.vehicleModel = variant.displayName;
-    createDialog.form.vehiclePrice = variant.price || 0;
-    if (variant.colors && variant.colors.length > 0) {
-      createDialog.form.vehicleColor = variant.colors[0].colorName || '';
-    } else {
-      createDialog.form.vehicleColor = '';
+async function handleVehicleChange(variantId: number) {
+  const vehicle = vehicleOptions.value.find(v => v.id === variantId);
+  if (vehicle) {
+    createDialog.form.vehicleModel = vehicle.variantName || vehicle.productName || '';
+    createDialog.form.vehicleColor = vehicle.colorName || '';
+    createDialog.form.chassisNo = vehicle.vinNumber || '';
+    createDialog.form.engineNo = vehicle.engineNumber || '';
+    createDialog.form.vehiclePrice = 0;
+    
+    if (vehicle.productVariantId) {
+      try {
+        const variantData = await ProductApi.getVariantsForOutput({
+          current: 1,
+          size: 1,
+          Filters: `id==${vehicle.productVariantId}`
+        });
+        if (variantData.items && variantData.items.length > 0) {
+          createDialog.form.vehiclePrice = variantData.items[0].price || 0;
+        }
+      } catch (err) {
+        console.error('Lỗi lấy giá xe:', err);
+      }
     }
   } else {
     createDialog.form.vehicleModel = '';
     createDialog.form.vehicleColor = '';
+    createDialog.form.chassisNo = '';
+    createDialog.form.engineNo = '';
     createDialog.form.vehiclePrice = 0;
   }
 }
