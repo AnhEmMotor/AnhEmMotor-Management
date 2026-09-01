@@ -78,7 +78,7 @@
                 <ElTag type="primary" effect="dark">{{ vehicle.fullName }}</ElTag>
               </div>
               <p class="mt-1 text-sm text-slate-500">
-                <span class="font-medium">{{ vehicle.licensePlate }}</span> • VIN:
+                <span class="font-medium">{{ vehicle.licensePlate || '-' }}</span> • VIN:
                 <span class="font-mono">{{ vehicle.vinNumber || '-' }}</span>
               </p>
             </div>
@@ -95,7 +95,7 @@
                 Biển số
               </div>
               <div class="font-black text-slate-900">
-                {{ vehicle.licensePlate }}
+                {{ vehicle.licensePlate || '-' }}
               </div>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -298,7 +298,7 @@
     <ElCard v-if="vehicle" class="mt-0">
       <div class="flex items-center justify-between gap-4 flex-wrap">
         <div class="text-sm text-slate-600">
-          <span class="font-black text-slate-900">{{ vehicle.licensePlate }}</span>
+          <span class="font-black text-slate-900">{{ vehicle.licensePlate || '-' }}</span>
           •
           <span>{{ vehicle.fullName }}</span>
         </div>

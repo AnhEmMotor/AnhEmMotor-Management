@@ -119,7 +119,54 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
 
       if (res) {
         vehicle.value = res.vehicle;
-        timeline.value = res.history;
+
+                const historyData = res.history || [];
+        historyData.forEach((item: any) => {
+          if ((!item.details || item.details.length === 0) && item.partsJson) {
+            const itemsList: any[] = [];
+            try {
+              const parsed = JSON.parse(item.partsJson);
+              if (Array.isArray(parsed)) {
+                parsed.forEach((p: any) => {
+                  itemsList.push({
+                    type: p.productVariantId ? 'Part' : 'Service',
+                    serviceName: p.serviceName,
+                    variantName: p.productVariantName || p.variantName,
+                    productCode: p.productCode,
+                    count: p.count || 1,
+                    notes: p.notes,
+                  });
+                });
+              } else if (parsed && typeof parsed === 'object') {
+                if (Array.isArray(parsed.Parts)) {
+                  parsed.Parts.forEach((p: any) => {
+                    itemsList.push({
+                      type: 'Part',
+                      variantName: p.ProductVariantName || p.productVariantName,
+                      count: p.Count || p.count || 1,
+                      notes: p.Notes || p.notes,
+                    });
+                  });
+                }
+                if (Array.isArray(parsed.Services)) {
+                  parsed.Services.forEach((s: any) => {
+                    itemsList.push({
+                      type: 'Service',
+                      serviceName: s.ServiceName || s.serviceName,
+                      count: s.Count || s.count || 1,
+                      notes: s.Notes || s.notes,
+                    });
+                  });
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to parse partsJson in history', e);
+            }
+            item.details = itemsList;
+          }
+        });
+
+        timeline.value = historyData;
         pagination.value.total = res.totalHistoryCount;
         error.value = '';
       }
