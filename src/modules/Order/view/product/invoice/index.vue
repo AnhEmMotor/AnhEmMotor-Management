@@ -479,7 +479,7 @@
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
         <div class="grid grid-cols-12 gap-4">
-          <ElFormItem label="Giá xe" required class="col-span-3">
+          <ElFormItem label="Giá xe" required class="col-span-4">
             <ElInputNumber
               v-model="createDialog.form.vehiclePrice"
               :min="0"
@@ -497,7 +497,7 @@
               />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem label="Tỷ lệ đặt cọc" required class="col-span-4">
+          <ElFormItem label="Tỷ lệ đặt cọc" required class="col-span-3">
             <ElSelect v-model="createDialog.form.depositPercentage" class="w-full">
               <ElOption label="Thanh toán đủ (100%)" :value="100" />
               <ElOption label="50%" :value="50" />
