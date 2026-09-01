@@ -494,7 +494,30 @@
         <ElDivider content-position="left">🏍️ Thông tin xe</ElDivider>
         <div class="grid grid-cols-2 gap-4">
           <ElFormItem label="Dòng xe" required>
-            <ElInput v-model="createDialog.form.vehicleModel" placeholder="VD: Honda SH 160i ABS" />
+            <ElSelect
+              v-model="createDialog.selectedVehicleId"
+              filterable
+              remote
+              reserve-keyword
+              :remote-method="searchVehicles"
+              :loading="vehicleLoading"
+              placeholder="Tìm và chọn dòng xe"
+              class="w-full"
+              @change="handleVehicleChange"
+              @focus="() => searchVehicles('')"
+            >
+              <ElOption
+                v-for="v in vehicleOptions"
+                :key="v.id"
+                :label="v.displayName"
+                :value="v.id"
+              >
+                <div class="flex justify-between items-center w-full">
+                  <span>{{ v.displayName }}</span>
+                  <span class="text-xs text-gray-400 ml-4">{{ v.price ? v.price.toLocaleString('vi-VN') + ' đ' : '' }}</span>
+                </div>
+              </ElOption>
+            </ElSelect>
           </ElFormItem>
           <ElFormItem label="Màu sơn">
             <ElInput v-model="createDialog.form.vehicleColor" placeholder="VD: Đen nhám" />
@@ -584,6 +607,8 @@ import {
   invoiceApi,
   type AdminInvoiceDetailResponse,
 } from '@/api/sales/invoice.api';
+import { ProductApi } from '@/api/product/product.api';
+import type { ProductVariantLiteForInput } from '@/domain/product/product.types';
 
 defineOptions({ name: 'OrderProductInvoice' });
 
@@ -631,6 +656,7 @@ const dialog = reactive({
 
 const createDialog = reactive({
   visible: false,
+  selectedVehicleId: undefined as number | undefined,
   form: {
     customerName: '',
     customerPhone: '',
@@ -685,6 +711,47 @@ const paginatedInvoices = computed(() => {
   const end = start + pagination.size;
   return filteredInvoices.value.slice(start, end);
 });
+
+const vehicleOptions = ref<ProductVariantLiteForInput[]>([]);
+const vehicleLoading = ref(false);
+
+async function searchVehicles(keyword: string = '') {
+  vehicleLoading.value = true;
+  try {
+    // Chỉ lọc các sản phẩm thuộc danh mục "Xe máy" (CategoryId = 8)
+    const filters = [`Product.CategoryId==8`];
+    if (keyword) {
+      filters.push(`search@=${keyword}`);
+    }
+    const res = await ProductApi.getVariantsForOutput({
+      current: 1,
+      size: 50,
+      Filters: filters.join(','),
+    });
+    vehicleOptions.value = res.items || [];
+  } catch (error) {
+    console.error('Lỗi tải danh sách xe:', error);
+  } finally {
+    vehicleLoading.value = false;
+  }
+}
+
+function handleVehicleChange(variantId: number) {
+  const variant = vehicleOptions.value.find(v => v.id === variantId);
+  if (variant) {
+    createDialog.form.vehicleModel = variant.displayName;
+    createDialog.form.vehiclePrice = variant.price || 0;
+    if (variant.colors && variant.colors.length > 0) {
+      createDialog.form.vehicleColor = variant.colors[0].colorName || '';
+    } else {
+      createDialog.form.vehicleColor = '';
+    }
+  } else {
+    createDialog.form.vehicleModel = '';
+    createDialog.form.vehicleColor = '';
+    createDialog.form.vehiclePrice = 0;
+  }
+}
 
 async function fetchInvoices() {
   loadingList.value = true;
@@ -877,6 +944,11 @@ const handleCreate = () => {
     salesPerson: '',
     deliveryDate: '',
   };
+  createDialog.selectedVehicleId = undefined;
+    
+  // Load initial vehicle list
+  searchVehicles('');
+    
   createDialog.visible = true;
 };
 
