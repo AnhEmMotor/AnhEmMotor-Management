@@ -187,28 +187,10 @@
             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
 
 
-              <!-- Nút Đổi trạng thái dropdown -->
-              <ElDropdown trigger="click" @command="(cmd: string) => handleQuickChangeStatus(row, cmd)">
-                <ElButton size="small" type="info" plain>
-                  Đổi TT <ElIcon class="el-icon--right"><ArrowDown /></ElIcon>
-                </ElButton>
-                <template #dropdown>
-                  <ElDropdownMenu>
-                    <ElDropdownItem command="pending" :disabled="row.status === 'pending'">
-                      📝 Chờ xử lý
-                    </ElDropdownItem>
-                    <ElDropdownItem command="processing" :disabled="row.status === 'processing'">
-                      ⏳ Gửi Admin duyệt
-                    </ElDropdownItem>
-                    <ElDropdownItem command="completed" :disabled="row.status === 'completed'">
-                      ✅ Duyệt / Hoàn tất
-                    </ElDropdownItem>
-                    <ElDropdownItem command="cancelled" divided :disabled="row.status === 'cancelled'">
-                      ❌ Hủy hóa đơn
-                    </ElDropdownItem>
-                  </ElDropdownMenu>
-                </template>
-              </ElDropdown>
+              <ElButton plain type="primary" size="small" @click="handleEdit(row)">
+                <ArtSvgIcon icon="ri:edit-2-line" class="mr-1" />
+                Chỉnh sửa
+              </ElButton>
 
               <ElButton link type="primary" size="small" @click="handleView(row)">
                 Chi tiết
@@ -427,10 +409,10 @@
       </template>
     </ElDialog>
 
-    <!-- Create Invoice Dialog -->
+    <!-- Create/Edit Invoice Dialog -->
     <ElDialog
       v-model="createDialog.visible"
-      title="Tạo hóa đơn bán xe mới"
+      :title="createDialog.isEdit ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn bán xe mới'"
       width="65%"
       :close-on-click-modal="false"
       destroy-on-close
@@ -657,6 +639,8 @@ const dialog = reactive({
 
 const createDialog = reactive({
   visible: false,
+  isEdit: false,
+  editId: undefined as number | undefined,
   selectedVehicleId: undefined as number | undefined,
   form: {
     customerName: '',
@@ -975,6 +959,8 @@ const handlePrintInvoice = (invoice: any) => {
 };
 
 const handleCreate = () => {
+  createDialog.isEdit = false;
+  createDialog.editId = undefined;
   createDialog.form = {
     customerName: '',
     customerPhone: '',
@@ -993,6 +979,39 @@ const handleCreate = () => {
     bankName: '',
     salesPerson: '',
     deliveryDate: '',
+  };
+  createDialog.selectedVehicleId = undefined;
+    
+  // Load initial vehicle list
+  searchVehicles('');
+  fetchVouchers();
+  fetchSalesStaff();
+    
+  createDialog.visible = true;
+};
+
+const handleEdit = (row: any) => {
+  createDialog.isEdit = true;
+  createDialog.editId = row.id;
+  createDialog.form = {
+    customerName: row.customerName || '',
+    customerPhone: row.customerPhone || '',
+    customerIdCard: row.customerIdCard || '',
+    customerAddress: row.customerAddress || '',
+    vehicleModel: row.vehicleModel || '',
+    vehicleColor: row.vehicleColor || '',
+    chassisNo: row.chassisNo || '',
+    engineNo: row.engineNo || '',
+    vehiclePrice: row.vehiclePrice || 0,
+    registrationFee: row.registrationFee || 0,
+    insuranceFee: row.insuranceFee || 0,
+    voucherCode: row.voucherCode || '',
+    depositPercentage: row.depositPercentage ?? 100,
+    paymentMethod: row.paymentMethod || 'transfer',
+    bankName: row.bankName || '',
+    salesPerson: row.salesPerson || '',
+    deliveryDate: row.deliveryDate ? row.deliveryDate.substring(0, 10) : '',
+    status: row.status || 'pending',
   };
   createDialog.selectedVehicleId = undefined;
     
@@ -1037,16 +1056,21 @@ async function handleSave() {
     ElMessage.warning('Vui lòng nhập dòng xe');
     return;
   }
-  actionLoading.value = true;
   try {
-    await invoiceApi.createAdmin({
-      ...createDialog.form,
-    });
-    ElMessage.success('Tạo hóa đơn thành công');
+    actionLoading.value = true;
+    
+    if (createDialog.isEdit && createDialog.editId) {
+      await invoiceApi.updateAdmin(createDialog.editId, createDialog.form);
+      ElMessage.success('Cập nhật hóa đơn thành công');
+    } else {
+      await invoiceApi.createAdmin(createDialog.form);
+      ElMessage.success('Tạo hóa đơn thành công');
+    }
+    
     createDialog.visible = false;
     fetchInvoices();
-  } catch (e) {
-    ElMessage.error('Không thể tạo hóa đơn');
+  } catch (error: any) {
+    ElMessage.error(error.message || (createDialog.isEdit ? 'Lỗi khi cập nhật hóa đơn' : 'Lỗi khi tạo hóa đơn'));
   } finally {
     actionLoading.value = false;
   }
