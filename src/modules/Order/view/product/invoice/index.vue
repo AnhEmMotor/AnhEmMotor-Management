@@ -568,12 +568,24 @@
             />
           </ElFormItem>
         </div>
+
+        <ElDivider content-position="left" v-if="createDialog.isEdit">Trạng thái Hóa đơn</ElDivider>
+        <div class="grid grid-cols-2 gap-4" v-if="createDialog.isEdit">
+          <ElFormItem label="Trạng thái hóa đơn">
+            <ElSelect v-model="createDialog.form.status" class="w-full">
+              <ElOption label="Chờ xử lý" value="pending" />
+              <ElOption label="Gửi Admin duyệt" value="processing" />
+              <ElOption label="Duyệt / Hoàn tất" value="completed" />
+              <ElOption label="Hủy hóa đơn" value="cancelled" />
+            </ElSelect>
+          </ElFormItem>
+        </div>
       </ElForm>
 
       <template #footer>
         <ElButton @click="createDialog.visible = false">Hủy</ElButton>
         <ElButton type="primary" :loading="actionLoading" @click="handleSave">
-          Tạo hóa đơn
+          {{ createDialog.isEdit ? 'Lưu thay đổi' : 'Tạo hóa đơn' }}
         </ElButton>
       </template>
     </ElDialog>
