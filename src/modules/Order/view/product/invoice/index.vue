@@ -382,18 +382,6 @@
                 formatCurrency(dialog.invoice.vehiclePrice)
               }}</span>
             </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Phí đăng ký (Biển số / trước bạ):</span>
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{
-                formatCurrency(dialog.invoice.registrationFee)
-              }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Phí bảo hiểm:</span>
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{
-                formatCurrency(dialog.invoice.insuranceFee)
-              }}</span>
-            </div>
           </div>
 
           <div class="border-t border-blue-200 dark:border-blue-800/60 pt-3 flex justify-between items-center text-sm">
@@ -530,28 +518,12 @@
         </div>
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 gap-4">
           <ElFormItem label="Giá xe" required>
             <ElInputNumber
               v-model="createDialog.form.vehiclePrice"
               :min="0"
               :step="1000000"
-              class="w-full"
-            />
-          </ElFormItem>
-          <ElFormItem label="Phí đăng ký">
-            <ElInputNumber
-              v-model="createDialog.form.registrationFee"
-              :min="0"
-              :step="100000"
-              class="w-full"
-            />
-          </ElFormItem>
-          <ElFormItem label="Phí bảo hiểm">
-            <ElInputNumber
-              v-model="createDialog.form.insuranceFee"
-              :min="0"
-              :step="100000"
               class="w-full"
             />
           </ElFormItem>
