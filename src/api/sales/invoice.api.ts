@@ -42,6 +42,8 @@ export interface AdminInvoiceSummaryResponse {
   vehiclePrice: number;
   registrationFee: number;
   insuranceFee: number;
+  voucherCode?: string;
+  depositPercentage?: number;
   totalAmount: number;
   paymentMethod: string;
   bankName?: string;
@@ -71,6 +73,8 @@ export interface AdminInvoiceDetailResponse {
   vehiclePrice: number;
   registrationFee: number;
   insuranceFee: number;
+  voucherCode?: string;
+  depositPercentage?: number;
   totalAmount: number;
   paymentMethod: string;
   bankName?: string;
@@ -103,6 +107,8 @@ export interface CreateAdminInvoiceRequest {
   salesPerson?: string;
   deliveryDate?: string;
   paymentBreakdown?: Array<{ method: string; amount: number; note?: string }>;
+  voucherCode?: string;
+  depositPercentage?: number;
 }
 
 export interface UpdateAdminInvoiceRequest {
@@ -127,6 +133,7 @@ export interface UpdateAdminInvoiceRequest {
   deliveryDate?: string;
   paymentBreakdown?: Array<{ method: string; amount: number; note?: string }>;
   voucherCode?: string;
+  depositPercentage?: number;
 }
 
 export interface UpdateInvoiceStatusRequest {

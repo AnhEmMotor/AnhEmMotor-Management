@@ -518,7 +518,7 @@
         </div>
 
         <ElDivider content-position="left">💰 Chi tiết tài chính</ElDivider>
-        <div class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-3 gap-4">
           <ElFormItem label="Giá xe" required>
             <ElInputNumber
               v-model="createDialog.form.vehiclePrice"
@@ -526,6 +526,26 @@
               :step="1000000"
               class="w-full"
             />
+          </ElFormItem>
+          <ElFormItem label="Mã voucher">
+            <ElSelect v-model="createDialog.form.voucherCode" clearable placeholder="Chọn mã voucher" class="w-full">
+              <ElOption
+                v-for="v in voucherOptions"
+                :key="v.id"
+                :label="v.code + (v.discountAmount ? ` (-${formatCurrency(v.discountAmount)})` : '')"
+                :value="v.code"
+              />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem label="Tỷ lệ đặt cọc" required>
+            <ElSelect v-model="createDialog.form.depositPercentage" class="w-full">
+              <ElOption label="Thanh toán đủ (100%)" :value="100" />
+              <ElOption label="50%" :value="50" />
+              <ElOption label="30%" :value="30" />
+              <ElOption label="20%" :value="20" />
+              <ElOption label="10%" :value="10" />
+              <ElOption label="Không cọc (0%)" :value="0" />
+            </ElSelect>
           </ElFormItem>
         </div>
 
@@ -580,6 +600,7 @@ import {
 } from '@/api/sales/invoice.api';
 import { ProductApi } from '@/api/product/product.api';
 import { VehicleApi, type Vehicle } from '@/api/vehicle/vehicle.api';
+import { VoucherApi } from '@/api/voucher.api';
 
 defineOptions({ name: 'OrderProductInvoice' });
 
@@ -640,6 +661,8 @@ const createDialog = reactive({
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
+    voucherCode: '',
+    depositPercentage: 100,
     paymentMethod: 'transfer',
     bankName: '',
     salesPerson: '',
@@ -924,6 +947,8 @@ const handleCreate = () => {
     vehiclePrice: 0,
     registrationFee: 0,
     insuranceFee: 0,
+    voucherCode: '',
+    depositPercentage: 100,
     paymentMethod: 'transfer',
     bankName: '',
     salesPerson: '',
@@ -933,9 +958,20 @@ const handleCreate = () => {
     
   // Load initial vehicle list
   searchVehicles('');
+  fetchVouchers();
     
   createDialog.visible = true;
 };
+
+const voucherOptions = ref<any[]>([]);
+async function fetchVouchers() {
+  try {
+    const res = await VoucherApi.getList({ current: 1, size: 50 });
+    voucherOptions.value = res.items || [];
+  } catch (error) {
+    console.error('Lỗi tải danh sách voucher:', error);
+  }
+}
 
 async function handleSave() {
   if (!createDialog.form.customerName) {
