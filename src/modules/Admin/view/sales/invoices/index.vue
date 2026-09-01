@@ -183,10 +183,28 @@
             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap" @click.stop>
 
 
-              <ElButton plain type="primary" size="small" @click="handleEdit(row)">
-                <ArtSvgIcon icon="ri:edit-2-line" class="mr-1" />
-                Chỉnh sửa
+              <!-- Nút Duyệt hợp đồng -->
+              <ElButton
+                v-if="row.status === 'processing' || row.status === 'pending'"
+                type="success"
+                size="small"
+                plain
+                :loading="row._loading"
+                @click="handleApproveInvoice(row)"
+              >
+                <ArtSvgIcon icon="ri:checkbox-circle-line" class="mr-1" />
+                Duyệt hợp đồng
               </ElButton>
+
+              <ElTag
+                v-else-if="row.status === 'completed'"
+                type="success"
+                size="small"
+                effect="light"
+                class="font-medium"
+              >
+                Đã duyệt
+              </ElTag>
 
               <ElButton link type="primary" size="small" @click="handleView(row)">
                 Chi tiết
@@ -873,15 +891,15 @@ async function handleSendForApproval(invoice: any) {
   }
 }
 
-// Action: Duyệt hóa đơn (processing/pending -> completed)
+// Action: Duyệt hợp đồng (processing/pending -> completed)
 async function handleApproveInvoice(invoice: any) {
   try {
     await ElMessageBox.confirm(
-      `Xác nhận phê duyệt và hoàn tất hóa đơn ${invoice.invoiceNumber}?`,
-      'Phê duyệt hóa đơn',
+      `Xác nhận phê duyệt hợp đồng / hóa đơn ${invoice.invoiceNumber}?\n\nSau khi duyệt thành công, hợp đồng sẽ chuyển sang trạng thái "Đã duyệt / Hoàn tất" và trả về cho phân hệ Đơn hàng.`,
+      'Phê duyệt hợp đồng',
       {
-        confirmButtonText: 'Duyệt hoàn tất',
-        cancelButtonText: 'Đóng',
+        confirmButtonText: '✓ Duyệt hợp đồng',
+        cancelButtonText: 'Bỏ qua',
         type: 'success',
       }
     );
@@ -890,17 +908,18 @@ async function handleApproveInvoice(invoice: any) {
     actionLoading.value = true;
     await invoiceApi.updateAdminStatus(invoice.id, {
       status: 'completed',
-      processedBy: 'Admin Tổng',
+      processedBy: 'Admin',
     });
 
-    ElMessage.success(`Hóa đơn ${invoice.invoiceNumber} đã được duyệt và hoàn tất thành công!`);
+    ElMessage.success(`Hợp đồng ${invoice.invoiceNumber} đã được phê duyệt thành công!`);
     invoice.status = 'completed';
     if (dialog.invoice && dialog.invoice.id === invoice.id) {
       dialog.invoice.status = 'completed';
     }
+    fetchInvoices();
   } catch (e: any) {
     if (e !== 'cancel') {
-      ElMessage.error('Không thể phê duyệt hóa đơn');
+      ElMessage.error('Không thể phê duyệt hợp đồng');
     }
   } finally {
     invoice._loading = false;
