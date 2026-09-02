@@ -38,7 +38,7 @@
       />
       <ArtStatsCard
         icon-style="bg-info"
-        :title="'Chờ QC'"
+        :title="'Chờ nghiệm thu'"
         :count="counts.qcPending"
         description="Phiếu sửa chữa"
         icon="ri:clipboard-check-line"
@@ -54,7 +54,7 @@
 
     <ArtSearchBar
       :items="searchItems"
-      :label-width="140"
+      :label-width="115"
       :span="6"
       @search="handleSearch"
       @reset="handleReset"
@@ -221,8 +221,17 @@
             <ElInput
               v-model="createForm.vinNumber"
               placeholder="Ví dụ: RL..."
-              :disabled="!createForm.isNewCustomer"
+              :loading="isLookingUpVin"
+              @blur="handleVinLookup"
+              @keyup.enter="handleVinLookup"
             />
+            <div
+              v-if="vinFoundInSystem"
+              class="mt-1 text-xs text-green-600 flex items-center gap-1"
+            >
+              <el-icon><CircleCheck /></el-icon>
+              Đã tìm thấy trong hệ thống — tự điền thông tin xe
+            </div>
           </div>
 
           <div>
@@ -237,6 +246,26 @@
               placeholder="Ví dụ: 51A-123.45"
               :disabled="!createForm.isNewCustomer"
             />
+          </div>
+        </div>
+
+        <div class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
+            >
+              Tên xe (Dòng sản phẩm)
+            </label>
+            <ElInput v-model="createForm.vehicleProductName" placeholder="Ví dụ: Honda Winner X" />
+          </div>
+
+          <div>
+            <label
+              class="el-form-item__label text-xs! font-semibold! text-gray-700! h-auto! leading-none! pb-1.5! mb-0! block"
+            >
+              Loại xe (Danh mục)
+            </label>
+            <ElInput v-model="createForm.vehicleCategory" placeholder="Ví dụ: Xe số, Xe ga..." />
           </div>
         </div>
 
@@ -285,11 +314,16 @@
               filterable
             >
               <ElOption
-                v-for="emp in technicians"
+                v-for="emp in availableTechnicians"
                 :key="emp.id"
                 :label="emp.fullName + ' (' + emp.jobTitle + ')'"
                 :value="emp.id"
               />
+              <template v-if="availableTechnicians.length === 0" #empty>
+                <div class="text-center py-3 text-slate-400 text-sm">
+                  Tất cả kỹ thuật viên đã được phân công
+                </div>
+              </template>
             </ElSelect>
           </div>
 
@@ -539,9 +573,9 @@ const searchItems = [
     type: 'select',
     options: [
       { label: 'Chờ xử lý', value: 'Pending' },
-      { label: 'Đang sửa', value: 'InProgress' },
-      { label: 'Chờ QC', value: 'QcPending' },
-      { label: 'Hoàn thành', value: 'Completed' },
+      { label: 'Đang sửa chữa', value: 'InProgress' },
+      { label: 'Chờ nghiệm thu', value: 'QcPending' },
+      { label: 'Đã hoàn thành', value: 'Completed' },
       { label: 'Đã hủy', value: 'Cancelled' },
     ],
   },
@@ -641,6 +675,17 @@ const counts = computed(() => {
   return byStatus;
 });
 
+const availableTechnicians = computed(() => {
+  const activeTechIds = new Set(
+    allValidItems.value
+      .filter(
+        (x: any) => ['Pending', 'InProgress', 'QcPending'].includes(x.status) && x.technicianId
+      )
+      .map((x: any) => x.technicianId)
+  );
+  return technicians.value.filter((t) => !activeTechIds.has(t.id));
+});
+
 const statusTagType = (status: string) => {
   switch (status) {
     case 'Completed':
@@ -664,9 +709,9 @@ const getTechnicianName = (id: number) => {
 const getStatusText = (status: string) => {
   const map: Record<string, string> = {
     Pending: 'Chờ xử lý',
-    InProgress: 'Đang sửa',
-    QcPending: 'Chờ QC',
-    Completed: 'Hoàn thành',
+    InProgress: 'Đang sửa chữa',
+    QcPending: 'Chờ nghiệm thu',
+    Completed: 'Đã hoàn thành',
     Cancelled: 'Đã hủy',
   };
   return map[status] || status;
@@ -680,6 +725,8 @@ const openDetail = (row: RepairOrder) => {
 
 const createDialogVisible = ref(false);
 const submitting = ref(false);
+const isLookingUpVin = ref(false);
+const vinFoundInSystem = ref(false);
 const createForm = ref({
   customerPhone: '',
   customerName: '',
@@ -690,6 +737,8 @@ const createForm = ref({
   isNewCustomer: true,
   vinNumber: '',
   licensePlate: '',
+  vehicleProductName: '',
+  vehicleCategory: '',
   vehicleName: '',
   vehicleColor: '',
 
@@ -700,6 +749,7 @@ const createForm = ref({
 
 const openCreateDialog = () => {
   createDialogVisible.value = true;
+  vinFoundInSystem.value = false;
   createForm.value = {
     customerPhone: '',
     customerName: '',
@@ -710,6 +760,8 @@ const openCreateDialog = () => {
     isNewCustomer: true,
     vinNumber: '',
     licensePlate: '',
+    vehicleProductName: '',
+    vehicleCategory: '',
     vehicleName: '',
     vehicleColor: '',
     technicianId: undefined,
@@ -739,9 +791,47 @@ const handleCustomerPhoneBlur = async () => {
     } else {
       createForm.value.isNewCustomer = true;
       createForm.value.vehicleId = undefined;
+      vinFoundInSystem.value = false;
     }
   } catch (e) {
     createForm.value.isNewCustomer = true;
+    vinFoundInSystem.value = false;
+  }
+};
+
+const handleVinLookup = async () => {
+  const vin = createForm.value.vinNumber?.trim();
+  if (!vin || vin.length < 5) return;
+  isLookingUpVin.value = true;
+  vinFoundInSystem.value = false;
+  try {
+    const res = await VehicleApi.getPortfolio({
+      query: vin,
+      queryType: 'vin',
+      page: 1,
+      pageSize: 1,
+    });
+    const vehicle = res?.vehicle;
+    if (vehicle) {
+      createForm.value.licensePlate = vehicle.licensePlate || createForm.value.licensePlate;
+      createForm.value.vehicleProductName =
+        vehicle.productName || createForm.value.vehicleProductName;
+      createForm.value.vehicleCategory = vehicle.categoryName || createForm.value.vehicleCategory;
+      createForm.value.vehicleName =
+        vehicle.variantName || vehicle.productName || createForm.value.vehicleName;
+      createForm.value.vehicleColor = vehicle.colorName || createForm.value.vehicleColor;
+      createForm.value.vehicleId = vehicle.id;
+      if (vehicle.fullName && !createForm.value.customerName) {
+        createForm.value.customerName = vehicle.fullName;
+      }
+      if (vehicle.phoneNumber && !createForm.value.customerPhone) {
+        createForm.value.customerPhone = vehicle.phoneNumber;
+      }
+      vinFoundInSystem.value = true;
+    }
+  } catch {
+  } finally {
+    isLookingUpVin.value = false;
   }
 };
 

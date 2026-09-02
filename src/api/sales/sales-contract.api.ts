@@ -85,6 +85,13 @@ export const SalesContractApi = {
     });
   },
 
+  reject(contractId: string, rejectReason: string) {
+    return request.post<SalesContractDetailDto>({
+      url: `/api/v1/contracts/sales/${contractId}/reject`,
+      data: { rejectReason },
+    });
+  },
+
   getStatistics() {
     return request.get<{
       draftCount: number;

@@ -1104,10 +1104,12 @@ async function searchCustomers(keyword: string) {
 async function searchProducts(keyword: string) {
   productLoading.value = true;
   try {
+    const filters = ['managementType==sku'];
+    if (keyword) filters.push(`search@=${keyword}`);
     const res = await ProductApi.getVariantsForOutput({
       current: 1,
       size: 20,
-      Filters: keyword ? `search@=${keyword}` : undefined,
+      Filters: filters.join('|'),
     });
     productOptions.value = res.items || [];
   } finally {

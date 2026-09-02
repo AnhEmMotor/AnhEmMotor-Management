@@ -55,14 +55,6 @@
       <template #header>
         <div class="card-header flex justify-between items-center">
           <span class="font-bold text-lg">{{ $t('menus.contract.sales') }}</span>
-          <el-button
-            type="primary"
-            :icon="Plus"
-            @click="handleOpenAddDialog"
-            v-auth="Permissions.Admin.ContractManagement.Create"
-          >
-            Thêm hợp đồng
-          </el-button>
         </div>
       </template>
       <div>
@@ -85,6 +77,7 @@
             @change="fetchData"
           >
             <el-option label="Nháp" value="Draft" />
+            <el-option label="Từ chối" value="Rejected" />
             <el-option label="Chờ Admin duyệt" value="PendingApproval" />
             <el-option label="Đã duyệt" value="Approved" />
             <el-option label="Đã ký" value="Signed" />
@@ -110,7 +103,7 @@
           v-loading="loading"
         >
           <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
-          <el-table-column label="Mã Đơn Hàng" width="140">
+          <el-table-column label="Mã Hóa Đơn" width="140">
             <template #default="scope">
               <el-button
                 link
@@ -118,7 +111,7 @@
                 class="font-semibold"
                 v-auth="Permissions.Admin.ContractManagement.Edit"
               >
-                {{ scope.row.orderId }}
+                {{ scope.row.invoiceNumber || scope.row.invoiceId }}
               </el-button>
             </template>
           </el-table-column>
@@ -183,94 +176,6 @@
         </div>
       </div>
     </el-card>
-
-    <el-dialog
-      v-model="dialogVisible"
-      title="Thêm hợp đồng"
-      width="600px"
-      class="resp-dialog"
-      append-to-body
-      destroy-on-close
-    >
-      <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
-        <el-form-item label="Chọn đơn hàng" prop="orderId">
-          <el-select
-            v-model="form.orderId"
-            filterable
-            remote
-            reserve-keyword
-            placeholder="Nhập tên KH, SĐT hoặc mã đơn hàng..."
-            :remote-method="searchOrders"
-            :loading="orderSearchLoading"
-            class="w-full"
-            clearable
-          >
-            <el-option
-              v-for="item in orderOptions"
-              :key="item.id"
-              :label="`${item.customerName || 'Khách lẻ'} - ${item.customerPhone || 'Không có SĐT'} (Đơn hàng #${item.id})`"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="Điều khoản đặc biệt">
-          <el-input
-            v-model="form.specialTerms"
-            type="textarea"
-            :rows="3"
-            placeholder="Nhập các điều khoản đặc biệt nếu có..."
-          />
-        </el-form-item>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="Thời gian bảo hành">
-              <el-input v-model="form.warrantyPeriod" placeholder="VD: 3 năm hoặc 30.000km" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Phạm vi bảo hành">
-              <el-input v-model="form.warrantyScope" placeholder="VD: Toàn quốc" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-form-item label="Ghi chú nội bộ">
-          <el-input
-            v-model="form.note"
-            type="textarea"
-            :rows="2"
-            placeholder="Ghi chú riêng nội bộ..."
-          />
-        </el-form-item>
-
-        <el-alert
-          type="info"
-          :closable="false"
-          show-icon
-          title="Bản quét PDF được tải lên tại trang chi tiết sau khi tạo hợp đồng."
-        />
-      </el-form>
-
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <el-button
-            @click="dialogVisible = false"
-            v-auth="Permissions.Admin.ContractManagement.View"
-            >Hủy</el-button
-          >
-          <el-button
-            type="primary"
-            :loading="submitLoading"
-            @click="handleSubmit"
-            v-auth="Permissions.Admin.ContractManagement.Edit"
-          >
-            Xác nhận
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -279,10 +184,10 @@ import { Permissions } from '@/domain/constants/permissions';
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { View, Search, Document, Warning, Money, Plus, Timer } from '@element-plus/icons-vue';
+import { View, Search, Document, Warning, Money, Timer } from '@element-plus/icons-vue';
 
 import { ElMessage } from 'element-plus';
-import { SalesContractApi, SalesOrderApi } from '@/api/sales';
+import { SalesContractApi } from '@/api/sales';
 import type { SalesContractListDto, SalesContractStatus } from '@/domain/sales/contract.types';
 
 const { t: $t } = useI18n();
@@ -296,7 +201,7 @@ const vehicleFilter = ref('');
 interface SalesContractListRow {
   id: string;
   contractNumber: string;
-  orderId: number;
+  invoiceId: number;
   status: SalesContractStatus;
   customerName: string;
   vehicle: string;
@@ -339,7 +244,7 @@ const formatVehicleTransaction = (contract: SalesContractListDto): string => {
 const mapSalesContractRow = (contract: SalesContractListDto): SalesContractListRow => ({
   id: contract.id,
   contractNumber: contract.contractNumber,
-  orderId: contract.orderId,
+  invoiceId: contract.invoiceId,
   status: contract.status,
   customerName: contract.customerFullName?.trim() || 'Chưa có khách hàng',
   vehicle: formatVehicleTransaction(contract),
@@ -380,9 +285,7 @@ const loadStatistics = async () => {
     statistics.pendingApprovalCount = stats.pendingApprovalCount;
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
-  } catch (_e) {
-    
-  }
+  } catch (_e) {}
 };
 
 onMounted(() => {
@@ -408,14 +311,15 @@ const getStatusType = (status: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
+  const statusMap: Record<string, string> = {
     Draft: 'Nháp',
+    Rejected: 'Từ chối',
     PendingApproval: 'Chờ Admin duyệt',
     Approved: 'Đã duyệt',
     Signed: 'Đã ký',
     Fulfilled: 'Hoàn tất',
   };
-  return map[status] || status;
+  return statusMap[status] || status;
 };
 
 const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
@@ -477,86 +381,6 @@ const getDeadlineTagType = (dateStr?: string): 'danger' | 'warning' | 'info' => 
   if (days < 0) return 'danger';
   if (days <= 2) return 'warning';
   return 'info';
-};
-
-const dialogVisible = ref(false);
-const orderSearchLoading = ref(false);
-const submitLoading = ref(false);
-const orderOptions = ref<any[]>([]);
-const formRef = ref<any>(null);
-
-const form = reactive({
-  orderId: null as number | null,
-  specialTerms: '',
-  warrantyPeriod: '3 năm hoặc 30.000km',
-  warrantyScope: 'Toàn quốc',
-  note: '',
-});
-
-const formRules = reactive({
-  orderId: [{ required: true, message: 'Vui lòng chọn đơn hàng', trigger: 'change' }],
-});
-
-const handleOpenAddDialog = () => {
-  form.orderId = null;
-  form.specialTerms = '';
-  form.warrantyPeriod = '3 năm hoặc 30.000km';
-  form.warrantyScope = 'Toàn quốc';
-  form.note = '';
-  if (formRef.value) {
-    formRef.value.resetFields();
-  }
-  dialogVisible.value = true;
-  searchOrders('');
-};
-
-const searchOrders = async (query: string) => {
-  orderSearchLoading.value = true;
-  try {
-    const res = await SalesOrderApi.getConfirmedList({
-      current: 1,
-      size: 50,
-      Search: query || undefined,
-      withoutContract: true,
-      Sorts: '-CreatedAt',
-    });
-    orderOptions.value = res.items || [];
-  } catch (_e) {
-    ElMessage.error('Không tải được danh sách đơn hàng.');
-  } finally {
-    orderSearchLoading.value = false;
-  }
-};
-
-const handleSubmit = async () => {
-  if (!formRef.value) return;
-  await formRef.value.validate(async (valid: boolean) => {
-    if (!valid) return;
-    submitLoading.value = true;
-    try {
-      const res = await SalesContractApi.create({
-        orderId: form.orderId!,
-        specialTerms: form.specialTerms || undefined,
-        warrantyPeriod: form.warrantyPeriod || undefined,
-        warrantyScope: form.warrantyScope || undefined,
-        note: form.note || undefined,
-      });
-
-      const createdContractId = res?.id;
-      ElMessage.success('Thêm hợp đồng thành công.');
-      dialogVisible.value = false;
-      if (createdContractId) {
-        goToPreview(createdContractId);
-      } else {
-        fetchData();
-        loadStatistics();
-      }
-    } catch (_e) {
-      ElMessage.error('Không thể tạo hợp đồng mới.');
-    } finally {
-      submitLoading.value = false;
-    }
-  });
 };
 
 const goToPreview = (id?: string) => {
