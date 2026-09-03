@@ -40,8 +40,8 @@ html.dark {
   --art-gray-500: #f1f5f9;
   --art-gray-600: #f1f5f9;
   --art-gray-700: #f8fafc;
-  --art-gray-800: #ffffff;
-  --art-gray-900: #ffffff;
+  --art-gray-800: #fff;
+  --art-gray-900: #fff;
   --art-card-border: rgb(255 255 255 / 8%);
   --default-border: rgb(255 255 255 / 10%);
   --default-border-dashed: #363843;

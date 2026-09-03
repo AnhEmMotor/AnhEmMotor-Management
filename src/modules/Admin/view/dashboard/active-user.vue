@@ -47,19 +47,23 @@ interface DisplayItem {
 }
 
 const list = reactive<DisplayItem[]>([
-  { name: 'Tổng Tài khoản',      num: '---', icon: 'ri:user-star-line',      colorKey: 'amber' },
-  { name: 'Lịch hẹn trong kỳ',   num: '---', icon: 'ri:calendar-check-line', colorKey: 'blue'  },
-  { name: 'Khách hàng mới',      num: '---', icon: 'ri:user-add-line',       colorKey: 'green' },
-  { name: 'Đơn chờ xử lý',       num: '---', icon: 'ri:inbox-unarchive-line',colorKey: 'red'   },
+  { name: 'Tổng Tài khoản', num: '---', icon: 'ri:user-star-line', colorKey: 'amber' },
+  { name: 'Lịch hẹn trong kỳ', num: '---', icon: 'ri:calendar-check-line', colorKey: 'blue' },
+  { name: 'Khách hàng mới', num: '---', icon: 'ri:user-add-line', colorKey: 'green' },
+  { name: 'Đơn chờ xử lý', num: '---', icon: 'ri:inbox-unarchive-line', colorKey: 'red' },
 ]);
 
-function fmt(n: number): string { return n.toLocaleString('vi-VN'); }
+function fmt(n: number): string {
+  return n.toLocaleString('vi-VN');
+}
 
 function itemMatches(card: DashboardKpisCard, key: string): boolean {
   const label = card.label.toLowerCase();
-  if (key.includes('hẹn'))        return label.includes('lịch') || label.includes('hẹn');
-  if (key.includes('Khách hàng mới')) return label.includes('khách hàng mới') || label.includes('mới');
-  if (key.includes('Đơn'))        return label.includes('đơn') || label.includes('quá hạn') || label.includes('chờ');
+  if (key.includes('hẹn')) return label.includes('lịch') || label.includes('hẹn');
+  if (key.includes('Khách hàng mới'))
+    return label.includes('khách hàng mới') || label.includes('mới');
+  if (key.includes('Đơn'))
+    return label.includes('đơn') || label.includes('quá hạn') || label.includes('chờ');
   return false;
 }
 
@@ -85,10 +89,11 @@ async function load() {
 
     try {
       const stats = await fetchDashboardStats();
-      if (list[2].num === '---' || list[2].num === '0') list[2].num = fmt(stats.newCustomersCount ?? 0);
-      if (list[3].num === '---' || list[3].num === '0') list[3].num = fmt(stats.pendingOrdersCount ?? 0);
+      if (list[2].num === '---' || list[2].num === '0')
+        list[2].num = fmt(stats.newCustomersCount ?? 0);
+      if (list[3].num === '---' || list[3].num === '0')
+        list[3].num = fmt(stats.pendingOrdersCount ?? 0);
     } catch {}
-
   } catch {}
 }
 
@@ -102,7 +107,7 @@ watch(() => props.timeFilter, load);
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 20px 20px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -122,16 +127,24 @@ watch(() => props.timeFilter, load);
 }
 
 .panel-icon {
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
 
-  &--amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
+  &--amber {
+    background: rgb(245 158 11 / 12%);
+    color: #f59e0b;
+  }
 }
 
 .panel-title {
-  font-size: 15px; font-weight: 700;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--el-text-color-primary);
   margin: 0 0 2px;
 }
@@ -154,7 +167,7 @@ watch(() => props.timeFilter, load);
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 14px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--el-border-color-lighter);
   transition: all 0.2s;
@@ -162,26 +175,44 @@ watch(() => props.timeFilter, load);
 
   &:hover {
     border-color: transparent;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.09);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 9%);
     transform: translateY(-1px);
   }
 
   &__icon {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
 
-    .customer-stat--amber & { background: rgba(245,158,11,0.12); color: #f59e0b; }
-    .customer-stat--blue &  { background: rgba(59,130,246,0.12);  color: #3b82f6; }
-    .customer-stat--green & { background: rgba(16,185,129,0.12);  color: #10b981; }
-    .customer-stat--red &   { background: rgba(239,68,68,0.12);   color: #ef4444; }
+    .customer-stat--amber & {
+      background: rgb(245 158 11 / 12%);
+      color: #f59e0b;
+    }
+    .customer-stat--blue & {
+      background: rgb(59 130 246 / 12%);
+      color: #3b82f6;
+    }
+    .customer-stat--green & {
+      background: rgb(16 185 129 / 12%);
+      color: #10b981;
+    }
+    .customer-stat--red & {
+      background: rgb(239 68 68 / 12%);
+      color: #ef4444;
+    }
   }
 
-  &__content { flex: 1; }
+  &__content {
+    flex: 1;
+  }
 
   &__num {
-    font-size: 22px; font-weight: 700;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--el-text-color-primary);
     line-height: 1.2;
   }
@@ -193,4 +224,3 @@ watch(() => props.timeFilter, load);
   }
 }
 </style>
-

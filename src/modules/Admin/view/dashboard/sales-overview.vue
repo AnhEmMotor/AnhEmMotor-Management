@@ -43,7 +43,7 @@ async function fetchData() {
       return `T${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;
     });
     revenueData.value = data.map((item: MonthlyRevenueProfit) => item.totalRevenue);
-    profitData.value  = data.map((item: MonthlyRevenueProfit) => item.totalProfit);
+    profitData.value = data.map((item: MonthlyRevenueProfit) => item.totalProfit);
   } catch (error) {
     console.error('Failed to fetch monthly revenue profit:', error);
   } finally {
@@ -81,25 +81,29 @@ function initChart() {
       },
     },
     grid: { left: '2%', right: '2%', bottom: '8%', top: '8%', containLabel: true },
-    xAxis: [{
-      type: 'category',
-      data: months.value,
-      axisTick: { alignWithLabel: true },
-      axisLine: { lineStyle: { color: '#e5e7eb' } },
-      axisLabel: { color: '#9ca3af', fontSize: 11 },
-    }],
-    yAxis: [{
-      type: 'value',
-      name: 'Triệu VNĐ',
-      nameTextStyle: { color: '#9ca3af', fontSize: 11 },
-      splitLine: { lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.25)' } },
-      axisLabel: {
-        color: '#9ca3af',
-        fontSize: 11,
-        formatter: (v: number) =>
-          (v / MILLION_VND).toLocaleString('vi-VN', { maximumFractionDigits: 1 }),
+    xAxis: [
+      {
+        type: 'category',
+        data: months.value,
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: '#e5e7eb' } },
+        axisLabel: { color: '#9ca3af', fontSize: 11 },
       },
-    }],
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Triệu VNĐ',
+        nameTextStyle: { color: '#9ca3af', fontSize: 11 },
+        splitLine: { lineStyle: { type: 'dashed', color: 'rgba(156,163,175,0.25)' } },
+        axisLabel: {
+          color: '#9ca3af',
+          fontSize: 11,
+          formatter: (v: number) =>
+            (v / MILLION_VND).toLocaleString('vi-VN', { maximumFractionDigits: 1 }),
+        },
+      },
+    ],
     series: [
       {
         name: 'Doanh thu',
@@ -134,7 +138,9 @@ function initChart() {
   });
 }
 
-function resizeChart() { chartInstance?.resize(); }
+function resizeChart() {
+  chartInstance?.resize();
+}
 
 onMounted(() => {
   nextTick(() => {
@@ -157,7 +163,7 @@ onUnmounted(() => {
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -187,7 +193,10 @@ onUnmounted(() => {
   font-size: 20px;
   flex-shrink: 0;
 
-  &--blue { background: rgba(59,130,246,0.12); color: #3b82f6; }
+  &--blue {
+    background: rgb(59 130 246 / 12%);
+    color: #3b82f6;
+  }
 }
 
 .panel-title {
@@ -219,8 +228,12 @@ onUnmounted(() => {
   display: inline-block;
   margin-left: 8px;
 
-  &--blue  { background: #3b82f6; }
-  &--green { background: #10b981; }
+  &--blue {
+    background: #3b82f6;
+  }
+  &--green {
+    background: #10b981;
+  }
 }
 
 .chart-wrap {

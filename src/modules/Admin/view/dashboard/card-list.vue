@@ -14,7 +14,11 @@
         <div class="kpi-card__value">{{ item.value }}</div>
         <div class="kpi-card__meta">
           <span class="kpi-card__badge">{{ PERIOD_LABELS[timeFilter] ?? 'Kỳ này' }}</span>
-          <span v-if="item.change !== null" class="kpi-card__change" :class="item.change >= 0 ? 'up' : 'down'">
+          <span
+            v-if="item.change !== null"
+            class="kpi-card__change"
+            :class="item.change >= 0 ? 'up' : 'down'"
+          >
             So với kỳ trước: {{ item.change >= 0 ? '▲' : '▼' }}
             {{ Math.abs(item.change).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) }}%
           </span>
@@ -101,8 +105,13 @@ watch(() => props.dateRange, load);
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 
-  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+  @media (width <= 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .kpi-card {
@@ -114,38 +123,71 @@ watch(() => props.dateRange, load);
   padding: 20px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-light);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 3px;
     border-radius: 14px 14px 0 0;
   }
 
-  &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+  }
 
-  &--blue::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-  &--green::before  { background: linear-gradient(90deg, #10b981, #34d399); }
-  &--orange::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  &--red::before    { background: linear-gradient(90deg, #ef4444, #f87171); }
+  &--blue::before {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  }
+  &--green::before {
+    background: linear-gradient(90deg, #10b981, #34d399);
+  }
+  &--orange::before {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  }
+  &--red::before {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+  }
 
   &__icon {
     flex-shrink: 0;
-    width: 52px; height: 52px;
+    width: 52px;
+    height: 52px;
     border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    .kpi-card--blue &   { background: rgba(59,130,246,0.12); color: #3b82f6; }
-    .kpi-card--green &  { background: rgba(16,185,129,0.12); color: #10b981; }
-    .kpi-card--orange & { background: rgba(245,158,11,0.12); color: #f59e0b; }
-    .kpi-card--red &    { background: rgba(239,68,68,0.12);  color: #ef4444; }
+    .kpi-card--blue & {
+      background: rgb(59 130 246 / 12%);
+      color: #3b82f6;
+    }
+    .kpi-card--green & {
+      background: rgb(16 185 129 / 12%);
+      color: #10b981;
+    }
+    .kpi-card--orange & {
+      background: rgb(245 158 11 / 12%);
+      color: #f59e0b;
+    }
+    .kpi-card--red & {
+      background: rgb(239 68 68 / 12%);
+      color: #ef4444;
+    }
   }
 
-  &__body { flex: 1; min-width: 0; }
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
 
   &__label {
     font-size: 11px;
@@ -164,7 +206,11 @@ watch(() => props.dateRange, load);
     margin-bottom: 6px;
   }
 
-  &__meta { display: flex; align-items: center; gap: 8px; }
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
   &__badge {
     font-size: 11px;
@@ -175,9 +221,14 @@ watch(() => props.dateRange, load);
   }
 
   &__change {
-    font-size: 12px; font-weight: 600;
-    &.up   { color: #10b981; }
-    &.down { color: #ef4444; }
+    font-size: 12px;
+    font-weight: 600;
+    &.up {
+      color: #10b981;
+    }
+    &.down {
+      color: #ef4444;
+    }
   }
 }
 </style>

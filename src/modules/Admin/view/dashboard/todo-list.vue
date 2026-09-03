@@ -14,9 +14,15 @@
         </div>
       </div>
       <ElButtonGroup size="small">
-        <ElButton :type="filter === 'day'   ? 'primary' : 'default'" @click="setFilter('day')">Hôm nay</ElButton>
-        <ElButton :type="filter === 'week'  ? 'primary' : 'default'" @click="setFilter('week')">Tuần này</ElButton>
-        <ElButton :type="filter === 'month' ? 'primary' : 'default'" @click="setFilter('month')">Tháng này</ElButton>
+        <ElButton :type="filter === 'day' ? 'primary' : 'default'" @click="setFilter('day')"
+          >Hôm nay</ElButton
+        >
+        <ElButton :type="filter === 'week' ? 'primary' : 'default'" @click="setFilter('week')"
+          >Tuần này</ElButton
+        >
+        <ElButton :type="filter === 'month' ? 'primary' : 'default'" @click="setFilter('month')"
+          >Tháng này</ElButton
+        >
       </ElButtonGroup>
     </div>
 
@@ -62,7 +68,6 @@ import { fetchDashboardKpis } from '@/api/dashboard.api';
 
 const props = defineProps<{ timeFilter?: string }>();
 
-
 interface TodoItem {
   category: string;
   title: string;
@@ -75,13 +80,22 @@ interface TodoItem {
 }
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  financial: '💰', inventory: '📦', customer: '👤', operations: '📋',
+  financial: '💰',
+  inventory: '📦',
+  customer: '👤',
+  operations: '📋',
 };
 const CATEGORY_LABELS: Record<string, string> = {
-  financial: 'Tài chính', inventory: 'Kho hàng', customer: 'Khách hàng', operations: 'Vận hành',
+  financial: 'Tài chính',
+  inventory: 'Kho hàng',
+  customer: 'Khách hàng',
+  operations: 'Vận hành',
 };
 const CATEGORY_COLORS: Record<string, TodoItem['priority']> = {
-  financial: 'danger', inventory: 'warning', customer: 'danger', operations: 'info',
+  financial: 'danger',
+  inventory: 'warning',
+  customer: 'danger',
+  operations: 'info',
 };
 
 const list = reactive<TodoItem[]>([]);
@@ -89,7 +103,10 @@ const isLoading = ref(false);
 const totalAlerts = ref(0);
 
 const FILTER_MAP: Record<string, 'day' | 'week' | 'month'> = {
-  today: 'day', week: 'week', month: 'month', year: 'month',
+  today: 'day',
+  week: 'week',
+  month: 'month',
+  year: 'month',
 };
 const filter = ref<'day' | 'week' | 'month'>('day');
 
@@ -109,17 +126,59 @@ function buildTodoItem(category: string, count: number, title: string, url: stri
 function buildAlerts(alerts: any) {
   list.length = 0;
   if (alerts.financial.delayedLoans > 0)
-    list.push(buildTodoItem('financial', alerts.financial.delayedLoans, 'Trả góp trễ hạn', '/admin/finance/delayed'));
+    list.push(
+      buildTodoItem(
+        'financial',
+        alerts.financial.delayedLoans,
+        'Trả góp trễ hạn',
+        '/admin/finance/delayed'
+      )
+    );
   if (alerts.inventory.lowStockVehicles > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockVehicles, 'Tồn kho xe thấp', '/Warehouse/inventory-settings'));
+    list.push(
+      buildTodoItem(
+        'inventory',
+        alerts.inventory.lowStockVehicles,
+        'Tồn kho xe thấp',
+        '/Warehouse/inventory-settings'
+      )
+    );
   if (alerts.inventory.lowStockParts > 0)
-    list.push(buildTodoItem('inventory', alerts.inventory.lowStockParts, 'Tồn kho phụ tùng thấp', '/Warehouse/inventory-settings'));
+    list.push(
+      buildTodoItem(
+        'inventory',
+        alerts.inventory.lowStockParts,
+        'Tồn kho phụ tùng thấp',
+        '/Warehouse/inventory-settings'
+      )
+    );
   if (alerts.customer.newComplaints > 0)
-    list.push(buildTodoItem('customer', alerts.customer.newComplaints, 'Khiếu nại mới', '/Marketing/contact?tab=feedback'));
+    list.push(
+      buildTodoItem(
+        'customer',
+        alerts.customer.newComplaints,
+        'Khiếu nại mới',
+        '/Marketing/contact?tab=feedback'
+      )
+    );
   if (alerts.customer.missedAppointments > 0)
-    list.push(buildTodoItem('customer', alerts.customer.missedAppointments, 'Lịch hẹn bị bỏ lỡ', '/admin/appointments'));
+    list.push(
+      buildTodoItem(
+        'customer',
+        alerts.customer.missedAppointments,
+        'Lịch hẹn bị bỏ lỡ',
+        '/admin/appointments'
+      )
+    );
   if (alerts.operations.pendingOrders > 0)
-    list.push(buildTodoItem('operations', alerts.operations.pendingOrders, 'Đơn hàng chưa xử lý', '/Order/management/order'));
+    list.push(
+      buildTodoItem(
+        'operations',
+        alerts.operations.pendingOrders,
+        'Đơn hàng chưa xử lý',
+        '/Order/management/order'
+      )
+    );
 }
 
 async function setFilter(f: 'day' | 'week' | 'month') {
@@ -151,10 +210,13 @@ async function fetchData() {
 }
 
 onMounted(fetchData);
-watch(() => props.timeFilter, (val) => {
-  if (val) filter.value = FILTER_MAP[val] ?? 'day';
-  fetchData();
-});
+watch(
+  () => props.timeFilter,
+  (val) => {
+    if (val) filter.value = FILTER_MAP[val] ?? 'day';
+    fetchData();
+  }
+);
 </script>
 
 <style scoped lang="scss">
@@ -163,7 +225,7 @@ watch(() => props.timeFilter, (val) => {
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -193,7 +255,10 @@ watch(() => props.timeFilter, (val) => {
   font-size: 20px;
   flex-shrink: 0;
 
-  &--red { background: rgba(239,68,68,0.12); color: #ef4444; }
+  &--red {
+    background: rgb(239 68 68 / 12%);
+    color: #ef4444;
+  }
 }
 
 .panel-title {
@@ -227,9 +292,16 @@ watch(() => props.timeFilter, (val) => {
   border-bottom: 1px solid var(--el-border-color-lighter);
   transition: background 0.15s;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 
-  &:hover { background: var(--el-fill-color-light); border-radius: 10px; padding-left: 8px; padding-right: 8px; }
+  &:hover {
+    background: var(--el-fill-color-light);
+    border-radius: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 
   &__icon-wrap {
     width: 38px;
@@ -241,13 +313,24 @@ watch(() => props.timeFilter, (val) => {
     flex-shrink: 0;
     font-size: 18px;
 
-    &--danger  { background: rgba(239,68,68,0.1); }
-    &--warning { background: rgba(245,158,11,0.1); }
-    &--info    { background: rgba(59,130,246,0.1); }
-    &--success { background: rgba(16,185,129,0.1); }
+    &--danger {
+      background: rgb(239 68 68 / 10%);
+    }
+    &--warning {
+      background: rgb(245 158 11 / 10%);
+    }
+    &--info {
+      background: rgb(59 130 246 / 10%);
+    }
+    &--success {
+      background: rgb(16 185 129 / 10%);
+    }
   }
 
-  &__body { flex: 1; min-width: 0; }
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
 
   &__title {
     font-size: 14px;
@@ -303,8 +386,18 @@ watch(() => props.timeFilter, (val) => {
   color: var(--el-text-color-placeholder);
   padding: 40px 0;
 
-  :deep(svg), .text-4xl { font-size: 40px; color: #10b981; }
-  span { font-size: 14px; font-weight: 600; color: var(--el-text-color-secondary); }
-  small { font-size: 12px; }
+  :deep(svg),
+  .text-4xl {
+    font-size: 40px;
+    color: #10b981;
+  }
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+  }
+  small {
+    font-size: 12px;
+  }
 }
 </style>

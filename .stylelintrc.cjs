@@ -100,5 +100,7 @@ module.exports = {
     'order/properties-order': null,
     'scss/operator-no-unspaced': null,
     'block-no-redundant-nested-style-rules': null,
+    'declaration-block-single-line-max-declarations': null,
+    'block-no-empty': null,
   },
 };

@@ -13,31 +13,31 @@ html.dark {
   --w-e-textarea-slight-bg-color: #090909;
   --w-e-modal-button-bg-color: #090909;
   --w-e-toolbar-active-color: var(--art-gray-800);
-
-  --el-table-text-color: #ffffff;
-  --el-table-header-text-color: #ffffff;
+  --el-table-text-color: #fff;
+  --el-table-header-text-color: #fff;
 
   .el-table {
-    --el-table-text-color: #ffffff !important;
-    --el-table-header-text-color: #ffffff !important;
-    color: #ffffff !important;
+    --el-table-text-color: #fff !important;
+    --el-table-header-text-color: #fff !important;
+
+    color: #fff !important;
 
     td.el-table__cell,
     th.el-table__cell {
-      color: #ffffff !important;
+      color: #fff !important;
     }
 
     .el-table__body {
-      color: #ffffff !important;
+      color: #fff !important;
     }
 
     .cell {
-      color: #ffffff !important;
+      color: #fff !important;
     }
   }
 
   .text-black:not([class*='dark:text-']) {
-    color: #ffffff !important;
+    color: #fff !important;
   }
 
   .text-gray-950:not([class*='dark:text-']),
@@ -48,14 +48,14 @@ html.dark {
   .text-slate-900:not([class*='dark:text-']),
   .text-zinc-900:not([class*='dark:text-']),
   .text-neutral-900:not([class*='dark:text-']) {
-    color: #ffffff !important;
+    color: #fff !important;
   }
 
   .text-gray-800:not([class*='dark:text-']),
   .text-slate-800:not([class*='dark:text-']),
   .text-zinc-800:not([class*='dark:text-']),
   .text-neutral-800:not([class*='dark:text-']) {
-    color: #ffffff !important;
+    color: #fff !important;
   }
 
   .text-gray-700:not([class*='dark:text-']),
@@ -123,7 +123,7 @@ html.dark {
   [class*='border-slate-']:not([class*='dark:border-']),
   [class*='border-zinc-']:not([class*='dark:border-']),
   [class*='border-neutral-']:not([class*='dark:border-']) {
-    border-color: var(--default-border, rgba(255, 255, 255, 0.1)) !important;
+    border-color: var(--default-border, rgb(255 255 255 / 10%)) !important;
   }
 
   .el-tabs--border-card {

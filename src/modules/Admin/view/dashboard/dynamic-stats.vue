@@ -21,11 +21,7 @@
       <span>Không có hoạt động nào gần đây</span>
     </div>
     <ElScrollbar v-else class="log-scroll">
-      <div
-        v-for="(item, index) in list"
-        :key="index"
-        class="log-row"
-      >
+      <div v-for="(item, index) in list" :key="index" class="log-row">
         <div class="log-row__indicator" :class="`log-row__indicator--${item.category}`"></div>
         <div class="log-row__content">
           <div class="log-row__top">
@@ -38,7 +34,9 @@
               {{ CATEGORY_LABELS[item.category] ?? item.category }}
             </el-tag>
             <span class="log-row__action">{{ ACTION_LABELS[item.action] ?? item.action }}</span>
-            <span class="log-row__target">{{ TARGET_LABELS[item.targetType] ?? item.targetType }}</span>
+            <span class="log-row__target">{{
+              TARGET_LABELS[item.targetType] ?? item.targetType
+            }}</span>
           </div>
           <div class="log-row__bottom">
             <span v-if="item.actorName" class="log-row__actor">
@@ -57,20 +55,32 @@ import { ref, reactive, onMounted } from 'vue';
 import { fetchRecentAuditLogs } from '@/api/dashboard.api';
 
 const CATEGORY_TAG: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
-  order: 'primary', inventory: 'warning', customer: 'success',
-  operations: 'info', finance: 'danger',
+  order: 'primary',
+  inventory: 'warning',
+  customer: 'success',
+  operations: 'info',
+  finance: 'danger',
 };
 const CATEGORY_LABELS: Record<string, string> = {
-  order: 'Đơn hàng', inventory: 'Kho hàng', customer: 'Khách hàng',
-  operations: 'Vận hành', finance: 'Tài chính',
+  order: 'Đơn hàng',
+  inventory: 'Kho hàng',
+  customer: 'Khách hàng',
+  operations: 'Vận hành',
+  finance: 'Tài chính',
 };
 
 const ACTION_LABELS: Record<string, string> = {
-  created: 'tạo mới', updated: 'cập nhật', deleted: 'xóa', expense: 'phát sinh',
+  created: 'tạo mới',
+  updated: 'cập nhật',
+  deleted: 'xóa',
+  expense: 'phát sinh',
 };
 
 const TARGET_LABELS: Record<string, string> = {
-  Order: 'đơn hàng', Customer: 'khách hàng', Inventory: 'kho hàng', Expense: 'chi phí',
+  Order: 'đơn hàng',
+  Customer: 'khách hàng',
+  Inventory: 'kho hàng',
+  Expense: 'chi phí',
 };
 
 interface AuditLogItem {
@@ -90,8 +100,11 @@ const isLoading = ref(false);
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleString('vi-VN', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -117,7 +130,7 @@ onMounted(fetchData);
   border: 1px solid var(--el-border-color-light);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -146,7 +159,10 @@ onMounted(fetchData);
   font-size: 20px;
   flex-shrink: 0;
 
-  &--slate { background: rgba(100,116,139,0.12); color: #64748b; }
+  &--slate {
+    background: rgb(100 116 139 / 12%);
+    color: #64748b;
+  }
 }
 
 .panel-title {
@@ -174,7 +190,9 @@ onMounted(fetchData);
   padding: 10px 0;
   border-bottom: 1px solid var(--el-border-color-lighter);
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 
   &__indicator {
     width: 3px;
@@ -182,15 +200,30 @@ onMounted(fetchData);
     flex-shrink: 0;
     align-self: stretch;
 
-    &--order      { background: #3b82f6; }
-    &--inventory  { background: #f59e0b; }
-    &--customer   { background: #10b981; }
-    &--operations { background: #8b5cf6; }
-    &--finance    { background: #ef4444; }
-    &--default    { background: #94a3b8; }
+    &--order {
+      background: #3b82f6;
+    }
+    &--inventory {
+      background: #f59e0b;
+    }
+    &--customer {
+      background: #10b981;
+    }
+    &--operations {
+      background: #8b5cf6;
+    }
+    &--finance {
+      background: #ef4444;
+    }
+    &--default {
+      background: #94a3b8;
+    }
   }
 
-  &__content { flex: 1; min-width: 0; }
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
 
   &__top {
     display: flex;
@@ -200,7 +233,9 @@ onMounted(fetchData);
     margin-bottom: 4px;
   }
 
-  &__cat { flex-shrink: 0; }
+  &__cat {
+    flex-shrink: 0;
+  }
 
   &__action {
     font-size: 13px;
@@ -244,7 +279,12 @@ onMounted(fetchData);
   gap: 8px;
   color: var(--el-text-color-placeholder);
 
-  svg, .text-4xl { font-size: 36px; }
-  span { font-size: 13px; }
+  svg,
+  .text-4xl {
+    font-size: 36px;
+  }
+  span {
+    font-size: 13px;
+  }
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="resp-page console-dashboard">
-    <!-- Header -->
     <div class="dash-header mb-6">
       <div class="dash-header__left">
         <div class="dash-header__icon">📊</div>
@@ -28,10 +27,8 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
     <CardList :time-filter="timeFilter" :date-range="dateRange" />
 
-    <!-- Row 1: Customer overview + Sales chart -->
     <ElRow :gutter="20" class="mb-5">
       <ElCol :sm="24" :md="12" :lg="10">
         <ActiveUser :time-filter="timeFilter" />
@@ -41,7 +38,6 @@
       </ElCol>
     </ElRow>
 
-    <!-- Row 2: Audit log + Alerts -->
     <ElRow :gutter="20">
       <ElCol :sm="24" :md="12" :lg="12">
         <Dynamic />
@@ -72,7 +68,7 @@ const dateRange = ref<[Date, Date] | null>(null);
   padding: 24px;
   max-width: 100%;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     padding: 12px;
   }
 }

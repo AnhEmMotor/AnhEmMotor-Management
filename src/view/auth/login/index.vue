@@ -307,7 +307,6 @@ const handleFacebookLogin = async () => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-
   overflow: hidden;
 
   .login-video-bg {
