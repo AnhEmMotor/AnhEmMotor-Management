@@ -192,14 +192,17 @@ watch(() => props.timeFilter, load);
       background: rgb(245 158 11 / 12%);
       color: #f59e0b;
     }
+
     .customer-stat--blue & {
       background: rgb(59 130 246 / 12%);
       color: #3b82f6;
     }
+
     .customer-stat--green & {
       background: rgb(16 185 129 / 12%);
       color: #10b981;
     }
+
     .customer-stat--red & {
       background: rgb(239 68 68 / 12%);
       color: #ef4444;

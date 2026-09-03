@@ -147,12 +147,15 @@ watch(() => props.dateRange, load);
   &--blue::before {
     background: linear-gradient(90deg, #3b82f6, #60a5fa);
   }
+
   &--green::before {
     background: linear-gradient(90deg, #10b981, #34d399);
   }
+
   &--orange::before {
     background: linear-gradient(90deg, #f59e0b, #fbbf24);
   }
+
   &--red::before {
     background: linear-gradient(90deg, #ef4444, #f87171);
   }
@@ -170,14 +173,17 @@ watch(() => props.dateRange, load);
       background: rgb(59 130 246 / 12%);
       color: #3b82f6;
     }
+
     .kpi-card--green & {
       background: rgb(16 185 129 / 12%);
       color: #10b981;
     }
+
     .kpi-card--orange & {
       background: rgb(245 158 11 / 12%);
       color: #f59e0b;
     }
+
     .kpi-card--red & {
       background: rgb(239 68 68 / 12%);
       color: #ef4444;
@@ -223,9 +229,11 @@ watch(() => props.dateRange, load);
   &__change {
     font-size: 12px;
     font-weight: 600;
+
     &.up {
       color: #10b981;
     }
+
     &.down {
       color: #ef4444;
     }

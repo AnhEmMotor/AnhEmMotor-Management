@@ -203,18 +203,23 @@ onMounted(fetchData);
     &--order {
       background: #3b82f6;
     }
+
     &--inventory {
       background: #f59e0b;
     }
+
     &--customer {
       background: #10b981;
     }
+
     &--operations {
       background: #8b5cf6;
     }
+
     &--finance {
       background: #ef4444;
     }
+
     &--default {
       background: #94a3b8;
     }
@@ -283,6 +288,7 @@ onMounted(fetchData);
   .text-4xl {
     font-size: 36px;
   }
+
   span {
     font-size: 13px;
   }

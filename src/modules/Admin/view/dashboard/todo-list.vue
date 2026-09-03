@@ -316,12 +316,15 @@ watch(
     &--danger {
       background: rgb(239 68 68 / 10%);
     }
+
     &--warning {
       background: rgb(245 158 11 / 10%);
     }
+
     &--info {
       background: rgb(59 130 246 / 10%);
     }
+
     &--success {
       background: rgb(16 185 129 / 10%);
     }
@@ -391,11 +394,13 @@ watch(
     font-size: 40px;
     color: #10b981;
   }
+
   span {
     font-size: 14px;
     font-weight: 600;
     color: var(--el-text-color-secondary);
   }
+
   small {
     font-size: 12px;
   }

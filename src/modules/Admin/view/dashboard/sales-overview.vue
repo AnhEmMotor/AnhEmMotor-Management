@@ -231,6 +231,7 @@ onUnmounted(() => {
   &--blue {
     background: #3b82f6;
   }
+
   &--green {
     background: #10b981;
   }
