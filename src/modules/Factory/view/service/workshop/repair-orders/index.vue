@@ -318,10 +318,25 @@
                 :key="emp.id"
                 :label="emp.fullName + ' (' + emp.jobTitle + ')'"
                 :value="emp.id"
-              />
+              >
+                <div class="flex items-center justify-between w-full">
+                  <span>
+                    <strong>{{ emp.fullName }}</strong>
+                    <span class="text-xs text-gray-500 ml-1.5">({{ emp.jobTitle }})</span>
+                  </span>
+                  <ElTag
+                    size="small"
+                    type="success"
+                    effect="light"
+                    class="font-normal text-xs"
+                  >
+                    {{ getTechTagLabel(emp.id) }}
+                  </ElTag>
+                </div>
+              </ElOption>
               <template v-if="availableTechnicians.length === 0" #empty>
                 <div class="text-center py-3 text-slate-400 text-sm">
-                  Tất cả kỹ thuật viên đã được phân công
+                  Chưa có kỹ thuật viên hoàn thành phiếu hoặc sẵn sàng nhận việc
                 </div>
               </template>
             </ElSelect>
@@ -681,15 +696,48 @@ const counts = computed(() => {
 });
 
 const availableTechnicians = computed(() => {
-  const activeTechIds = new Set(
+  // Những kỹ thuật viên có ít nhất 1 phiếu đã hoàn thành tại trang sửa chữa
+  const completedTechIds = new Set(
     allValidItems.value
-      .filter(
-        (x: any) => ['Pending', 'InProgress', 'QcPending'].includes(x.status) && x.technicianId
-      )
-      .map((x: any) => x.technicianId)
+      .filter((x: any) => x.status === 'Completed' && x.technicianId)
+      .map((x: any) => Number(x.technicianId))
   );
-  return technicians.value.filter((t) => !activeTechIds.has(t.id));
+
+  // Trạng thái phiếu gần nhất của từng kỹ thuật viên
+  const latestStatusByTechId = new Map<number, string>();
+  const sortedByRecent = [...allValidItems.value].sort(
+    (a: any, b: any) => (b.id || 0) - (a.id || 0)
+  );
+  for (const item of sortedByRecent) {
+    const tId = Number(item.technicianId);
+    if (tId && !latestStatusByTechId.has(tId)) {
+      latestStatusByTechId.set(tId, item.status);
+    }
+  }
+
+  return technicians.value.filter((t) => {
+    const techId = Number(t.id);
+    // 1. Kỹ thuật viên có phiếu đã hoàn thành
+    if (completedTechIds.has(techId)) return true;
+
+    // 2. Phiếu gần nhất đã hoàn thành hoặc đã hủy (thợ đã xong việc)
+    const latestStatus = latestStatusByTechId.get(techId);
+    if (latestStatus === 'Completed' || latestStatus === 'Cancelled') return true;
+
+    // 3. Kỹ thuật viên chưa nhận phiếu nào (sẵn sàng nhận việc)
+    if (!latestStatus) return true;
+
+    return false;
+  });
 });
+
+const getTechTagLabel = (techId: number) => {
+  const hasCompleted = allValidItems.value.some(
+    (x: any) => Number(x.technicianId) === techId && x.status === 'Completed'
+  );
+  if (hasCompleted) return 'Đã hoàn thành phiếu';
+  return 'Sẵn sàng nhận việc';
+};
 
 const statusTagType = (status: string) => {
   switch (status) {
@@ -756,6 +804,8 @@ const createForm = ref({
 const openCreateDialog = () => {
   createDialogVisible.value = true;
   vinFoundInSystem.value = false;
+  void fetchTechnicians();
+  void fetchData();
   createForm.value = {
     customerPhone: '',
     customerName: '',
