@@ -81,10 +81,10 @@
     <template v-else>
       <div class="reporting-kpi-grid mb-4">
         <ArtStatsCard
-          title="Đơn hàng liên kết"
-          :count="contractData.orderId ? `#${contractData.orderId}` : '-'"
+          title="Hóa đơn liên kết"
+          :count="contractData.invoiceNumber || (contractData.invoiceId ? `#${contractData.invoiceId}` : (contractData.orderId ? `#${contractData.orderId}` : '-'))"
           :description="contractData.contractNumber || 'Chưa có số hợp đồng'"
-          icon="ri:hashtag"
+          icon="ri:file-text-line"
           icon-style="bg-report-red"
         />
         <ArtStatsCard
@@ -433,6 +433,8 @@ const isLoading = ref(true);
 const contractData = ref({
   id: '' as string,
   orderId: undefined as number | undefined,
+  invoiceId: undefined as number | undefined,
+  invoiceNumber: undefined as string | undefined,
   contractNumber: '' as string,
   status: 'Draft' as SalesContractStatus,
 
@@ -530,6 +532,8 @@ const loadData = async () => {
     const c = await SalesContractApi.getById(contractId);
     contractData.value.id = c.id;
     contractData.value.orderId = c.orderId;
+    contractData.value.invoiceId = c.invoiceId;
+    contractData.value.invoiceNumber = c.invoiceNumber;
     contractData.value.contractNumber = c.contractNumber;
     contractData.value.status = (c.status || 'Draft') as SalesContractStatus;
     contractData.value.customerFullName = c.customerFullName || '';

@@ -102,11 +102,20 @@
 
         <el-table :data="tableData" border style="width: 100%" v-loading="loading">
           <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
-          <el-table-column label="Mã Hóa Đơn" width="140">
+          <el-table-column label="Mã Hóa Đơn" width="160">
             <template #default="scope">
-              <span class="font-semibold text-gray-700">
-                {{ scope.row.invoiceNumber || (scope.row.invoiceId ? `#${scope.row.invoiceId}` : 'Chưa gắn HĐ') }}
+              <el-tag
+                v-if="scope.row.invoiceNumber"
+                type="primary"
+                size="small"
+                class="font-semibold"
+              >
+                {{ scope.row.invoiceNumber }}
+              </el-tag>
+              <span v-else-if="scope.row.invoiceId" class="font-semibold text-primary">
+                #{{ scope.row.invoiceId }}
               </span>
+              <span v-else class="text-gray-400">-</span>
             </template>
           </el-table-column>
           <el-table-column prop="customerName" label="Khách Hàng" min-width="160" />

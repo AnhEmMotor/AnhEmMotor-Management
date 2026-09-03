@@ -414,6 +414,7 @@ const isLoading = ref(true);
 const contractData = ref({
   id: '' as string,
   invoiceId: undefined as number | undefined,
+  invoiceNumber: undefined as string | undefined,
   orderId: undefined as number | undefined,
   contractNumber: '' as string,
   status: 'Draft' as SalesContractStatus,
@@ -524,6 +525,7 @@ const loadData = async () => {
     const c = await SalesContractApi.getById(contractId);
     contractData.value.id = c.id;
     contractData.value.invoiceId = c.invoiceId;
+    contractData.value.invoiceNumber = c.invoiceNumber;
     contractData.value.contractNumber = c.contractNumber;
     contractData.value.status = (c.status || 'Draft') as SalesContractStatus;
     contractData.value.customerFullName = c.customerFullName || '';
