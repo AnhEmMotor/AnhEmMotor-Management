@@ -1130,7 +1130,7 @@ async function updateSessionStatus(newStatus: string) {
   if (!activeSession.value) return;
   sessionStatusUpdating.value = true;
   try {
-    await ContactApi.updateStatus(activeSession.value.id, { status: newStatus as any });
+    await ContactApi.updateStatus(activeSession.value.id, 'SupportRequest', { status: newStatus as any });
     activeSession.value.status = newStatus as any;
     ElMessage.success('Đã cập nhật trạng thái');
     await loadSupportSessions(activeSession.value.id);

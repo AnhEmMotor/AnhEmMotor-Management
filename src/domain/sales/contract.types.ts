@@ -63,7 +63,7 @@ export interface SalesContractDetailDto {
 
 export interface CreateSalesContractRequest {
   orderId?: number;
-  invoiceId: number;
+  invoiceId?: number;
   specialTerms?: string;
   warrantyPeriod?: string;
   warrantyScope?: string;

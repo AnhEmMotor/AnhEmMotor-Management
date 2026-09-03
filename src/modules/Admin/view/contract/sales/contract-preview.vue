@@ -444,7 +444,6 @@ const contractData = ref({
   warrantyScope: '',
   specialTerms: '',
   note: '',
-  rejectReason: '' as string,
 
   scannedFileUrl: null as string | null,
 });
