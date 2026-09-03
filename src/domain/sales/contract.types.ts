@@ -4,7 +4,7 @@ export interface SalesContractListDto {
   id: string;
   contractNumber: string;
   orderId?: number;
-  invoiceId: number;
+  invoiceId?: number;
   invoiceNumber?: string;
   outputId?: number;
   status: SalesContractStatus;
@@ -24,9 +24,9 @@ export interface SalesContractDetailDto {
   id: string;
   contractNumber: string;
   orderId?: number;
-  invoiceId: number;
+  invoiceId?: number;
   invoiceNumber?: string;
-  outputId: number;
+  outputId?: number;
   status: SalesContractStatus;
   signedDate?: string;
   scannedFileUrl?: string;

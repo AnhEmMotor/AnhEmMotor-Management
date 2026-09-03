@@ -105,14 +105,9 @@
           <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
           <el-table-column label="Mã Hóa Đơn" width="140">
             <template #default="scope">
-              <el-button
-                link
-                type="primary"
-                class="font-semibold"
-                v-auth="Permissions.Admin.ContractManagement.Edit"
-              >
-                {{ scope.row.invoiceNumber || scope.row.invoiceId }}
-              </el-button>
+              <span class="font-semibold text-gray-700">
+                {{ scope.row.invoiceNumber || (scope.row.invoiceId ? `#${scope.row.invoiceId}` : 'Chưa gắn HĐ') }}
+              </span>
             </template>
           </el-table-column>
           <el-table-column prop="customerName" label="Khách Hàng" min-width="160" />
@@ -201,7 +196,8 @@ const vehicleFilter = ref('');
 interface SalesContractListRow {
   id: string;
   contractNumber: string;
-  invoiceId: number;
+  invoiceId?: number;
+  invoiceNumber?: string;
   status: SalesContractStatus;
   customerName: string;
   vehicle: string;
@@ -245,6 +241,7 @@ const mapSalesContractRow = (contract: SalesContractListDto): SalesContractListR
   id: contract.id,
   contractNumber: contract.contractNumber,
   invoiceId: contract.invoiceId,
+  invoiceNumber: contract.invoiceNumber,
   status: contract.status,
   customerName: contract.customerFullName?.trim() || 'Chưa có khách hàng',
   vehicle: formatVehicleTransaction(contract),
@@ -269,8 +266,8 @@ const fetchData = async () => {
     if (vehicleFilter.value) params.vehicleModel = vehicleFilter.value;
 
     const res = await SalesContractApi.getList(params);
-    tableData.value = res.items.map(mapSalesContractRow);
-    pagination.total = res.totalCount || 0;
+    tableData.value = (res?.items || []).map(mapSalesContractRow);
+    pagination.total = res?.totalCount || 0;
   } catch (_e) {
     ElMessage.error('Không tải được danh sách hợp đồng.');
   } finally {
@@ -281,10 +278,12 @@ const fetchData = async () => {
 const loadStatistics = async () => {
   try {
     const stats = await SalesContractApi.getStatistics();
-    statistics.draftCount = stats.draftCount;
-    statistics.pendingApprovalCount = stats.pendingApprovalCount;
-    statistics.overdueCount = stats.overdueCount;
-    statistics.signedCount = stats.signedCount;
+    if (stats) {
+      statistics.draftCount = stats.draftCount || 0;
+      statistics.pendingApprovalCount = stats.pendingApprovalCount || 0;
+      statistics.overdueCount = stats.overdueCount || 0;
+      statistics.signedCount = stats.signedCount || 0;
+    }
   } catch (_e) {}
 };
 
@@ -384,7 +383,11 @@ const getDeadlineTagType = (dateStr?: string): 'danger' | 'warning' | 'info' => 
 };
 
 const goToPreview = (id?: string) => {
-  router.push({ name: 'SalesContractPreview', params: { id: id || '' } });
+  if (id) {
+    router.push({ name: 'SalesContractPreview', params: { id } });
+  } else {
+    router.push({ name: 'SalesContractPreview' });
+  }
 };
 </script>
 

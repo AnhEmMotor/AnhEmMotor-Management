@@ -531,7 +531,7 @@ const loadData = async () => {
     contractData.value.id = c.id;
     contractData.value.orderId = c.orderId;
     contractData.value.contractNumber = c.contractNumber;
-    contractData.value.status = c.status as SalesContractStatus;
+    contractData.value.status = (c.status || 'Draft') as SalesContractStatus;
     contractData.value.customerFullName = c.customerFullName || '';
     contractData.value.customerCCCD = c.customerCCCD || '';
     contractData.value.customerAddress = c.customerAddress || '';

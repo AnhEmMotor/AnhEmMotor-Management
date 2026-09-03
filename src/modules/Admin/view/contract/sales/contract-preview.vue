@@ -525,7 +525,7 @@ const loadData = async () => {
     contractData.value.id = c.id;
     contractData.value.invoiceId = c.invoiceId;
     contractData.value.contractNumber = c.contractNumber;
-    contractData.value.status = c.status as SalesContractStatus;
+    contractData.value.status = (c.status || 'Draft') as SalesContractStatus;
     contractData.value.customerFullName = c.customerFullName || '';
     contractData.value.customerCCCD = c.customerCCCD || '';
     contractData.value.customerAddress = c.customerAddress || '';
@@ -547,6 +547,7 @@ const loadData = async () => {
     contractData.value.warrantyScope = c.warrantyScope || '';
     contractData.value.specialTerms = c.specialTerms || '';
     contractData.value.note = c.note || '';
+    contractData.value.rejectReason = c.rejectReason || '';
     contractData.value.scannedFileUrl = c.scannedFileUrl || null;
   } catch (_e) {
     ElMessage.error('Không tải được dữ liệu hợp đồng.');
