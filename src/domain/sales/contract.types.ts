@@ -1,8 +1,9 @@
-export type SalesContractStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Signed' | 'Fulfilled';
+export type SalesContractStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Signed' | 'Fulfilled' | 'Rejected';
 
 export interface SalesContractListDto {
   id: string;
   contractNumber: string;
+  orderId?: number;
   invoiceId: number;
   invoiceNumber?: string;
   outputId?: number;
@@ -22,6 +23,7 @@ export interface SalesContractListDto {
 export interface SalesContractDetailDto {
   id: string;
   contractNumber: string;
+  orderId?: number;
   invoiceId: number;
   invoiceNumber?: string;
   outputId: number;
@@ -60,6 +62,7 @@ export interface SalesContractDetailDto {
 }
 
 export interface CreateSalesContractRequest {
+  orderId?: number;
   invoiceId: number;
   specialTerms?: string;
   warrantyPeriod?: string;

@@ -1125,6 +1125,22 @@ async function sendChatReply() {
   }
 }
 
+const sessionStatusUpdating = ref(false);
+async function updateSessionStatus(newStatus: string) {
+  if (!activeSession.value) return;
+  sessionStatusUpdating.value = true;
+  try {
+    await ContactApi.updateStatus(activeSession.value.id, { status: newStatus as any });
+    activeSession.value.status = newStatus as any;
+    ElMessage.success('Đã cập nhật trạng thái');
+    await loadSupportSessions(activeSession.value.id);
+  } catch {
+    ElMessage.error('Không thể cập nhật trạng thái');
+  } finally {
+    sessionStatusUpdating.value = false;
+  }
+}
+
 function openProfile(lead: Lead) {
   router.push(`/Marketing/customer/profile/${lead.id}`);
 }

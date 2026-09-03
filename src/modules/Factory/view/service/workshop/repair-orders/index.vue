@@ -738,6 +738,7 @@ const createForm = ref({
   mileage: 0,
   description: '',
   voucherCode: '',
+  isLaborFree: false,
 
   isNewCustomer: true,
   vinNumber: '',
@@ -761,6 +762,7 @@ const openCreateDialog = () => {
     mileage: 0,
     description: '',
     voucherCode: '',
+    isLaborFree: false,
 
     isNewCustomer: true,
     vinNumber: '',

@@ -743,7 +743,7 @@
           v-if="
             !(
               createDialog.isEdit &&
-              ['processing', 'completed', 'cancelled'].includes(createDialog.originalStatus)
+              ['processing', 'completed', 'cancelled'].includes(createDialog.originalStatus || '')
             )
           "
           type="primary"

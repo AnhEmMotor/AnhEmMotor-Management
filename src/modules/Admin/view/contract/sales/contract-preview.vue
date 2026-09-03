@@ -414,6 +414,7 @@ const isLoading = ref(true);
 const contractData = ref({
   id: '' as string,
   invoiceId: undefined as number | undefined,
+  orderId: undefined as number | undefined,
   contractNumber: '' as string,
   status: 'Draft' as SalesContractStatus,
   rejectReason: undefined as string | undefined,
@@ -443,6 +444,7 @@ const contractData = ref({
   warrantyScope: '',
   specialTerms: '',
   note: '',
+  rejectReason: '' as string,
 
   scannedFileUrl: null as string | null,
 });
