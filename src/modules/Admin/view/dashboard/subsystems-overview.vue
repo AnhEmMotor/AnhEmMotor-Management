@@ -420,9 +420,11 @@ watch(() => props.timeFilter, loadData);
   &--green {
     background: #10b981;
   }
+
   &--orange {
     background: #f59e0b;
   }
+
   &--red {
     background: #ef4444;
   }
