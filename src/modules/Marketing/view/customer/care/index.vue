@@ -228,7 +228,7 @@
                   <ArtSvgIcon icon="ri:message-3-line" />
                 </button>
               </ElTooltip>
-              <ElTooltip content="Hồ sơ 360">
+              <ElTooltip content="Xem hồ sơ">
                 <button
                   type="button"
                   class="icon-action icon-action--primary"
@@ -371,7 +371,7 @@
               />
             </ElSelect>
             <ElButton v-if="matchedLead" size="small" @click="openProfile(matchedLead)">
-              Hồ sơ 360
+              Xem hồ sơ
             </ElButton>
           </div>
         </header>
@@ -700,7 +700,6 @@ const sessionStatusFilter = ref('all');
 const activeSession = ref<Contact.SupportRequest | null>(null);
 const replyDraft = ref('');
 const replySending = ref(false);
-const sessionStatusUpdating = ref(false);
 const messageListRef = ref<HTMLElement | null>(null);
 const assignableUsers = ref<AssignableContactUser[]>([]);
 const assignableUsersLoading = ref(false);
@@ -1123,21 +1122,6 @@ async function sendChatReply() {
     ElMessage.error('Không thể gửi phản hồi');
   } finally {
     replySending.value = false;
-  }
-}
-
-async function updateSessionStatus(status: string) {
-  if (!activeSession.value || status === activeSession.value.status) return;
-  sessionStatusUpdating.value = true;
-  const sessionId = activeSession.value.id;
-  try {
-    await ContactApi.updateStatus(sessionId, 'support', { status });
-    await loadSupportSessions(sessionId);
-    ElMessage.success('Đã cập nhật trạng thái phiên');
-  } catch {
-    ElMessage.error('Không thể cập nhật trạng thái phiên');
-  } finally {
-    sessionStatusUpdating.value = false;
   }
 }
 

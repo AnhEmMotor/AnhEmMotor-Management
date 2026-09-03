@@ -363,6 +363,7 @@ import { ElMessage } from 'element-plus';
 import { VehicleApi, type Vehicle } from '@/api/vehicle';
 import { ProductApi } from '@/api/product';
 import { fetchGetLeadList } from '@/api/customer/lead.api';
+import { formatImageUrl } from '@/common/utils/image';
 
 defineOptions({ name: 'CustomerAsset' });
 
@@ -402,13 +403,9 @@ const getInitials = (name: string) => {
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 };
 
-const getImageUrl = (url?: string) => {
-  if (!url)
-    return 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200';
-  if (url.startsWith('http')) return url;
-  const baseUrl = import.meta.env.VITE_PUBLIC_API_URL_FOR_BROWSER_CLIENT || 'http://localhost:5000';
-  return `${baseUrl.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
-};
+const getImageUrl = (url?: string) =>
+  formatImageUrl(url) ||
+  'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&q=80&w=200';
 
 const loadLeads = async () => {
   loadingLeads.value = true;
