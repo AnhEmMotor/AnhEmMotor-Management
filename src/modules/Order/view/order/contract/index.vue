@@ -184,20 +184,28 @@
           <el-select
             v-model="form.invoiceId"
             filterable
-            remote
-            reserve-keyword
             placeholder="Nhập tên KH, SĐT hoặc mã hóa đơn..."
-            :remote-method="searchInvoices"
             :loading="invoiceSearchLoading"
             class="w-full"
             clearable
+            :filter-method="filterInvoices"
+            @focus="() => filterInvoices('')"
           >
             <el-option
               v-for="item in invoiceOptions"
               :key="item.id"
-              :label="`${item.customerName} - ${item.customerPhone} (Hóa đơn #${item.id})`"
+              :label="`${item.invoiceNumber || '#' + item.id} - ${item.customerName} (${item.customerPhone || 'Không có SĐT'})`"
               :value="item.id"
-            />
+            >
+              <div class="flex justify-between items-center w-full">
+                <span>
+                  <strong class="text-primary">{{ item.invoiceNumber || '#' + item.id }}</strong>
+                  <span class="text-gray-600 ml-2">{{ item.customerName }}</span>
+                  <span v-if="item.customerPhone" class="text-gray-400 ml-1">({{ item.customerPhone }})</span>
+                </span>
+                <span class="text-xs text-gray-500 ml-4">{{ item.vehicleModel }}</span>
+              </div>
+            </el-option>
           </el-select>
         </el-form-item>
 
@@ -476,6 +484,8 @@ const getInvoiceStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
+const allInvoices = ref<any[]>([]);
+
 const handleOpenAddDialog = () => {
   form.invoiceId = null;
   form.specialTerms = '';
@@ -486,25 +496,43 @@ const handleOpenAddDialog = () => {
     formRef.value.resetFields();
   }
   dialogVisible.value = true;
-  searchInvoices('');
+  fetchAvailableInvoices();
 };
 
-const searchInvoices = async (query: string) => {
+const fetchAvailableInvoices = async () => {
   invoiceSearchLoading.value = true;
   try {
     const res = await invoiceApi.getAdminList({
       Page: 1,
-      PageSize: 50,
-      Filters: query ? `CustomerName@=${query}|InvoiceNumber@=${query}` : undefined,
+      PageSize: 100,
     });
-    invoiceOptions.value = (res.items || []).filter(
-      (invoice: any) => invoice.status === 'completed'
+    const items = res?.items || [];
+    const completedList = items.filter(
+      (invoice: any) => String(invoice.status || '').toLowerCase() === 'completed'
     );
+    allInvoices.value = completedList.length > 0 ? completedList : items;
+    invoiceOptions.value = allInvoices.value;
   } catch (_e) {
     ElMessage.error('Không tải được danh sách hóa đơn.');
   } finally {
     invoiceSearchLoading.value = false;
   }
+};
+
+const filterInvoices = (query: string) => {
+  if (!query) {
+    invoiceOptions.value = allInvoices.value;
+    return;
+  }
+  const q = query.toLowerCase().trim();
+  invoiceOptions.value = allInvoices.value.filter(
+    (i: any) =>
+      (i.customerName && i.customerName.toLowerCase().includes(q)) ||
+      (i.customerPhone && i.customerPhone.includes(q)) ||
+      (i.invoiceNumber && i.invoiceNumber.toLowerCase().includes(q)) ||
+      String(i.id).includes(q) ||
+      (i.vehicleModel && i.vehicleModel.toLowerCase().includes(q))
+  );
 };
 
 const handleSubmit = async () => {
