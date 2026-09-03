@@ -31,7 +31,7 @@
             v-model="filters.status"
             placeholder="Tất cả trạng thái"
             clearable
-            class="w-56"
+            style="width: 220px; min-width: 220px;"
             @change="handleSearch"
           >
             <el-option label="Mới tiếp nhận" :value="1" />

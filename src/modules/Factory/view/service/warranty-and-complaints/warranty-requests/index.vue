@@ -44,7 +44,7 @@
             v-model="filters.status"
             placeholder="Tất cả trạng thái"
             clearable
-            class="w-56"
+            style="width: 250px; min-width: 250px;"
             @change="handleSearch"
           >
             <el-option label="Tiếp nhận" :value="1" />
