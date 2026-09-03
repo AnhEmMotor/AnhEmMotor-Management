@@ -48,7 +48,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['*.ts', '**/*.ts', '*.js', '**/*.js', '*.cjs', '**/*.cjs'],
+    files: ['*.ts', '**/*.ts', '*.js', '**/*.js', '*.cjs', '**/*.cjs', '*.mjs', '**/*.mjs'],
     languageOptions: {
       parser: tseslint.parser,
       sourceType: 'module',

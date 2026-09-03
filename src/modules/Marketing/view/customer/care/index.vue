@@ -350,26 +350,6 @@
           </div>
 
           <div class="chat-panel__actions">
-            <ElSelect
-              :model-value="activeSession.status"
-              size="small"
-              :loading="sessionStatusUpdating"
-              aria-label="Cập nhật trạng thái phiên hỗ trợ"
-              @change="updateSessionStatus"
-            >
-              <ElOption label="Mới" value="New" disabled />
-              <ElOption label="Đã phân công" value="Assigned" disabled />
-              <ElOption
-                label="Đang xử lý"
-                value="InProgress"
-                :disabled="!['Assigned', 'InProgress'].includes(activeSession.status)"
-              />
-              <ElOption
-                label="Đã đóng"
-                value="Closed"
-                :disabled="!['InProgress', 'Closed'].includes(activeSession.status)"
-              />
-            </ElSelect>
             <ElButton v-if="matchedLead" size="small" @click="openProfile(matchedLead)">
               Xem hồ sơ
             </ElButton>
@@ -1122,22 +1102,6 @@ async function sendChatReply() {
     ElMessage.error('Không thể gửi phản hồi');
   } finally {
     replySending.value = false;
-  }
-}
-
-const sessionStatusUpdating = ref(false);
-async function updateSessionStatus(newStatus: string) {
-  if (!activeSession.value) return;
-  sessionStatusUpdating.value = true;
-  try {
-    await ContactApi.updateStatus(activeSession.value.id, 'SupportRequest', { status: newStatus as any });
-    activeSession.value.status = newStatus as any;
-    ElMessage.success('Đã cập nhật trạng thái');
-    await loadSupportSessions(activeSession.value.id);
-  } catch {
-    ElMessage.error('Không thể cập nhật trạng thái');
-  } finally {
-    sessionStatusUpdating.value = false;
   }
 }
 

@@ -286,15 +286,19 @@ watch(() => props.dateRange, load);
   &--blue::before {
     background: linear-gradient(90deg, #3b82f6, #60a5fa);
   }
+
   &--orange::before {
     background: linear-gradient(90deg, #f59e0b, #fbbf24);
   }
+
   &--purple::before {
     background: linear-gradient(90deg, #8b5cf6, #a78bfa);
   }
+
   &--green::before {
     background: linear-gradient(90deg, #10b981, #34d399);
   }
+
   &--pink::before {
     background: linear-gradient(90deg, #ec4899, #f472b6);
   }
@@ -423,6 +427,7 @@ watch(() => props.dateRange, load);
     &.up {
       color: #10b981;
     }
+
     &.down {
       color: #ef4444;
     }
