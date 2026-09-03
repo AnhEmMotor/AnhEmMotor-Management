@@ -38,7 +38,7 @@ export const factoryMenu: AppRouteRecord[] = [
             name: 'WorkshopDashboard',
             component: '/Factory/view/service/workshop/dashboard/index',
             meta: {
-              title: 'Dashboard xưởng',
+              title: 'Thống kê xưởng',
               icon: 'ri:dashboard-line',
               permissions: [Permissions.Factory.DashboardManagement.View],
             },

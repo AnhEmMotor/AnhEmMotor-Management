@@ -4,8 +4,11 @@
       <div class="dash-header__left">
         <div class="dash-header__icon">📊</div>
         <div>
-          <h1 class="dash-header__title">Trung tâm Thống kê & Điều hành</h1>
-          <p class="dash-header__sub">Theo dõi hiệu suất kinh doanh theo thời gian thực</p>
+          <h1 class="dash-header__title">Trung tâm Thống kê & Điều hành Đa Phân hệ</h1>
+          <p class="dash-header__sub">
+            Giám sát toàn diện 5 phân hệ cốt lõi: Bán hàng, Kho vận, Xưởng dịch vụ, Tài chính &
+            Khách hàng
+          </p>
         </div>
       </div>
       <div class="dash-header__controls">
@@ -29,12 +32,14 @@
 
     <CardList :time-filter="timeFilter" :date-range="dateRange" />
 
+    <SubsystemsOverview :time-filter="timeFilter" />
+
     <ElRow :gutter="20" class="mb-5">
-      <ElCol :sm="24" :md="12" :lg="10">
-        <ActiveUser :time-filter="timeFilter" />
-      </ElCol>
-      <ElCol :sm="24" :md="12" :lg="14">
+      <ElCol :sm="24" :md="16" :lg="16">
         <SalesOverview />
+      </ElCol>
+      <ElCol :sm="24" :md="8" :lg="8">
+        <ActiveUser :time-filter="timeFilter" />
       </ElCol>
     </ElRow>
 
@@ -52,6 +57,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import CardList from './card-list.vue';
+import SubsystemsOverview from './subsystems-overview.vue';
 import ActiveUser from './active-user.vue';
 import SalesOverview from './sales-overview.vue';
 import Dynamic from './dynamic-stats.vue';

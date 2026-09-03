@@ -6,10 +6,10 @@
           <ArtSvgIcon icon="ri:alarm-warning-line" class="text-2xl" />
         </div>
         <div>
-          <h4 class="panel-title">Cảnh báo Hệ thống</h4>
+          <h4 class="panel-title">Cảnh báo Đa Phân hệ</h4>
           <p class="panel-desc">
             Cần xử lý gấp:
-            <span class="alert-total">{{ totalAlerts }}</span> vấn đề
+            <span class="alert-total">{{ totalAlerts }}</span> vấn đề trên 5 phân hệ
           </p>
         </div>
       </div>
@@ -31,8 +31,8 @@
     </div>
     <div v-else-if="list.length === 0" class="empty-state">
       <ArtSvgIcon icon="ri:shield-check-line" class="text-4xl" />
-      <span>Không có cảnh báo nào</span>
-      <small>Hệ thống đang hoạt động bình thường</small>
+      <span>Không có cảnh báo tồn đọng nào</span>
+      <small>Tất cả 5 phân hệ đang vận hành ổn định</small>
     </div>
     <ElScrollbar v-else class="alert-scroll">
       <div
@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue';
 import { RouterLink } from 'vue-router';
-import { fetchDashboardKpis } from '@/api/dashboard.api';
+import { fetchDashboardKpis, fetchWorkshopDashboardOverview } from '@/api/dashboard.api';
 
 const props = defineProps<{ timeFilter?: string }>();
 
@@ -82,20 +82,25 @@ interface TodoItem {
 const CATEGORY_EMOJI: Record<string, string> = {
   financial: '💰',
   inventory: '📦',
+  service: '🔧',
   customer: '👤',
   operations: '📋',
 };
+
 const CATEGORY_LABELS: Record<string, string> = {
   financial: 'Tài chính',
   inventory: 'Kho hàng',
+  service: 'Xưởng DV',
   customer: 'Khách hàng',
-  operations: 'Vận hành',
+  operations: 'Bán hàng',
 };
+
 const CATEGORY_COLORS: Record<string, TodoItem['priority']> = {
   financial: 'danger',
   inventory: 'warning',
+  service: 'info',
   customer: 'danger',
-  operations: 'info',
+  operations: 'warning',
 };
 
 const list = reactive<TodoItem[]>([]);
@@ -123,9 +128,9 @@ function buildTodoItem(category: string, count: number, title: string, url: stri
   };
 }
 
-function buildAlerts(alerts: any) {
+function buildAlerts(alerts: any, workshopOverview?: any) {
   list.length = 0;
-  if (alerts.financial.delayedLoans > 0)
+  if (alerts?.financial?.delayedLoans > 0)
     list.push(
       buildTodoItem(
         'financial',
@@ -134,7 +139,7 @@ function buildAlerts(alerts: any) {
         '/admin/finance/delayed'
       )
     );
-  if (alerts.inventory.lowStockVehicles > 0)
+  if (alerts?.inventory?.lowStockVehicles > 0)
     list.push(
       buildTodoItem(
         'inventory',
@@ -143,7 +148,7 @@ function buildAlerts(alerts: any) {
         '/Warehouse/inventory-settings'
       )
     );
-  if (alerts.inventory.lowStockParts > 0)
+  if (alerts?.inventory?.lowStockParts > 0)
     list.push(
       buildTodoItem(
         'inventory',
@@ -152,7 +157,7 @@ function buildAlerts(alerts: any) {
         '/Warehouse/inventory-settings'
       )
     );
-  if (alerts.customer.newComplaints > 0)
+  if (alerts?.customer?.newComplaints > 0)
     list.push(
       buildTodoItem(
         'customer',
@@ -161,7 +166,7 @@ function buildAlerts(alerts: any) {
         '/Marketing/contact?tab=feedback'
       )
     );
-  if (alerts.customer.missedAppointments > 0)
+  if (alerts?.customer?.missedAppointments > 0)
     list.push(
       buildTodoItem(
         'customer',
@@ -170,7 +175,16 @@ function buildAlerts(alerts: any) {
         '/admin/appointments'
       )
     );
-  if (alerts.operations.pendingOrders > 0)
+  if (workshopOverview?.inProgressTickets > 10)
+    list.push(
+      buildTodoItem(
+        'service',
+        workshopOverview.inProgressTickets,
+        'Xe đang bảo dưỡng quá tải',
+        '/Factory/service/service-ticket'
+      )
+    );
+  if (alerts?.operations?.pendingOrders > 0)
     list.push(
       buildTodoItem(
         'operations',
@@ -190,7 +204,11 @@ async function fetchData() {
   isLoading.value = true;
   try {
     const period = props.timeFilter ?? filter.value;
-    const data = await fetchDashboardKpis(period);
+    const [data, workshop] = await Promise.all([
+      fetchDashboardKpis(period).catch(() => null),
+      fetchWorkshopDashboardOverview().catch(() => null),
+    ]);
+
     if (data && data.alerts) {
       const total =
         (data.alerts.financial?.delayedLoans ?? 0) +
@@ -200,7 +218,7 @@ async function fetchData() {
         (data.alerts.customer?.missedAppointments ?? 0) +
         (data.alerts.operations?.pendingOrders ?? 0);
       totalAlerts.value = total;
-      buildAlerts(data.alerts);
+      buildAlerts(data.alerts, workshop);
     }
   } catch (error) {
     console.error('Failed to fetch todo alerts:', error);
@@ -233,7 +251,7 @@ watch(
 
 .panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
   gap: 16px;

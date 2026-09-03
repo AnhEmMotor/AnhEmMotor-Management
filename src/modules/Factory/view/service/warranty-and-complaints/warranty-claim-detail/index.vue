@@ -82,6 +82,15 @@
         >
           <el-icon><Close /></el-icon> Hồ sơ đã bị từ chối
         </span>
+
+        <el-button
+          v-if="currentStatusValue === 6"
+          type="primary"
+          @click="createRepairOrderFromClaim"
+          v-auth="Permissions.Factory.RepairOrderManagement.Create"
+        >
+          Chuyển sang Sửa Chữa Dịch Vụ
+        </el-button>
       </div>
     </div>
 
@@ -471,7 +480,10 @@
               }}</span>
             </div>
             <div class="text-[10px] text-slate-400 italic text-center mt-2">
-              <span v-if="finalCustomerCost === 0">
+              <span v-if="currentStatusValue === 6" class="text-rose-400">
+                (Hồ sơ bị từ chối, không tiến hành bảo hành / sửa chữa)
+              </span>
+              <span v-else-if="finalCustomerCost === 0">
                 (Lỗi NSX: Miễn phí 100% linh kiện & công sửa chữa)
               </span>
               <span v-else> (Lỗi khách: Tính tiền phụ tùng, miễn phí công sửa chữa) </span>
@@ -584,7 +596,7 @@ const totalPartsCost = computed(() => {
 const finalCustomerCost = computed(() => {
   const s = claim.value?.status ? String(claim.value.status).toLowerCase() : '';
   if (s === '6' || s === 'rejected') {
-    return totalPartsCost.value;
+    return 0;
   }
   return 0;
 });
@@ -654,6 +666,18 @@ function goBack() {
   router.push({ name: 'WorkshopWarranty' }).catch(() => null);
 }
 
+function createRepairOrderFromClaim() {
+  if (!claim.value) return;
+  router.push({
+    name: 'WorkshopRepair',
+    query: {
+      action: 'create',
+      phone: claim.value.customerPhone,
+      plate: claim.value.vehiclePlate,
+    },
+  });
+}
+
 async function loadHistory() {
   if (!claim.value?.vehicleId) return;
   historyLoading.value = true;
@@ -691,19 +715,41 @@ async function handleUpdateStatus(statusNum: number) {
   };
 
   try {
-    await ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn ${labels[statusNum]}? Hành động này không thể hoàn tác.`,
-      'Xác nhận thay đổi trạng thái',
-      {
-        confirmButtonText: 'Xác nhận',
-        cancelButtonText: 'Hủy bỏ',
-        type: statusNum === 6 ? 'error' : 'warning',
-      }
-    );
+    let decisionText = undefined;
+    if (statusNum === 6) {
+      const promptResult = await ElMessageBox.prompt(
+        'Vui lòng nhập lý do hãng từ chối bảo hành:',
+        'Từ chối bảo hành',
+        {
+          confirmButtonText: 'Xác nhận từ chối',
+          cancelButtonText: 'Hủy bỏ',
+          inputPlaceholder: 'VD: Khách hàng tự ý thay đổi kết cấu, hao mòn tự nhiên...',
+          inputValidator: (value) => {
+            if (!value || value.trim().length === 0) {
+              return 'Vui lòng nhập lý do từ chối.';
+            }
+            return true;
+          },
+          type: 'error',
+        }
+      );
+      decisionText = promptResult.value;
+    } else {
+      await ElMessageBox.confirm(
+        `Bạn có chắc chắn muốn ${labels[statusNum]}? Hành động này không thể hoàn tác.`,
+        'Xác nhận thay đổi trạng thái',
+        {
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy bỏ',
+          type: 'warning',
+        }
+      );
+    }
 
     submitting.value = true;
     await WarrantyClaimApi.updateStatus(claimId, {
       status: statusNum,
+      manufacturerDecision: decisionText,
     });
     ElMessage.success('Cập nhật trạng thái thành công!');
     void load();

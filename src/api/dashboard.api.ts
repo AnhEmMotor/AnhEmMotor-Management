@@ -195,3 +195,35 @@ export const fetchRecentAuditLogs = (limit = 20) => {
     params: { limit },
   });
 };
+
+export interface WorkshopDashboardOverview {
+  totalTickets: number;
+  inProgressTickets: number;
+  completedTickets: number;
+  cancelledTickets: number;
+  totalAppointments: number;
+  todayAppointments: number;
+  workshopRevenue: number;
+  retailRevenue: number;
+}
+
+export const fetchWorkshopDashboardOverview = (from?: string, to?: string) => {
+  return request.get<WorkshopDashboardOverview>({
+    url: '/api/v1/Statistics/workshop-dashboard-overview',
+    params: { from, to },
+  });
+};
+
+export const fetchWarehouseOverview = (startDate?: string, endDate?: string) => {
+  return request.get<Statistical.AdminWarehouseReportResponse>({
+    url: '/api/v1/Statistics/warehouse-report',
+    params: { startDate, endDate },
+  });
+};
+
+export const fetchOrderStatistics = (params?: Record<string, any>) => {
+  return request.get<any>({
+    url: '/api/v1/Statistics/order-statistics',
+    params,
+  });
+};

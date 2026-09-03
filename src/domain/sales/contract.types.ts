@@ -1,9 +1,11 @@
-export type SalesContractStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Signed' | 'Fulfilled';
+export type SalesContractStatus = 'Draft' | 'PendingApproval' | 'Approved' | 'Signed' | 'Fulfilled' | 'Rejected';
 
 export interface SalesContractListDto {
   id: string;
   contractNumber: string;
-  orderId: number;
+  orderId?: number;
+  invoiceId: number;
+  invoiceNumber?: string;
   outputId?: number;
   status: SalesContractStatus;
   customerFullName?: string;
@@ -14,13 +16,16 @@ export interface SalesContractListDto {
   actualSalePrice: number;
   signedDate?: string;
   scannedFileUrl?: string;
+  rejectReason?: string;
   createdAt: string;
 }
 
 export interface SalesContractDetailDto {
   id: string;
   contractNumber: string;
-  orderId: number;
+  orderId?: number;
+  invoiceId: number;
+  invoiceNumber?: string;
   outputId: number;
   status: SalesContractStatus;
   signedDate?: string;
@@ -29,6 +34,7 @@ export interface SalesContractDetailDto {
   warrantyPeriod?: string;
   warrantyScope?: string;
   note?: string;
+  rejectReason?: string;
 
   showroomName?: string;
   showroomTaxCode?: string;
@@ -56,7 +62,8 @@ export interface SalesContractDetailDto {
 }
 
 export interface CreateSalesContractRequest {
-  orderId: number;
+  orderId?: number;
+  invoiceId?: number;
   specialTerms?: string;
   warrantyPeriod?: string;
   warrantyScope?: string;

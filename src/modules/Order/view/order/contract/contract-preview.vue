@@ -18,7 +18,7 @@
             <el-icon><Printer /></el-icon> In hợp đồng
           </el-button>
           <el-button
-            v-if="contractData.status === 'Draft'"
+            v-if="['Draft', 'Rejected'].includes(contractData.status)"
             type="primary"
             @click="handleSaveDraft"
             v-auth="Permissions.Order.ContractManagement.Edit"
@@ -26,7 +26,7 @@
             <el-icon><Document /></el-icon> Lưu bản nháp
           </el-button>
           <el-button
-            v-if="contractData.status === 'Draft'"
+            v-if="['Draft', 'Rejected'].includes(contractData.status)"
             type="danger"
             :loading="isSubmittingApproval"
             @click="handleSubmitForApproval"
@@ -157,6 +157,19 @@
             show-icon
             title="Hợp đồng đang ở trạng thái Nháp"
             description="Kiểm tra thông tin được lấy từ đơn hàng, lưu nội dung rồi gửi Admin duyệt."
+          />
+        </div>
+        <div v-else-if="contractData.status === 'Rejected'" class="mt-4">
+          <el-alert
+            type="error"
+            :closable="false"
+            show-icon
+            title="Admin đã từ chối duyệt hợp đồng"
+            :description="
+              contractData.rejectReason
+                ? `Lý do: ${contractData.rejectReason}`
+                : 'Vui lòng chỉnh sửa nội dung theo yêu cầu và gửi duyệt lại.'
+            "
           />
         </div>
         <div v-else-if="contractData.status === 'PendingApproval'" class="mt-4">
@@ -448,6 +461,7 @@ const contractData = ref({
   warrantyScope: '',
   specialTerms: '',
   note: '',
+  rejectReason: '' as string,
 
   scannedFileUrl: null as string | null,
 });
@@ -474,7 +488,9 @@ const activeStep = computed(() => {
   return 0;
 });
 
-const isContractLocked = computed(() => contractData.value.status !== 'Draft');
+const isContractLocked = computed(
+  () => contractData.value.status !== 'Draft' && contractData.value.status !== 'Rejected'
+);
 const canUploadSignedScan = computed(() =>
   ['Approved', 'Signed'].includes(contractData.value.status)
 );
@@ -486,6 +502,8 @@ const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
     case 'Draft':
       return 'Nháp';
+    case 'Rejected':
+      return 'Từ chối';
     case 'PendingApproval':
       return 'Chờ Admin duyệt';
     case 'Approved':
@@ -535,6 +553,7 @@ const loadData = async () => {
     contractData.value.warrantyScope = c.warrantyScope || '';
     contractData.value.specialTerms = c.specialTerms || '';
     contractData.value.note = c.note || '';
+    contractData.value.rejectReason = c.rejectReason || '';
     contractData.value.scannedFileUrl = c.scannedFileUrl || null;
   } catch (_e) {
     ElMessage.error('Không tải được dữ liệu hợp đồng.');
@@ -899,23 +918,41 @@ const formatDate = (dateString: string) => {
 
 .contract-document-layout {
   row-gap: 16px;
+  align-items: stretch;
+}
+
+.form-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-card :deep(.el-card__body) {
   min-height: 600px;
   padding: 14px;
+  flex: 1;
+}
+
+.preview-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .preview-card :deep(.el-card__body) {
   min-height: 650px;
   padding: 0;
   background-color: var(--el-fill-color-light);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .a4-preview-container {
   height: 610px;
   overflow-y: auto;
   border-radius: 0 0 8px 8px;
+  flex: 1;
 }
 
 .a4-paper {

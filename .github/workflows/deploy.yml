@@ -35,7 +35,8 @@ jobs:
           host: ${{ secrets.PRODUCTION_SERVER_IP }}
           username: ${{ secrets.PRODUCTION_SERVER_USERNAME }}
           key: ${{ secrets.SERVER_REMOTE_ACCESS_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT_FOR_PRODUCTION_SERVER }}
+          port: ${{ secrets.SSH_PORT_FOR_PRODUCTION_SERVER || 22 }}
+          timeout: 60s
           source: 'dist/'
           target: '/var/www/anhemmotor/frontend-management'
           strip_components: 1

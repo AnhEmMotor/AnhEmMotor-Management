@@ -119,7 +119,57 @@ export function useVehiclePortfolioHistory(): UseVehiclePortfolioHistoryResult {
 
       if (res) {
         vehicle.value = res.vehicle;
-        timeline.value = res.history;
+
+        const historyData = res.history || [];
+        historyData.forEach((item: any) => {
+          if ((!item.details || item.details.length === 0) && item.partsJson) {
+            const itemsList: any[] = [];
+            try {
+              const parsed = JSON.parse(item.partsJson);
+              if (Array.isArray(parsed)) {
+                parsed.forEach((p: any) => {
+                  const isPart = p.Type === 'Product' || p.productVariantId || p.ProductVariantId;
+                  itemsList.push({
+                    type: isPart ? 'Part' : 'Service',
+                    serviceName: p.serviceName || p.ServiceName || p.Name,
+                    variantName: p.productVariantName || p.variantName || p.Name,
+                    productCode: p.productCode || p.ProductCode,
+                    count: p.count || p.Count || 1,
+                    notes: p.notes || p.Notes,
+                  });
+                });
+              } else if (parsed && typeof parsed === 'object') {
+                if (Array.isArray(parsed.Parts)) {
+                  parsed.Parts.forEach((p: any) => {
+                    const fallbackName = p.ProductVariantId ? `Sản phẩm ID: ${p.ProductVariantId}` : null;
+                    itemsList.push({
+                      type: 'Part',
+                      variantName: p.ProductVariantName || p.productVariantName || p.Name || fallbackName,
+                      count: p.Count || p.count || 1,
+                      notes: p.Notes || p.notes,
+                    });
+                  });
+                }
+                if (Array.isArray(parsed.Services)) {
+                  parsed.Services.forEach((s: any) => {
+                    const fallbackName = s.ServiceId ? `Dịch vụ ID: ${s.ServiceId}` : null;
+                    itemsList.push({
+                      type: 'Service',
+                      serviceName: s.ServiceName || s.serviceName || s.Name || fallbackName,
+                      count: s.Count || s.count || 1,
+                      notes: s.Notes || s.notes,
+                    });
+                  });
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to parse partsJson in history', e);
+            }
+            item.details = itemsList;
+          }
+        });
+
+        timeline.value = historyData;
         pagination.value.total = res.totalHistoryCount;
         error.value = '';
       }

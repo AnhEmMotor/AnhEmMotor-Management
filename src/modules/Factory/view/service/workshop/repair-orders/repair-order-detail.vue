@@ -197,10 +197,20 @@
                 <h3 class="text-sm font-bold m-0 text-slate-800">
                   Hạng mục sửa chữa & Vật tư thay thế
                 </h3>
-                <div class="flex gap-2" v-if="calculatedStatus !== 'QcPending'">
+                <div class="flex gap-2">
                   <ElButton size="small" type="primary" plain @click="openPartsDialog"
                     >+ Thêm phụ tùng</ElButton
                   >
+                  <ElButton
+                    v-if="calculatedStatus === 'QcPending'"
+                    size="small"
+                    type="warning"
+                    plain
+                    :loading="submitting"
+                    @click="saveIssueParts('InProgress')"
+                  >
+                    ↩ Trả về sửa chữa
+                  </ElButton>
                 </div>
               </div>
 
@@ -209,15 +219,11 @@
                   <template #default="{ row }">
                     <div class="font-bold text-slate-800">{{ row.name }}</div>
                     <ElInput
-                      v-if="calculatedStatus !== 'QcPending'"
                       v-model="row.notes"
                       size="small"
                       placeholder="Ghi chú..."
                       class="mt-1"
                     />
-                    <div v-else class="text-xs text-slate-400 mt-1">
-                      {{ row.notes }}
-                    </div>
                   </template>
                 </ElTableColumn>
                 <ElTableColumn label="Loại" width="100" align="center">
@@ -230,7 +236,7 @@
                 <ElTableColumn label="Số lượng" width="120" align="center">
                   <template #default="{ row }">
                     <ElInputNumber
-                      v-if="row.type === 'Part' && calculatedStatus !== 'QcPending'"
+                      v-if="row.type === 'Part'"
                       v-model="row.count"
                       :min="1"
                       size="small"
@@ -243,14 +249,12 @@
                 <ElTableColumn label="Đơn giá" width="140" align="right">
                   <template #default="{ row }">
                     <ElInputNumber
-                      v-if="calculatedStatus !== 'QcPending'"
                       v-model="row.price"
                       :min="0"
                       size="small"
                       class="w-full"
                       :controls="false"
                     />
-                    <span v-else class="font-medium">{{ formatCurrency(row.price) }}</span>
                   </template>
                 </ElTableColumn>
                 <ElTableColumn label="Thành tiền" width="140" align="right">
@@ -260,12 +264,7 @@
                     }}</span>
                   </template>
                 </ElTableColumn>
-                <ElTableColumn
-                  label="Thao tác"
-                  width="60"
-                  align="center"
-                  v-if="calculatedStatus !== 'QcPending'"
-                >
+                <ElTableColumn label="Thao tác" width="60" align="center">
                   <template #default="{ $index, row }">
                     <ElButton
                       type="danger"
@@ -290,6 +289,18 @@
                   @click="saveIssueParts('QcPending')"
                 >
                   Hoàn tất sửa & Chuyển QC
+                </ElButton>
+              </div>
+              <div
+                class="flex justify-end gap-3 mt-5 pt-4 border-t"
+                v-if="calculatedStatus === 'QcPending'"
+              >
+                <ElButton
+                  type="primary"
+                  :disabled="submitting"
+                  @click="saveIssueParts('QcPending')"
+                >
+                  Lưu thay đổi
                 </ElButton>
               </div>
             </div>

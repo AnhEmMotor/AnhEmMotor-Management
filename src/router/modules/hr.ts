@@ -27,6 +27,7 @@ export const hrRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.hr.commissionPolicy',
         icon: 'ri:percent-line',
+        isHide: true,
       },
     },
     {

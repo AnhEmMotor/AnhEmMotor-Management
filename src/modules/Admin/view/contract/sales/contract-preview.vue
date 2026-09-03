@@ -27,6 +27,14 @@
             <el-icon><CircleCheck /></el-icon> Duyệt Hợp Đồng
           </el-button>
           <el-button
+            v-if="contractData.status === 'PendingApproval'"
+            type="danger"
+            @click="handleRejectContract"
+            v-auth="Permissions.Admin.ContractManagement.Edit"
+          >
+            <el-icon><CircleClose /></el-icon> Từ chối duyệt
+          </el-button>
+          <el-button
             v-if="contractData.status === 'Draft'"
             type="danger"
             @click="handleDelete"
@@ -388,6 +396,7 @@ import {
   EditPen,
   Printer,
   CircleCheck,
+  CircleClose,
   Check,
   Delete,
 } from '@element-plus/icons-vue';
@@ -404,9 +413,11 @@ const isLoading = ref(true);
 
 const contractData = ref({
   id: '' as string,
+  invoiceId: undefined as number | undefined,
   orderId: undefined as number | undefined,
   contractNumber: '' as string,
   status: 'Draft' as SalesContractStatus,
+  rejectReason: undefined as string | undefined,
 
   showroomName: '',
   showroomTaxCode: '',
@@ -457,13 +468,17 @@ const activeStep = computed(() => {
   return 0;
 });
 
-const isContractLocked = computed(() => contractData.value.status !== 'Draft');
+const isContractLocked = computed(
+  () => contractData.value.status !== 'Draft' && contractData.value.status !== 'Rejected'
+);
 const canUploadSignedScan = computed(() => contractData.value.status === 'Approved');
 
 const _contractStatusType = computed(() => {
   switch (contractData.value.status) {
     case 'Draft':
       return 'info';
+    case 'Rejected':
+      return 'danger';
     case 'PendingApproval':
       return 'warning';
     case 'Approved':
@@ -481,6 +496,8 @@ const getStatusLabel = (status: SalesContractStatus): string => {
   switch (status) {
     case 'Draft':
       return 'Nháp';
+    case 'Rejected':
+      return 'Từ chối';
     case 'PendingApproval':
       return 'Chờ Admin duyệt';
     case 'Approved':
@@ -506,7 +523,7 @@ const loadData = async () => {
   try {
     const c = await SalesContractApi.getById(contractId);
     contractData.value.id = c.id;
-    contractData.value.orderId = c.orderId;
+    contractData.value.invoiceId = c.invoiceId;
     contractData.value.contractNumber = c.contractNumber;
     contractData.value.status = c.status as SalesContractStatus;
     contractData.value.customerFullName = c.customerFullName || '';
@@ -575,6 +592,36 @@ const handleApproveContract = async () => {
   } catch (error) {
     if (error !== 'cancel' && error !== 'close') {
       ElMessage.error('Không thể duyệt hợp đồng.');
+    }
+  }
+};
+
+const handleRejectContract = async () => {
+  if (!contractData.value?.id) return;
+  try {
+    const { value: rejectReason } = await ElMessageBox.prompt(
+      'Vui lòng nhập lý do từ chối duyệt hợp đồng này.',
+      'Xác nhận từ chối duyệt',
+      {
+        confirmButtonText: 'Từ chối duyệt',
+        cancelButtonText: 'Hủy',
+        type: 'error',
+        inputValidator: (value) => {
+          if (!value || value.trim() === '') {
+            return 'Vui lòng nhập lý do từ chối';
+          }
+          return true;
+        },
+      }
+    );
+    const updated = await SalesContractApi.reject(contractData.value.id, rejectReason);
+    contractData.value.status = updated.status;
+    contractData.value.rejectReason = updated.rejectReason;
+    ElMessage.success('Đã từ chối duyệt hợp đồng. Hợp đồng đã chuyển về trạng thái Nháp.');
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      ElMessage.error('Không thể từ chối duyệt hợp đồng.');
+      console.error(error);
     }
   }
 };
@@ -880,23 +927,48 @@ const formatDate = (dateString: string) => {
 
 .contract-document-layout {
   row-gap: 16px;
+  display: flex;
+  align-items: stretch;
+}
+
+.form-column,
+.preview-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-card :deep(.el-card__body) {
   min-height: 600px;
   padding: 14px;
+  flex: 1;
+}
+
+.preview-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .preview-card :deep(.el-card__body) {
   min-height: 650px;
   padding: 0;
   background-color: var(--el-fill-color-light);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .a4-preview-container {
   height: 610px;
   overflow-y: auto;
   border-radius: 0 0 8px 8px;
+  flex: 1;
 }
 
 .a4-paper {

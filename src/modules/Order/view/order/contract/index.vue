@@ -102,7 +102,7 @@
 
         <el-table :data="tableData" border style="width: 100%" v-loading="loading">
           <el-table-column prop="contractNumber" label="Số Hợp Đồng" width="160" />
-          <el-table-column label="Mã Đơn Hàng" width="140">
+          <el-table-column label="Mã Hóa Đơn" width="140">
             <template #default="scope">
               <el-button
                 link
@@ -110,7 +110,7 @@
                 class="font-semibold"
                 v-auth="Permissions.Order.ContractManagement.Edit"
               >
-                {{ scope.row.orderId }}
+                {{ scope.row.invoiceId }}
               </el-button>
             </template>
           </el-table-column>
@@ -176,48 +176,48 @@
       destroy-on-close
     >
       <el-form :model="form" :rules="formRules" ref="formRef" label-position="top">
-        <el-form-item label="Chọn đơn hàng" prop="orderId">
+        <el-form-item label="Chọn hóa đơn" prop="invoiceId">
           <el-select
-            v-model="form.orderId"
+            v-model="form.invoiceId"
             filterable
             remote
             reserve-keyword
-            placeholder="Nhập tên KH, SĐT hoặc mã đơn hàng..."
-            :remote-method="searchOrders"
-            :loading="orderSearchLoading"
+            placeholder="Nhập tên KH, SĐT hoặc mã hóa đơn..."
+            :remote-method="searchInvoices"
+            :loading="invoiceSearchLoading"
             class="w-full"
             clearable
           >
             <el-option
-              v-for="item in orderOptions"
+              v-for="item in invoiceOptions"
               :key="item.id"
-              :label="`${item.customerName} - ${item.customerPhone} (Đơn hàng #${item.id})`"
+              :label="`${item.customerName} - ${item.customerPhone} (Hóa đơn #${item.id})`"
               :value="item.id"
             />
           </el-select>
         </el-form-item>
 
-        <div v-if="selectedOrder" class="order-link-summary">
+        <div v-if="selectedInvoice" class="order-link-summary">
           <div class="order-link-summary__heading">
-            <span>Đơn hàng đã xác nhận #{{ selectedOrder.id }}</span>
+            <span>Hóa đơn đã duyệt #{{ selectedInvoice.id }}</span>
             <el-tag type="success" effect="plain" size="small"> Đủ điều kiện lập hợp đồng </el-tag>
           </div>
           <div class="order-link-summary__grid">
             <div>
               <span>Khách hàng</span>
-              <strong>{{ selectedOrder.customerName || 'Chưa cập nhật' }}</strong>
+              <strong>{{ selectedInvoice.customerName || 'Chưa cập nhật' }}</strong>
             </div>
             <div>
               <span>Số điện thoại</span>
-              <strong>{{ selectedOrder.customerPhone || 'Chưa cập nhật' }}</strong>
+              <strong>{{ selectedInvoice.customerPhone || 'Chưa cập nhật' }}</strong>
             </div>
             <div>
-              <span>Giá trị đơn</span>
-              <strong>{{ formatCurrency(selectedOrder.total || 0) }}</strong>
+              <span>Giá trị hóa đơn</span>
+              <strong>{{ formatCurrency(selectedInvoice.totalAmount || 0) }}</strong>
             </div>
             <div>
-              <span>Trạng thái đơn</span>
-              <strong>{{ getOrderStatusLabel(selectedOrder.statusId) }}</strong>
+              <span>Trạng thái</span>
+              <strong>{{ getInvoiceStatusLabel(selectedInvoice.status) }}</strong>
             </div>
           </div>
         </div>
@@ -290,8 +290,7 @@ import { useRouter } from 'vue-router';
 import { View, Search, Document, Warning, Money, Plus, Timer } from '@element-plus/icons-vue';
 
 import { ElMessage } from 'element-plus';
-import { SalesContractApi, SalesOrderApi } from '@/api/sales';
-import type { SalesOrder } from '@/domain/order/order.types';
+import { SalesContractApi, invoiceApi } from '@/api/sales';
 import type { SalesContractListDto, SalesContractStatus } from '@/domain/sales/contract.types';
 
 const router = useRouter();
@@ -304,7 +303,7 @@ const vehicleFilter = ref('');
 interface SalesContractListRow {
   id: string;
   contractNumber: string;
-  orderId: number;
+  invoiceId: number;
   status: SalesContractStatus;
   customerName: string;
   vehicle: string;
@@ -344,7 +343,7 @@ const formatVehicleTransaction = (contract: SalesContractListDto): string => {
 const mapSalesContractRow = (contract: SalesContractListDto): SalesContractListRow => ({
   id: contract.id,
   contractNumber: contract.contractNumber,
-  orderId: contract.orderId,
+  invoiceId: contract.invoiceId,
   status: contract.status,
   customerName: contract.customerFullName?.trim() || 'Chưa có khách hàng',
   vehicle: formatVehicleTransaction(contract),
@@ -385,8 +384,7 @@ const loadStatistics = async () => {
     statistics.pendingApprovalCount = stats.pendingApprovalCount;
     statistics.overdueCount = stats.overdueCount;
     statistics.signedCount = stats.signedCount;
-  } catch (_e) {
-  }
+  } catch (_e) {}
 };
 
 onMounted(() => {
@@ -440,13 +438,13 @@ const formatCurrency = (value: number) =>
   }).format(value);
 
 const dialogVisible = ref(false);
-const orderSearchLoading = ref(false);
+const invoiceSearchLoading = ref(false);
 const submitLoading = ref(false);
-const orderOptions = ref<SalesOrder[]>([]);
+const invoiceOptions = ref<any[]>([]);
 const formRef = ref();
 
 const form = reactive({
-  orderId: null as number | null,
+  invoiceId: null as number | null,
   specialTerms: '',
   warrantyPeriod: '3 năm hoặc 30.000km',
   warrantyScope: 'Toàn quốc',
@@ -454,30 +452,24 @@ const form = reactive({
 });
 
 const formRules = reactive({
-  orderId: [{ required: true, message: 'Vui lòng chọn đơn hàng', trigger: 'change' }],
+  invoiceId: [{ required: true, message: 'Vui lòng chọn hóa đơn', trigger: 'change' }],
 });
 
-const selectedOrder = computed(
-  () => orderOptions.value.find((order) => order.id === form.orderId) ?? null
+const selectedInvoice = computed(
+  () => invoiceOptions.value.find((invoice) => invoice.id === form.invoiceId) ?? null
 );
 
-const ineligibleOrderStatuses = new Set(['cancelled', 'refunding', 'refunded']);
-
-const getOrderStatusLabel = (status: string) => {
+const getInvoiceStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    confirmed_cod: 'Đã xác nhận COD',
-    paid_processing: 'Đang xử lý thanh toán',
-    deposit_paid: 'Đã đặt cọc',
-    installment_approved: 'Đã duyệt trả góp',
-    delivering: 'Đang giao hàng',
-    waiting_pickup: 'Chờ nhận xe',
-    completed: 'Đã hoàn thành',
+    pending: 'Chờ duyệt',
+    completed: 'Hoàn thành',
+    cancelled: 'Đã hủy',
   };
   return labels[status] || status;
 };
 
 const handleOpenAddDialog = () => {
-  form.orderId = null;
+  form.invoiceId = null;
   form.specialTerms = '';
   form.warrantyPeriod = '3 năm hoặc 30.000km';
   form.warrantyScope = 'Toàn quốc';
@@ -486,25 +478,24 @@ const handleOpenAddDialog = () => {
     formRef.value.resetFields();
   }
   dialogVisible.value = true;
-  searchOrders('');
+  searchInvoices('');
 };
 
-const searchOrders = async (query: string) => {
-  orderSearchLoading.value = true;
+const searchInvoices = async (query: string) => {
+  invoiceSearchLoading.value = true;
   try {
-    const res = await SalesOrderApi.getConfirmedList({
-      current: 1,
-      size: 50,
-      Search: query || undefined,
-      Sorts: '-CreatedAt',
+    const res = await invoiceApi.getAdminList({
+      Page: 1,
+      PageSize: 50,
+      Filters: query ? `CustomerName@=${query}|InvoiceNumber@=${query}` : undefined,
     });
-    orderOptions.value = (res.items || []).filter(
-      (order) => !ineligibleOrderStatuses.has(order.statusId)
+    invoiceOptions.value = (res.items || []).filter(
+      (invoice: any) => invoice.status === 'completed'
     );
   } catch (_e) {
-    ElMessage.error('Không tải được danh sách đơn hàng.');
+    ElMessage.error('Không tải được danh sách hóa đơn.');
   } finally {
-    orderSearchLoading.value = false;
+    invoiceSearchLoading.value = false;
   }
 };
 
@@ -515,7 +506,7 @@ const handleSubmit = async () => {
     submitLoading.value = true;
     try {
       const res = await SalesContractApi.create({
-        orderId: form.orderId!,
+        invoiceId: form.invoiceId!,
         specialTerms: form.specialTerms || undefined,
         warrantyPeriod: form.warrantyPeriod || undefined,
         warrantyScope: form.warrantyScope || undefined,
