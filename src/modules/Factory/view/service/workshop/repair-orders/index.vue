@@ -336,6 +336,11 @@
             <ElInputNumber v-model="createForm.mileage" :min="0" class="w-full" placeholder="0" />
           </div>
         </div>
+        <div class="mt-4">
+          <ElCheckbox v-model="createForm.isLaborFree" class="font-semibold! text-amber-700!">
+            Miễn phí công thợ (0đ) - Hỗ trợ khách hàng từ chối bảo hành
+          </ElCheckbox>
+        </div>
 
         <div v-if="false" class="resp-stats-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -845,6 +850,7 @@ const submitCreate = async () => {
       mileage: createForm.value.mileage,
       description: createForm.value.description,
       voucherCode: createForm.value.voucherCode,
+      isLaborFree: createForm.value.isLaborFree,
 
       vinNumber: createForm.value.isNewCustomer ? createForm.value.vinNumber : undefined,
       licensePlate: createForm.value.isNewCustomer ? createForm.value.licensePlate : undefined,
