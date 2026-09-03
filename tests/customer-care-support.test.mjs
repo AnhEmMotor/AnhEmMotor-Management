@@ -9,6 +9,10 @@ const carePageSource = readFileSync(
   resolve(projectRoot, 'src/modules/Marketing/view/customer/care/index.vue'),
   'utf8'
 );
+const contactApiSource = readFileSync(
+  resolve(projectRoot, 'src/api/customer/contact.api.ts'),
+  'utf8'
+);
 
 assert.match(carePageSource, /fetchGetLeadList/, 'Customer care must load real Lead records');
 assert.match(
@@ -30,6 +34,41 @@ assert.match(
   carePageSource,
   /ContactApi\.createSupportRequest/,
   'The page must be able to create a support session'
+);
+assert.match(
+  contactApiSource,
+  /createSupportRequest[\s\S]*?data:\s*\{\s*request:\s*data\s*\}/,
+  'Support request payload must match the backend command envelope'
+);
+assert.match(
+  carePageSource,
+  /supportCategoryOptions[\s\S]*?Billing[\s\S]*?Thanh toán & Hóa đơn/,
+  'Care intake must use the support request category catalog'
+);
+assert.match(
+  carePageSource,
+  /saveCareActivity[\s\S]*?ContactApi\.createSupportRequest/,
+  'Care intake must create a request for the contact management workflow'
+);
+assert.match(
+  carePageSource,
+  /assignedUserId[\s\S]*?ContactApi\.assign/,
+  'Chat session creation must assign the selected support employee'
+);
+assert.match(
+  carePageSource,
+  /ContactApi\.getPaginated\(\{[\s\S]*?assignedUserId/,
+  'Support chat sessions must be scoped to the signed-in employee'
+);
+assert.match(
+  carePageSource,
+  /Tạo phiên chat hỗ trợ/,
+  'The assigned workflow must be presented as support chat session creation'
+);
+assert.doesNotMatch(
+  carePageSource,
+  /<ElTableColumn label="Phụ trách"/,
+  'Customer care must hide the assignee column'
 );
 assert.match(carePageSource, /ContactApi\.reply/, 'Chat replies must be sent to the backend');
 assert.doesNotMatch(
