@@ -32,10 +32,15 @@ assert.match(
   'The page must be able to create a support session'
 );
 assert.match(carePageSource, /ContactApi\.reply/, 'Chat replies must be sent to the backend');
-assert.match(
+assert.doesNotMatch(
   carePageSource,
   /ContactApi\.updateStatus/,
-  'Support session status changes must be persisted'
+  'Customer care must not expose support-session status controls'
+);
+assert.doesNotMatch(
+  carePageSource,
+  /Cập nhật trạng thái phiên hỗ trợ/,
+  'The support-session status dropdown must stay hidden'
 );
 assert.match(
   carePageSource,
